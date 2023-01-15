@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -17,24 +17,14 @@ class UserFactory extends Factory
      */
     public function definition()
     {
-        return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-            'remember_token' => Str::random(10),
-        ];
-    }
+        $company_ids = Company::all()->pluck('id')->toArray();
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     *
-     * @return static
-     */
-    public function unverified()
-    {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
+        return [
+            'company_id' => fake()->randomElement($company_ids),
+            'type' => mt_rand(0, 99) < 5 ? 'I' : 'A',
+            'phone_number' => fake()->unique()->e164PhoneNumber(),
+            'created_at' => date('Y-m-d H:i:s'),
+            'last_active' => mt_rand(0, 99) < 20 ? null : fake()->dateTimeInInterval('-1 week', '+3 days'),
+        ];
     }
 }
