@@ -2,11 +2,19 @@
 
 namespace App\Exceptions;
 
+use App\Http\Traits\ErrorHandling;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
 {
+    use ErrorHandling;
+
     /**
      * A list of exception types with their corresponding custom log levels.
      *
@@ -43,8 +51,24 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        $this->renderable(function (AccessDeniedHttpException $e) {
+            return $this->forbidden();
+        });
+
+        $this->renderable(function (MethodNotAllowedHttpException $e) {
+            return $this->method_not_allowed();
+        });
+
+        $this->renderable(function (NotFoundHttpException $e) {
+            return $this->not_found();
+        });
+
+        $this->renderable(function (UnauthorizedHttpException $e) {
+            return $this->unathorized();
+        });
+
+        $this->renderable(function (UnsupportedMediaTypeHttpException $e) {
+            return $this->unsupported_media_type();
         });
     }
 }

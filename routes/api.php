@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +14,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::controller(UserController::class)->group(function () {
+    Route::get('/check-token', 'check_token')
+        ->middleware(['auth:sanctum', 'ability:check']);
+
+    /**
+     * IMPORTANT!
+     * This endpoint should never be enabled unless it is specifically requested for a specific task. It essentially generates all kinds of forever API tokens for free.
+     */
+    // Route::post('/token', 'generate_token');
 });
