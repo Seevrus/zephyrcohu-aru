@@ -16,13 +16,17 @@ class ReceiptController extends Controller
      */
     public function all()
     {
+        // driverId, driverPhoneNumber, roundId, clientId, productId, createdAt, lastDownloadedAt
         $company_id = request()->user()->company_id;
-        return new ReceiptCollection(
-            Company::find($company_id)
-                ->receipts()
-                ->with(['transactions', 'transactions.purchases', 'transactions.order'])
-                ->paginate(100)
-        );
+        $receipts = Company::find($company_id)
+            ->receipts()
+            ->with(['transactions', 'transactions.purchases', 'transactions.order'])
+            ->paginate(100);
+
+        $row_ids = $receipts->pluck('id')->all();
+        Receipt::whereIn('id', $row_ids)->update([]);
+
+        return new ReceiptCollection($receipts);
     }
 
     /**
@@ -44,7 +48,8 @@ class ReceiptController extends Controller
      */
     public function show(Receipt $receipt)
     {
-        // 
+        // authorization
+        // id, receiptNr
     }
 
     /**
