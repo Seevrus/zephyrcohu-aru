@@ -22,7 +22,7 @@ class ReceiptController extends Controller
         $user_ids = User::where('company_id', $company_id)->pluck('id')->all();
         return new ReceiptCollection(
             Receipt::whereIn('user_id', $user_ids)
-                ->with('transactions')
+                ->with(['transactions', 'transactions.purchases', 'transactions.order'])
                 ->paginate(100)
         );
     }
