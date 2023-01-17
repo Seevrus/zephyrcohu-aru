@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Company;
 use App\Models\Receipt;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -30,7 +31,9 @@ class ReceiptPolicy
      */
     public function view(User $user, Receipt $receipt)
     {
-        //
+        return Company::find($user->company_id)
+            ->receipts
+            ->contains($receipt->id);
     }
 
     /**

@@ -7,7 +7,9 @@ use App\Http\Requests\StoreReceiptRequest;
 use App\Http\Resources\ReceiptCollection;
 use App\Models\Company;
 use App\Filters\ReceiptsFilter;
+use App\Http\Resources\ReceiptResource;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ReceiptController extends Controller
 {
@@ -61,10 +63,17 @@ class ReceiptController extends Controller
      * @param  \App\Models\Receipt  $receipt
      * @return \Illuminate\Http\Response
      */
-    public function show(Receipt $receipt)
+    public function show($id)
     {
-        // authorization
-        // id, receiptNr
+        $receipt = Receipt::findOrFail($id);
+
+        $this->authorize('view', $receipt);
+
+        if (!$receipt) {
+            throw new NotFoundHttpException();
+        }
+
+        return new ReceiptResource($receipt);
     }
 
     /**
