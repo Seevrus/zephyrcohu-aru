@@ -4,6 +4,17 @@ namespace App\Http\Traits;
 
 trait ErrorHandling
 {
+    public function bad_request()
+    {
+        $response = [
+            'status' => 400,
+            'codeName' => 'Bad Request',
+            'message' => 'The server cannot or will not process the request due to something that is perceived to be a client error.'
+        ];
+
+        return response($response, 400);
+    }
+
     public function unathorized()
     {
         $response = [

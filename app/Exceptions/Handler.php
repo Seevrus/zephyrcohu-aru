@@ -8,6 +8,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
 use Throwable;
 
@@ -65,6 +66,10 @@ class Handler extends ExceptionHandler
 
         $this->renderable(function (UnauthorizedHttpException $e) {
             return $this->unathorized();
+        });
+
+        $this->renderable(function (UnprocessableEntityHttpException $e) {
+            return $this->bad_request();
         });
 
         $this->renderable(function (UnsupportedMediaTypeHttpException $e) {

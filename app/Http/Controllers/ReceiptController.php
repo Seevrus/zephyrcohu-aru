@@ -6,6 +6,8 @@ use App\Models\Receipt;
 use App\Http\Requests\StoreReceiptRequest;
 use App\Http\Resources\ReceiptCollection;
 use App\Models\Company;
+use App\Filters\ReceiptsFilter;
+use Illuminate\Http\Request;
 
 class ReceiptController extends Controller
 {
@@ -14,14 +16,27 @@ class ReceiptController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function all()
+    public function all(Request $request)
     {
-        // driverId, driverPhoneNumber, roundId, clientId, productId, createdAt, lastDownloadedAt
-        $company_id = request()->user()->company_id;
-        $receipts = Company::find($company_id)
-            ->receipts()
-            ->with(['transactions', 'transactions.purchases', 'transactions.order'])
-            ->paginate(100);
+        $filter = new ReceiptsFilter();
+        $query_items = $filter->transform($request);
+
+        $company_id = $request->user()->company_id;
+
+        if (count($query_items['where_in_query'])) {
+            $receipts = Company::find($company_id)
+                ->receipts()
+                ->where($query_items['where_query'])
+                ->whereIn($query_items['where_in_query'][0], $query_items['where_in_query'][1])
+                ->with(['transactions', 'transactions.purchases', 'transactions.order'])
+                ->paginate(100);
+        } else {
+            $receipts = Company::find($company_id)
+                ->receipts()
+                ->where($query_items['where_query'])
+                ->with(['transactions', 'transactions.purchases', 'transactions.order'])
+                ->paginate(100);
+        }
 
         $row_ids = $receipts->pluck('id')->all();
         Receipt::whereIn('id', $row_ids)->update([]);
