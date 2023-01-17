@@ -43,7 +43,7 @@ class ReceiptController extends Controller
         $row_ids = $receipts->pluck('id')->all();
         Receipt::whereIn('id', $row_ids)->update([]);
 
-        return new ReceiptCollection($receipts);
+        return new ReceiptCollection($receipts->appends($request->query()));
     }
 
     /**
