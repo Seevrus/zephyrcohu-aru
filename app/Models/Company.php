@@ -13,4 +13,9 @@ class Company extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function receipts()
+    {
+        return $this->hasManyThrough(Receipt::class, User::class);
+    }
 }
