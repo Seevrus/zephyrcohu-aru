@@ -21,7 +21,7 @@ class ReceiptResource extends JsonResource
             'roundId' => $this->round_id,
             'clientId' => $this->client_id,
             'receiptNr' => $this->receipt_nr,
-            'transactions' => new TransactionCollection($this->transactions),
+            'transactions' => TransactionResource::collection($this->transactions),
             'createdAt' => $this->created_at?->format('Y-m-d H:i:s'),
             'updatedAt' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];
