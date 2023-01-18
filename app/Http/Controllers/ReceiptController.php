@@ -73,7 +73,7 @@ class ReceiptController extends Controller
      */
     public function show($id)
     {
-        $receipt = Receipt::findOrFail($id);
+        $receipt = Receipt::with(['transactions', 'transactions.purchases', 'transactions.order'])->findOrFail($id);
 
         $this->authorize('view', $receipt);
 
