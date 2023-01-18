@@ -16,6 +16,7 @@ class ApiFilter
     {
         $where_query = [];
         $where_in_query = [];
+        $where_null_query = [];
         $nr_in_queries = 0;
 
         try {
@@ -39,6 +40,8 @@ class ApiFilter
                                 $column,
                                 json_decode($query[$operator]),
                             ];
+                        } else if ($operator === 'is_null') {
+                            $where_null_query[] = $column;
                         } else {
                             $where_query[] = [
                                 $column,
@@ -53,10 +56,11 @@ class ApiFilter
             return [
                 'where_query' => $where_query,
                 'where_in_query' => $where_in_query,
+                'where_null_query' => $where_null_query,
+
             ];
         } catch (Exception $e) {
-            throw $e;
-            // throw new UnprocessableEntityHttpException();
+            throw new UnprocessableEntityHttpException();
         }
     }
 }
