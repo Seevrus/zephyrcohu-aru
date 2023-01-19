@@ -17,7 +17,6 @@ class TransactionResource extends JsonResource
         return [
             'productId' => $this->product_id,
             'purchases' => PurchaseResource::collection($this->purchases),
-            'order' => new OrderResource($this->order),
         ];
     }
 }

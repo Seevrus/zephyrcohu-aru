@@ -16,7 +16,8 @@ class PurchaseResource extends JsonResource
     {
         return [
             'expireasAt' => $this->expires_at,
-            'amount' => $this->amount,
+            'quantity' => $this->quantity,
+            'itemAmount' => $this->item_amount,
         ];
     }
 }

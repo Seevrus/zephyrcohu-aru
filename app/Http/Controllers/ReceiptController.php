@@ -49,7 +49,9 @@ class ReceiptController extends Controller
             }
 
             $row_ids = $receipts->pluck('id')->all();
-            Receipt::whereIn('id', $row_ids)->update([]);
+            Receipt::whereIn('id', $row_ids)->update([
+                'last_downloaded_at' => date('Y-m-d H:i:s'),
+            ]);
 
             return new ReceiptCollection($receipts->appends($request->query()));
         } catch (Exception $e) {
