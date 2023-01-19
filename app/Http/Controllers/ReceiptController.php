@@ -8,7 +8,6 @@ use App\Http\Resources\ReceiptCollection;
 use App\Models\Company;
 use App\Filters\ReceiptsFilter;
 use App\Http\Resources\ReceiptResource;
-use App\Models\Order;
 use App\Models\Purchase;
 use App\Models\Transaction;
 use Exception;
@@ -38,14 +37,14 @@ class ReceiptController extends Controller
                     ->where($query_items['where_query'])
                     ->whereIn($query_items['where_in_query'][0], $query_items['where_in_query'][1])
                     ->whereNull($query_items['where_null_query'])
-                    ->with(['transactions', 'transactions.purchases', 'transactions.order'])
+                    ->with(['transactions', 'transactions.purchases'])
                     ->paginate(100);
             } else {
                 $receipts = Company::find($company_id)
                     ->receipts()
                     ->where($query_items['where_query'])
                     ->whereNull($query_items['where_null_query'])
-                    ->with(['transactions', 'transactions.purchases', 'transactions.order'])
+                    ->with(['transactions', 'transactions.purchases'])
                     ->paginate(100);
             }
 
