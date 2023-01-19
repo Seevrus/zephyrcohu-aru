@@ -31,4 +31,7 @@ Route::controller(ReceiptController::class)->prefix('receipts')->group(function 
         ->middleware(['auth:sanctum', 'ability:get']);
     Route::get('/{id}', 'show')
         ->middleware(['auth:sanctum', 'ability:get']);
+
+    Route::post('/', 'store')
+        ->middleware(['auth:sanctum', 'ability:post']);
 });

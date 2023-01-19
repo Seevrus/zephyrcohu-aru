@@ -8,8 +8,12 @@ use App\Http\Resources\ReceiptCollection;
 use App\Models\Company;
 use App\Filters\ReceiptsFilter;
 use App\Http\Resources\ReceiptResource;
+use App\Models\Order;
+use App\Models\Purchase;
+use App\Models\Transaction;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
@@ -60,9 +64,37 @@ class ReceiptController extends Controller
      * @param  \App\Http\Requests\StoreReceiptRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function create(StoreReceiptRequest $request)
+    public function store(StoreReceiptRequest $request)
     {
-        //
+        // return new ReceiptResource(Receipt::create([
+        //     'user_id' => Auth::user()->id,
+        //     'round_id' => $request->roundId,
+        //     'client_id' => $request->clientId,
+        //     'transactions' => Transaction::createMany(array_map(function ($transaction) {
+        //         return array_filter([
+        //             'product_id' => $transaction['productId'],
+        //             'purchases' => Purchase::createMany(array_map(function ($purchase) {
+        //                 return [
+        //                     'expires_at' => $purchase->expiresAt,
+        //                     'amount' => $purchase->amount,
+        //                 ];
+        //             }, $transaction->purchases ?? [])),
+        //             'order' => $transaction->order ? Order::create([
+        //                 'amount' => $transaction->order->amount
+        //             ]) : false,
+        //         ]);
+        //     }, $request->transactions)),
+        // ]));
+
+        // $receiptId = Receipt::insertGetId([
+        //     'user_id' => Auth::user()->id,
+        //     'round_id' => $request->roundId,
+        //     'client_id' => $request->clientId,
+        // ]);
+
+        // $receipt = Receipt::find($receiptId);
+
+        // $receipt->transactions()->createMany();
     }
 
     /**

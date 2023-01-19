@@ -11,6 +11,11 @@ class Purchase extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'expires_at',
+        'amount',
+    ];
+
     public function transaction()
     {
         return $this->belongsTo(Transaction::class);

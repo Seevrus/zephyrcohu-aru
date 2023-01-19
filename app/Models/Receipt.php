@@ -9,6 +9,13 @@ class Receipt extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'round_id',
+        'client_id',
+        'receipt_nr',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

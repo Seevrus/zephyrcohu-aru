@@ -11,6 +11,10 @@ class Transaction extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'product_id',
+    ];
+
     public function receipt()
     {
         return $this->belongsTo(Receipt::class);

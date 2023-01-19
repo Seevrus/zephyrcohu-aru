@@ -11,6 +11,10 @@ class Order extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'amount',
+    ];
+
     public function transaction()
     {
         return $this->belongsTo(Transaction::class);
