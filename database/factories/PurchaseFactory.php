@@ -22,7 +22,8 @@ class PurchaseFactory extends Factory
         return [
             'transaction_id' => fake()->randomElement($transaction_ids),
             'expires_at' => fake()->dateTimeInInterval('+3 months', '+3 months'),
-            'amount' => fake()->numberBetween(1, 20)
+            'quantity' => fake()->numberBetween(1, 20),
+            'item_amount' => fake()->numberBetween(1000, 20000),
         ];
     }
 }

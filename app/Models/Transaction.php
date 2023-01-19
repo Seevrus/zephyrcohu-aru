@@ -24,9 +24,4 @@ class Transaction extends Model
     {
         return $this->hasMany(Purchase::class);
     }
-
-    public function order()
-    {
-        return $this->hasOne(Order::class);
-    }
 }

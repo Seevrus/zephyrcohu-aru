@@ -17,24 +17,17 @@ class TransactionSeeder extends Seeder
     {
         Transaction::factory()
             ->count(10000)
-            ->hasOrder(1)
-            ->hasPurchases(2)
-            ->create();
-
-        Transaction::factory()
-            ->count(5000)
-            ->hasPurchases(3)
-            ->create();
-
-        Transaction::factory()
-            ->count(5000)
-            ->hasOrder(1)
             ->hasPurchases(1)
             ->create();
 
         Transaction::factory()
             ->count(10000)
-            ->hasPurchases(1)
+            ->hasPurchases(2)
+            ->create();
+
+        Transaction::factory()
+            ->count(10000)
+            ->hasPurchases(3)
             ->create();
     }
 }

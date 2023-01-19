@@ -24,7 +24,8 @@ class ReceiptFactory extends Factory
             'round_id' => fake()->numberBetween(1, 20),
             'client_id' => fake()->numberBetween(1, 50),
             'receipt_nr' => fake()->numerify('#####/23'),
-            'last_downloaded_at' => mt_rand(0, 99) < 20 ? null : fake()->dateTimeInInterval('-1 week', '+3 days')
+            'printed_at' => fake()->dateTimeInInterval('-2 weeks', '+1 week'),
+            'total_amount' => fake()->numberBetween(10000, 80000),
         ];
     }
 }

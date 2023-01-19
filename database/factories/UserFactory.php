@@ -23,7 +23,7 @@ class UserFactory extends Factory
             'company_id' => fake()->randomElement($company_ids),
             'type' => mt_rand(0, 99) < 5 ? 'I' : 'A',
             'phone_number' => fake()->unique()->e164PhoneNumber(),
-            'created_at' => date('Y-m-d H:i:s'),
+            'created_at' => fake()->dateTimeInInterval('-1 months', '+2 weeks'),
             'last_active' => mt_rand(0, 99) < 20 ? null : fake()->dateTimeInInterval('-1 week', '+3 days'),
         ];
     }
