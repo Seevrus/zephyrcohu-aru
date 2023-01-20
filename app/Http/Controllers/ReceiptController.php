@@ -13,7 +13,6 @@ use App\Models\Transaction;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class ReceiptController extends Controller
@@ -67,11 +66,8 @@ class ReceiptController extends Controller
      */
     public function store(StoreReceiptRequest $request)
     {
-        $user = Auth::user();
-        $this->authorize('store', $user);
-
         $receiptId = Receipt::insertGetId([
-            'user_id' => $user->id,
+            'user_id' => Auth::user()->id,
             'round_id' => $request->roundId,
             'client_id' => $request->clientId,
             'receipt_nr' => $request->receiptNr,
@@ -110,23 +106,28 @@ class ReceiptController extends Controller
 
         $this->authorize('view', $receipt);
 
-        if (!$receipt) {
-            throw new NotFoundHttpException();
-        }
-
         return new ReceiptResource($receipt);
     }
 
     /**
-     * Delete a receipt.
+     * Delete multiple receipts.
      *
      * @param  \App\Models\Receipt  $receipt
      * @return \Illuminate\Http\Response
      */
-    public function delete(int $id)
+    public function delete(Request $request)
     {
-        $receipt = Receipt::findOrFail($id);
-        $this->authorize('delete', $receipt);
-        $receipt->delete();
+        $receipt_ids = json_decode($request->ids['eq'] ?? '');
+
+        if (!is_array($receipt_ids) || !count($receipt_ids)) {
+            throw new UnprocessableEntityHttpException();
+        }
+
+        foreach ($receipt_ids as $id) {
+            $receipt = Receipt::findOrFail($id);
+            $this->authorize('delete', $receipt);
+        }
+
+        Receipt::destroy($receipt_ids);
     }
 }

@@ -26,18 +26,6 @@ class ReceiptPolicy
     }
 
     /**
-     * Determine whether the user can upload the new receipt.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function store(User $user)
-    {
-        // The receipt will automatically paired with the company, so yeah, if they are authorized to POST, they will be able to create it.
-        return true;
-    }
-
-    /**
      * Determine whether the user can delete a receipt.
      *
      * @param  \App\Models\User  $user
