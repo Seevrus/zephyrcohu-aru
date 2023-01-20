@@ -67,35 +67,32 @@ class ReceiptController extends Controller
      */
     public function store(StoreReceiptRequest $request)
     {
-        // return new ReceiptResource(Receipt::create([
-        //     'user_id' => Auth::user()->id,
-        //     'round_id' => $request->roundId,
-        //     'client_id' => $request->clientId,
-        //     'transactions' => Transaction::createMany(array_map(function ($transaction) {
-        //         return array_filter([
-        //             'product_id' => $transaction['productId'],
-        //             'purchases' => Purchase::createMany(array_map(function ($purchase) {
-        //                 return [
-        //                     'expires_at' => $purchase->expiresAt,
-        //                     'amount' => $purchase->amount,
-        //                 ];
-        //             }, $transaction->purchases ?? [])),
-        //             'order' => $transaction->order ? Order::create([
-        //                 'amount' => $transaction->order->amount
-        //             ]) : false,
-        //         ]);
-        //     }, $request->transactions)),
-        // ]));
+        $receiptId = Receipt::insertGetId([
+            'user_id' => Auth::user()->id,
+            'round_id' => $request->roundId,
+            'client_id' => $request->clientId,
+            'receipt_nr' => $request->receiptNr,
+            'total_amount' => $request->totalAmount,
+            'created_at' => $request->createdAt,
+        ]);
 
-        // $receiptId = Receipt::insertGetId([
-        //     'user_id' => Auth::user()->id,
-        //     'round_id' => $request->roundId,
-        //     'client_id' => $request->clientId,
-        // ]);
+        foreach ($request->transactions as $transaction) {
+            $transactionId = Transaction::insertGetId([
+                'receipt_id' => $receiptId,
+                'product_id' => $transaction['productId'],
+            ]);
 
-        // $receipt = Receipt::find($receiptId);
+            foreach ($transaction['purchases'] as $purchase) {
+                Purchase::insert([
+                    'transaction_id' => $transactionId,
+                    'expires_at' => $purchase['expiresAt'],
+                    'quantity' => $purchase['quantity'],
+                    'item_amount' => $purchase['itemAmount'],
+                ]);
+            }
+        }
 
-        // $receipt->transactions()->createMany();
+        return new ReceiptResource(Receipt::find($receiptId));
     }
 
     /**

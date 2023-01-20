@@ -25,16 +25,17 @@ class StoreReceiptRequest extends FormRequest
     public function rules()
     {
         return [
-            'roundId' => 'required|integer|min:1|max:20',
-            'clientId' => 'required|integer|min:1|max:50',
+            'roundId' => 'required|integer|min:1',
+            'clientId' => 'required|integer|min:1',
             'receiptNr' => 'required|regex:`^\d{5}[/]\d{2}$`|unique:receipts,receipt_nr',
             'transactions' => 'required|array',
             'transactions.*.productId' => 'required|regex:`\d{13}`',
-            'transactions.*.purchases' => 'required_without:transactions.*.order|array',
+            'transactions.*.purchases' => 'required|array',
             'transactions.*.purchases.*.expiresAt' => 'required|date_format:Y-m-d',
-            'transactions.*.purchases.*.amount' => 'required|integer',
-            'transactions.*.order' => 'required_without:transactions.*.purchases',
-            'transactions.*.order.amount' => 'required_unless:transactions.*.order,null|integer',
+            'transactions.*.purchases.*.quantity' => 'required|integer',
+            'transactions.*.purchases.*.itemAmount' => 'required|integer',
+            'totalAmount' => 'required|integer|min:1',
+            'createdAt' => 'required|date_format:Y-m-d H:i:s',
         ];
     }
 }
