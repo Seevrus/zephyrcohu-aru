@@ -49,8 +49,7 @@ class ReceiptController extends Controller
                     ->paginate($limit);
             }
 
-            $row_ids = $receipts->pluck('id')->all();
-            Receipt::whereIn('id', $row_ids)->update([
+            $receipts->toQuery()->update([
                 'last_downloaded_at' => date('Y-m-d H:i:s'),
             ]);
 
