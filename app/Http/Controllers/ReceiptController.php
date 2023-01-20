@@ -25,11 +25,15 @@ class ReceiptController extends Controller
     public function all(Request $request)
     {
         try {
+            $user = $request->user();
+            $user->last_active = date('Y-m-d H:i:s');
+            $user->save();
+
             $filter = new ReceiptsFilter();
             $query_items = $filter->transform($request);
             $limit = $request->limit['eq'] ?? 100;
 
-            $company_id = $request->user()->company_id;
+            $company_id = $user->company_id;
 
             if (count($query_items['where_in_query'])) {
                 $receipts = Company::find($company_id)
@@ -66,8 +70,12 @@ class ReceiptController extends Controller
      */
     public function store(StoreReceiptRequest $request)
     {
+        $user = $request->user();
+        $user->last_active = date('Y-m-d H:i:s');
+        $user->save();
+
         $receiptId = Receipt::insertGetId([
-            'user_id' => Auth::user()->id,
+            'user_id' => $user->id,
             'round_id' => $request->roundId,
             'client_id' => $request->clientId,
             'receipt_nr' => $request->receiptNr,
@@ -102,6 +110,10 @@ class ReceiptController extends Controller
      */
     public function show($id)
     {
+        $user = request()->user();
+        $user->last_active = date('Y-m-d H:i:s');
+        $user->save();
+
         $receipt = Receipt::with(['transactions', 'transactions.purchases', 'transactions.order'])->findOrFail($id);
 
         $this->authorize('view', $receipt);
@@ -117,6 +129,10 @@ class ReceiptController extends Controller
      */
     public function delete(Request $request)
     {
+        $user = $request->user();
+        $user->last_active = date('Y-m-d H:i:s');
+        $user->save();
+
         $receipt_ids = json_decode($request->ids['eq'] ?? '');
 
         if (!is_array($receipt_ids) || !count($receipt_ids)) {
