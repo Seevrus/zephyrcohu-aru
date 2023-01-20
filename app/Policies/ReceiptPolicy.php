@@ -12,17 +12,6 @@ class ReceiptPolicy
     use HandlesAuthorization;
 
     /**
-     * Determine whether the user can view any models.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function viewAny(User $user)
-    {
-        //
-    }
-
-    /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
@@ -37,30 +26,19 @@ class ReceiptPolicy
     }
 
     /**
-     * Determine whether the user can create models.
+     * Determine whether the user can upload the new receipt.
      *
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function store(User $user)
     {
-        //
+        // The receipt will automatically paired with the company, so yeah, if they are authorized to POST, they will be able to create it.
+        return true;
     }
 
     /**
-     * Determine whether the user can update the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Receipt  $receipt
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function update(User $user, Receipt $receipt)
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can delete the model.
+     * Determine whether the user can delete a receipt.
      *
      * @param  \App\Models\User  $user
      * @param  \App\Models\Receipt  $receipt
@@ -68,30 +46,8 @@ class ReceiptPolicy
      */
     public function delete(User $user, Receipt $receipt)
     {
-        //
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Receipt  $receipt
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function restore(User $user, Receipt $receipt)
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Receipt  $receipt
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function forceDelete(User $user, Receipt $receipt)
-    {
-        //
+        return Company::find($user->company_id)
+            ->receipts
+            ->contains($receipt->id);
     }
 }

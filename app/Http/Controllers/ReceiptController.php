@@ -67,8 +67,11 @@ class ReceiptController extends Controller
      */
     public function store(StoreReceiptRequest $request)
     {
+        $user = Auth::user();
+        $this->authorize('store', $user);
+
         $receiptId = Receipt::insertGetId([
-            'user_id' => Auth::user()->id,
+            'user_id' => $user->id,
             'round_id' => $request->roundId,
             'client_id' => $request->clientId,
             'receipt_nr' => $request->receiptNr,
@@ -120,8 +123,10 @@ class ReceiptController extends Controller
      * @param  \App\Models\Receipt  $receipt
      * @return \Illuminate\Http\Response
      */
-    public function delete(Receipt $receipt)
+    public function delete(int $id)
     {
-        //
+        $receipt = Receipt::findOrFail($id);
+        $this->authorize('delete', $receipt);
+        $receipt->delete();
     }
 }

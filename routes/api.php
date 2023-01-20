@@ -34,4 +34,7 @@ Route::controller(ReceiptController::class)->prefix('receipts')->group(function 
 
     Route::post('/', 'store')
         ->middleware(['auth:sanctum', 'ability:post']);
+
+    Route::delete('/{id}', 'delete')
+        ->middleware(['auth:sanctum', 'ability:delete']);
 });
