@@ -12,7 +12,6 @@ use App\Models\Purchase;
 use App\Models\Transaction;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class ReceiptController extends Controller
@@ -42,6 +41,7 @@ class ReceiptController extends Controller
                     ->whereIn($query_items['where_in_query'][0], $query_items['where_in_query'][1])
                     ->whereNull($query_items['where_null_query'])
                     ->with(['transactions', 'transactions.purchases'])
+                    ->orderBy('id')
                     ->paginate($limit);
             } else {
                 $receipts = Company::find($company_id)
@@ -49,6 +49,7 @@ class ReceiptController extends Controller
                     ->where($query_items['where_query'])
                     ->whereNull($query_items['where_null_query'])
                     ->with(['transactions', 'transactions.purchases'])
+                    ->orderBy('id')
                     ->paginate($limit);
             }
 
