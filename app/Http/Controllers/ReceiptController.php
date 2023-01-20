@@ -28,6 +28,7 @@ class ReceiptController extends Controller
         try {
             $filter = new ReceiptsFilter();
             $query_items = $filter->transform($request);
+            $limit = $request->limit['eq'] ?? 100;
 
             $company_id = $request->user()->company_id;
 
@@ -38,14 +39,14 @@ class ReceiptController extends Controller
                     ->whereIn($query_items['where_in_query'][0], $query_items['where_in_query'][1])
                     ->whereNull($query_items['where_null_query'])
                     ->with(['transactions', 'transactions.purchases'])
-                    ->paginate(100);
+                    ->paginate($limit);
             } else {
                 $receipts = Company::find($company_id)
                     ->receipts()
                     ->where($query_items['where_query'])
                     ->whereNull($query_items['where_null_query'])
                     ->with(['transactions', 'transactions.purchases'])
-                    ->paginate(100);
+                    ->paginate($limit);
             }
 
             $row_ids = $receipts->pluck('id')->all();
