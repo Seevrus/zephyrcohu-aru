@@ -12,7 +12,7 @@ class User extends Authenticatable
 
     public $timestamps = false;
 
-    public function employer()
+    public function company()
     {
         return $this->belongsTo(Company::class);
     }

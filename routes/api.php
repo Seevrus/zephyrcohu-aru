@@ -21,9 +21,12 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
 
     /**
      * IMPORTANT!
-     * This endpoint should never be enabled unless it is specifically requested for a specific task. It essentially generates all kinds of forever API tokens for free.
+     * This endpoint should never be enabled unless it is specifically requested for a specific task. You have been warned.
      */
-    // Route::post('/token', 'generate_token');
+    // Route::post('/master-token', 'generate_master_token');
+
+    Route::post('/token', 'generate_token')
+        ->middleware(['auth:sanctum', 'ability:generate']);
 });
 
 Route::controller(ReceiptController::class)->prefix('receipts')->group(function () {
