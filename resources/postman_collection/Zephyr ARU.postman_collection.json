@@ -1,0 +1,294 @@
+{
+	"info": {
+		"_postman_id": "1bc5f360-8f72-4d19-8980-4cd817dba4ed",
+		"name": "Zephyr ARU",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14197538"
+	},
+	"item": [
+		{
+			"name": "Master Token",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"companyId\": 1,\r\n    \"phoneNumber\": \"+36301234567\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{zephyr_aru_url}}/users/master-token",
+					"host": [
+						"{{zephyr_aru_url}}"
+					],
+					"path": [
+						"users",
+						"master-token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Token",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{master_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"phoneNumber\": \"+36301234567\",\r\n    \"userType\": \"I\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{zephyr_aru_url}}/users/token",
+					"host": [
+						"{{zephyr_aru_url}}"
+					],
+					"path": [
+						"users",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check Token",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{zephyr_aru_url}}/users/check-token",
+					"host": [
+						"{{zephyr_aru_url}}"
+					],
+					"path": [
+						"users",
+						"check-token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Receipts",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{user_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{zephyr_aru_url}}/receipts",
+					"host": [
+						"{{zephyr_aru_url}}"
+					],
+					"path": [
+						"receipts"
+					],
+					"query": [
+						{
+							"key": "totalAmount[eq]",
+							"value": "10000",
+							"disabled": true
+						},
+						{
+							"key": "limit[eq]",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": "30",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Receipt",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{zephyr_aru_url}}/receipts/3001",
+					"host": [
+						"{{zephyr_aru_url}}"
+					],
+					"path": [
+						"receipts",
+						"3001"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Receipt",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{user_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"roundId\": 1,\r\n    \"clientId\": 1,\r\n    \"receiptNr\": \"83094/23\",\r\n    \"transactions\": [\r\n        {\r\n            \"productId\": \"9558296925671\",\r\n            \"purchases\": [\r\n                {\r\n                    \"expiresAt\": \"2023-08-31\",\r\n                    \"quantity\": 4,\r\n                    \"itemAmount\": 2729\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2023-04-30\",\r\n                    \"quantity\": 1,\r\n                    \"itemAmount\": 1394\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"productId\": \"9558297925671\",\r\n            \"purchases\": [\r\n                {\r\n                    \"expiresAt\": \"2023-03-31\",\r\n                    \"quantity\": 1,\r\n                    \"itemAmount\": 799\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2023-05-31\",\r\n                    \"quantity\": 3,\r\n                    \"itemAmount\": 4590\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"totalAmount\": 10788,\r\n    \"createdAt\": \"2023-01-19 19:42:24\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{zephyr_aru_url}}/receipts",
+					"host": [
+						"{{zephyr_aru_url}}"
+					],
+					"path": [
+						"receipts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Receipt",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{zephyr_aru_url}}/receipts?ids[eq]=[3002, 3003]",
+					"host": [
+						"{{zephyr_aru_url}}"
+					],
+					"path": [
+						"receipts"
+					],
+					"query": [
+						{
+							"key": "ids[eq]",
+							"value": "[3002, 3003]"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
