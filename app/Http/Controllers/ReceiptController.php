@@ -8,6 +8,7 @@ use App\Http\Resources\ReceiptCollection;
 use App\Models\Company;
 use App\Filters\ReceiptsFilter;
 use App\Http\Resources\ReceiptResource;
+use App\Models\Log;
 use App\Models\Purchase;
 use App\Models\Transaction;
 use Exception;
@@ -57,6 +58,14 @@ class ReceiptController extends Controller
                 'last_downloaded_at' => date('Y-m-d H:i:s'),
             ]);
 
+            Log::insert([
+                'company_id' => $user->company_id,
+                'user_id' => $user->id,
+                'token_id' => $user->currentAccessToken()->id,
+                'action' => 'Accessed ' . $limit . ' receipts',
+                'occured_at' => date('Y-m-d H:i:s'),
+            ]);
+
             return new ReceiptCollection($receipts->appends($request->query()));
         } catch (Exception $e) {
             throw new UnprocessableEntityHttpException();
@@ -100,6 +109,14 @@ class ReceiptController extends Controller
             }
         }
 
+        Log::insert([
+            'company_id' => $user->company_id,
+            'user_id' => $user->id,
+            'token_id' => $user->currentAccessToken()->id,
+            'action' => 'Uploaded a new receipt',
+            'occured_at' => date('Y-m-d H:i:s'),
+        ]);
+
         return new ReceiptResource(Receipt::find($receiptId));
     }
 
@@ -118,6 +135,14 @@ class ReceiptController extends Controller
         $receipt = Receipt::with(['transactions', 'transactions.purchases', 'transactions.order'])->findOrFail($id);
 
         $this->authorize('view', $receipt);
+
+        Log::insert([
+            'company_id' => $user->company_id,
+            'user_id' => $user->id,
+            'token_id' => $user->currentAccessToken()->id,
+            'action' => 'Accessed 1 receipt',
+            'occured_at' => date('Y-m-d H:i:s'),
+        ]);
 
         return new ReceiptResource($receipt);
     }
@@ -146,5 +171,13 @@ class ReceiptController extends Controller
         }
 
         Receipt::destroy($receipt_ids);
+
+        Log::insert([
+            'company_id' => $user->company_id,
+            'user_id' => $user->id,
+            'token_id' => $user->currentAccessToken()->id,
+            'action' => 'Deleted ' . count($receipt_ids) . ' receipts',
+            'occured_at' => date('Y-m-d H:i:s'),
+        ]);
     }
 }

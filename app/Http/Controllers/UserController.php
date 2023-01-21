@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\MasterKeyUsed;
+use App\Models\Log;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -111,6 +112,14 @@ class UserController extends Controller
                 'post',
             ]);
         }
+
+        Log::insert([
+            'company_id' => $sender->company_id,
+            'user_id' => $sender->id,
+            'token_id' => $master_token_id,
+            'action' => 'Created New Access Token',
+            'occured_at' => date('Y-m-d H:i:s'),
+        ]);
 
         // TODO: update email template with APP Styles once they are available
         Mail::to('tiller2004@gmail.com')->send(new MasterKeyUsed(
