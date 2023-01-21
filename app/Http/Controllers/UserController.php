@@ -51,7 +51,10 @@ class UserController extends Controller
             'name' => 'master-token',
         ])->delete();
 
-        $token = $user->createToken('master-token', ['generate']);
+        $token = $user->createToken('master-token', [
+            'check',
+            'generate'
+        ]);
 
         return [
             'companyId' => $user->company_id,
