@@ -36,6 +36,7 @@ class UserController extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
+                'company_id',
                 'phone_number',
                 'type',
             ]
@@ -87,6 +88,7 @@ class UserController extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
+                'company_id',
                 'phone_number',
                 'type',
             ]
@@ -141,6 +143,4 @@ class UserController extends Controller
             'accessToken' => $token->plainTextToken,
         ];
     }
-
-    // TODO: logokat beállítani adatbázis hozzáférések naplózásához. Ki, melyik végpont, mikor
 }
