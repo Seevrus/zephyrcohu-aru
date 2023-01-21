@@ -127,7 +127,7 @@ class UserController extends Controller
         ]);
 
         // TODO: update email template with APP Styles once they are available
-        Mail::to('tiller2004@gmail.com')->send(new MasterKeyUsed(
+        Mail::to(env('MAIL_ADMIN_EMAIL'))->send(new MasterKeyUsed(
             $company_id,
             $master_token_id,
             $user->id,
