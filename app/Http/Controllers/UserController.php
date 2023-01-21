@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GenerateMasterTokenRequest;
+use App\Http\Requests\GenerateTokenRequest;
 use App\Mail\MasterKeyUsed;
 use App\Models\Log;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -18,13 +19,8 @@ class UserController extends Controller
         return true;
     }
 
-    public function generate_master_token(Request $request)
+    public function generate_master_token(GenerateMasterTokenRequest $request)
     {
-        $request->validate([
-            'companyId' => 'required|exists:companies,id',
-            'phoneNumber' => 'required|regex:`^\+36[237]0\d{7}$`'
-        ]);
-
         $company_id = $request->post('companyId');
         $phone_number = $request->post('phoneNumber');
 
@@ -66,13 +62,8 @@ class UserController extends Controller
         ];
     }
 
-    public function generate_token(Request $request)
+    public function generate_token(GenerateTokenRequest $request)
     {
-        $request->validate([
-            'phoneNumber' => 'required|regex:`^\+36[237]0\d{7}$`',
-            'userType' => 'required|in:A,I',
-        ]);
-
         $phone_number = $request->post('phoneNumber');
         $user_type = $request->post('userType');
 
