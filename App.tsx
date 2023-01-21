@@ -1,5 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import { Provider } from 'react-redux';
+import store from './react_native/store';
 
 function Main() {
   return (
@@ -20,5 +22,9 @@ const styles = StyleSheet.create({
 });
 
 export default function App() {
-  // TODO: setup a Redux store and wrap around Main
+  return (
+    <Provider store={store}>
+      <Main />
+    </Provider>
+  );
 }
