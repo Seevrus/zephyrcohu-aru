@@ -14,9 +14,9 @@ class UserController extends Controller
 {
     public function check_token()
     {
+        $this->authorize('checkToken', User::class);
         request()->user()->last_active = date('Y-m-d H:i:s');
         request()->user()->save();
-        return true;
     }
 
     public function generate_master_token(GenerateMasterTokenRequest $request)

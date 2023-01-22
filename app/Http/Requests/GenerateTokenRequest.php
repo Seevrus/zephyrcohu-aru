@@ -13,7 +13,7 @@ class GenerateTokenRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return $this->user()->phone_number === request()->header('X-Phone-Number');
     }
 
     /**

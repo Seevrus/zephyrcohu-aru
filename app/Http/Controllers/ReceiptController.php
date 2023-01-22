@@ -12,7 +12,10 @@ use App\Models\Log;
 use App\Models\Purchase;
 use App\Models\Transaction;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class ReceiptController extends Controller
@@ -25,6 +28,8 @@ class ReceiptController extends Controller
     public function all(Request $request)
     {
         try {
+            $this->authorize('viewAny', Receipt::class);
+
             $user = $request->user();
             $user->last_active = date('Y-m-d H:i:s');
             $user->save();
@@ -68,6 +73,7 @@ class ReceiptController extends Controller
 
             return new ReceiptCollection($receipts->appends($request->query()));
         } catch (Exception $e) {
+            if ($e instanceof AuthorizationException) throw $e;
             throw new UnprocessableEntityHttpException();
         }
     }
@@ -80,6 +86,8 @@ class ReceiptController extends Controller
      */
     public function store(StoreReceiptRequest $request)
     {
+        $this->authorize('store', Receipt::class);
+
         $user = $request->user();
         $user->last_active = date('Y-m-d H:i:s');
         $user->save();
@@ -128,11 +136,16 @@ class ReceiptController extends Controller
      */
     public function show($id)
     {
+        // Have to do this here before using the policy because I do not want to return with 404 is the receipt does not exist but the user does not even have access right to the endpoint
+        if (!Gate::allows('show-receipt')) {
+            throw new AccessDeniedHttpException();
+        }
+
         $user = request()->user();
         $user->last_active = date('Y-m-d H:i:s');
         $user->save();
 
-        $receipt = Receipt::with(['transactions', 'transactions.purchases', 'transactions.order'])->findOrFail($id);
+        $receipt = Receipt::with(['transactions', 'transactions.purchases'])->findOrFail($id);
 
         $this->authorize('view', $receipt);
 

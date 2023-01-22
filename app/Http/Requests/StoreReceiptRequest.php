@@ -13,8 +13,7 @@ class StoreReceiptRequest extends FormRequest
      */
     public function authorize()
     {
-        // User needs to be authenticated by sanctum to reach this point, so no other authorization needed
-        return true;
+        return $this->user()->phone_number === request()->header('X-Phone-Number');
     }
 
     /**
