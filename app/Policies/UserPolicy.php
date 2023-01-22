@@ -20,4 +20,15 @@ class UserPolicy
     {
         return $user->phone_number === request()->header('X-Phone-Number');
     }
+
+    /**
+     * Determine whether the user can view any users.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function viewAny(User $user)
+    {
+        return $user->phone_number === request()->header('X-Phone-Number');
+    }
 }

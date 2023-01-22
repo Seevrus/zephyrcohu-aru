@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(UserController::class)->prefix('users')->group(function () {
     Route::get('/check-token', 'check_token')
-        ->middleware(['auth:sanctum', 'ability:check']);
+        ->middleware(['auth:sanctum', 'ability:check-token']);
 
     /**
      * IMPORTANT!
@@ -26,18 +26,21 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
     // Route::post('/master-token', 'generate_master_token');
 
     Route::post('/token', 'generate_token')
-        ->middleware(['auth:sanctum', 'ability:generate']);
+        ->middleware(['auth:sanctum', 'ability:generate-token']);
+
+    Route::post('/all', 'all')
+        ->middleware(['auth:sanctum', 'ability:get-users']);
 });
 
 Route::controller(ReceiptController::class)->prefix('receipts')->group(function () {
     Route::post('/all', 'all')
-        ->middleware(['auth:sanctum', 'ability:get']);
+        ->middleware(['auth:sanctum', 'ability:get-receipts']);
     Route::get('/{id}', 'show')
-        ->middleware(['auth:sanctum', 'ability:get']);
+        ->middleware(['auth:sanctum', 'ability:get-receipts']);
 
     Route::post('/', 'store')
-        ->middleware(['auth:sanctum', 'ability:post']);
+        ->middleware(['auth:sanctum', 'ability:post-receipt']);
 
     Route::delete('/', 'delete')
-        ->middleware(['auth:sanctum', 'ability:delete']);
+        ->middleware(['auth:sanctum', 'ability:delete-receipt']);
 });

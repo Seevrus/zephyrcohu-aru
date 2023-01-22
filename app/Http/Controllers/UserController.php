@@ -4,11 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\GenerateMasterTokenRequest;
 use App\Http\Requests\GenerateTokenRequest;
+use App\Http\Resources\UserCollection;
 use App\Mail\MasterKeyUsed;
+use App\Models\Company;
 use App\Models\Log;
 use App\Models\User;
+use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class UserController extends Controller
 {
@@ -49,8 +55,8 @@ class UserController extends Controller
         ])->delete();
 
         $token = $user->createToken('master-token', [
-            'check',
-            'generate'
+            'check-token',
+            'generate-token',
         ]);
 
         return [
@@ -64,10 +70,13 @@ class UserController extends Controller
 
     public function generate_token(GenerateTokenRequest $request)
     {
+        $sender = $request->user();
+        $sender->last_active = date('Y-m-d H:i:s');
+        $sender->save();
+
         $phone_number = $request->post('phoneNumber');
         $user_type = $request->post('userType');
 
-        $sender = $request->user();
         $company_id = $sender->company_id;
         $master_token_id = $sender->currentAccessToken()->id;
 
@@ -97,15 +106,16 @@ class UserController extends Controller
 
         if ($user->type === 'I') {
             $token = $user->createToken('user-token', [
-                'check',
-                'get',
-                'post',
-                'delete',
+                'check-token',
+                'get-users',
+                'get-receipts',
+                'post-receipt',
+                'delete-receipt',
             ]);
         } else {
             $token = $user->createToken('user-token', [
-                'check',
-                'post',
+                'check-token',
+                'post-receipt',
             ]);
         }
 
@@ -133,5 +143,33 @@ class UserController extends Controller
             'tokenType' => 'Bearer',
             'accessToken' => $token->plainTextToken,
         ];
+    }
+
+    public function all(Request $request)
+    {
+        try {
+            $this->authorize('viewAny', User::class);
+
+            $user = $request->user();
+            $user->last_active = date('Y-m-d H:i:s');
+            $user->save();
+
+            $company_id = $user->company_id;
+
+            $users = Company::find($company_id)->users()->paginate(100);
+
+            Log::insert([
+                'company_id' => $user->company_id,
+                'user_id' => $user->id,
+                'token_id' => $user->currentAccessToken()->id,
+                'action' => 'Accessed ' . $users->count() . ' users',
+                'occured_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            return new UserCollection($users);
+        } catch (Exception $e) {
+            if ($e instanceof AuthorizationException) throw $e;
+            throw new UnprocessableEntityHttpException();
+        }
     }
 }
