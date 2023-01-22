@@ -17,7 +17,7 @@ class UserResource extends JsonResource
         return [
             'id' => $this->id,
             'phoneNumber' => $this->phone_number,
-            'type' => $this->type,
+            'type' => $this->type === 'I' ? 'Integra' : 'App',
             'createdAt' => $this->created_at,
             'lastActive' => $this->last_active,
         ];

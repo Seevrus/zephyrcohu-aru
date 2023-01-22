@@ -10,6 +10,7 @@
       <li>Cég azonosítója: {{ $company_id }}</li>
       <li>Mesterkulcs azonosítója: {{ $master_key_id }}</li>
       <li>Felhasználó azonosítója: {{ $user_id }}</li>
+      <li>Felhasználó típusa: {{ $user_type }}</li>
       <li>Felhasználó telefonszáma: {{ $user_phone_number }}</li>
       <li>Generált kulcs azonosítója: {{ $user_key_id }}</li>
     </ul>

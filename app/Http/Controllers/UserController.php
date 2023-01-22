@@ -132,6 +132,7 @@ class UserController extends Controller
             $company_id,
             $master_token_id,
             $user->id,
+            $user->type,
             $user->phone_number,
             $token->accessToken->id,
         ));

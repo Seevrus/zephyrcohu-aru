@@ -16,6 +16,7 @@ class MasterKeyUsed extends Mailable
     public $company_id;
     public $master_key_id;
     public $user_id;
+    public $user_type;
     public $user_phone_number;
     public $user_key_id;
 
@@ -28,12 +29,14 @@ class MasterKeyUsed extends Mailable
         $company_id,
         $master_key_id,
         $user_id,
+        $user_type,
         $user_phone_number,
         $user_key_id
     ) {
         $this->company_id = $company_id;
         $this->master_key_id = $master_key_id;
         $this->user_id = $user_id;
+        $this->user_type = $user_type === 'I' ? 'Integra' : 'App';
         $this->user_phone_number = $user_phone_number;
         $this->user_key_id = $user_key_id;
     }

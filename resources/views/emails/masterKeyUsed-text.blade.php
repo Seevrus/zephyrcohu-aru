@@ -4,6 +4,7 @@ Az kéréshez kapcsolódó paraméterek:
 - Cég azonosítója: {{ $company_id }}
 - Mesterkulcs azonosítója: {{ $master_key_id }}
 - Felhasználó azonosítója: {{ $user_id }}
+- Felhasználó típusa: {{ $user_type }}
 - Felhasználó telefonszáma: {{ $user_phone_number }}
 - Generált kulcs azonosítója: {{ $user_key_id }}
 
