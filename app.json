@@ -4,12 +4,12 @@
     "slug": "zephyrcohu-aru",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./react_native/assets/icon.png",
-    "userInterfaceStyle": "light",
+    "icon": "./react_native/assets/zephyr-icon.png",
+    "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./react_native/assets/splash.png",
+      "image": "./react_native/assets/zephyr-splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#382E6B"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -20,12 +20,9 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./react_native/assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "foregroundImage": "./react_native/assets/zephyr-icon.png",
+        "backgroundColor": "#382E6B"
       }
-    },
-    "web": {
-      "favicon": "./react_native/assets/favicon.png"
     }
   }
 }
