@@ -20,34 +20,32 @@ class ApiFilter
         $nr_in_queries = 0;
 
         try {
-            foreach ($this->allowed_params as $param => $operators) {
-                $query = $request->query($param);
+            $filters = $request->filters ?? [];
 
-                if (!$query) continue;
+            foreach ($filters as $filter) {
+                if (array_key_exists($filter['key'], $this->allowed_params)) {
+                    foreach ($this->allowed_params[$filter['key']] as $operator) {
+                        if ($filter['operator'] === $operator) {
+                            if ($filter['operator'] === 'in') {
+                                $nr_in_queries++;
 
-                $column = $this->column_map[$param] ?? $param;
+                                if ($nr_in_queries > 1) {
+                                    throw new UnprocessableEntityHttpException();
+                                }
 
-                foreach ($operators as $operator) {
-                    if (isset($query[$operator])) {
-                        if ($operator === 'in') {
-                            $nr_in_queries++;
-
-                            if ($nr_in_queries > 1) {
-                                throw new UnprocessableEntityHttpException();
+                                $where_in_query = [
+                                    $this->column_map[$filter['key']],
+                                    $filter['value'],
+                                ];
+                            } else if ($filter['operator'] === 'is' && $filter['value'] === null) {
+                                $where_null_query[] = $this->column_map[$filter['key']];
+                            } else {
+                                $where_query[] = [
+                                    $this->column_map[$filter['key']],
+                                    $this->operator_map[$filter['operator']],
+                                    $filter['value'],
+                                ];
                             }
-
-                            $where_in_query = [
-                                $column,
-                                json_decode($query[$operator]),
-                            ];
-                        } else if ($operator === 'is_null') {
-                            $where_null_query[] = $column;
-                        } else {
-                            $where_query[] = [
-                                $column,
-                                $this->operator_map[$operator],
-                                $query[$operator],
-                            ];
                         }
                     }
                 }
@@ -57,7 +55,6 @@ class ApiFilter
                 'where_query' => $where_query,
                 'where_in_query' => $where_in_query,
                 'where_null_query' => $where_null_query,
-
             ];
         } catch (Exception $e) {
             throw new UnprocessableEntityHttpException();

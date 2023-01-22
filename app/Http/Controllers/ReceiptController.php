@@ -36,7 +36,7 @@ class ReceiptController extends Controller
 
             $filter = new ReceiptsFilter();
             $query_items = $filter->transform($request);
-            $limit = $request->limit['eq'] ?? 100;
+            $limit = $request->limit ?? 100;
 
             $company_id = $user->company_id;
 
@@ -59,19 +59,21 @@ class ReceiptController extends Controller
                     ->paginate($limit);
             }
 
-            $receipts->toQuery()->update([
-                'last_downloaded_at' => date('Y-m-d H:i:s'),
-            ]);
+            if ($receipts->isNotEmpty()) {
+                $receipts->toQuery()->update([
+                    'last_downloaded_at' => date('Y-m-d H:i:s'),
+                ]);
+            }
 
             Log::insert([
                 'company_id' => $user->company_id,
                 'user_id' => $user->id,
                 'token_id' => $user->currentAccessToken()->id,
-                'action' => 'Accessed ' . $limit . ' receipts',
+                'action' => 'Accessed ' . $receipts->count() . ' receipts',
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 
-            return new ReceiptCollection($receipts->appends($request->query()));
+            return new ReceiptCollection($receipts);
         } catch (Exception $e) {
             if ($e instanceof AuthorizationException) throw $e;
             throw new UnprocessableEntityHttpException();

@@ -30,7 +30,7 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
 });
 
 Route::controller(ReceiptController::class)->prefix('receipts')->group(function () {
-    Route::get('/', 'all')
+    Route::post('/all', 'all')
         ->middleware(['auth:sanctum', 'ability:get']);
     Route::get('/{id}', 'show')
         ->middleware(['auth:sanctum', 'ability:get']);

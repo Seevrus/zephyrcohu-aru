@@ -13,7 +13,7 @@ class ReceiptsFilter extends ApiFilter
         'receiptNr' => ['eq', 'lte', 'gte', 'in'],
         'totalAmount' => ['eq', 'lte', 'gte'],
         'createdAt' => ['lte', 'gte'],
-        'lastDownloadedAt' => ['lte', 'gte', 'is_null'],
+        'lastDownloadedAt' => ['lte', 'gte', 'is'],
     ];
 
     protected $column_map = [
@@ -30,6 +30,7 @@ class ReceiptsFilter extends ApiFilter
 
     protected $operator_map = [
         'eq' => '=',
+        'is' => 'is',
         'ne' => '<>',
         'in' => 'in',
         'lte' => '<=',

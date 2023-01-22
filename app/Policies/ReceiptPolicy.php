@@ -6,7 +6,6 @@ use App\Models\Company;
 use App\Models\Receipt;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Log;
 
 class ReceiptPolicy
 {
