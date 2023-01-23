@@ -19,7 +19,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"companyId\": 1,\r\n    \"phoneNumber\": \"+36301234567\"\r\n}",
+					"raw": "{\r\n    \"companyId\": 1,\r\n    \"phoneNumber\": \"+361234567\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -58,6 +58,11 @@
 						"key": "Accept",
 						"value": "application/json",
 						"type": "text"
+					},
+					{
+						"key": "X-Phone-Number",
+						"value": "+36301234567",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -90,13 +95,19 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{api_token}}",
+							"value": "{{user_token}}",
 							"type": "string"
 						}
 					]
 				},
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "X-Phone-Number",
+						"value": "+36301234567",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "{{zephyr_aru_url}}/users/check-token",
 					"host": [
@@ -105,6 +116,54 @@
 					"path": [
 						"users",
 						"check-token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{user_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Phone-Number",
+						"value": "+36301234567",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filters\": [\r\n        {\r\n            \"key\": \"phoneNumber\",\r\n            \"operator\": \"eq\",\r\n            \"value\": \"+12137184044\"\r\n        }\r\n    ],\r\n    \"limit\": 10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{zephyr_aru_url}}/users/all",
+					"host": [
+						"{{zephyr_aru_url}}"
+					],
+					"path": [
+						"users",
+						"all"
 					]
 				}
 			},
@@ -123,37 +182,41 @@
 						}
 					]
 				},
-				"method": "GET",
+				"method": "POST",
 				"header": [
 					{
 						"key": "Accept",
 						"value": "application/json",
 						"type": "text"
+					},
+					{
+						"key": "X-Phone-Number",
+						"value": "+36301234567",
+						"type": "text"
 					}
 				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filters\": [\r\n        {\r\n            \"key\": \"driverPhoneNumber\",\r\n            \"operator\": \"in\",\r\n            \"value\": [\r\n                \"+18785258283\",\r\n                \"+12137184044\"\r\n            ]\r\n        }\r\n    ],\r\n    \"limit\": 10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "{{zephyr_aru_url}}/receipts",
+					"raw": "{{zephyr_aru_url}}/receipts/all?page=3",
 					"host": [
 						"{{zephyr_aru_url}}"
 					],
 					"path": [
-						"receipts"
+						"receipts",
+						"all"
 					],
 					"query": [
 						{
-							"key": "totalAmount[eq]",
-							"value": "10000",
-							"disabled": true
-						},
-						{
-							"key": "limit[eq]",
-							"value": "1",
-							"disabled": true
-						},
-						{
 							"key": "page",
-							"value": "30",
-							"disabled": true
+							"value": "3"
 						}
 					]
 				}
@@ -173,7 +236,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{api_token}}",
+							"value": "{{user_token}}",
 							"type": "string"
 						}
 					]
@@ -184,16 +247,21 @@
 						"key": "Accept",
 						"value": "application/json",
 						"type": "text"
+					},
+					{
+						"key": "X-Phone-Number",
+						"value": "+36301234567",
+						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "{{zephyr_aru_url}}/receipts/3001",
+					"raw": "{{zephyr_aru_url}}/receipts/1",
 					"host": [
 						"{{zephyr_aru_url}}"
 					],
 					"path": [
 						"receipts",
-						"3001"
+						"1"
 					]
 				}
 			},
@@ -222,6 +290,11 @@
 					{
 						"key": "Accept",
 						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Phone-Number",
+						"value": "+36301234567",
 						"type": "text"
 					}
 				],
@@ -269,6 +342,11 @@
 					{
 						"key": "Accept",
 						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Phone-Number",
+						"value": "+3601234567",
 						"type": "text"
 					}
 				],
