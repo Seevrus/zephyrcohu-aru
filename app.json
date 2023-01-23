@@ -1,14 +1,12 @@
 {
   "expo": {
-    "name": "zephyrcohu-aru",
-    "slug": "zephyrcohu-aru",
-    "version": "1.0.0",
+    "name": "Borrel",
+    "slug": "zephyr-borrel",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./react_native/assets/zephyr-icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./react_native/assets/zephyr-splash.png",
-      "resizeMode": "contain",
       "backgroundColor": "#382E6B"
     },
     "updates": {

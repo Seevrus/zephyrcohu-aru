@@ -29,6 +29,7 @@
         "react-native"
     ],
     "rules": {
+        "global-require": "off",
         "import/no-extraneous-dependencies": [
             "error",
             {
@@ -72,23 +73,24 @@
                 ]
             }
         ],
-        "react/react-in-jsx-scope": "off",
         "react-hooks/rules-of-hooks": "error",
         "react-hooks/exhaustive-deps": "warn",
-        "react/style-prop-object": [
-            "error",
-            {
-                "allow": [
-                    "StatusBar"
-                ]
-            }
-        ],
+        "react/jsx-props-no-spreading": "off",
         "react/prop-types": [
             "error",
             {
                 "ignore": [
                     "navigation",
                     "navigation.navigate"
+                ]
+            }
+        ],
+        "react/react-in-jsx-scope": "off",
+        "react/style-prop-object": [
+            "error",
+            {
+                "allow": [
+                    "StatusBar"
                 ]
             }
         ]
