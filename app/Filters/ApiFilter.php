@@ -8,9 +8,17 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class ApiFilter
 {
+    protected $operator_map = [
+        'eq' => '=',
+        'is' => 'is',
+        'ne' => '<>',
+        'in' => 'in',
+        'lte' => '<=',
+        'gte' => '>=',
+    ];
+
     protected $allowed_params = [];
     protected $column_map = [];
-    protected $operator_map = [];
 
     public function transform(Request $request)
     {
