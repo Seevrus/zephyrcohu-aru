@@ -4,7 +4,7 @@ import Loading from '../../components/Loading';
 
 export default function StartupCheck({ navigation }) {
   useEffect(() => {
-    SecureStore.getItemAsync('borrel-token').then((token) => {
+    SecureStore.getItemAsync('boreal-token').then((token) => {
       if (!token) {
         navigation.replace('Login');
       }

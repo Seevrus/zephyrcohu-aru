@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Borrel",
-    "slug": "zephyr-borrel",
+    "name": "Boreal",
+    "slug": "zephyr-boreal",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./react_native/assets/zephyr-icon.png",

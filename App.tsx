@@ -53,7 +53,7 @@ function Main() {
             component={StartupCheck}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="Login" component={Login} options={{ headerTitle: 'Zephyr Borrel' }} />
+          <Stack.Screen name="Login" component={Login} options={{ headerTitle: 'Zephyr Boreal' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </>

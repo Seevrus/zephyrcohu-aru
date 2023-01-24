@@ -9,7 +9,7 @@ export default function Login() {
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
       <TextCard>
-        Üdvözöljük a <Text style={styles.cardEmphasized}>Zephyr Borrel</Text> áruforgalmi alkalmazás
+        Üdvözöljük a <Text style={styles.cardEmphasized}>Zephyr Boreal</Text> áruforgalmi alkalmazás
         kezdőoldalán! A kezdéshez adja meg az adminisztrátorától kapott bejelentkezési kódot.
       </TextCard>
       <View style={styles.form}>
