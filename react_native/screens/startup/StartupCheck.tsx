@@ -7,6 +7,8 @@ export default function StartupCheck({ navigation }) {
     SecureStore.getItemAsync('boreal-token').then((token) => {
       if (!token) {
         navigation.replace('Login');
+      } else {
+        navigation.replace('Index');
       }
     });
   }, [navigation]);

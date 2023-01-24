@@ -3,9 +3,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import { Provider } from 'react-redux';
+
 import Loading from './react_native/components/Loading';
 import colors from './react_native/constants/colors';
 import fontSizes from './react_native/constants/fontSizes';
+import Index from './react_native/screens/Index';
 import Login from './react_native/screens/startup/Login';
 import StartupCheck from './react_native/screens/startup/StartupCheck';
 import store from './react_native/store';
@@ -54,6 +56,7 @@ function Main() {
             options={{ headerShown: false }}
           />
           <Stack.Screen name="Login" component={Login} options={{ headerTitle: 'Zephyr Boreal' }} />
+          <Stack.Screen name="Index" component={Index} options={{ headerTitle: 'Kör képernyő' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </>
