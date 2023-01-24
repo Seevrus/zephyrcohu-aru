@@ -19,7 +19,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"companyId\": 1,\r\n    \"phoneNumber\": \"+361234567\"\r\n}",
+					"raw": "{\r\n    \"companyId\": 1,\r\n    \"phoneNumber\": \"+36301234567\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -60,8 +60,8 @@
 						"type": "text"
 					},
 					{
-						"key": "X-Phone-Number",
-						"value": "+36301234567",
+						"key": "X-Device-Id",
+						"value": "{{master_device_id}}",
 						"type": "text"
 					}
 				],
@@ -88,6 +88,56 @@
 			"response": []
 		},
 		{
+			"name": "Register Device",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{user_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"deviceId\": \"cbfd50fa-ca61-4fde-96bf-2ef3e16aa3ef\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{zephyr_aru_url}}/users/register-device",
+					"host": [
+						"{{zephyr_aru_url}}"
+					],
+					"path": [
+						"users",
+						"register-device"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Check Token",
 			"request": {
 				"auth": {
@@ -103,8 +153,13 @@
 				"method": "GET",
 				"header": [
 					{
-						"key": "X-Phone-Number",
-						"value": "+36301234567",
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Device-Id",
+						"value": "{{user_device_id}}",
 						"type": "text"
 					}
 				],
@@ -142,8 +197,8 @@
 						"type": "text"
 					},
 					{
-						"key": "X-Phone-Number",
-						"value": "+36301234567",
+						"key": "X-Device-Id",
+						"value": "{{user_device_id}}",
 						"type": "text"
 					}
 				],
@@ -190,8 +245,8 @@
 						"type": "text"
 					},
 					{
-						"key": "X-Phone-Number",
-						"value": "+36301234567",
+						"key": "X-Device-Id",
+						"value": "{{user_device_id}}",
 						"type": "text"
 					}
 				],
@@ -249,8 +304,8 @@
 						"type": "text"
 					},
 					{
-						"key": "X-Phone-Number",
-						"value": "+36301234567",
+						"key": "X-Device-Id",
+						"value": "{{user_device_id}}",
 						"type": "text"
 					}
 				],
@@ -293,8 +348,8 @@
 						"type": "text"
 					},
 					{
-						"key": "X-Phone-Number",
-						"value": "+36301234567",
+						"key": "X-Device-Id",
+						"value": "{{user_device_id}}",
 						"type": "text"
 					}
 				],
@@ -345,8 +400,8 @@
 						"type": "text"
 					},
 					{
-						"key": "X-Phone-Number",
-						"value": "+3601234567",
+						"key": "X-Device-Id",
+						"value": "{{user_device_id}}",
 						"type": "text"
 					}
 				],
