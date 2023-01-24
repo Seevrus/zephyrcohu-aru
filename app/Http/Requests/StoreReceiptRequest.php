@@ -13,7 +13,7 @@ class StoreReceiptRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->phone_number === request()->header('X-Phone-Number');
+        return $this->user()->uuid === request()->header('X-Device-Id');
     }
 
     /**

@@ -19,7 +19,7 @@ class ReceiptPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->phone_number === request()->header('X-Phone-Number');
+        return $user->uuid === request()->header('X-Device-Id');
     }
 
     /**
@@ -31,6 +31,10 @@ class ReceiptPolicy
      */
     public function view(User $user, Receipt $receipt)
     {
+        if ($user->uuid !== request()->header('X-Device-Id')) {
+            return false;
+        }
+
         return Company::find($user->company_id)
             ->receipts
             ->contains($receipt->id);
@@ -45,11 +49,7 @@ class ReceiptPolicy
      */
     public function store(User $user)
     {
-        if ($user->phone_number !== request()->header('X-Phone-Number')) {
-            return false;
-        }
-
-        return true;
+        return $user->uuid === request()->header('X-Device-Id');
     }
 
     /**
@@ -61,7 +61,7 @@ class ReceiptPolicy
      */
     public function delete(User $user, Receipt $receipt)
     {
-        if ($user->phone_number !== request()->header('X-Phone-Number')) {
+        if ($user->uuid !== request()->header('X-Device-Id')) {
             return false;
         }
 

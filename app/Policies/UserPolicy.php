@@ -18,7 +18,7 @@ class UserPolicy
      */
     public function checkToken(User $user)
     {
-        return $user->phone_number === request()->header('X-Phone-Number');
+        return $user->uuid === request()->header('X-Device-Id');
     }
 
     /**
@@ -29,6 +29,6 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->phone_number === request()->header('X-Phone-Number');
+        return $user->uuid === request()->header('X-Device-Id');
     }
 }

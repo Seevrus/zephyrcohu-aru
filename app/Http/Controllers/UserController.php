@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Filters\UsersFilter;
 use App\Http\Requests\GenerateMasterTokenRequest;
 use App\Http\Requests\GenerateTokenRequest;
+use App\Http\Requests\RegisterDeviceRequest;
 use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserResource;
 use App\Mail\MasterKeyUsed;
 use App\Models\Company;
 use App\Models\Log;
@@ -15,17 +17,11 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class UserController extends Controller
 {
-    public function check_token()
-    {
-        $this->authorize('checkToken', User::class);
-        request()->user()->last_active = date('Y-m-d H:i:s');
-        request()->user()->save();
-    }
-
     public function generate_master_token(GenerateMasterTokenRequest $request)
     {
         $company_id = $request->post('companyId');
@@ -41,6 +37,7 @@ class UserController extends Controller
                 'company_id' => $company_id,
                 'phone_number' => $phone_number,
                 'type' => 'M',
+                'uuid' => Str::uuid(),
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
 
@@ -61,6 +58,7 @@ class UserController extends Controller
             'companyId' => $user->company_id,
             'phoneNumber' => $user->phone_number,
             'userType' => $user->type,
+            'deviceId' => $user->uuid,
             'tokenType' => 'Bearer',
             'accessToken' => $token->plainTextToken,
         ];
@@ -139,6 +137,33 @@ class UserController extends Controller
             'tokenType' => 'Bearer',
             'accessToken' => $token->plainTextToken,
         ];
+    }
+
+    public function register_device(RegisterDeviceRequest $request)
+    {
+        $sender = $request->user();
+
+        if (!!$sender->uuid) {
+            throw new UnprocessableEntityHttpException();
+        }
+
+        $sender->uuid = $request->deviceId;
+        $sender->last_active = date('Y-m-d H:i:s');
+        $sender->save();
+
+        return new UserResource($sender);
+    }
+
+    public function check_token(Request $request)
+    {
+        $sender = $request->user();
+
+        $this->authorize('checkToken', $sender);
+
+        $sender->last_active = date('Y-m-d H:i:s');
+        $sender->save();
+
+        return new UserResource($sender);
     }
 
     public function all(Request $request)

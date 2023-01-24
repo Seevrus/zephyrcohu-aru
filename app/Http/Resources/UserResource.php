@@ -14,12 +14,17 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
-            'id' => $this->id,
-            'phoneNumber' => $this->phone_number,
-            'type' => $this->type === 'I' ? 'Integra' : 'App',
-            'createdAt' => $this->created_at,
-            'lastActive' => $this->last_active,
-        ];
+        $isAdmin = $request->user()->type === "I";
+
+        return $isAdmin
+            ? [
+                'id' => $this->id,
+                'phoneNumber' => $this->phone_number,
+                'type' => $this->type,
+                'createdAt' => $this->created_at,
+                'lastActive' => $this->last_active,
+            ] : [
+                'type' => $this->type,
+            ];
     }
 }

@@ -16,9 +16,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::controller(UserController::class)->prefix('users')->group(function () {
-    Route::get('/check-token', 'check_token')
-        ->middleware(['auth:sanctum', 'ability:check-token']);
-
     /**
      * IMPORTANT!
      * This endpoint should never be enabled unless it is specifically requested for a specific task. You have been warned.
@@ -27,6 +24,12 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
 
     Route::post('/token', 'generate_token')
         ->middleware(['auth:sanctum', 'ability:generate-token']);
+
+    Route::post('/register-device', 'register_device')
+        ->middleware(['auth:sanctum', 'ability:check-token']);
+
+    Route::get('/check-token', 'check_token')
+        ->middleware(['auth:sanctum', 'ability:check-token']);
 
     Route::post('/all', 'all')
         ->middleware(['auth:sanctum', 'ability:get-users']);

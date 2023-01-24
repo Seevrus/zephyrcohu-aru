@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class GenerateTokenRequest extends FormRequest
+class RegisterDeviceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,10 +13,7 @@ class GenerateTokenRequest extends FormRequest
      */
     public function authorize()
     {
-        if ($this->user()->uuid !== request()->header('X-Device-Id')) {
-            throw new UnauthorizedHttpException(random_bytes(32));
-        }
-
+        // We only check for tokens and that is not handled here
         return true;
     }
 
@@ -29,8 +25,7 @@ class GenerateTokenRequest extends FormRequest
     public function rules()
     {
         return [
-            'phoneNumber' => 'required|regex:`^\+36[237]0\d{7}$`',
-            'userType' => 'required|in:A,I',
+            'deviceId' => 'required|uuid'
         ];
     }
 }
