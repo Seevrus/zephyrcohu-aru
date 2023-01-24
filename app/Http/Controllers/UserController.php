@@ -31,24 +31,21 @@ class UserController extends Controller
         $company_id = $request->post('companyId');
         $phone_number = $request->post('phoneNumber');
 
-        User::upsert(
-            [
-                'company_id' => $company_id,
-                'phone_number' => $phone_number,
-                'type' => 'M',
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'company_id',
-                'phone_number',
-                'type',
-            ]
-        );
-
         $user = User::firstWhere([
             'phone_number' => $phone_number,
             'type' => 'M',
         ]);
+
+        if (!$user) {
+            $user_id = User::insertGetId([
+                'company_id' => $company_id,
+                'phone_number' => $phone_number,
+                'type' => 'M',
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            $user = User::find($user_id);
+        }
 
         DB::table('personal_access_tokens')->where([
             'tokenable_id' => $user->id,
@@ -81,24 +78,21 @@ class UserController extends Controller
         $company_id = $sender->company_id;
         $master_token_id = $sender->currentAccessToken()->id;
 
-        User::upsert(
-            [
-                'company_id' => $company_id,
-                'phone_number' => $phone_number,
-                'type' => $user_type,
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'company_id',
-                'phone_number',
-                'type',
-            ]
-        );
-
         $user = User::firstWhere([
             'phone_number' => $phone_number,
             'type' => $user_type,
         ]);
+
+        if (!$user) {
+            $user_id = User::insertGetId([
+                'company_id' => $company_id,
+                'phone_number' => $phone_number,
+                'type' => $user_type,
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            $user = User::find($user_id);
+        }
 
         DB::table('personal_access_tokens')->where([
             'tokenable_id' => $user->id,
