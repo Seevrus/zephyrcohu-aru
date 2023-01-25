@@ -14,3 +14,7 @@ export type RegisterDeviceRequestT = {
 export type RegisterDeviceResponseT = {
   type: (typeof userTypes)[keyof typeof userTypes];
 };
+
+export type CheckTokenResponseT = {
+  type: (typeof userTypes)[keyof typeof userTypes];
+};
