@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class UserPolicy
 {
@@ -19,7 +20,11 @@ class UserPolicy
      */
     public function checkToken(User $user)
     {
-        return Hash::check(request()->header('X-Device-Id'), $user->device_id);
+        if (!Hash::check(request()->header('X-Device-Id'), $user->device_id)) {
+            throw new UnauthorizedHttpException(random_bytes(32));
+        }
+
+        return true;
     }
 
     /**
