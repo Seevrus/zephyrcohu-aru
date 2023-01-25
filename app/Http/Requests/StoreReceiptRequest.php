@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Hash;
 
 class StoreReceiptRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class StoreReceiptRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->uuid === request()->header('X-Device-Id');
+        return Hash::check(request()->header('X-Device-Id'), $this->user()->device_id);
     }
 
     /**

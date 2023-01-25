@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Hash;
 
 class UserPolicy
 {
@@ -18,7 +19,7 @@ class UserPolicy
      */
     public function checkToken(User $user)
     {
-        return $user->uuid === request()->header('X-Device-Id');
+        return Hash::check(request()->header('X-Device-Id'), $user->device_id);
     }
 
     /**
@@ -29,6 +30,6 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->uuid === request()->header('X-Device-Id');
+        return Hash::check(request()->header('X-Device-Id'), $user->device_id);
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\Receipt;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Hash;
 
 class ReceiptPolicy
 {
@@ -19,7 +20,7 @@ class ReceiptPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->uuid === request()->header('X-Device-Id');
+        return Hash::check(request()->header('X-Device-Id'), $user->device_id);
     }
 
     /**
@@ -31,7 +32,7 @@ class ReceiptPolicy
      */
     public function view(User $user, Receipt $receipt)
     {
-        if ($user->uuid !== request()->header('X-Device-Id')) {
+        if (!Hash::check(request()->header('X-Device-Id'), $user->device_id)) {
             return false;
         }
 
@@ -49,7 +50,7 @@ class ReceiptPolicy
      */
     public function store(User $user)
     {
-        return $user->uuid === request()->header('X-Device-Id');
+        return Hash::check(request()->header('X-Device-Id'), $user->device_id);
     }
 
     /**
@@ -61,7 +62,7 @@ class ReceiptPolicy
      */
     public function delete(User $user, Receipt $receipt)
     {
-        if ($user->uuid !== request()->header('X-Device-Id')) {
+        if (!Hash::check(request()->header('X-Device-Id'), $user->device_id)) {
             return false;
         }
 

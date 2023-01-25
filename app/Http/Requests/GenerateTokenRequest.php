@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class GenerateTokenRequest extends FormRequest
@@ -14,7 +15,7 @@ class GenerateTokenRequest extends FormRequest
      */
     public function authorize()
     {
-        if ($this->user()->uuid !== request()->header('X-Device-Id')) {
+        if (!Hash::check(request()->header('X-Device-Id'), $this->user()->device_id)) {
             throw new UnauthorizedHttpException(random_bytes(32));
         }
 

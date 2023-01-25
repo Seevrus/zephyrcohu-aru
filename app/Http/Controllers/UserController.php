@@ -16,6 +16,7 @@ use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
@@ -32,12 +33,14 @@ class UserController extends Controller
             'type' => 'M',
         ]);
 
+        $uuid = Str::uuid();
+
         if (!$user) {
             $user_id = User::insertGetId([
                 'company_id' => $company_id,
                 'phone_number' => $phone_number,
                 'type' => 'M',
-                'uuid' => Str::uuid(),
+                'device_id' => Hash::make($uuid),
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
 
@@ -58,7 +61,7 @@ class UserController extends Controller
             'companyId' => $user->company_id,
             'phoneNumber' => $user->phone_number,
             'userType' => $user->type,
-            'deviceId' => $user->uuid,
+            'deviceId' => $uuid,
             'tokenType' => 'Bearer',
             'accessToken' => $token->plainTextToken,
         ];
@@ -90,6 +93,9 @@ class UserController extends Controller
             ]);
 
             $user = User::find($user_id);
+        } else {
+            $user->device_id = null;
+            $user->save();
         }
 
         DB::table('personal_access_tokens')->where([
@@ -143,11 +149,11 @@ class UserController extends Controller
     {
         $sender = $request->user();
 
-        if (!!$sender->uuid) {
+        if (!!$sender->device_id) {
             throw new UnprocessableEntityHttpException();
         }
 
-        $sender->uuid = $request->deviceId;
+        $sender->device_id = Hash::make($request->deviceId);
         $sender->last_active = date('Y-m-d H:i:s');
         $sender->save();
 
