@@ -2,18 +2,18 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import colors from '../constants/colors';
-import fontSizes from '../constants/fontSizes';
+import colors from '../../constants/colors';
+import fontSizes from '../../constants/fontSizes';
 
-type ErrorCardProps = {
+type TextCardProps = {
   children: ReactNode;
 };
 
-export default function ErrorCard({ children }: ErrorCardProps) {
+export default function TextCard({ children }: TextCardProps) {
   return (
     <View style={styles.card}>
       <View style={styles.icon}>
-        <MaterialIcons name="error-outline" size={36} color="white" />
+        <MaterialIcons name="info-outline" size={36} color="white" />
       </View>
       <View style={styles.informationContainer}>
         <Text style={styles.information}>{children}</Text>
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row-reverse',
     marginHorizontal: '5%',
-    backgroundColor: colors.red600,
+    backgroundColor: colors.purple800,
     borderRadius: 10,
   },
   icon: {

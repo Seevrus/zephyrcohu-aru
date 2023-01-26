@@ -8,8 +8,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { registerDevice } from '../../store/config-slice/config-api-actions';
 import { useAppDispatch } from '../../store/hooks';
 
-import ErrorCard from '../../components/ErrorCard';
-import TextCard from '../../components/TextCard';
+import ErrorCard from '../../components/info-cards/ErrorCard';
+import TextCard from '../../components/info-cards/TextCard';
 import Button from '../../components/ui/buttons/Button';
 import Input from '../../components/ui/Input';
 import colors from '../../constants/colors';

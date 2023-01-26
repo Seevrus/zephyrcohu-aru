@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { useAppDispatch } from '../../store/hooks';
 import { unregisterDevice } from '../../store/config-slice/config-api-actions';
 
-import ErrorCard from '../../components/ErrorCard';
+import ErrorCard from '../../components/info-cards/ErrorCard';
 import Button from '../../components/ui/buttons/Button';
 import colors from '../../constants/colors';
 import { StartupErrorProps } from '../screen-types';

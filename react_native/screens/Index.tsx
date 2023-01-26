@@ -1,5 +1,8 @@
 import { Text, View } from 'react-native';
 
+import StartErrandLogo from '../assets/svg/start-errand.svg';
+// <StartErrandLogo width={120} height={40} />
+
 export default function Index() {
   return (
     <View>
