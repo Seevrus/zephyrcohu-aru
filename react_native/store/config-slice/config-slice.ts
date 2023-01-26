@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 
-import { checkToken, registerDevice } from './config-api-actions';
+import { checkToken, registerDevice, unregisterDevice } from './config-api-actions';
 import { Config } from './config-slice-types';
 
 const initialState: Config = {
@@ -17,6 +17,7 @@ const configSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(registerDevice.fulfilled, (state, { payload }) => {
       const { type } = payload;
+      state.isLoggedin = true;
       state.userType = type;
     });
     builder.addCase(registerDevice.rejected, (_, { payload }) => {
@@ -34,6 +35,7 @@ const configSlice = createSlice({
 
     builder.addCase(checkToken.fulfilled, (state, { payload }) => {
       const { type } = payload;
+      state.isLoggedin = true;
       state.userType = type;
     });
     builder.addCase(checkToken.rejected, (_, { payload }) => {
@@ -47,6 +49,16 @@ const configSlice = createSlice({
             'Váratlan hiba lépett fel a kód feldolgozása során. Amennyiben a probléma nem oldódik meg többszöri próbálkozás után sem, kérem az alábbi gombra kattintva törölje ki ezeket, igényeljen új kódot az alkalmazás adminisztrátorától és az alkalmazás újraindítása után adja meg azt a megjelenő kezdőképernyőn.'
           );
       }
+    });
+
+    builder.addCase(unregisterDevice.fulfilled, (state) => {
+      state.isLoggedin = false;
+      state.userType = undefined;
+    });
+    builder.addCase(unregisterDevice.rejected, () => {
+      throw new Error(
+        'Probléma lépett fel a hitelesítési adatok eltávolítása során. Kérem próbálkozzon később.'
+      );
     });
   },
 });

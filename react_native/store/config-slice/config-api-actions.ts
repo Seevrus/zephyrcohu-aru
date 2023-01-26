@@ -1,10 +1,11 @@
+import * as SecureStore from 'expo-secure-store';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 import env from '../../env.json';
 import { ErrorResponseT } from '../base-types';
 import {
-  CheckTokenquestT,
+  CheckTokenRequestT,
   CheckTokenResponseT,
   RegisterDeviceRequestT,
   RegisterDeviceResponseT,
@@ -33,7 +34,7 @@ export const registerDevice = createAsyncThunk<
 
 export const checkToken = createAsyncThunk<
   CheckTokenResponseT,
-  CheckTokenquestT,
+  CheckTokenRequestT,
   { rejectValue: ErrorResponseT }
 >('config/checkToken', async (requestData, { rejectWithValue }) => {
   try {
@@ -48,3 +49,21 @@ export const checkToken = createAsyncThunk<
     return rejectWithValue(e.response.data);
   }
 });
+
+export const unregisterDevice = createAsyncThunk<boolean, never, { rejectValue: ErrorResponseT }>(
+  'config/unregisterDevice',
+  async (_, { rejectWithValue }) => {
+    try {
+      await SecureStore.deleteItemAsync('boreal-device-id');
+      await SecureStore.deleteItemAsync('boreal-token');
+
+      return true;
+    } catch (e) {
+      return rejectWithValue({
+        status: 500,
+        codeName: 'Internal Server Error',
+        message: 'Unable to remove items from secure storage',
+      });
+    }
+  }
+);
