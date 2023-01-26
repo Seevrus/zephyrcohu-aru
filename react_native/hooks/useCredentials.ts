@@ -16,53 +16,37 @@ const useCredentials = () => {
     tokenError: false,
   });
 
-  function getCredentials() {
-    SecureStore.getItemAsync('boreal-device-id')
-      .then((storedDeviceId) => {
-        if (!storedDeviceId) {
-          setCredentials((prev) => ({
-            ...prev,
-            deviceId: 'NONE',
-          }));
-        } else {
-          setCredentials((prev) => ({
-            ...prev,
-            deviceId: storedDeviceId,
-          }));
-
-          SecureStore.getItemAsync('boreal-token')
-            .then((storedToken) => {
-              if (!storedToken) {
-                setCredentials((prev) => ({
-                  ...prev,
-                  token: 'NONE',
-                }));
-              } else {
-                setCredentials((prev) => ({
-                  ...prev,
-                  token: storedToken,
-                }));
-              }
-            })
-            .catch(() => {
-              setCredentials((prev) => ({
-                ...prev,
-                tokenError: true,
-              }));
-            });
-        }
-      })
-      .catch(() => {
-        setCredentials((prev) => ({
-          ...prev,
-          deviceIdError: true,
-        }));
-      });
-  }
-
   useEffect(() => {
+    const getCredentials = async () => {
+      let { deviceId, deviceIdError, token, tokenError } = credentials;
+      try {
+        deviceId = await SecureStore.getItemAsync('boreal-device-id');
+        if (!deviceId) {
+          deviceId = 'NONE';
+        }
+      } catch (_) {
+        deviceIdError = true;
+      }
+
+      try {
+        token = await SecureStore.getItemAsync('boreal-token');
+        if (!token) {
+          token = 'NONE';
+        }
+      } catch (_) {
+        tokenError = true;
+      }
+
+      setCredentials({
+        deviceId,
+        deviceIdError,
+        token,
+        tokenError,
+      });
+    };
+
     getCredentials();
-  }, []);
+  }, [credentials]);
 
   return credentials;
 };
