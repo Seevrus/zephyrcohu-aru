@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 
-import { registerDevice } from '../../store/config-slice/config-slice';
+import { registerDevice } from '../../store/config-slice/config-api-actions';
 import { useAppDispatch } from '../../store/hooks';
 
 import ErrorCard from '../../components/ErrorCard';

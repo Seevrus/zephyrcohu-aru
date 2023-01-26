@@ -1,8 +1,8 @@
 import userTypes from '../../constants/userTypes';
 
 export type Config = {
-  hasToken: boolean;
-  isTokenValid: boolean;
+  isDemoMode: boolean;
+  isLoggedin: boolean;
   userType: (typeof userTypes)[keyof typeof userTypes];
 };
 
@@ -13,6 +13,11 @@ export type RegisterDeviceRequestT = {
 
 export type RegisterDeviceResponseT = {
   type: (typeof userTypes)[keyof typeof userTypes];
+};
+
+export type CheckTokenquestT = {
+  deviceId: string;
+  token: string;
 };
 
 export type CheckTokenResponseT = {
