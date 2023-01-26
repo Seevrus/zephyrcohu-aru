@@ -8,7 +8,7 @@ type CredentialsStateT = {
   tokenError: boolean;
 };
 
-const useCredentials = () => {
+const useOfflineCredentials = () => {
   const [credentials, setCredentials] = useState<CredentialsStateT>({
     deviceId: '',
     deviceIdError: false,
@@ -51,4 +51,4 @@ const useCredentials = () => {
   return credentials;
 };
 
-export default useCredentials;
+export default useOfflineCredentials;

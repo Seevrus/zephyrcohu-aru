@@ -1,15 +1,12 @@
 import { useEffect } from 'react';
 
-import useCredentials from '../../hooks/useCredentials';
-// import { checkToken } from '../../store/config-slice/config-slice';
-// import { useAppDispatch } from '../../store/hooks';
+import useOfflineCredentials from '../../hooks/useOfflineCredentials';
 
 import Loading from '../../components/Loading';
 import { StartupCheckProps } from '../screen-types';
 
 export default function StartupCheck({ navigation }: StartupCheckProps) {
-  // const dispatch = useAppDispatch();
-  const credentials = useCredentials();
+  const credentials = useOfflineCredentials();
 
   useEffect(() => {
     if (credentials.deviceIdError || credentials.tokenError) {
@@ -25,7 +22,8 @@ export default function StartupCheck({ navigation }: StartupCheckProps) {
         message: 'Az Ön bejelentkezési adatai kompromittálódtak ezen az eszközön.',
       });
     }
-    // Különben jöhet a token ellenőrzés
+
+    navigation.navigate('Index');
   }, [
     credentials.deviceId,
     credentials.deviceIdError,
