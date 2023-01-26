@@ -20,7 +20,7 @@ export const registerDevice = createAsyncThunk<
     const response = await axios.post(
       `${env.api_url}/users/register-device`,
       {
-        devideId: requestData.deviceId,
+        deviceId: requestData.deviceId,
       },
       {
         headers: { Authorization: `Bearer ${requestData.token}` },

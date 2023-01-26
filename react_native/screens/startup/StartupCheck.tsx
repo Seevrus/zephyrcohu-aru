@@ -21,9 +21,9 @@ export default function StartupCheck({ navigation }: StartupCheckProps) {
       navigation.replace('StartupError', {
         message: 'Az Ön bejelentkezési adatai kompromittálódtak ezen az eszközön.',
       });
+    } else if (!!credentials.deviceId && !!credentials.token) {
+      navigation.replace('Index');
     }
-
-    navigation.navigate('Index');
   }, [
     credentials.deviceId,
     credentials.deviceIdError,
