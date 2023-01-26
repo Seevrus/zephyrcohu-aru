@@ -4,15 +4,18 @@ import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import { Provider } from 'react-redux';
 
+import store from './react_native/store';
+
 import Loading from './react_native/components/Loading';
 import colors from './react_native/constants/colors';
 import fontSizes from './react_native/constants/fontSizes';
+import StartupError from './react_native/screens/errors/StartupError';
 import Index from './react_native/screens/Index';
+import { StackParams } from './react_native/screens/screen-types';
 import Login from './react_native/screens/startup/Login';
 import StartupCheck from './react_native/screens/startup/StartupCheck';
-import store from './react_native/store';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<StackParams>();
 
 // Kezdünk egy képernyőn, ami nézetileg csak egy spinner. Ez legelőször bekéri a tokent.
 // Ha nincs token, lecseréli magát a Regisztrációs kpépernyőre
@@ -57,6 +60,11 @@ function Main() {
           />
           <Stack.Screen name="Login" component={Login} options={{ headerTitle: 'Zephyr Boreal' }} />
           <Stack.Screen name="Index" component={Index} options={{ headerTitle: 'Kör képernyő' }} />
+          <Stack.Screen
+            name="StartupError"
+            component={StartupError}
+            options={{ headerTitle: 'Hiba!' }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </>

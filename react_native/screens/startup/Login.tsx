@@ -1,4 +1,5 @@
 import 'react-native-get-random-values';
+
 import * as SecureStore from 'expo-secure-store';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -12,8 +13,9 @@ import TextCard from '../../components/TextCard';
 import Button from '../../components/ui/buttons/Button';
 import Input from '../../components/ui/Input';
 import colors from '../../constants/colors';
+import { LoginProps } from '../screen-types';
 
-export default function Login({ navigation }) {
+export default function Login({ navigation }: LoginProps) {
   const dispatch = useAppDispatch();
 
   const [tokenInput, setTokenInput] = useState<string>('');
@@ -116,7 +118,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 8,
-    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -1,38 +1,38 @@
-import * as SecureStore from 'expo-secure-store';
 import { useEffect } from 'react';
 
-import { useAppDispatch } from '../../store/hooks';
-import { checkToken } from '../../store/config-slice/config-slice';
+import useCredentials from '../../hooks/useCredentials';
+// import { checkToken } from '../../store/config-slice/config-slice';
+// import { useAppDispatch } from '../../store/hooks';
 
 import Loading from '../../components/Loading';
+import { StartupCheckProps } from '../screen-types';
 
-export default function StartupCheck({ navigation }) {
-  const dispatch = useAppDispatch();
+export default function StartupCheck({ navigation }: StartupCheckProps) {
+  // const dispatch = useAppDispatch();
+  const credentials = useCredentials();
 
   useEffect(() => {
-    const initializeStartupCheck = async () => {
-      try {
-        const token = SecureStore.getItemAsync('boreal-token');
-        if (!token) {
-          navigation.replace('Login');
-        }
-      } catch (err) {
-        // Váratlan hiba lépett fel az eszközazonosító elérése során.
-        // Ezzel a hibával térjünk át az AppStartupError képernyőre, ami még nincs is.
-        return;
-      }
+    if (credentials.deviceIdError || credentials.tokenError) {
+      navigation.replace('StartupError', {
+        message: 'Váratlan hiba lépett fel az azonosító adatok betöltése során.',
+      });
+    }
 
-      try {
-        dispatch(checkToken);
-        // Itt kellene visszaállítani a korábban elmentett state-et együttvéve, mindenestül.
-        // Utána pedig elmenni az Index oldalra.
-      } catch (err) {
-        // A hibaüzenettel menjünk át a startuperror részre.
-      }
-    };
-
-    initializeStartupCheck();
-  }, [dispatch, navigation]);
+    if (credentials.deviceId === 'NONE' && credentials.token === 'NONE') {
+      // még nem regisztrált, megyünk a regisztrációs képernyőre
+    } else if (credentials.deviceId === 'NONE' || credentials.token === 'NONE') {
+      navigation.replace('StartupError', {
+        message: 'Az Ön bejelentkezési adatai kompromittálódtak ezen az eszközön.',
+      });
+    }
+    // Különben jöhet a token ellenőrzés
+  }, [
+    credentials.deviceId,
+    credentials.deviceIdError,
+    credentials.token,
+    credentials.tokenError,
+    navigation,
+  ]);
 
   return <Loading />;
 }
