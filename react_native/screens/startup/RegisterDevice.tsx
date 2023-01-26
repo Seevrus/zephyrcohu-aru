@@ -13,9 +13,9 @@ import TextCard from '../../components/TextCard';
 import Button from '../../components/ui/buttons/Button';
 import Input from '../../components/ui/Input';
 import colors from '../../constants/colors';
-import { LoginProps } from '../screen-types';
+import { RegisterDeviceProps } from '../screen-types';
 
-export default function Login({ navigation }: LoginProps) {
+export default function RegisterDevice({ navigation }: RegisterDeviceProps) {
   const dispatch = useAppDispatch();
 
   const [tokenInput, setTokenInput] = useState<string>('');

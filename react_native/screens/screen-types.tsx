@@ -2,13 +2,14 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export type StackParams = {
   StartupCheck: undefined;
-  Login: undefined;
-  Index: undefined;
+  RegisterDevice: undefined;
   StartupError: {
     message: string;
   };
+
+  Index: undefined;
 };
 
 export type StartupErrorProps = NativeStackScreenProps<StackParams, 'StartupError'>;
-export type LoginProps = NativeStackScreenProps<StackParams, 'Login'>;
+export type RegisterDeviceProps = NativeStackScreenProps<StackParams, 'RegisterDevice'>;
 export type StartupCheckProps = NativeStackScreenProps<StackParams, 'StartupCheck'>;

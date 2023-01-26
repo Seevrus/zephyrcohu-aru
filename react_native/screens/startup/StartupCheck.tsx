@@ -19,7 +19,7 @@ export default function StartupCheck({ navigation }: StartupCheckProps) {
     }
 
     if (credentials.deviceId === 'NONE' && credentials.token === 'NONE') {
-      navigation.replace('Login');
+      navigation.replace('RegisterDevice');
     } else if (credentials.deviceId === 'NONE' || credentials.token === 'NONE') {
       navigation.replace('StartupError', {
         message: 'Az Ön bejelentkezési adatai kompromittálódtak ezen az eszközön.',

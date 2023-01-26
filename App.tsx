@@ -12,7 +12,7 @@ import fontSizes from './react_native/constants/fontSizes';
 import StartupError from './react_native/screens/errors/StartupError';
 import Index from './react_native/screens/Index';
 import { StackParams } from './react_native/screens/screen-types';
-import Login from './react_native/screens/startup/Login';
+import RegisterDevice from './react_native/screens/startup/RegisterDevice';
 import StartupCheck from './react_native/screens/startup/StartupCheck';
 
 const Stack = createNativeStackNavigator<StackParams>();
@@ -58,7 +58,11 @@ function Main() {
             component={StartupCheck}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="Login" component={Login} options={{ headerTitle: 'Zephyr Boreal' }} />
+          <Stack.Screen
+            name="RegisterDevice"
+            component={RegisterDevice}
+            options={{ headerTitle: 'Zephyr Boreal' }}
+          />
           <Stack.Screen name="Index" component={Index} options={{ headerTitle: 'Kör képernyő' }} />
           <Stack.Screen
             name="StartupError"
