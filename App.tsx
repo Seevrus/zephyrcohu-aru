@@ -1,7 +1,9 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
+import { Pressable } from 'react-native';
 import { Provider } from 'react-redux';
 
 import store from './react_native/store';
@@ -17,13 +19,13 @@ import StartupCheck from './react_native/screens/startup/StartupCheck';
 
 const Stack = createNativeStackNavigator<StackParams>();
 
-// Kezdünk egy képernyőn, ami nézetileg csak egy spinner. Ez legelőször bekéri a tokent.
-// Ha nincs token, lecseréli magát a Regisztrációs kpépernyőre
-// Ha van token, akkor bekéri a telefonszámot.
-// Ha erre nincs engedélye, lecseréli magát egy hibaüzenetre, ahol újra lehet engedélyt adni.
-// Ha van engedélye, ellenőrzi a tokent.
-// Ha a token nem jó, lecseréli magát a regisztrációs képernyőre (vagy annak egy változatára)
-// Ha a token jó, akkor jutunk el a tényleges App képernyőre.
+function Settings() {
+  return (
+    <Pressable style={({ pressed }) => [pressed && { opacity: 0.75 }]}>
+      <MaterialIcons name="settings" size={36} color="white" />
+    </Pressable>
+  );
+}
 
 function Main() {
   const [fontsLoaded] = useFonts({
@@ -63,7 +65,14 @@ function Main() {
             component={RegisterDevice}
             options={{ headerTitle: 'Zephyr Boreal' }}
           />
-          <Stack.Screen name="Index" component={Index} options={{ headerTitle: 'Kör képernyő' }} />
+          <Stack.Screen
+            name="Index"
+            component={Index}
+            options={{
+              headerTitle: 'Kör képernyő',
+              headerRight: Settings,
+            }}
+          />
           <Stack.Screen
             name="StartupError"
             component={StartupError}
