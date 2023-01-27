@@ -2,7 +2,7 @@ import 'react-native-get-random-values';
 
 import * as SecureStore from 'expo-secure-store';
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 
 import { registerDevice } from '../../store/config-slice/config-api-actions';
@@ -18,7 +18,9 @@ import { RegisterDeviceProps } from '../screen-types';
 export default function RegisterDevice({ navigation }: RegisterDeviceProps) {
   const dispatch = useAppDispatch();
 
-  const [tokenInput, setTokenInput] = useState<string>('');
+  const [tokenInput, setTokenInput] = useState<string>(
+    '2|P72s8RYNuiSQzC8EmEVAp6WJCACiNPr3TqfE4AYl'
+  );
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export default function RegisterDevice({ navigation }: RegisterDeviceProps) {
         </View>
       )}
       <View style={styles.form}>
-        <View>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
           <Input
             label="Kód"
             config={{
@@ -80,6 +82,7 @@ export default function RegisterDevice({ navigation }: RegisterDeviceProps) {
               importantForAutofill: 'no',
               multiline: true,
               onChangeText: inputChangedHandler,
+              value: '2|P72s8RYNuiSQzC8EmEVAp6WJCACiNPr3TqfE4AYl',
             }}
           />
           <View style={styles.buttonContainer}>
@@ -90,7 +93,7 @@ export default function RegisterDevice({ navigation }: RegisterDeviceProps) {
               Alkalmazás regisztrációja
             </Button>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </View>
     </ScrollView>
   );

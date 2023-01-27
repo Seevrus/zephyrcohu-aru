@@ -17,7 +17,7 @@ const defaultProps = {
 export default function Button({ variant, onPress, children }: ButtonProps) {
   const buttonVariants = {
     neutral: colors.purple500,
-    ok: colors.green500,
+    ok: colors.green600,
     error: colors.red600,
     disabled: colors.gray500,
   };
