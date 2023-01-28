@@ -1,42 +1,42 @@
 import { useEffect, useState } from 'react';
+import { setLocalStorage } from '../store/async-storage';
 
 import { checkToken } from '../store/config-slice/config-api-actions';
-import { useAppDispatch } from '../store/hooks';
+import { configActions } from '../store/config-slice/config-slice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 import useOfflineCredentials from './useOfflineCredentials';
-
-type CredentialsStateT = {
-  isValid: boolean;
-  errorMessage: string;
-};
 
 const useOnlineCredentials = () => {
   const dispatch = useAppDispatch();
-  const { deviceId, token } = useOfflineCredentials();
-
-  const [credentials, setCredentials] = useState<CredentialsStateT>({
-    isValid: false,
-    errorMessage: '',
-  });
+  const { deviceId, deviceIdError, token, tokenError } = useOfflineCredentials();
+  const [credentialsError, setCredentialsError] = useState<string>('');
+  const isLoggedin = useAppSelector((state) => state.config.isLoggedin);
+  const checkTokenError = useAppSelector((state) => state.config.tokenError);
 
   useEffect(() => {
     const checkCredentials = async () => {
-      let { isValid, errorMessage } = credentials;
+      let error: string;
+
+      if (!deviceId || deviceIdError || !token || tokenError || isLoggedin || checkTokenError)
+        return;
+
       if (deviceId !== 'NONE' && token !== 'NONE') {
         try {
           await dispatch(checkToken({ deviceId, token }));
-          isValid = true;
+          await setLocalStorage({ config: { isLoggedin: true } });
         } catch (err) {
-          errorMessage = err.message;
+          dispatch(configActions.setTokenError(true));
+          error = err.message;
         }
 
-        setCredentials({ isValid, errorMessage });
+        setCredentialsError(error);
       }
     };
 
     checkCredentials();
-  }, [credentials, deviceId, dispatch, token]);
+  }, [checkTokenError, deviceId, deviceIdError, dispatch, isLoggedin, token, tokenError]);
 
-  return [credentials.isValid, credentials.errorMessage];
+  return [credentialsError];
 };
 
 export default useOnlineCredentials;

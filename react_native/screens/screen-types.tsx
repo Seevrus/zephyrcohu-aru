@@ -10,6 +10,8 @@ export type StackParams = {
   Index: undefined;
 };
 
-export type StartupErrorProps = NativeStackScreenProps<StackParams, 'StartupError'>;
-export type RegisterDeviceProps = NativeStackScreenProps<StackParams, 'RegisterDevice'>;
 export type StartupCheckProps = NativeStackScreenProps<StackParams, 'StartupCheck'>;
+export type RegisterDeviceProps = NativeStackScreenProps<StackParams, 'RegisterDevice'>;
+export type StartupErrorProps = NativeStackScreenProps<StackParams, 'StartupError'>;
+
+export type IndexProps = NativeStackScreenProps<StackParams, 'Index'>;

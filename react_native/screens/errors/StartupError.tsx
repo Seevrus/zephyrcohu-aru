@@ -48,7 +48,7 @@ export default function Error({ navigation, route }: StartupErrorProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.purple500,
+    backgroundColor: colors.background,
   },
   error: {
     marginTop: 30,

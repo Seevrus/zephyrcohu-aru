@@ -1,54 +1,34 @@
 import * as SecureStore from 'expo-secure-store';
 import { useEffect, useState } from 'react';
 
-type CredentialsStateT = {
-  deviceId: string;
-  deviceIdError: boolean;
-  token: string;
-  tokenError: boolean;
-};
-
 const useOfflineCredentials = () => {
-  const [credentials, setCredentials] = useState<CredentialsStateT>({
-    deviceId: '',
-    deviceIdError: false,
-    token: '',
-    tokenError: false,
-  });
+  const [deviceId, setDeviceId] = useState<string>('');
+  const [deviceIdError, setDeviceIdError] = useState<boolean>(false);
+  const [token, setToken] = useState<string>('');
+  const [tokenError, setTokenError] = useState<boolean>(false);
 
   useEffect(() => {
     const getCredentials = async () => {
-      let { deviceId, deviceIdError, token, tokenError } = credentials;
+      console.log('Getting token from storage');
       try {
-        deviceId = await SecureStore.getItemAsync('boreal-device-id');
-        if (!deviceId) {
-          deviceId = 'NONE';
-        }
+        const storedDeviceId = await SecureStore.getItemAsync('boreal-device-id');
+        setDeviceId(storedDeviceId ?? 'NONE');
       } catch (_) {
-        deviceIdError = true;
+        setDeviceIdError(true);
       }
 
       try {
-        token = await SecureStore.getItemAsync('boreal-token');
-        if (!token) {
-          token = 'NONE';
-        }
+        const storedToken = await SecureStore.getItemAsync('boreal-token');
+        setToken(storedToken ?? 'NONE');
       } catch (_) {
-        tokenError = true;
+        setTokenError(true);
       }
-
-      setCredentials({
-        deviceId,
-        deviceIdError,
-        token,
-        tokenError,
-      });
     };
 
     getCredentials();
-  }, [credentials]);
+  }, []);
 
-  return credentials;
+  return { deviceId, deviceIdError, token, tokenError };
 };
 
 export default useOfflineCredentials;

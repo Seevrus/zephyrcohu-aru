@@ -2,6 +2,9 @@ import { FC } from 'react';
 import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 import { SvgProps } from 'react-native-svg';
 
+import useLocalState from '../hooks/useLocalState';
+import useOnlineCredentials from '../hooks/useOnlineCredentials';
+
 import EndErrandLogo from '../assets/svg/end-errand.svg';
 import PurchaseLogo from '../assets/svg/purchase.svg';
 import ReceiptsLogo from '../assets/svg/receipts.svg';
@@ -9,7 +12,7 @@ import StartErrandLogo from '../assets/svg/start-errand.svg';
 import ErrorCard from '../components/info-cards/ErrorCard';
 import Tile from '../components/Tile';
 import colors from '../constants/colors';
-import useLocalState from '../hooks/useLocalState';
+import { useAppSelector } from '../store/hooks';
 
 type TileT = {
   id: string;
@@ -52,6 +55,9 @@ const TILES: TileT[] = [
 
 export default function Index() {
   const [localStateError] = useLocalState();
+  const [credentialsError] = useOnlineCredentials();
+  const userType = useAppSelector((state) => state.config.userType);
+  console.log(userType);
 
   const renderTile: ListRenderItem<TileT> = (info: ListRenderItemInfo<TileT>) => (
     <Tile title={info.item.title} Icon={info.item.icon} variant={info.item.variant} />
@@ -62,6 +68,11 @@ export default function Index() {
       {!!localStateError && (
         <View style={styles.error}>
           <ErrorCard>{localStateError}</ErrorCard>
+        </View>
+      )}
+      {!!credentialsError && (
+        <View style={styles.error}>
+          <ErrorCard>{credentialsError}</ErrorCard>
         </View>
       )}
       <FlatList

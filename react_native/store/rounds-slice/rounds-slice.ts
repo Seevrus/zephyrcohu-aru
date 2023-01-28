@@ -4,7 +4,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { LocalStorage } from '../async-storage';
 import { Rounds } from './rounds-slice-types';
 
-const initialState: Rounds = undefined;
+const initialState: Rounds = [];
 
 const roundsSlice = createSlice({
   name: 'rounds',

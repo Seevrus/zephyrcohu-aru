@@ -7,6 +7,7 @@ export type LocalStorage = {
   config?: {
     isDemoMode: boolean;
     isLoggedin: boolean;
+    tokenError: boolean;
     userType: (typeof userTypes)[keyof typeof userTypes];
   };
   company?: {
@@ -78,7 +79,7 @@ export const getLocalStorage = async () => {
   }
 };
 
-export const setLocalStorage = async (items: LocalStorage) => {
+export const setLocalStorage = async (items) => {
   try {
     const jsonStore = await AsyncStorage.getItem('boreal-store');
     const importedStore: LocalStorage = jsonStore ? JSON.parse(jsonStore) : {};

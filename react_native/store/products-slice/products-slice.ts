@@ -1,11 +1,11 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { mergeDeepLeft } from 'ramda';
+import { mergeDeepRight } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
 import { Products } from './products-slice-types';
 
-const initialState: Products = undefined;
+const initialState: Products = [];
 
 const productsSlice = createSlice({
   name: 'products',
@@ -20,7 +20,7 @@ const productsSlice = createSlice({
         })),
       }));
 
-      state = mergeDeepLeft(state, storedProducts) as Products;
+      state = mergeDeepRight(state, storedProducts) as Products;
     },
   },
 });

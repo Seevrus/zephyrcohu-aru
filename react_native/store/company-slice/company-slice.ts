@@ -3,7 +3,11 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { LocalStorage } from '../async-storage';
 import { Company } from './company-slice-types';
 
-const initialState: Company = undefined;
+const initialState: Company = {
+  name: '',
+  vatNumber: '',
+  address: undefined,
+};
 
 const companySlice = createSlice({
   name: 'company',

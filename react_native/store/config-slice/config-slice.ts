@@ -4,12 +4,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { checkToken, registerDevice, unregisterDevice } from './config-api-actions';
 import { Config } from './config-slice-types';
 
-import userTypes from '../../constants/userTypes';
+import { LocalStorage } from '../async-storage';
 
 const initialState: Config = {
   isLocalStateMerged: false,
   isDemoMode: false,
   isLoggedin: false,
+  tokenError: false,
   userType: undefined,
 };
 
@@ -17,18 +18,18 @@ const configSlice = createSlice({
   name: 'config',
   initialState,
   reducers: {
-    mergeLocalState: (
-      state,
-      action: PayloadAction<{
-        isDemoMode: boolean;
-        isLoggedin: boolean;
-        userType?: (typeof userTypes)[keyof typeof userTypes];
-      }>
-    ) => {
+    mergeLocalState: (state, action: PayloadAction<LocalStorage['config']>) => {
       state.isLocalStateMerged = true;
-      state.isDemoMode = action.payload.isDemoMode;
-      state.isLoggedin = action.payload.isLoggedin;
-      state.userType = action.payload.userType;
+      state.isDemoMode = action.payload?.isDemoMode ?? false;
+      state.isLoggedin = action.payload?.isLoggedin ?? false;
+      state.tokenError = action.payload?.tokenError ?? false;
+      state.userType = action.payload?.userType;
+    },
+    setIsLoggedin: (state, action: PayloadAction<boolean>) => {
+      state.isLoggedin = action.payload;
+    },
+    setTokenError: (state, action: PayloadAction<boolean>) => {
+      state.tokenError = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -57,18 +58,17 @@ const configSlice = createSlice({
       state.isLoggedin = true;
       state.userType = type;
     });
-    builder.addCase(checkToken.rejected, (_, { payload }) => {
+    builder.addCase(checkToken.rejected, (state, { payload }) => {
+      state.tokenError = true;
       switch (payload.status) {
         case 401:
           throw new Error(
-            'Probléma lépett fel a korábban meghadott hitelesítési adatok ellenőrzése során. Amennyiben a probléma nem oldódik meg többszöri próbálkozás után sem, kérem az alábbi gombra kattintva törölje ki ezeket, igényeljen új kódot az alkalmazás adminisztrátorától és az alkalmazás újraindítása után adja meg azt a megjelenő kezdőképernyőn.'
+            'Probléma lépett fel a korábban megadott hitelesítési adatok ellenőrzése során.'
           );
         case 507:
           throw new Error(payload.message);
         default:
-          throw new Error(
-            'Váratlan hiba lépett fel a kód feldolgozása során. Amennyiben a probléma nem oldódik meg többszöri próbálkozás után sem, kérem az alábbi gombra kattintva törölje ki ezeket, igényeljen új kódot az alkalmazás adminisztrátorától és az alkalmazás újraindítása után adja meg azt a megjelenő kezdőképernyőn.'
-          );
+          throw new Error('Váratlan hiba lépett fel a kód feldolgozása során.');
       }
     });
 

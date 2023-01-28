@@ -4,6 +4,7 @@ export type Config = {
   isLocalStateMerged: boolean;
   isDemoMode: boolean;
   isLoggedin: boolean;
+  tokenError: boolean;
   userType: (typeof userTypes)[keyof typeof userTypes];
 };
 

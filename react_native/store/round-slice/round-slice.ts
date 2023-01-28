@@ -1,11 +1,17 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { mergeDeepLeft } from 'ramda';
+import { mergeDeepRight } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
 import { Round } from './round-slice-types';
 
-const initialState: Round = undefined;
+const initialState: Round = {
+  id: undefined,
+  name: undefined,
+  clientIds: undefined,
+  firstAvailableReceiptNr: undefined,
+  receipts: [],
+};
 
 const roundSlice = createSlice({
   name: 'round',
@@ -14,7 +20,7 @@ const roundSlice = createSlice({
     mergeLocalState: (state, action: PayloadAction<LocalStorage['round']>) => {
       const storedRound: Round = {
         ...action.payload,
-        receipts: action.payload.receipts?.map((receipt) => ({
+        receipts: action.payload?.receipts.map((receipt) => ({
           ...receipt,
           transactions: receipt.transactions.map((transaction) => ({
             ...transaction,
@@ -27,7 +33,7 @@ const roundSlice = createSlice({
         })),
       };
 
-      state = mergeDeepLeft(state, storedRound) as Round;
+      state = mergeDeepRight(state, storedRound) as Round;
     },
   },
 });
