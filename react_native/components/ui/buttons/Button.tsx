@@ -16,22 +16,28 @@ const defaultProps = {
 
 export default function Button({ variant, onPress, children }: ButtonProps) {
   const buttonVariants = {
-    neutral: colors.purple500,
-    ok: colors.green600,
-    error: colors.red600,
-    disabled: colors.gray500,
+    neutral: colors.neutral,
+    ok: colors.ok,
+    error: colors.error,
+    disabled: colors.disabled,
   };
 
   const buttonBackgroundStyle = {
     backgroundColor: buttonVariants[variant],
   };
 
+  const rippleColors = {
+    neutral: colors.neutralRipple,
+    ok: colors.okRipple,
+    error: colors.errorRipple,
+  };
+
   return (
     <View>
       <Pressable
-        style={({ pressed }) => pressed && styles.pressed}
         disabled={variant === 'disabled'}
         onPress={onPress}
+        android_ripple={{ color: rippleColors[variant] }}
       >
         <View style={[styles.button, buttonBackgroundStyle]}>
           <Text style={styles.buttonText}>{children}</Text>

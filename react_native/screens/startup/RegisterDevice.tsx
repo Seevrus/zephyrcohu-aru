@@ -102,7 +102,7 @@ export default function RegisterDevice({ navigation }: RegisterDeviceProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.purple500,
+    backgroundColor: colors.background,
   },
   welcome: {
     marginVertical: 30,
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   form: {
     marginHorizontal: '5%',
     padding: 8,
-    backgroundColor: colors.purple800,
+    backgroundColor: colors.neutralTile,
     borderRadius: 10,
   },
   buttonContainer: {

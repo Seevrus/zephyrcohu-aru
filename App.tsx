@@ -45,7 +45,7 @@ function Main() {
         <Stack.Navigator
           screenOptions={{
             headerStyle: {
-              backgroundColor: colors.purple800,
+              backgroundColor: colors.neutral,
             },
             headerTitleAlign: 'center',
             headerTitleStyle: {

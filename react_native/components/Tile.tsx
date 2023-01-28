@@ -13,10 +13,16 @@ type TileProps = {
 
 export default function Tile({ title, Icon, variant }: TileProps) {
   const tileColors = {
-    ok: colors.green600,
-    warning: colors.yellow800,
-    neutral: colors.purple800,
-    disabled: colors.gray500,
+    ok: colors.ok,
+    warning: colors.warning,
+    neutral: colors.neutral,
+    disabled: colors.disabled,
+  };
+
+  const rippleColors = {
+    ok: colors.okRipple,
+    warning: colors.warningRipple,
+    neutral: colors.neutralRipple,
   };
 
   const tileStyle = {
@@ -26,8 +32,11 @@ export default function Tile({ title, Icon, variant }: TileProps) {
   return (
     <View style={styles.container}>
       <Pressable
-        style={({ pressed }) => [styles.tile, tileStyle, pressed && styles.tilePressed]}
+        style={[styles.tile, tileStyle]}
         disabled={variant === 'disabled'}
+        android_ripple={{
+          color: rippleColors[variant],
+        }}
       >
         <View style={styles.titleContainer}>
           <Text style={styles.title}>{title}</Text>
@@ -54,9 +63,6 @@ const styles = StyleSheet.create({
     width: '80%',
     paddingTop: 20,
     borderRadius: 10,
-  },
-  tilePressed: {
-    opacity: 0.75,
   },
   titleContainer: {
     flex: 1,

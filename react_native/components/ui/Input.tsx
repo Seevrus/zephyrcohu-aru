@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   input: {
     padding: 8,
     borderRadius: 8,
-    backgroundColor: colors.purple300,
+    backgroundColor: colors.input,
     color: 'white',
     fontSize: 24,
     fontFamily: 'Muli',

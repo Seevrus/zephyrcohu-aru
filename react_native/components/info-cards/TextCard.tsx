@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row-reverse',
     marginHorizontal: '5%',
-    backgroundColor: colors.purple800,
+    backgroundColor: colors.neutralTile,
     borderRadius: 10,
   },
   icon: {
