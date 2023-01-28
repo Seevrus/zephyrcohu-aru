@@ -6,8 +6,10 @@ import EndErrandLogo from '../assets/svg/end-errand.svg';
 import PurchaseLogo from '../assets/svg/purchase.svg';
 import ReceiptsLogo from '../assets/svg/receipts.svg';
 import StartErrandLogo from '../assets/svg/start-errand.svg';
+import ErrorCard from '../components/info-cards/ErrorCard';
 import Tile from '../components/Tile';
 import colors from '../constants/colors';
+import useLocalState from '../hooks/useLocalState';
 
 type TileT = {
   id: string;
@@ -43,13 +45,25 @@ const TILES: TileT[] = [
   },
 ];
 
+// 1. Helyre kell állítani a state-et lokálból, ha van
+// 2. Ha nincs aktív kör, kell egy check token
+// 2.1. Ha nincs beállítva a telephely, be kell állíttatnunk
+// 2.2. Be kell húzni a konfigurációs fájlt helyi hálózatról
+
 export default function Index() {
+  const [localStateError] = useLocalState();
+
   const renderTile: ListRenderItem<TileT> = (info: ListRenderItemInfo<TileT>) => (
     <Tile title={info.item.title} Icon={info.item.icon} variant={info.item.variant} />
   );
 
   return (
     <View style={styles.container}>
+      {!!localStateError && (
+        <View style={styles.error}>
+          <ErrorCard>{localStateError}</ErrorCard>
+        </View>
+      )}
       <FlatList
         data={TILES}
         keyExtractor={(tile) => tile.id}
@@ -64,5 +78,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  error: {
+    marginTop: 30,
   },
 });

@@ -1,10 +1,13 @@
 /* eslint-disable no-param-reassign */
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { checkToken, registerDevice, unregisterDevice } from './config-api-actions';
 import { Config } from './config-slice-types';
 
+import userTypes from '../../constants/userTypes';
+
 const initialState: Config = {
+  isLocalStateMerged: false,
   isDemoMode: false,
   isLoggedin: false,
   userType: undefined,
@@ -13,7 +16,21 @@ const initialState: Config = {
 const configSlice = createSlice({
   name: 'config',
   initialState,
-  reducers: {},
+  reducers: {
+    mergeLocalState: (
+      state,
+      action: PayloadAction<{
+        isDemoMode: boolean;
+        isLoggedin: boolean;
+        userType?: (typeof userTypes)[keyof typeof userTypes];
+      }>
+    ) => {
+      state.isLocalStateMerged = true;
+      state.isDemoMode = action.payload.isDemoMode;
+      state.isLoggedin = action.payload.isLoggedin;
+      state.userType = action.payload.userType;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(registerDevice.fulfilled, (state, { payload }) => {
       const { type } = payload;
@@ -28,6 +45,8 @@ const configSlice = createSlice({
           );
         case 401:
           throw new Error('A beírt token érvénytelen.');
+        case 507:
+          throw new Error(payload.message);
         default:
           throw new Error('Váratlan hiba lépett fel a kód feldolgozása során.');
       }
@@ -44,6 +63,8 @@ const configSlice = createSlice({
           throw new Error(
             'Probléma lépett fel a korábban meghadott hitelesítési adatok ellenőrzése során. Amennyiben a probléma nem oldódik meg többszöri próbálkozás után sem, kérem az alábbi gombra kattintva törölje ki ezeket, igényeljen új kódot az alkalmazás adminisztrátorától és az alkalmazás újraindítása után adja meg azt a megjelenő kezdőképernyőn.'
           );
+        case 507:
+          throw new Error(payload.message);
         default:
           throw new Error(
             'Váratlan hiba lépett fel a kód feldolgozása során. Amennyiben a probléma nem oldódik meg többszöri próbálkozás után sem, kérem az alábbi gombra kattintva törölje ki ezeket, igényeljen új kódot az alkalmazás adminisztrátorától és az alkalmazás újraindítása után adja meg azt a megjelenő kezdőképernyőn.'
@@ -55,10 +76,8 @@ const configSlice = createSlice({
       state.isLoggedin = false;
       state.userType = undefined;
     });
-    builder.addCase(unregisterDevice.rejected, () => {
-      throw new Error(
-        'Probléma lépett fel a hitelesítési adatok eltávolítása során. Kérem próbálkozzon később.'
-      );
+    builder.addCase(unregisterDevice.rejected, (_, { payload }) => {
+      throw new Error(payload.message);
     });
   },
 });

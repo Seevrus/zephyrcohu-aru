@@ -1,6 +1,7 @@
 import userTypes from '../../constants/userTypes';
 
 export type Config = {
+  isLocalStateMerged: boolean;
   isDemoMode: boolean;
   isLoggedin: boolean;
   userType: (typeof userTypes)[keyof typeof userTypes];

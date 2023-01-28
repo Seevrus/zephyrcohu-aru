@@ -1,8 +1,9 @@
-import * as SecureStore from 'expo-secure-store';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import * as SecureStore from 'expo-secure-store';
 
 import env from '../../env.json';
+import { removeLocalStorage, setLocalStorage } from '../async-storage';
 import { ErrorResponseT } from '../base-types';
 import {
   CheckTokenRequestT,
@@ -16,8 +17,9 @@ export const registerDevice = createAsyncThunk<
   RegisterDeviceRequestT,
   { rejectValue: ErrorResponseT }
 >('config/registerDevice', async (requestData, { rejectWithValue }) => {
+  let response: AxiosResponse<RegisterDeviceResponseT>;
   try {
-    const response = await axios.post(
+    response = await axios.post(
       `${env.api_url}/users/register-device`,
       {
         deviceId: requestData.deviceId,
@@ -26,10 +28,26 @@ export const registerDevice = createAsyncThunk<
         headers: { Authorization: `Bearer ${requestData.token}` },
       }
     );
-    return response.data;
   } catch (e) {
     return rejectWithValue(e.response.data);
   }
+
+  try {
+    await setLocalStorage({
+      config: {
+        isLoggedin: true,
+        userType: response.data.type,
+      },
+    });
+  } catch (e) {
+    return rejectWithValue({
+      status: 507,
+      codeName: 'Insufficient Storage',
+      message: e.message,
+    });
+  }
+
+  return response.data;
 });
 
 export const checkToken = createAsyncThunk<
@@ -37,17 +55,34 @@ export const checkToken = createAsyncThunk<
   CheckTokenRequestT,
   { rejectValue: ErrorResponseT }
 >('config/checkToken', async (requestData, { rejectWithValue }) => {
+  let response: AxiosResponse<CheckTokenResponseT>;
   try {
-    const response = await axios.get(`${env.api_url}/users/check-token`, {
+    response = await axios.get(`${env.api_url}/users/check-token`, {
       headers: {
         Authorization: `Bearer ${requestData.token}`,
         'X-Device-Id': requestData.deviceId,
       },
     });
-    return response.data;
   } catch (e) {
     return rejectWithValue(e.response.data);
   }
+
+  try {
+    await setLocalStorage({
+      config: {
+        isLoggedin: true,
+        userType: response.data.type,
+      },
+    });
+  } catch (e) {
+    return rejectWithValue({
+      status: 507,
+      codeName: 'Insufficient Storage',
+      message: e.message,
+    });
+  }
+
+  return response.data;
 });
 
 export const unregisterDevice = createAsyncThunk<boolean, never, { rejectValue: ErrorResponseT }>(
@@ -56,14 +91,25 @@ export const unregisterDevice = createAsyncThunk<boolean, never, { rejectValue: 
     try {
       await SecureStore.deleteItemAsync('boreal-device-id');
       await SecureStore.deleteItemAsync('boreal-token');
-
-      return true;
     } catch (e) {
       return rejectWithValue({
-        status: 500,
-        codeName: 'Internal Server Error',
-        message: 'Unable to remove items from secure storage',
+        status: 507,
+        codeName: 'Insufficient Storage',
+        message:
+          'Probléma lépett fel a hitelesítési adatok eltávolítása során. Kérem próbálkozzon újra később.',
       });
     }
+
+    try {
+      await removeLocalStorage();
+    } catch (e) {
+      return rejectWithValue({
+        status: 507,
+        codeName: 'Insufficient Storage',
+        message: e.message,
+      });
+    }
+
+    return true;
   }
 );

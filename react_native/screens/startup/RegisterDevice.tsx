@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   form: {
     marginHorizontal: '5%',
     padding: 8,
-    backgroundColor: colors.neutralTile,
+    backgroundColor: colors.neutral,
     borderRadius: 10,
   },
   buttonContainer: {
