@@ -7,10 +7,7 @@ import { Config } from './config-slice-types';
 import { LocalStorage } from '../async-storage';
 
 const initialState: Config = {
-  isLocalStateMerged: false,
   isDemoMode: false,
-  isLoggedin: false,
-  tokenError: false,
   userType: undefined,
 };
 
@@ -19,24 +16,13 @@ const configSlice = createSlice({
   initialState,
   reducers: {
     mergeLocalState: (state, action: PayloadAction<LocalStorage['config']>) => {
-      state.isLocalStateMerged = true;
       state.isDemoMode = action.payload?.isDemoMode ?? false;
-      state.isLoggedin = action.payload?.isLoggedin ?? false;
-      state.tokenError = action.payload?.tokenError ?? false;
       state.userType = action.payload?.userType;
-    },
-    setIsLoggedin: (state, action: PayloadAction<boolean>) => {
-      state.isLoggedin = action.payload;
-    },
-    setTokenError: (state, action: PayloadAction<boolean>) => {
-      state.tokenError = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(registerDevice.fulfilled, (state, { payload }) => {
-      const { type } = payload;
-      state.isLoggedin = true;
-      state.userType = type;
+      state.userType = payload.data?.type;
     });
     builder.addCase(registerDevice.rejected, (_, { payload }) => {
       switch (payload.status) {
@@ -54,12 +40,9 @@ const configSlice = createSlice({
     });
 
     builder.addCase(checkToken.fulfilled, (state, { payload }) => {
-      const { type } = payload;
-      state.isLoggedin = true;
-      state.userType = type;
+      state.userType = payload.data?.type;
     });
-    builder.addCase(checkToken.rejected, (state, { payload }) => {
-      state.tokenError = true;
+    builder.addCase(checkToken.rejected, (_, { payload }) => {
       switch (payload.status) {
         case 401:
           throw new Error(
@@ -73,7 +56,6 @@ const configSlice = createSlice({
     });
 
     builder.addCase(unregisterDevice.fulfilled, (state) => {
-      state.isLoggedin = false;
       state.userType = undefined;
     });
     builder.addCase(unregisterDevice.rejected, (_, { payload }) => {

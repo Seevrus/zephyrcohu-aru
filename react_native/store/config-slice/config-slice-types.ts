@@ -1,10 +1,7 @@
 import userTypes from '../../constants/userTypes';
 
 export type Config = {
-  isLocalStateMerged: boolean;
   isDemoMode: boolean;
-  isLoggedin: boolean;
-  tokenError: boolean;
   userType: (typeof userTypes)[keyof typeof userTypes];
 };
 
@@ -14,7 +11,7 @@ export type RegisterDeviceRequestT = {
 };
 
 export type RegisterDeviceResponseT = {
-  type: (typeof userTypes)[keyof typeof userTypes];
+  data: { type: (typeof userTypes)[keyof typeof userTypes] };
 };
 
 export type CheckTokenRequestT = {
@@ -23,5 +20,5 @@ export type CheckTokenRequestT = {
 };
 
 export type CheckTokenResponseT = {
-  type: (typeof userTypes)[keyof typeof userTypes];
+  data: { type: (typeof userTypes)[keyof typeof userTypes] };
 };

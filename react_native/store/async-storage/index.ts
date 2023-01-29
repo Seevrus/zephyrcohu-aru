@@ -6,8 +6,6 @@ import userTypes from '../../constants/userTypes';
 export type LocalStorage = {
   config?: {
     isDemoMode: boolean;
-    isLoggedin: boolean;
-    tokenError: boolean;
     userType: (typeof userTypes)[keyof typeof userTypes];
   };
   company?: {

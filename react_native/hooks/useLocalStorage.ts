@@ -4,22 +4,20 @@ import { getLocalStorage } from '../store/async-storage';
 import { clientsActions } from '../store/clients-slice/clients-slice';
 import { companyActions } from '../store/company-slice/company-slice';
 import { configActions } from '../store/config-slice/config-slice';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { useAppDispatch } from '../store/hooks';
 import { productsActions } from '../store/products-slice/products-slice';
 import { roundActions } from '../store/round-slice/round-slice';
 import { roundsActions } from '../store/rounds-slice/rounds-slice';
 
-const useLocalState = () => {
+const useLocalStorage = (canGetLocalState: boolean) => {
   const dispatch = useAppDispatch();
-  const [localStateError, setLocalStateError] = useState<string>('');
-  const isLocalStateMerged = useAppSelector((state) => state.config.isLocalStateMerged);
+  const [isLocalStateMerged, setIsLocalStateMerged] = useState<boolean>(false);
+  const [localStateError, setLocalStateError] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log('Fetching local state');
     const resetStateFromLocal = async () => {
-      if (isLocalStateMerged) return;
+      if (!canGetLocalState) return;
 
-      let error: string;
       try {
         const importedStore = await getLocalStorage();
 
@@ -29,17 +27,17 @@ const useLocalState = () => {
         dispatch(roundsActions.mergeLocalState(importedStore.rounds));
         dispatch(productsActions.mergeLocalState(importedStore.products));
         dispatch(roundActions.mergeLocalState(importedStore.round));
-      } catch (err) {
-        error = 'Probléma lépett fel az alkalmazás mentett állapotának helyreállítása során.';
-      }
 
-      setLocalStateError(error);
+        setIsLocalStateMerged(true);
+      } catch (_) {
+        setLocalStateError(true);
+      }
     };
 
     resetStateFromLocal();
-  }, [dispatch, isLocalStateMerged]);
+  }, [canGetLocalState, dispatch]);
 
-  return [localStateError];
+  return [isLocalStateMerged, localStateError];
 };
 
-export default useLocalState;
+export default useLocalStorage;

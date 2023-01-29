@@ -1,35 +1,65 @@
+import { useNetInfo } from '@react-native-community/netinfo';
 import { useEffect } from 'react';
 
-import useOfflineCredentials from '../../hooks/useOfflineCredentials';
+import useCheckToken from '../../hooks/useCheckToken';
+import useLocalStorage from '../../hooks/useLocalStorage';
+import useToken from '../../hooks/useToken';
 
 import Loading from '../../components/Loading';
 import { StartupCheckProps } from '../screen-types';
 
 export default function StartupCheck({ navigation }: StartupCheckProps) {
-  const credentials = useOfflineCredentials();
+  const { isInternetReachable } = useNetInfo();
+  const { deviceId, token, isTokenAvailable, tokenStorageError } = useToken();
+  const [isLocalStateMerged, localStateError] = useLocalStorage(
+    isTokenAvailable && !tokenStorageError
+  );
+  const [isTokenValid, tokenValidationError] = useCheckToken(
+    isInternetReachable,
+    isTokenAvailable && !tokenStorageError,
+    deviceId,
+    token
+  );
 
   useEffect(() => {
-    if (credentials.deviceIdError || credentials.tokenError) {
+    if (tokenStorageError) {
       navigation.replace('StartupError', {
         message: 'Váratlan hiba lépett fel az azonosító adatok betöltése során.',
       });
+      return;
     }
 
-    if (credentials.deviceId === 'NONE' && credentials.token === 'NONE') {
+    if (deviceId === 'NONE' && token === 'NONE') {
       navigation.replace('RegisterDevice');
-    } else if (credentials.deviceId === 'NONE' || credentials.token === 'NONE') {
+      return;
+    }
+
+    if (localStateError) {
       navigation.replace('StartupError', {
-        message: 'Az Ön bejelentkezési adatai kompromittálódtak ezen az eszközön.',
+        message: 'Váratlan hiba lépett fel a kör adatainak betöltése során.',
       });
-    } else if (!!credentials.deviceId && !!credentials.token) {
+      return;
+    }
+
+    if (tokenValidationError) {
+      navigation.replace('StartupError', {
+        message: 'A korábban megadott bejelentkezési adatok hitelesítése sikertelen.',
+      });
+      return;
+    }
+
+    if (isLocalStateMerged && isTokenValid) {
       navigation.replace('Index');
     }
   }, [
-    credentials.deviceId,
-    credentials.deviceIdError,
-    credentials.token,
-    credentials.tokenError,
+    deviceId,
+    isLocalStateMerged,
+    isTokenValid,
+    localStateError,
     navigation,
+    token,
+    tokenStorageError,
+    tokenValidationError,
   ]);
 
   return <Loading />;
