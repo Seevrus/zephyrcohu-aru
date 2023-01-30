@@ -12,7 +12,7 @@ import Loading from './react_native/components/Loading';
 import colors from './react_native/constants/colors';
 import fontSizes from './react_native/constants/fontSizes';
 import StartupError from './react_native/screens/errors/StartupError';
-import Index from './react_native/screens/Index';
+import Index from './react_native/screens/start-page/Index';
 import { StackParams } from './react_native/screens/screen-types';
 import RegisterDevice from './react_native/screens/startup/RegisterDevice';
 import StartupCheck from './react_native/screens/startup/StartupCheck';
