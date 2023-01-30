@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useAppDispatch } from '../../store/hooks';
 import { unregisterDevice } from '../../store/config-slice/config-api-actions';
@@ -17,13 +17,24 @@ export default function Error({ navigation, route }: StartupErrorProps) {
 
   const errorText = `${message} Amennyiben a probléma nem oldódik meg többszöri újraindítás után sem, kérem az alábbi gombra kattintva törölje az adatait, igényeljen új kódot az alkalmazás adminisztrátorától és az alkalmazás újraindítása után adja meg azt a megjelenő kezdőképernyőn.`;
 
+  const tryAgainHandler = () => {
+    navigation.replace('StartupCheck');
+  };
+
   const appResetHandler = async () => {
-    try {
-      await dispatch(unregisterDevice());
-      navigation.replace('StartupCheck');
-    } catch (err) {
-      setAdditionalError(err.message);
-    }
+    const onAlertConfirm = async () => {
+      try {
+        await dispatch(unregisterDevice());
+        navigation.replace('StartupCheck');
+      } catch (err) {
+        setAdditionalError(err.message);
+      }
+    };
+
+    Alert.alert('Biztos benne?', 'Valóban törölni szeretné a regisztrációs adatait?', [
+      { text: 'Mégsem' },
+      { text: 'Igen', onPress: onAlertConfirm },
+    ]);
   };
 
   return (
@@ -37,6 +48,9 @@ export default function Error({ navigation, route }: StartupErrorProps) {
         </View>
       )}
       <View style={styles.buttonContainer}>
+        <Button variant="neutral" onPress={tryAgainHandler}>
+          Újrapróbálkozás
+        </Button>
         <Button variant="error" onPress={appResetHandler}>
           Regisztrációs adatok törlése
         </Button>
@@ -55,8 +69,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 30,
-    flexDirection: 'row',
-    justifyContent: 'center',
+    height: 150,
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
 });

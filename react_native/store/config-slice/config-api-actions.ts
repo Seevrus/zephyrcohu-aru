@@ -35,8 +35,7 @@ export const registerDevice = createAsyncThunk<
   try {
     await setLocalStorage({
       config: {
-        isLoggedin: true,
-        userType: response.data.type,
+        userType: response.data.data?.type,
       },
     });
   } catch (e) {
@@ -70,8 +69,7 @@ export const checkToken = createAsyncThunk<
   try {
     await setLocalStorage({
       config: {
-        isLoggedin: true,
-        userType: response.data.type,
+        userType: response.data.data?.type,
       },
     });
   } catch (e) {

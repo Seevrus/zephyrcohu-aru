@@ -6,8 +6,6 @@ type CredentialsState = {
   deviceIdError: boolean;
   token: string;
   tokenError: boolean;
-  isTokenAvailable: boolean;
-  tokenStorageError: boolean;
 };
 
 enum CredentialsActionTypes {
@@ -27,8 +25,6 @@ const intialState: CredentialsState = {
   deviceIdError: false,
   token: '',
   tokenError: false,
-  isTokenAvailable: false,
-  tokenStorageError: false,
 };
 
 const credentialsReducer = (state: CredentialsState, action: CredentialsAction) => {
@@ -40,8 +36,6 @@ const credentialsReducer = (state: CredentialsState, action: CredentialsAction) 
         ...state,
         deviceId,
         deviceIdError,
-        isTokenAvailable: !!deviceId && !state.deviceIdError && !!state.token && !state.tokenError,
-        tokenStorageError: deviceIdError || state.tokenError,
       };
     }
     case CredentialsActionTypes.SET_DEVICE_ID_ERROR: {
@@ -50,8 +44,6 @@ const credentialsReducer = (state: CredentialsState, action: CredentialsAction) 
         ...state,
         deviceId: deviceIdError ? '' : state.deviceId,
         deviceIdError,
-        isTokenAvailable: state.deviceId && !deviceIdError && !!state.token && !state.tokenError,
-        tokenStorageError: deviceIdError || state.tokenError,
       };
     }
     case CredentialsActionTypes.SET_TOKEN: {
@@ -61,8 +53,6 @@ const credentialsReducer = (state: CredentialsState, action: CredentialsAction) 
         ...state,
         token,
         tokenError,
-        isTokenAvailable: !!state.deviceId && !state.deviceIdError && !!token && !state.tokenError,
-        tokenStorageError: state.deviceIdError || tokenError,
       };
     }
     case CredentialsActionTypes.SET_TOKEN_ERROR: {
@@ -71,8 +61,6 @@ const credentialsReducer = (state: CredentialsState, action: CredentialsAction) 
         ...state,
         token: tokenError ? '' : state.token,
         tokenError,
-        isTokenAvailable: state.deviceId && !state.deviceIdError && !!state.token && !tokenError,
-        tokenStorageError: state.deviceIdError || tokenError,
       };
     }
     default:
@@ -106,8 +94,14 @@ const useToken = () => {
   return {
     deviceId: credentialsState.deviceId,
     token: credentialsState.token,
-    isTokenAvailable: credentialsState.isTokenAvailable,
-    tokenStorageError: credentialsState.tokenStorageError,
+    credentialsAvailable:
+      credentialsState.deviceId &&
+      credentialsState.deviceId !== 'NONE' &&
+      !credentialsState.deviceIdError &&
+      credentialsState.token &&
+      credentialsState.token !== 'NONE' &&
+      !credentialsState.tokenError,
+    tokenStorageError: credentialsState.deviceIdError || credentialsState.tokenError,
   };
 };
 
