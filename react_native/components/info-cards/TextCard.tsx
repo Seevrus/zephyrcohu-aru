@@ -1,15 +1,11 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { ReactNode } from 'react';
+import { PropsWithChildren } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import colors from '../../constants/colors';
 import fontSizes from '../../constants/fontSizes';
 
-type TextCardProps = {
-  children: ReactNode;
-};
-
-export default function TextCard({ children }: TextCardProps) {
+export default function TextCard({ children }: PropsWithChildren) {
   return (
     <View style={styles.card}>
       <View style={styles.icon}>
@@ -26,7 +22,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row-reverse',
     marginHorizontal: '5%',
-    backgroundColor: colors.neutralTile,
+    backgroundColor: colors.neutral,
     borderRadius: 10,
   },
   icon: {

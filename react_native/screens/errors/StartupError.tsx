@@ -31,7 +31,7 @@ export default function Error({ navigation, route }: StartupErrorProps) {
       }
     };
 
-    Alert.alert('Biztos benne?', 'Valóban törölni szeretné a regisztrációs adatait?', [
+    Alert.alert('Megerősítés szükséges', 'Valóban törölni szeretné a regisztrációs adatait?', [
       { text: 'Mégsem' },
       { text: 'Igen', onPress: onAlertConfirm },
     ]);

@@ -1,15 +1,11 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { ReactNode } from 'react';
+import { PropsWithChildren } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import colors from '../../constants/colors';
 import fontSizes from '../../constants/fontSizes';
 
-type ErrorCardProps = {
-  children: ReactNode;
-};
-
-export default function ErrorCard({ children }: ErrorCardProps) {
+export default function ErrorCard({ children }: PropsWithChildren) {
   return (
     <View style={styles.card}>
       <View style={styles.icon}>

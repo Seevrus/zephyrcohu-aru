@@ -9,9 +9,9 @@ type TileProps = {
   title: string;
   Icon: FC<SvgProps>;
   variant: 'ok' | 'warning' | 'disabled' | 'neutral';
+  onPress: () => void;
 };
-
-export default function Tile({ title, Icon, variant }: TileProps) {
+export default function Tile({ title, Icon, variant, onPress }: TileProps) {
   const tileColors = {
     ok: colors.ok,
     warning: colors.warning,
@@ -23,6 +23,7 @@ export default function Tile({ title, Icon, variant }: TileProps) {
     ok: colors.okRipple,
     warning: colors.warningRipple,
     neutral: colors.neutralRipple,
+    disabled: colors.disabledRipple,
   };
 
   const tileStyle = {
@@ -33,10 +34,10 @@ export default function Tile({ title, Icon, variant }: TileProps) {
     <View style={styles.container}>
       <Pressable
         style={[styles.tile, tileStyle]}
-        disabled={variant === 'disabled'}
         android_ripple={{
           color: rippleColors[variant],
         }}
+        onPress={onPress}
       >
         <View style={styles.titleContainer}>
           <Text style={styles.title}>{title}</Text>
@@ -52,7 +53,7 @@ export default function Tile({ title, Icon, variant }: TileProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: 150,
+    height: 180,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 40,
@@ -73,9 +74,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Muli',
     fontSize: fontSizes.body,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   iconContainer: {
-    flex: 2,
+    flex: 1.5,
     alignItems: 'center',
   },
 });

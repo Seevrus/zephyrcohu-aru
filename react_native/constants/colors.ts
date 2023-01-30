@@ -4,7 +4,7 @@ const colors = {
   gray200: '#DADEED',
   gray400: '#A0A7AA',
   disabled: '#767676',
-  gray800: '#4E4E4E',
+  disabledRipple: '#606060',
   ok: '#1FB381',
   okRipple: '#1b966d',
   green600: '#157f40',
