@@ -2,17 +2,20 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
 import useCheckToken from '../../hooks/useCheckToken';
-import useIndexTile from '../../hooks/useIndexTile';
 import useToken from '../../hooks/useToken';
 
 import { useAppSelector } from '../../store/hooks';
 
+import EndErrandLogo from '../../assets/svg/end-errand.svg';
+import PurchaseLogo from '../../assets/svg/purchase.svg';
+import ReceiptsLogo from '../../assets/svg/receipts.svg';
+import StartErrandLogo from '../../assets/svg/start-errand.svg';
 import TextCard from '../../components/info-cards/TextCard';
 import Loading from '../../components/Loading';
 import Tile from '../../components/Tile';
 import colors from '../../constants/colors';
 import { IndexProps } from '../screen-types';
-import { getTiles, TileT } from './getTiles';
+import { TileT } from './getTiles';
 
 // 1. Helyre kell állítani a state-et lokálból, ha van
 // 2. Ha nincs aktív kör, kell egy check token
@@ -20,7 +23,7 @@ import { getTiles, TileT } from './getTiles';
 // 2.2. Be kell húzni a konfigurációs fájlt helyi hálózatról
 
 export default function Index({ navigation }: IndexProps) {
-  const { isInternetReachable, type: networkType } = useNetInfo();
+  const { isInternetReachable } = useNetInfo();
 
   const { deviceId, token, credentialsAvailable } = useToken();
   const [isTokenValid, tokenValidationError] = useCheckToken(
@@ -29,18 +32,48 @@ export default function Index({ navigation }: IndexProps) {
     deviceId,
     token
   );
-  const { selectPartnerTile, receiptsTile, startErrandTile, endErrandTile } = useIndexTile();
+  // const { selectPartnerTile, receiptsTile, startErrandTile, endErrandTile } = useIndexTile();
 
   const numberOfReceipts = useAppSelector((state) => state.round.receipts).length;
 
-  const TILES = getTiles({
-    selectPartnerTile,
-    receiptsTile,
-    startErrandTile,
-    endErrandTile,
-    numberOfReceipts,
-    networkType,
-  });
+  const TILES = [
+    {
+      id: 't0',
+      title: 'Árulevétel',
+      icon: PurchaseLogo,
+      variant: 'neutral',
+      onPress: () => {
+        navigation.navigate('SelectPartner');
+      },
+    },
+    {
+      id: 't1',
+      title: `Bizonylatok (${numberOfReceipts})`,
+      icon: ReceiptsLogo,
+      variant: 'neutral',
+      onPress: () => {
+        navigation.navigate('ReceiptList');
+      },
+    },
+    {
+      id: 't2',
+      title: 'Kör indítása',
+      icon: StartErrandLogo,
+      variant: 'neutral',
+      onPress: () => {
+        navigation.navigate('StartErrand');
+      },
+    },
+    {
+      id: 't3',
+      title: 'Kör zárása',
+      icon: EndErrandLogo,
+      variant: 'neutral',
+      onPress: () => {
+        navigation.navigate('EndErrand');
+      },
+    },
+  ];
 
   if (isInternetReachable && !isTokenValid && !tokenValidationError) {
     return <Loading />;

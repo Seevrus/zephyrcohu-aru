@@ -1,15 +1,26 @@
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import colors from '../../constants/colors';
+import fontSizes from '../../constants/fontSizes';
 
 export default function StartErrand() {
   return (
-    <View>
-      <Text>
-        Ezen a képernyőn lehet indítani a kört. Célszerű lehet ellenőrizni a hálózati mappa
-        elérhetőségét, és annak függvényében aktívvá tenni a zárási folyamat indítását. A kör
-        indításához ki kell választani a kört, amihez már le kell tölteni a kör adatait, úgyhogy ezt
-        a hálózatról fájlmegnyiást itt próbálnám megcsinálni.
+    <View style={styles.container}>
+      <Text style={styles.text}>
+        Ezen a képernyőn lehet indítani a kört. Azt még meg kell beszélnünk, hogy hogyan.
       </Text>
-      <Text>A Vissza gomb az Index oldalra vezet.</Text>
+      <Text style={styles.text}>A Vissza gomb a kör képernyőre vezet.</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  text: {
+    color: 'white',
+    fontFamily: 'Muli',
+    fontSize: fontSizes.body,
+  },
+});

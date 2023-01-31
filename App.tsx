@@ -11,9 +11,17 @@ import store from './react_native/store';
 import Loading from './react_native/components/Loading';
 import colors from './react_native/constants/colors';
 import fontSizes from './react_native/constants/fontSizes';
+import EndErrand from './react_native/screens/errand-administration/EndErrand';
+import StartErrand from './react_native/screens/errand-administration/StartErrand';
 import StartupError from './react_native/screens/errors/StartupError';
-import Index from './react_native/screens/start-page/Index';
+import Receipt from './react_native/screens/receipts/Receipt';
+import ReceiptList from './react_native/screens/receipts/ReceiptList';
 import { StackParams } from './react_native/screens/screen-types';
+import Review from './react_native/screens/sell/Review';
+import SelectGoods from './react_native/screens/sell/SelectGoods';
+import SelectPartner from './react_native/screens/sell/SelectPartner';
+import Summary from './react_native/screens/sell/Summary';
+import Index from './react_native/screens/start-page/Index';
 import RegisterDevice from './react_native/screens/startup/RegisterDevice';
 import StartupCheck from './react_native/screens/startup/StartupCheck';
 
@@ -61,6 +69,11 @@ function Main() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="StartupError"
+            component={StartupError}
+            options={{ headerTitle: 'Hiba!' }}
+          />
+          <Stack.Screen
             name="RegisterDevice"
             component={RegisterDevice}
             options={{ headerTitle: 'Zephyr Boreal' }}
@@ -74,9 +87,60 @@ function Main() {
             }}
           />
           <Stack.Screen
-            name="StartupError"
-            component={StartupError}
-            options={{ headerTitle: 'Hiba!' }}
+            name="SelectPartner"
+            component={SelectPartner}
+            options={{
+              headerTitle: 'Partner választása',
+            }}
+          />
+          <Stack.Screen
+            name="SelectGoods"
+            component={SelectGoods}
+            options={{
+              headerTitle: 'Termékek választása',
+            }}
+          />
+          <Stack.Screen
+            name="Review"
+            component={Review}
+            options={{
+              headerTitle: 'Áttekintés',
+            }}
+          />
+          <Stack.Screen
+            name="Summary"
+            component={Summary}
+            options={{
+              headerTitle: 'Összegzés',
+            }}
+          />
+          <Stack.Screen
+            name="ReceiptList"
+            component={ReceiptList}
+            options={{
+              headerTitle: 'Bizonylatok',
+            }}
+          />
+          <Stack.Screen
+            name="Receipt"
+            component={Receipt}
+            options={{
+              headerTitle: '',
+            }}
+          />
+          <Stack.Screen
+            name="StartErrand"
+            component={StartErrand}
+            options={{
+              headerTitle: 'Kör indítása',
+            }}
+          />
+          <Stack.Screen
+            name="EndErrand"
+            component={EndErrand}
+            options={{
+              headerTitle: 'Kör zárása',
+            }}
           />
         </Stack.Navigator>
       </NavigationContainer>
