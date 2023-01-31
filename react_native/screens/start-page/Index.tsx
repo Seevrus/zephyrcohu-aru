@@ -1,6 +1,7 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
+import { useEffect } from 'react';
 import useCheckToken from '../../hooks/useCheckToken';
 import useToken from '../../hooks/useToken';
 
@@ -33,6 +34,14 @@ export default function Index({ navigation }: IndexProps) {
     token
   );
   // const { selectPartnerTile, receiptsTile, startErrandTile, endErrandTile } = useIndexTile();
+
+  useEffect(() => {
+    if (tokenValidationError) {
+      navigation.replace('StartupError', {
+        message: 'A korábban megadott belépőkód nem érvényes.',
+      });
+    }
+  }, [navigation, tokenValidationError]);
 
   const numberOfReceipts = useAppSelector((state) => state.round.receipts).length;
 
@@ -77,12 +86,6 @@ export default function Index({ navigation }: IndexProps) {
 
   if (isInternetReachable && !isTokenValid && !tokenValidationError) {
     return <Loading />;
-  }
-
-  if (tokenValidationError) {
-    navigation.replace('StartupError', {
-      message: 'A korábban megadott belépőkód nem érvényes.',
-    });
   }
 
   const renderTile: ListRenderItem<TileT> = (info: ListRenderItemInfo<TileT>) => (

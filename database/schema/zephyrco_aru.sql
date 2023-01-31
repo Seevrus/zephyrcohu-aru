@@ -3,11 +3,10 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2023. Jan 21. 05:50
+-- Létrehozás ideje: 2023. Jan 31. 19:59
 -- Kiszolgáló verziója: 10.4.27-MariaDB
 -- PHP verzió: 8.0.25
 
-SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -28,7 +27,6 @@ SET time_zone = "+00:00";
 -- Tábla szerkezet ehhez a táblához `companies`
 --
 
-DROP TABLE IF EXISTS `companies`;
 CREATE TABLE `companies` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -41,7 +39,6 @@ CREATE TABLE `companies` (
 -- Tábla szerkezet ehhez a táblához `logs`
 --
 
-DROP TABLE IF EXISTS `logs`;
 CREATE TABLE `logs` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `company_id` bigint(20) UNSIGNED NOT NULL,
@@ -57,7 +54,6 @@ CREATE TABLE `logs` (
 -- Tábla szerkezet ehhez a táblához `migrations`
 --
 
-DROP TABLE IF EXISTS `migrations`;
 CREATE TABLE `migrations` (
   `id` int(10) UNSIGNED NOT NULL,
   `migration` varchar(255) NOT NULL,
@@ -70,7 +66,6 @@ CREATE TABLE `migrations` (
 -- Tábla szerkezet ehhez a táblához `personal_access_tokens`
 --
 
-DROP TABLE IF EXISTS `personal_access_tokens`;
 CREATE TABLE `personal_access_tokens` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `tokenable_type` varchar(255) NOT NULL,
@@ -90,7 +85,6 @@ CREATE TABLE `personal_access_tokens` (
 -- Tábla szerkezet ehhez a táblához `purchases`
 --
 
-DROP TABLE IF EXISTS `purchases`;
 CREATE TABLE `purchases` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `transaction_id` bigint(20) UNSIGNED NOT NULL,
@@ -105,7 +99,6 @@ CREATE TABLE `purchases` (
 -- Tábla szerkezet ehhez a táblához `receipts`
 --
 
-DROP TABLE IF EXISTS `receipts`;
 CREATE TABLE `receipts` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
@@ -123,7 +116,6 @@ CREATE TABLE `receipts` (
 -- Tábla szerkezet ehhez a táblához `transactions`
 --
 
-DROP TABLE IF EXISTS `transactions`;
 CREATE TABLE `transactions` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `receipt_id` bigint(20) UNSIGNED NOT NULL,
@@ -136,12 +128,12 @@ CREATE TABLE `transactions` (
 -- Tábla szerkezet ehhez a táblához `users`
 --
 
-DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `company_id` bigint(20) UNSIGNED NOT NULL,
   `phone_number` varchar(255) NOT NULL,
   `type` varchar(1) NOT NULL,
+  `device_id` varchar(255) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `last_active` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -299,7 +291,6 @@ ALTER TABLE `transactions`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `users_company_id_foreign` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON UPDATE CASCADE;
-SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

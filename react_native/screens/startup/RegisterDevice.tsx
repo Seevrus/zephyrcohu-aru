@@ -18,9 +18,7 @@ import { RegisterDeviceProps } from '../screen-types';
 export default function RegisterDevice({ navigation }: RegisterDeviceProps) {
   const dispatch = useAppDispatch();
 
-  const [tokenInput, setTokenInput] = useState<string>(
-    '2|P72s8RYNuiSQzC8EmEVAp6WJCACiNPr3TqfE4AYl'
-  );
+  const [tokenInput, setTokenInput] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
@@ -82,7 +80,6 @@ export default function RegisterDevice({ navigation }: RegisterDeviceProps) {
               importantForAutofill: 'no',
               multiline: true,
               onChangeText: inputChangedHandler,
-              value: '2|P72s8RYNuiSQzC8EmEVAp6WJCACiNPr3TqfE4AYl',
             }}
           />
           <View style={styles.buttonContainer}>
