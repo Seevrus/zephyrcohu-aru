@@ -1,4 +1,4 @@
-type Expiration = {
+type Stock = {
   expiresAt: Date;
   quantity: number;
 };
@@ -7,7 +7,7 @@ type Product = {
   id: number;
   name: string;
   price: number;
-  expirations: Expiration[];
+  stock: Stock[];
 };
 
 export type Products = Product[];
