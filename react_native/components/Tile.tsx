@@ -11,6 +11,7 @@ type TileProps = {
   variant: 'ok' | 'warning' | 'disabled' | 'neutral';
   onPress: () => void;
 };
+
 export default function Tile({ title, Icon, variant, onPress }: TileProps) {
   const tileColors = {
     ok: colors.ok,
