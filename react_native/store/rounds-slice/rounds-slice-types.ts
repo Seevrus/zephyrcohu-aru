@@ -2,7 +2,10 @@ type Round = {
   id: number;
   name: string;
   clientIds: number[];
-  firstAvailableReceiptNr: string;
+  receiptNr: {
+    first: string;
+    last: string;
+  };
 };
 
 export type Rounds = Round[];

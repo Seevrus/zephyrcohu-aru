@@ -5,11 +5,12 @@ import { mergeDeepRight } from 'ramda';
 import { LocalStorage } from '../async-storage';
 import { Round } from './round-slice-types';
 
+// TODO: remove dummy data after BE integration
 const initialState: Round = {
-  id: undefined,
-  name: undefined,
-  clientIds: undefined,
-  firstAvailableReceiptNr: undefined,
+  id: 1,
+  name: 'Zsibbadt Egerek 1.',
+  clientIds: [1, 2, 3, 4],
+  firstAvailableReceiptNr: '11243/23',
   receipts: [],
 };
 
@@ -35,6 +36,10 @@ const roundSlice = createSlice({
 
       state = mergeDeepRight(state, storedRound) as Round;
     },
+    // this will be our entry point tomorrow. Therefore, we need a screen to start a round
+    initializeRound: () => {},
+    addNewReceipt: () => {},
+    removeLastUnsentReceipt: () => {},
   },
 });
 

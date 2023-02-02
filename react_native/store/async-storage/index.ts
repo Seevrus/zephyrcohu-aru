@@ -18,6 +18,7 @@ export type LocalStorage = {
     };
   };
   clients?: {
+    id: number;
     name: string;
     vatNumber: string;
     address: {
@@ -39,7 +40,10 @@ export type LocalStorage = {
     id: number;
     name: string;
     clientIds: number[];
-    firstAvailableReceiptNr: string;
+    receiptNr: {
+      first: string;
+      last: string;
+    };
   }[];
   round?: {
     id: number;
