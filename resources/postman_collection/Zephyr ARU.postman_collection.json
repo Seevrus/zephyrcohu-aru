@@ -67,7 +67,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"phoneNumber\": \"+36301234567\",\r\n    \"userType\": \"I\"\r\n}",
+					"raw": "{\r\n    \"phoneNumber\": \"+36301234567\",\r\n    \"userType\": \"A\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -110,7 +110,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"deviceId\": \"cbfd50fa-ca61-4fde-96bf-2ef3e16aa3ef\"\r\n}",
+					"raw": "{\r\n    \"deviceId\": \"be0cd0ad-b623-4846-b3bb-8d4af30c3520\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
