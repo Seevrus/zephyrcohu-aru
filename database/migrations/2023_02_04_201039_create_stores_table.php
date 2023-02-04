@@ -14,17 +14,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('stores', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Company::class);
-            $table->foreign('company_id')
-                ->references('id')->on('companies')
-                ->onUpdate('cascade')
-                ->onDelete('restrict');
-            $table->string('type', 1); // A: app, I: integra
-            $table->string('phone_number');
-            $table->dateTime('created_at');
-            $table->dateTime('last_active')->nullable();
+            $table->string('code', 4)->unique();
+            $table->string('name');
+            $table->mediumInteger('first_available_serial_number', false, true);
+            $table->mediumInteger('last_available_serial_number', false, true);
+            $table->smallInteger('year_code', false, true);
+            $table->timestamps();
         });
     }
 
@@ -35,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('stores');
     }
 };

@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Company extends Model
+class Store extends Model
 {
     use HasFactory;
 
-    public function users()
+    public function company()
     {
-        return $this->hasMany(User::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function partners()
@@ -19,13 +19,8 @@ class Company extends Model
         return $this->hasMany(Partner::class);
     }
 
-    public function stores()
-    {
-        return $this->hasMany(Store::class);
-    }
-
     public function items()
     {
-        return $this->hasMany(Item::class);
+        return $this->belongsToMany(Item::class, 'stocks')->using(Stock::class);
     }
 }

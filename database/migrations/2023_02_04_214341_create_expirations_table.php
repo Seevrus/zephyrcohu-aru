@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Stock;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,9 +14,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('uuid');
-            $table->string('device_id')->after('type')->nullable();
+        Schema::create('expirations', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(Stock::class, 'stock_id');
+            $table->date('expires_at');
+            $table->smallInteger('quantity', false, true);
         });
     }
 
@@ -26,8 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('expirations');
     }
 };

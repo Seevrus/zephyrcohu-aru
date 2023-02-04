@@ -14,11 +14,16 @@ class User extends Authenticatable
 
     public function company()
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class, 'company_code', 'code');
     }
 
     public function receipts()
     {
         return $this->hasMany(Receipt::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Expiration;
 use App\Models\Receipt;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,13 +15,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('transactions', function (Blueprint $table) {
-            $table->id();
+        Schema::create('expiration_receipt', function (Blueprint $table) {
+            $table->foreignIdFor(Expiration::class);
             $table->foreignIdFor(Receipt::class);
-            $table->foreign('receipt_id')
-                ->references('id')->on('receipts')
-                ->onUpdate('cascade')->onDelete('cascade');
-            $table->string('product_id');
+            $table->primary(['expiration_id', 'receipt_id']);
+            $table->smallInteger('quantity', false, true);
+            $table->integer('item_amount', false, true);
         });
     }
 
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('expiration_receipt');
     }
 };
