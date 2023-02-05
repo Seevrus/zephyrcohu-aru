@@ -33,6 +33,8 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
 
     Route::post('/all', 'all')
         ->middleware(['auth:sanctum', 'ability:get-users']);
+
+    Route::delete('/:id', 'delete');
 });
 
 Route::controller(ReceiptController::class)->prefix('receipts')->group(function () {
@@ -43,7 +45,4 @@ Route::controller(ReceiptController::class)->prefix('receipts')->group(function 
 
     Route::post('/', 'store')
         ->middleware(['auth:sanctum', 'ability:post-receipt']);
-
-    Route::delete('/', 'delete')
-        ->middleware(['auth:sanctum', 'ability:delete-receipt']);
 });

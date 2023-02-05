@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('price_lists', function (Blueprint $table) {
             $table->id();
             $table->string('code', 4)->unique();
+            $table->timestamp('created_at')->nullable();
+            $table->timestamp('updated_at')->nullable();
         });
     }
 

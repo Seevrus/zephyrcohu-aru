@@ -21,6 +21,6 @@ class Store extends Model
 
     public function items()
     {
-        return $this->belongsToMany(Item::class, 'stock_items')->using(StockItem::class);
+        return $this->belongsToMany(Item::class, 'stock_item')->using(StockItem::class)->withTimestamps();
     }
 }

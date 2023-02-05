@@ -17,10 +17,7 @@ class PriceListFactory extends Factory
      */
     public function definition()
     {
-        $item_ids = Item::all()->pluck('id')->toArray();
-
         return [
-            'item_id' => fake()->unique()->randomElement($item_ids),
             'code' => fake()->unique()->numerify('####'),
         ];
     }

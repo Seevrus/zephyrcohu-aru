@@ -9,5 +9,11 @@ class StockItem extends Pivot
 {
     use HasFactory;
 
-    
+    protected $table = 'stock_item';
+    public $incrementing = true;
+
+    public function expirations()
+    {
+        return $this->hasMany(Expiration::class);
+    }
 }

@@ -24,7 +24,7 @@ class ExpirationReceiptFactory extends Factory
         return [
             'expiration_id' => fake()->randomElement($expiration_ids),
             'receipt_id' => fake()->randomElement($receipt_ids),
-            'quantity' => fake()->random_int(10, 100),
+            'quantity' => fake()->numberBetween(10, 100),
             'item_amount' => fake()->random_int(100000, 1000000),
         ];
     }

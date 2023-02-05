@@ -23,9 +23,9 @@ class StoreFactory extends Factory
             'company_id' => fake()->randomElement($company_ids),
             'code' => fake()->unique()->numerify('####'),
             'name' => fake()->word(),
-            'first_available_serial_number' => fake()->random_int(10000, 99999),
-            'last_available_serial_number' => fake()->random_int(10000, 99999),
-            'year_code' => fake()->random_int(10, 99),
+            'first_available_serial_number' => fake()->numberBetween(10000, 99999),
+            'last_available_serial_number' => fake()->numberBetween(10000, 99999),
+            'year_code' => fake()->numberBetween(10, 99),
         ];
     }
 }

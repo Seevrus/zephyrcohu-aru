@@ -22,7 +22,7 @@ class ExpirationFactory extends Factory
         return [
             'stock_item_id' => fake()->randomElement($stock_item_ids),
             'expires_at' => fake()->dateTimeInInterval('+3 months', '+1 year'),
-            'quantity' => fake()->random_int(100, 1000),
+            'quantity' => fake()->numberBetween(100, 1000),
         ];
     }
 }

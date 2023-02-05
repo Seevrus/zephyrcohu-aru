@@ -14,11 +14,13 @@ use App\Models\Log;
 use App\Models\User;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class UserController extends Controller
@@ -217,5 +219,29 @@ class UserController extends Controller
             if ($e instanceof AuthorizationException) throw $e;
             throw new UnprocessableEntityHttpException();
         }
+    }
+
+    public function delete(int $id)
+    {
+        if (!Gate::allows('delete-user')) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $sender = request()->user();
+        $sender->last_active = date('Y-m-d H:i:s');
+        $sender->save();
+
+        $user = User::findOrFail($id);
+        $this->authorize('delete', $user);
+
+        $user->delete();
+
+        Log::insert([
+            'company_id' => $sender->company_id,
+            'user_id' => $sender->id,
+            'token_id' => $sender->currentAccessToken()->id,
+            'action' => 'Deleted user ' . $user->id,
+            'occured_at' => date('Y-m-d H:i:s'),
+        ]);
     }
 }

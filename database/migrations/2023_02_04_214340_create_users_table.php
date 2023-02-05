@@ -22,7 +22,7 @@ return new class extends Migration
             $table->unique(['company_id', 'phone_number', 'type']);
             $table->string('device_id')->nullable();
             $table->dateTime('created_at');
-            $table->dateTime('last_active');
+            $table->dateTime('last_active')->nullable();
         });
     }
 

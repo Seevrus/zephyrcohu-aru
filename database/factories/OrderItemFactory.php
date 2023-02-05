@@ -24,7 +24,7 @@ class OrderItemFactory extends Factory
         return [
             'item_id' => fake()->randomElement($item_ids),
             'order_id' => fake()->randomElement($order_ids),
-            'quantity' => fake()->random_int(1, 100),
+            'quantity' => fake()->numberBetween(1, 100),
         ];
     }
 }

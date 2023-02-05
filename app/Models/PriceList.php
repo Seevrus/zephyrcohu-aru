@@ -9,8 +9,6 @@ class PriceList extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
-
     public function price_list_items()
     {
         return $this->hasMany(PriceListItem::class);
