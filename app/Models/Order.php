@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Receipt extends Model
+class Order extends Model
 {
     use HasFactory;
 
@@ -20,7 +20,7 @@ class Receipt extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function expirations() {
-        return $this->belongsToMany(Expiration::class)->withPivot('quantity');
+    public function items() {
+        return $this->belongsToMany(Item::class, 'order_item')->withPivot('quantity');
     }
 }

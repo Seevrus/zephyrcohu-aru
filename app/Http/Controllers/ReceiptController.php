@@ -161,38 +161,4 @@ class ReceiptController extends Controller
 
         return new ReceiptResource($receipt);
     }
-
-    /**
-     * Delete multiple receipts.
-     *
-     * @param  \App\Models\Receipt  $receipt
-     * @return \Illuminate\Http\Response
-     */
-    public function delete(Request $request)
-    {
-        $user = $request->user();
-        $user->last_active = date('Y-m-d H:i:s');
-        $user->save();
-
-        $receipt_ids = json_decode($request->ids['eq'] ?? '');
-
-        if (!is_array($receipt_ids) || !count($receipt_ids)) {
-            throw new UnprocessableEntityHttpException();
-        }
-
-        foreach ($receipt_ids as $id) {
-            $receipt = Receipt::findOrFail($id);
-            $this->authorize('delete', $receipt);
-        }
-
-        Receipt::destroy($receipt_ids);
-
-        Log::insert([
-            'company_id' => $user->company_id,
-            'user_id' => $user->id,
-            'token_id' => $user->currentAccessToken()->id,
-            'action' => 'Deleted ' . count($receipt_ids) . ' receipts',
-            'occured_at' => date('Y-m-d H:i:s'),
-        ]);
-    }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Partner;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +15,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('logs', function (Blueprint $table) {
-            $table->dropForeign(['token_id']);
+        Schema::create('orders', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(Partner::class);
+            $table->foreignIdFor(User::class);
+            $table->date('created_at');
         });
     }
 
@@ -25,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('orders');
     }
 };

@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Item;
+use App\Models\PriceList;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +15,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('receipts', function (Blueprint $table) {
-            $table->dateTime('last_downloaded_at')->nullable()->change();
+        Schema::create('price_list_items', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(PriceList::class);
+            $table->foreignIdFor(Item::class);
+            $table->float('price', 18, 5);
         });
     }
 
@@ -25,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('price_list_items');
     }
 };

@@ -5,19 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Purchase extends Model
+class Expiration extends Model
 {
     use HasFactory;
 
     public $timestamps = false;
 
-    protected $fillable = [
-        'expires_at',
-        'amount',
-    ];
-
-    public function transaction()
+    public function stock_item()
     {
-        return $this->belongsTo(Transaction::class);
+        return $this->belongsTo(StockItem::class);
     }
 }

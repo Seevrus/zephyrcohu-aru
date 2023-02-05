@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Partner;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -16,15 +17,13 @@ return new class extends Migration
     {
         Schema::create('receipts', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(Partner::class);
             $table->foreignIdFor(User::class);
-            $table->foreign('user_id')
-                ->references('id')->on('users')
-                ->onUpdate('cascade')->onDelete('restrict');
-            $table->bigInteger('round_id');
-            $table->bigInteger('client_id');
-            $table->string('receipt_nr');
-            $table->timestamps();
-            $table->dateTime('last_downloaded_at');
+            $table->mediumInteger('serial_number', false, true);
+            $table->smallInteger('year_code', false, true);
+            $table->unique(['serial_number', 'year_code']);
+            $table->integer('total_amount', false, true);
+            $table->date('created_at');
         });
     }
 
