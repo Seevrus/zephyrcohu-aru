@@ -15,9 +15,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('expiration_receipt', function (Blueprint $table) {
-            $table->foreignIdFor(Expiration::class);
+        Schema::create('receipt_expiration', function (Blueprint $table) {
             $table->foreignIdFor(Receipt::class);
+            $table->foreignIdFor(Expiration::class);
             $table->primary(['expiration_id', 'receipt_id']);
             $table->smallInteger('quantity', false, true);
             $table->integer('item_amount', false, true);

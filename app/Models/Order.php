@@ -21,6 +21,6 @@ class Order extends Model
     }
 
     public function items() {
-        return $this->belongsToMany(Item::class)->withPivot('quantity');
+        return $this->belongsToMany(Item::class, 'order_items')->withPivot('quantity');
     }
 }

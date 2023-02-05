@@ -11,13 +11,8 @@ class Expiration extends Model
 
     public $timestamps = false;
 
-    public function stock()
+    public function stock_item()
     {
-        return $this->belongsTo(Stock::class);
-    }
-
-    public function receipts()
-    {
-        return $this->belongsToMany(Receipt::class)->withPivot('quantity');
+        return $this->belongsTo(StockItem::class);
     }
 }

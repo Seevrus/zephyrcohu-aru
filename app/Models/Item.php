@@ -16,11 +16,11 @@ class Item extends Model
 
     public function stores()
     {
-        return $this->belongsToMany(Store::class, 'stocks')->using(Stock::class);
+        return $this->belongsToMany(Store::class, 'stock_items')->using(StockItem::class);
     }
 
     public function orders()
     {
-        return $this->belongsToMany(Order::class)->withPivot('quantity');
+        return $this->belongsToMany(Order::class, 'order_items')->withPivot('quantity');
     }
 }

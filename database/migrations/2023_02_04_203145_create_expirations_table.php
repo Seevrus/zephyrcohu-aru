@@ -1,7 +1,6 @@
 <?php
 
-use App\Models\Item;
-use App\Models\Order;
+use App\Models\StockItem;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,10 +14,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('item_order', function (Blueprint $table) {
-            $table->foreignIdFor(Item::class);
-            $table->foreignIdFor(Order::class);
-            $table->primary(['item_id', 'order_id']);
+        Schema::create('expirations', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(StockItem::class, 'stock_item_id');
+            $table->date('expires_at');
             $table->smallInteger('quantity', false, true);
         });
     }
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('expirations');
     }
 };
