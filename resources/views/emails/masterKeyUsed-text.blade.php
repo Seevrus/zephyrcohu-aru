@@ -1,7 +1,7 @@
 Ez egy automatikus email üzenet, amelyet azért küldött ki a rendszer, mert az Áruforgalmi Alkalmazás egyik mesterkulcsával új felhasználó létrehozására került sor.
 
 Az kéréshez kapcsolódó paraméterek:
-- Cég azonosítója: {{ $company_id }}
+- Cégkód: {{ $company_code }}
 - Mesterkulcs azonosítója: {{ $master_key_id }}
 - Felhasználó azonosítója: {{ $user_id }}
 - Felhasználó típusa: {{ $user_type }}

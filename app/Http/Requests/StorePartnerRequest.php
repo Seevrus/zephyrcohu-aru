@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Hash;
 
-class GenerateMasterTokenRequest extends FormRequest
+class StorePartnerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +14,7 @@ class GenerateMasterTokenRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return Hash::check(request()->header('X-Device-Id'), $this->user()->device_id);
     }
 
     /**
@@ -24,8 +25,7 @@ class GenerateMasterTokenRequest extends FormRequest
     public function rules()
     {
         return [
-            'companyCode' => 'required|string|size:3|exists:companies,code',
-            'phoneNumber' => 'required|regex:`^\+36[237]0\d{7}$`',
+            'data' => 'required|array:'
         ];
     }
 }

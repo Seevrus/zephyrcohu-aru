@@ -35,7 +35,11 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
-        return Hash::check(request()->header('X-Device-Id'), $user->device_id);
+        if (!Hash::check(request()->header('X-Device-Id'), $user->device_id)) {
+            throw new UnauthorizedHttpException(random_bytes(32));
+        }
+
+        return true;
     }
 
     /**
@@ -44,12 +48,9 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user)
+    public function delete(User $sender, User $user)
     {
-        if (!Hash::check(request()->header('X-Device-Id'), $user->device_id)) {
-            return false;
-        }
-
-        return request()->user->company_id === $user->company_id;
+        // Device Id is already checked before user is retrieved
+        return $sender->company_id === $user->company_id;
     }
 }

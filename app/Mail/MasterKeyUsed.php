@@ -13,7 +13,7 @@ class MasterKeyUsed extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $company_id;
+    public $company_code;
     public $master_key_id;
     public $user_id;
     public $user_type;
@@ -26,14 +26,14 @@ class MasterKeyUsed extends Mailable
      * @return void
      */
     public function __construct(
-        $company_id,
+        $company_code,
         $master_key_id,
         $user_id,
         $user_type,
         $user_phone_number,
         $user_key_id
     ) {
-        $this->company_id = $company_id;
+        $this->company_code = $company_code;
         $this->master_key_id = $master_key_id;
         $this->user_id = $user_id;
         $this->user_type = $user_type === 'I' ? 'Integra' : 'App';
@@ -50,7 +50,7 @@ class MasterKeyUsed extends Mailable
     {
         return new Envelope(
             from: new Address('till.zoltan90@gmail.com', 'Dr. Till Zoltán'),
-            subject: '[Zephyr Bt.] ÁA mesterkulcsa használatban',
+            subject: '[Zephyr Bt.] Boreal mesterkulcsa használatban',
         );
     }
 

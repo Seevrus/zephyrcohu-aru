@@ -27,12 +27,8 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        function deviceIdCheck(User $user)
-        {
+        Gate::define('check-device-id', function (User $user) {
             return Hash::check(request()->header('X-Device-Id'), $user->device_id);
-        }
-
-        Gate::define('delete-user', 'deviceIdCheck');
-        Gate::define('show-receipt', 'deviceIdCheck');
+        });
     }
 }

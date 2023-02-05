@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\PartnersController;
 use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\StoresController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,18 +25,27 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
     // Route::post('/master-token', 'generate_master_token');
 
     Route::post('/token', 'generate_token')
-        ->middleware(['auth:sanctum', 'ability:generate-token']);
+        ->middleware(['auth:sanctum', 'ability:master']);
 
     Route::post('/register-device', 'register_device')
-        ->middleware(['auth:sanctum', 'ability:check-token']);
+        ->middleware(['auth:sanctum', 'ability:app,integra']);
 
     Route::get('/check-token', 'check_token')
-        ->middleware(['auth:sanctum', 'ability:check-token']);
+        ->middleware(['auth:sanctum', 'ability:master,app,integra']);
 
     Route::post('/all', 'all')
-        ->middleware(['auth:sanctum', 'ability:get-users']);
+        ->middleware(['auth:sanctum', 'ability:integra']);
 
-    Route::delete('/:id', 'delete');
+    Route::delete('/{id}', 'delete')
+        ->middleware(['auth:sanctum', 'ability:integra']);
+});
+
+Route::controller(StoresController::class)->prefix('/stores')->group(function () {
+    Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
+});
+
+Route::controller(PartnersController::class)->prefix('partners')->group(function () {
+    Route::put('/', 'store');
 });
 
 Route::controller(ReceiptController::class)->prefix('receipts')->group(function () {

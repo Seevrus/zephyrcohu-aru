@@ -7,7 +7,7 @@
       mesterkulcsával új felhasználó létrehozására került sor.</p>
     <p>Az kéréshez kapcsolódó paraméterek:</p>
     <ul>
-      <li>Cég azonosítója: {{ $company_id }}</li>
+      <li>Cégkód: {{ $company_code }}</li>
       <li>Mesterkulcs azonosítója: {{ $master_key_id }}</li>
       <li>Felhasználó azonosítója: {{ $user_id }}</li>
       <li>Felhasználó típusa: {{ $user_type }}</li>
