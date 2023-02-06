@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStoreRequest;
+use App\Models\Expiration;
+use App\Models\Item;
 use App\Models\Log;
 use App\Models\Store;
 
@@ -20,15 +22,32 @@ class StoresController extends Controller
         $company = $sender->company;
         $company->stores()->delete();
 
-        foreach ($request->data as $store) {
-            Store::create([
+        foreach ($request->data as $storeRequest) {
+            $store = new Store([
                 'company_id' => $company->id,
-                'code' => $store['code'],
-                'name' => $store['name'],
-                'first_available_serial_number' => $store['firstAvailableSerialNumber'],
-                'last_available_serial_number' => $store['lastAvailableSerialNumber'],
-                'year_code' => $store['yearCode'],
+                'code' => $storeRequest['code'],
+                'name' => $storeRequest['name'],
+                'first_available_serial_number' => $storeRequest['firstAvailableSerialNumber'],
+                'last_available_serial_number' => $storeRequest['lastAvailableSerialNumber'],
+                'year_code' => $storeRequest['yearCode'],
             ]);
+
+            $store->save();
+
+            foreach ($storeRequest['items'] as $itemRequest) {
+                $item = Item::firstWhere('article_number', $itemRequest['articleNumber']);
+                $store->items()->attach($item->id);
+
+                $stock_item_id = $store->items()->withPivot('id')->wherePivot('item_id', $item->id)->wherePivot('store_id', $store->id)->first()->pivot->id;
+
+                foreach ($itemRequest['expirations'] as $expirationRequest) {
+                    Expiration::create([
+                        'stock_item_id' => $stock_item_id,
+                        'expires_at' => date('Y-m-t', strtotime($expirationRequest['expiresAt'])),
+                        'quantity' => $expirationRequest['quantity'],
+                    ]);
+                }
+            }
         }
 
         Log::insert([
