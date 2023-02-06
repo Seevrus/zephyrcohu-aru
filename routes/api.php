@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\PartnersController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\StoresController;
@@ -38,6 +39,10 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
 
     Route::delete('/{id}', 'delete')
         ->middleware(['auth:sanctum', 'ability:integra']);
+});
+
+Route::controller(ItemsController::class)->prefix('/items')->group(function () {
+    Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
 });
 
 Route::controller(StoresController::class)->prefix('/stores')->group(function () {
