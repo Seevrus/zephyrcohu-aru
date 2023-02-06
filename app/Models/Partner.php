@@ -9,6 +9,24 @@ class Partner extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'company_id',
+        'store_id',
+        'price_list_id',
+        'code',
+        'site_code',
+        'name',
+        'country',
+        'postal_code',
+        'city',
+        'address',
+        'vat_number',
+        'iban',
+        'bank_account',
+        'phone_number',
+        'email',
+    ];
+
     public function company()
     {
         return $this->belongsTo(Company::class);

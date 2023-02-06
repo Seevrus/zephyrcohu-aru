@@ -9,7 +9,7 @@ use App\Models\Log;
 class ItemsController extends Controller
 {
     /**
-     * Delete previous stores and saves the new data.
+     * Delete previous items and saves the new data.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response

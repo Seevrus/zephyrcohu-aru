@@ -38,7 +38,7 @@ class StoreItemRequest extends FormRequest
             'data.*.unitName' => 'required|string|max:6',
             'data.*.productCatalogCode' => 'required|string|size:11|distinct',
             'data.*.vatRate' => 'required|string|size:2',
-            'data.*.price' => 'required|numeric',
+            'data.*.price' => 'required|numeric|min:0',
         ];
     }
 }

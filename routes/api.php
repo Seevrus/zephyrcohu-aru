@@ -41,7 +41,7 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
         ->middleware(['auth:sanctum', 'ability:integra']);
 });
 
-Route::controller(ItemsController::class)->prefix('/items')->group(function () {
+Route::controller(ItemsController::class)->prefix('items')->group(function () {
     Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
 });
 
@@ -50,7 +50,7 @@ Route::controller(StoresController::class)->prefix('/stores')->group(function ()
 });
 
 Route::controller(PartnersController::class)->prefix('partners')->group(function () {
-    Route::put('/', 'store');
+    Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
 });
 
 Route::controller(ReceiptController::class)->prefix('receipts')->group(function () {

@@ -9,6 +9,12 @@ class PriceListItem extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'price_list_id',
+        'item_id',
+        'price',
+    ];
+
     public $timestamps = false;
 
     public function item()
