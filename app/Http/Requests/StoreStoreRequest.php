@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class StoreStoreRequest extends FormRequest
 {
@@ -14,7 +15,11 @@ class StoreStoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return Hash::check(request()->header('X-Device-Id'), $this->user()->device_id);
+        if (!Hash::check(request()->header('X-Device-Id'), $this->user()->device_id)) {
+            throw new UnauthorizedHttpException(random_bytes(32));
+        }
+
+        return true;
     }
 
     /**
@@ -25,12 +30,12 @@ class StoreStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'data' => 'required|array:companyCode|code|firstAvailableSerialNumber|lastAvailableSerialNumber|yearCode',
-            'data.*.companyCode' => 'required|string|size:3|exists:companies,code',
-            'data.*.name' => 'required|string|max:255',
+            'data' => 'required|bail',
+            'data.*.code' => 'required|string|size:4|distinct',
+            'data.*.name' => 'required|string|max:255|distinct',
             'data.*.firstAvailableSerialNumber' => 'required|integer|min:1|max:16777215',
-            'data.*.lastAvailableSerialNumber' => 'required|integer|min:1|max:16777215|gt:firstAvailableSerialNumber',
-            'data.*.*yearCode' => 'required|integer|min:1|max:32767',
+            'data.*.lastAvailableSerialNumber' => 'required|integer|min:1|max:16777215|gt:data.*.firstAvailableSerialNumber',
+            'data.*.yearCode' => 'required|integer|min:1|max:32767',
         ];
     }
 }
