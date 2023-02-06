@@ -7,222 +7,318 @@
 	},
 	"item": [
 		{
-			"name": "Master Token",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyId\": 1,\r\n    \"phoneNumber\": \"+36301234567\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "users",
+			"item": [
+				{
+					"name": "Master Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"companyCode\": \"001\",\r\n    \"phoneNumber\": \"+36301234567\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{zephyr_aru_url}}/users/master-token",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"users",
+								"master-token"
+							]
 						}
-					}
-				},
-				"url": {
-					"raw": "{{zephyr_aru_url}}/users/master-token",
-					"host": [
-						"{{zephyr_aru_url}}"
-					],
-					"path": [
-						"users",
-						"master-token"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "User Token",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{master_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
 					},
-					{
-						"key": "X-Device-Id",
-						"value": "{{master_device_id}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"phoneNumber\": \"+36301234567\",\r\n    \"userType\": \"A\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"response": []
 				},
-				"url": {
-					"raw": "{{zephyr_aru_url}}/users/token",
-					"host": [
-						"{{zephyr_aru_url}}"
-					],
-					"path": [
-						"users",
-						"token"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Register Device",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{user_token}}",
-							"type": "string"
+				{
+					"name": "User Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{master_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{master_device_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phoneNumber\": \"+36301234567\",\r\n    \"userType\": \"I\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{zephyr_aru_url}}/users/token",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"users",
+								"token"
+							]
 						}
-					]
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"deviceId\": \"be0cd0ad-b623-4846-b3bb-8d4af30c3520\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{zephyr_aru_url}}/users/register-device",
-					"host": [
-						"{{zephyr_aru_url}}"
-					],
-					"path": [
-						"users",
-						"register-device"
-					],
-					"query": [
-						{
-							"key": "",
-							"value": null,
-							"disabled": true
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Check Token",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{user_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
 					},
-					{
-						"key": "X-Device-Id",
-						"value": "{{user_device_id}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{zephyr_aru_url}}/users/check-token",
-					"host": [
-						"{{zephyr_aru_url}}"
-					],
-					"path": [
-						"users",
-						"check-token"
-					]
+					"response": []
+				},
+				{
+					"name": "Register Device",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceId\": \"bbcbfb07-b429-437a-a4e5-05abbb4d538f\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{zephyr_aru_url}}/users/register-device",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"users",
+								"register-device"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{user_device_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{zephyr_aru_url}}/users/check-token",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"users",
+								"check-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{user_device_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"filters\": [\r\n        {\r\n            \"key\": \"type\",\r\n            \"operator\": \"eq\",\r\n            \"value\": \"I\"\r\n        }\r\n    ],\r\n    \"limit\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{zephyr_aru_url}}/users/all",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"users",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{user_device_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{zephyr_aru_url}}/users/2",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"users",
+								"2"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Users",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{user_token}}",
-							"type": "string"
+			"name": "stores",
+			"item": [
+				{
+					"name": "Overwrite Store List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{user_device_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"code\": \"0001\",\r\n            \"name\": \"Borsod 1. kör\",\r\n            \"firstAvailableSerialNumber\": 10000,\r\n            \"lastAvailableSerialNumber\": 19999,\r\n            \"yearCode\": 23\r\n        },\r\n        {\r\n            \"code\": \"0002\",\r\n            \"name\": \"Borsod 2. kör\",\r\n            \"firstAvailableSerialNumber\": 20000,\r\n            \"lastAvailableSerialNumber\": 29999,\r\n            \"yearCode\": 23\r\n        },\r\n        {\r\n            \"code\": \"0003\",\r\n            \"name\": \"Borsod 3. kör\",\r\n            \"firstAvailableSerialNumber\": 30000,\r\n            \"lastAvailableSerialNumber\": 39999,\r\n            \"yearCode\": 23\r\n        },\r\n        {\r\n            \"code\": \"0004\",\r\n            \"name\": \"Békés 1. kör\",\r\n            \"firstAvailableSerialNumber\": 40000,\r\n            \"lastAvailableSerialNumber\": 49999,\r\n            \"yearCode\": 23\r\n        },\r\n        {\r\n            \"code\": \"0005\",\r\n            \"name\": \"Békés 2. kör\",\r\n            \"firstAvailableSerialNumber\": 50000,\r\n            \"lastAvailableSerialNumber\": 59999,\r\n            \"yearCode\": 23\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{zephyr_aru_url}}/stores",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"stores"
+							]
 						}
-					]
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
 					},
-					{
-						"key": "X-Device-Id",
-						"value": "{{user_device_id}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"filters\": [\r\n        {\r\n            \"key\": \"phoneNumber\",\r\n            \"operator\": \"eq\",\r\n            \"value\": \"+12137184044\"\r\n        }\r\n    ],\r\n    \"limit\": 10\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{zephyr_aru_url}}/users/all",
-					"host": [
-						"{{zephyr_aru_url}}"
-					],
-					"path": [
-						"users",
-						"all"
-					]
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
 			"name": "Receipts",
@@ -252,7 +348,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"filters\": [\r\n        {\r\n            \"key\": \"driverPhoneNumber\",\r\n            \"operator\": \"in\",\r\n            \"value\": [\r\n                \"+18785258283\",\r\n                \"+12137184044\"\r\n            ]\r\n        }\r\n    ],\r\n    \"limit\": 10\r\n}",
+					"raw": "{\r\n    \"filters\": [\r\n        {\r\n            \"key\": \"receiptNr\",\r\n            \"operator\": \"gte\",\r\n            \"value\": \"1/23\"\r\n        }\r\n    ],\r\n    \"limit\": 10\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -260,19 +356,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{zephyr_aru_url}}/receipts/all?page=3",
+					"raw": "{{zephyr_aru_url}}/receipts/all",
 					"host": [
 						"{{zephyr_aru_url}}"
 					],
 					"path": [
 						"receipts",
 						"all"
-					],
-					"query": [
-						{
-							"key": "page",
-							"value": "3"
-						}
 					]
 				}
 			},
@@ -387,7 +477,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{api_token}}",
+							"value": "{{user_token}}",
 							"type": "string"
 						}
 					]
