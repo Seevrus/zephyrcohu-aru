@@ -40,16 +40,4 @@ class ReceiptPolicy
             ->receipts
             ->contains($receipt->id);
     }
-
-    /**
-     * Determine whether the user can store the receipt.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Receipt  $receipt
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function store(User $user)
-    {
-        return Hash::check(request()->header('X-Device-Id'), $user->device_id);
-    }
 }

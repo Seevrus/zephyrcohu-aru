@@ -93,8 +93,6 @@ class ReceiptController extends Controller
     public function store(StoreReceiptRequest $request)
     {
         try {
-            $this->authorize('store', Receipt::class);
-
             $sender = $request->user();
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();

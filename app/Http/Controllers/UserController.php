@@ -170,7 +170,7 @@ class UserController extends Controller
         return new UserResource($sender);
     }
 
-    public function all(Request $request)
+    public function search(Request $request)
     {
         try {
             $this->authorize('viewAny', User::class);

@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreItemRequest;
 use App\Models\Item;
 use App\Models\Log;
+use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class ItemsController extends Controller
 {
@@ -16,30 +20,42 @@ class ItemsController extends Controller
      */
     public function store(StoreItemRequest $request)
     {
-        $sender = $request->user();
-        $company = $sender->company;
-        $company->items()->delete();
+        try {
+            $sender = $request->user();
+            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->save();
 
-        foreach ($request->data as $store) {
-            Item::create([
-                'company_id' => $company->id,
-                'article_number' => $store['articleNumber'],
-                'name' => $store['name'],
-                'short_name' => $store['shortName'],
-                'category' => $store['category'],
-                'unit_name' => $store['unitName'],
-                'product_catalog_code' => $store['productCatalogCode'],
-                'vat_rate' => $store['vatRate'],
-                'price' => $store['price'],
+            $company = $sender->company;
+            $company->items()->delete();
+
+            foreach ($request->data as $store) {
+                Item::create([
+                    'company_id' => $company->id,
+                    'article_number' => $store['articleNumber'],
+                    'name' => $store['name'],
+                    'short_name' => $store['shortName'],
+                    'category' => $store['category'],
+                    'unit_name' => $store['unitName'],
+                    'product_catalog_code' => $store['productCatalogCode'],
+                    'vat_rate' => $store['vatRate'],
+                    'price' => $store['price'],
+                ]);
+            }
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Stored ' . count($request->data) . ' items',
+                'occured_at' => date('Y-m-d H:i:s'),
             ]);
-        }
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) throw $e;
 
-        Log::insert([
-            'company_id' => $sender->company_id,
-            'user_id' => $sender->id,
-            'token_id' => $sender->currentAccessToken()->id,
-            'action' => 'Stored ' . count($request->data) . ' items',
-            'occured_at' => date('Y-m-d H:i:s'),
-        ]);
+            throw new UnprocessableEntityHttpException();
+        }
     }
 }

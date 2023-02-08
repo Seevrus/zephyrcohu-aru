@@ -7,6 +7,10 @@ use App\Models\Expiration;
 use App\Models\Item;
 use App\Models\Log;
 use App\Models\Store;
+use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class StoresController extends Controller
 {
@@ -18,44 +22,56 @@ class StoresController extends Controller
      */
     public function store(StoreStoreRequest $request)
     {
-        $sender = $request->user();
-        $company = $sender->company;
-        $company->stores()->delete();
+        try {
+            $sender = $request->user();
+            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->save();
 
-        foreach ($request->data as $storeRequest) {
-            $store = new Store([
-                'company_id' => $company->id,
-                'code' => $storeRequest['code'],
-                'name' => $storeRequest['name'],
-                'first_available_serial_number' => $storeRequest['firstAvailableSerialNumber'],
-                'last_available_serial_number' => $storeRequest['lastAvailableSerialNumber'],
-                'year_code' => $storeRequest['yearCode'],
-            ]);
+            $company = $sender->company;
+            $company->stores()->delete();
 
-            $store->save();
+            foreach ($request->data as $storeRequest) {
+                $store = new Store([
+                    'company_id' => $company->id,
+                    'code' => $storeRequest['code'],
+                    'name' => $storeRequest['name'],
+                    'first_available_serial_number' => $storeRequest['firstAvailableSerialNumber'],
+                    'last_available_serial_number' => $storeRequest['lastAvailableSerialNumber'],
+                    'year_code' => $storeRequest['yearCode'],
+                ]);
 
-            foreach ($storeRequest['items'] as $itemRequest) {
-                $item = Item::firstWhere('article_number', $itemRequest['articleNumber']);
-                $store->items()->attach($item->id);
+                $store->save();
 
-                $stock_item_id = $store->items()->withPivot('id')->wherePivot('item_id', $item->id)->wherePivot('store_id', $store->id)->first()->pivot->id;
+                foreach ($storeRequest['items'] as $itemRequest) {
+                    $item = Item::firstWhere('article_number', $itemRequest['articleNumber']);
+                    $store->items()->attach($item->id);
 
-                foreach ($itemRequest['expirations'] as $expirationRequest) {
-                    Expiration::create([
-                        'stock_item_id' => $stock_item_id,
-                        'expires_at' => date('Y-m-t', strtotime($expirationRequest['expiresAt'])),
-                        'quantity' => $expirationRequest['quantity'],
-                    ]);
+                    $stock_item_id = $store->items()->withPivot('id')->wherePivot('item_id', $item->id)->wherePivot('store_id', $store->id)->first()->pivot->id;
+
+                    foreach ($itemRequest['expirations'] as $expirationRequest) {
+                        Expiration::create([
+                            'stock_item_id' => $stock_item_id,
+                            'expires_at' => date('Y-m-t', strtotime($expirationRequest['expiresAt'])),
+                            'quantity' => $expirationRequest['quantity'],
+                        ]);
+                    }
                 }
             }
-        }
 
-        Log::insert([
-            'company_id' => $sender->company_id,
-            'user_id' => $sender->id,
-            'token_id' => $sender->currentAccessToken()->id,
-            'action' => 'Stored ' . count($request->data) . ' stores',
-            'occured_at' => date('Y-m-d H:i:s'),
-        ]);
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Stored ' . count($request->data) . ' stores',
+                'occured_at' => date('Y-m-d H:i:s'),
+            ]);
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) throw $e;
+
+            throw new UnprocessableEntityHttpException();
+        }
     }
 }
