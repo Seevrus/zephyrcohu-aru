@@ -30,6 +30,6 @@ class Store extends Model
 
     public function items()
     {
-        return $this->belongsToMany(Item::class, 'stock_item')->using(StockItem::class)->withTimestamps();
+        return $this->belongsToMany(Item::class, 'stock_item')->using(StockItem::class)->withPivot('id')->withTimestamps();
     }
 }

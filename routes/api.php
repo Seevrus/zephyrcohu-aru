@@ -34,7 +34,7 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
     Route::get('/check-token', 'check_token')
         ->middleware(['auth:sanctum', 'ability:master,app,integra']);
 
-    Route::post('/all', 'all')
+    Route::post('/search', 'search')
         ->middleware(['auth:sanctum', 'ability:integra']);
 
     Route::delete('/{id}', 'delete')
@@ -54,11 +54,11 @@ Route::controller(PartnersController::class)->prefix('partners')->group(function
 });
 
 Route::controller(ReceiptController::class)->prefix('receipts')->group(function () {
-    Route::post('/all', 'all')
+    Route::post('/search', 'search')
         ->middleware(['auth:sanctum', 'ability:get-receipts']);
     Route::get('/{id}', 'show')
         ->middleware(['auth:sanctum', 'ability:get-receipts']);
 
     Route::post('/', 'store')
-        ->middleware(['auth:sanctum', 'ability:post-receipt']);
+        ->middleware(['auth:sanctum', 'ability:app']);
 });

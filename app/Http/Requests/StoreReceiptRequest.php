@@ -25,17 +25,24 @@ class StoreReceiptRequest extends FormRequest
     public function rules()
     {
         return [
-            'roundId' => 'required|integer|min:1',
-            'clientId' => 'required|integer|min:1',
-            'receiptNr' => 'required|regex:`^\d{5}[/]\d{2}$`|unique:receipts,receipt_nr',
-            'transactions' => 'required|array',
-            'transactions.*.productId' => 'required|regex:`\d{13}`',
-            'transactions.*.purchases' => 'required|array',
-            'transactions.*.purchases.*.expiresAt' => 'required|date_format:Y-m-d',
-            'transactions.*.purchases.*.quantity' => 'required|integer',
-            'transactions.*.purchases.*.itemAmount' => 'required|integer',
-            'totalAmount' => 'required|integer|min:1',
-            'createdAt' => 'required|date_format:Y-m-d H:i:s',
+            'data' => 'required|array|bail',
+            'data.*.userId' => 'required|integer|exists:users,id',
+            'data.*.storeCode' => 'required|string|exists:stores,code',
+            'data.*.partnerCode' => 'required|string|exists:partners,code',
+            'data.*.siteCode' => 'required|string|exists:partners,site_code',
+            'data.*.serialNumber' => 'required|integer|distinct|unique:receipts,serial_number',
+            'data.*.yearCode' => 'required|integer',
+            'data.*.totalAmount' => 'required|integer|min:1|max:4294967295',
+            'data.*.createdAt' => 'required|date_format:Y-m-d',
+            'data.*.items' => 'required|array|bail',
+            'data.*.items.*.articleNumber' => 'required_with:data.*.items|string|exists:items,article_number',
+            'data.*.items.*.expirations' => 'required_with:data.*.items|array|bail',
+            'data.*.items.*.expirations.*.expiresAt' => 'required_with:data.*.items.*.expirations|date_format:Y-m-d|exists:expirations,expires_at',
+            'data.*.items.*.expirations.*.quantity' => 'required_with:data.*.items.*.expirations|integer|min:1|max:65535',
+            'data.*.items.*.expirations.*.itemAmount' => 'required_with:data.*.items.*.expirations|integer|min:1|max:4294967295',
+            'data.*.orderItems' => 'array|bail',
+            'data.*.orderItems.*.articleNumber' => 'required_with:data.*.orderItems|string|exists:items,article_number',
+            'data.*.orderItems.*.quantity' => 'required_with:data.*orderItems|integer|min:1|max:65535',
         ];
     }
 }

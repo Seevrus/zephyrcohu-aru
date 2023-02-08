@@ -28,7 +28,7 @@ class Item extends Model
 
     public function stores()
     {
-        return $this->belongsToMany(Store::class, 'stock_item')->using(StockItem::class)->withTimestamps();
+        return $this->belongsToMany(Store::class, 'stock_item')->using(StockItem::class)->withPivot('id')->withTimestamps();
     }
 
     public function orders()

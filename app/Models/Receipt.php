@@ -9,6 +9,15 @@ class Receipt extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'partner_id',
+        'user_id',
+        'serial_number',
+        'year_code',
+        'total_amount',
+        'created_at',
+    ];
+
     public $timestamps = false;
 
     public function partner()
@@ -16,11 +25,13 @@ class Receipt extends Model
         return $this->belongsTo(Partner::class);
     }
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function expirations() {
-        return $this->belongsToMany(Expiration::class)->withPivot('quantity');
+    public function expirations()
+    {
+        return $this->belongsToMany(Expiration::class, 'receipt_expiration')->withPivot('quantity');
     }
 }
