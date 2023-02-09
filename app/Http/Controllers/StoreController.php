@@ -3,17 +3,75 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStoreRequest;
+use App\Http\Resources\StoreCollection;
 use App\Models\Expiration;
 use App\Models\Item;
 use App\Models\Log;
 use App\Models\Store;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
-class StoresController extends Controller
+class StoreController extends Controller
 {
+    /**
+     * View the list of stores
+     */
+    public function viewAll(Request $request)
+    {
+        $this->authorize('viewAll', Store::class);
+
+        $sender = $request->user();
+        $sender->last_active = date('Y-m-d H:i:s');
+        $sender->save();
+
+        $stores = $sender->company->stores()->get();
+        return new StoreCollection($stores);
+    }
+
+    /**
+     * Detailed view of a store
+     */
+    public function view(string $code)
+    {
+        $store = Store::firstWhere('code', $code);
+        $this->authorize('view', $store);
+        $stores_with_items = $store->load('items', 'partners');
+
+        $expirations = DB::select(DB::raw('SELECT i.id as item_id, i.article_number as item_article_number, e.expires_at as item_expires_at, e.quantity as item_quantity FROM stores s JOIN stock_item si ON s.id = si.store_id JOIN items i ON i.id = si.item_id JOIN expirations e ON e.stock_item_id = si.id GROUP BY i.id, i.article_number, e.expires_at, e.quantity, si.item_id, e.expires_at'));
+
+        return [
+            'id' => $stores_with_items->id,
+            'code' => $stores_with_items->code,
+            'name' => $stores_with_items->name,
+            'firstAvailableSerialNumber' => $stores_with_items->first_available_serial_number,
+            'lastAvailableSerialNumber' => $stores_with_items->last_available_serial_number,
+            'yearCode' => $stores_with_items->year_code,
+            'items' => array_map(function ($item) use ($expirations) {
+                $item_expirations = array_values(array_filter($expirations, function ($expiration) use ($item) {
+                    return $expiration->item_id == $item['id'];
+                }));
+
+                return [
+                    'id' => $item['id'],
+                    'code' => $item['article_number'],
+                    'expirations' => array_map(function ($expiration) {
+                        return [
+                            'expiresAt' => $expiration->item_expires_at,
+                            'quantity' => $expiration->item_quantity,
+                        ];
+                    }, $item_expirations),
+                ];
+            }, $stores_with_items->items->toArray()),
+            'partners' => array_map(function ($partner) {
+                return $partner['id'];
+            }, $stores_with_items->partners->toArray())
+        ];
+    }
+
     /**
      * Delete previous stores and saves the new data.
      *

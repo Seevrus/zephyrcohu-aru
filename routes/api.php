@@ -3,7 +3,7 @@
 use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\PartnersController;
 use App\Http\Controllers\ReceiptController;
-use App\Http\Controllers\StoresController;
+use App\Http\Controllers\StoreController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -45,7 +45,9 @@ Route::controller(ItemsController::class)->prefix('items')->group(function () {
     Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
 });
 
-Route::controller(StoresController::class)->prefix('/stores')->group(function () {
+Route::controller(StoreController::class)->prefix('/stores')->group(function () {
+    Route::get('/', 'viewAll')->middleware(['auth:sanctum', 'ability:app,integra']);
+    Route::get('/{code}', 'view')->middleware(['auth:sanctum', 'ability:app,integra']);
     Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
 });
 
