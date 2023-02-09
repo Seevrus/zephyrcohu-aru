@@ -53,6 +53,7 @@ Route::controller(StoreController::class)->prefix('/stores')->group(function () 
 });
 
 Route::controller(PartnersController::class)->prefix('partners')->group(function () {
+    Route::get('/', 'viewAll')->middleware(['auth:sanctum', 'ability:app,integra']);
     Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
 });
 

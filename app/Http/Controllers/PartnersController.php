@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePartnerRequest;
+use App\Http\Resources\PartnerCollection;
 use App\Models\Item;
 use App\Models\Log;
 use App\Models\Partner;
@@ -11,11 +12,45 @@ use App\Models\PriceListItem;
 use App\Models\Store;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class PartnersController extends Controller
 {
+    /**
+     * View the list of partners
+     */
+    public function viewAll(Request $request)
+    {
+        try {
+            $this->authorize('viewAll', Partner::class);
+
+            $sender = $request->user();
+            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->save();
+
+            $partners = $sender->company->partners()->with('price_list.price_list_items')->get();
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Accessed ' . count($partners) . ' partners',
+                'occured_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            return new PartnerCollection($partners);
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) throw $e;
+
+            throw new UnprocessableEntityHttpException();
+        }
+    }
+
     /**
      * Delete previous partners and store the new array in the database
      *

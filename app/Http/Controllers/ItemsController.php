@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 class ItemsController extends Controller
 {
     /**
-     * View the list of stores
+     * View the list of items
      */
     public function viewAll(Request $request)
     {
