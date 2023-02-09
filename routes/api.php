@@ -42,6 +42,7 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
 });
 
 Route::controller(ItemsController::class)->prefix('items')->group(function () {
+    Route::get('/', 'viewAll')->middleware(['auth:sanctum', 'ability:app,integra']);
     Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
 });
 
