@@ -1,8 +1,24 @@
 import userTypes from '../../constants/userTypes';
 
+type Company = {
+  id: number;
+  code: string;
+  name: string;
+  country: string;
+  postalCode: string;
+  city: string;
+  address: string;
+  vatNumber: string;
+  iban: string;
+  bankAccount: string;
+  phoneNumber?: string;
+  email?: string;
+};
+
 export type Config = {
   isDemoMode: boolean;
   userType: (typeof userTypes)[keyof typeof userTypes];
+  company: Company;
 };
 
 export type RegisterDeviceRequestT = {

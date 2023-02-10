@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 
 import { getLocalStorage } from '../store/async-storage';
-import { clientsActions } from '../store/clients-slice/clients-slice';
+import { clientsActions } from '../store/partners-slice/partners-slice';
 import { companyActions } from '../store/company-slice/company-slice';
 import { configActions } from '../store/config-slice/config-slice';
 import { useAppDispatch } from '../store/hooks';
-import { productsActions } from '../store/products-slice/products-slice';
+import { productsActions } from '../store/items-slice/items-slice';
 import { roundActions } from '../store/round-slice/round-slice';
-import { roundsActions } from '../store/rounds-slice/rounds-slice';
+import { roundsActions } from '../store/store-slice/store-slice';
 
 const useLocalStorage = (canGetLocalState: boolean) => {
   const dispatch = useAppDispatch();

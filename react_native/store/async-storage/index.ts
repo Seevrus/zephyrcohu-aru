@@ -1,74 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { mergeDeepRight } from 'ramda';
 
-import userTypes from '../../constants/userTypes';
+import { Config } from '../config-slice/config-slice-types';
+import { Items } from '../items-slice/items-slice-types';
+import { Partners } from '../partners-slice/partners-slice-types';
+import { Round } from '../round-slice/round-slice-types';
+import { Store } from '../store-slice/store-slice-types';
 
 export type LocalStorage = {
-  config?: {
-    isDemoMode: boolean;
-    userType: (typeof userTypes)[keyof typeof userTypes];
-  };
-  company?: {
-    name: string;
-    vatNumber: string;
-    address: {
-      zipCode: number;
-      city: string;
-      address: string;
-    };
-  };
-  clients?: {
-    id: number;
-    name: string;
-    vatNumber: string;
-    address: {
-      zipCode: number;
-      city: string;
-      address: string;
-    };
-  }[];
-  products?: {
-    id: number;
-    name: string;
-    price: number;
-    expirations: {
-      expiresAt: string;
-      quantity: number;
-    }[];
-  }[];
-  rounds?: {
-    id: number;
-    name: string;
-    clientIds: number[];
-    receiptNr: {
-      first: string;
-      last: string;
-    };
-  }[];
-  round?: {
-    id: number;
-    name: string;
-    clientIds: number[];
-    firstAvailableReceiptNr: string;
-    receipts?: {
-      clientId: number;
-      receiptNr: string;
-      transactions: {
-        productId: string;
-        purchases?: {
-          expiresAt: string;
-          quantity: number;
-          itemAmount: number;
-        }[];
-        order?: {
-          quantity: number;
-          itemAmount: number;
-        };
-      }[];
-      totalAmount: number;
-      createdAt: string;
-    }[];
-  };
+  config?: Config;
+  partners?: Partners;
+  items?: Items;
+  store?: Store;
+  round?: Round;
 };
 
 export const getLocalStorage = async () => {
@@ -97,6 +41,6 @@ export const removeLocalStorage = async () => {
   try {
     await AsyncStorage.removeItem('boreal-store');
   } catch (_) {
-    throw new Error('Probléma lépett fel az alkalmazás állapotának eltárolása során.');
+    throw new Error('Probléma lépett fel az alkalmazás adatainak törlése során.');
   }
 };
