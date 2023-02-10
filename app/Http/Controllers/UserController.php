@@ -167,7 +167,7 @@ class UserController extends Controller
         $sender->last_active = date('Y-m-d H:i:s');
         $sender->save();
 
-        return new UserResource($sender);
+        return new UserResource($sender->load('company'));
     }
 
     public function viewAll(Request $request)
