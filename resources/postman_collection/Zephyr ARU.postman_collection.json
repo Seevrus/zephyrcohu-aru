@@ -7,6 +7,429 @@
 	},
 	"item": [
 		{
+			"name": "items",
+			"item": [
+				{
+					"name": "Overwrite Items List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{integra_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{integra_device_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"articleNumber\": \"0000000000000001\",\r\n            \"name\": \"Első Jégkrém\",\r\n            \"shortName\": \"EJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000001\",\r\n            \"vatRate\": \"27\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000002\",\r\n            \"name\": \"Második Jégkrém\",\r\n            \"shortName\": \"MJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000002\",\r\n            \"vatRate\": \"18\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000003\",\r\n            \"name\": \"Harmadik Jégkrém\",\r\n            \"shortName\": \"HJ01\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000003\",\r\n            \"vatRate\": \"AM\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000004\",\r\n            \"name\": \"Negyedik Jégkrém\",\r\n            \"shortName\": \"NJ01\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000004\",\r\n            \"vatRate\": \"27\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000005\",\r\n            \"name\": \"Ötödik Jégkrém\",\r\n            \"shortName\": \"ÖJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000005\",\r\n            \"vatRate\": \"27\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000006\",\r\n            \"name\": \"Hatodik Jégkrém\",\r\n            \"shortName\": \"HJ02\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000006\",\r\n            \"vatRate\": \"18\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000007\",\r\n            \"name\": \"Hetedik Jégkrém\",\r\n            \"shortName\": \"HJ03\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000007\",\r\n            \"vatRate\": \"AM\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000008\",\r\n            \"name\": \"Nyolcadik Jégkrém\",\r\n            \"shortName\": \"NJ02\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000008\",\r\n            \"vatRate\": \"05\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000009\",\r\n            \"name\": \"Kilencedik Jégkrém\",\r\n            \"shortName\": \"KJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000009\",\r\n            \"vatRate\": \"05\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000010\",\r\n            \"name\": \"Tizedik Jégkrém\",\r\n            \"shortName\": \"TJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000010\",\r\n            \"vatRate\": \"27\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000011\",\r\n            \"name\": \"Tizenegyedik Jégkrém\",\r\n            \"shortName\": \"TEJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000011\",\r\n            \"vatRate\": \"27\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000012\",\r\n            \"name\": \"Tizenkettedik Jégkrém\",\r\n            \"shortName\": \"TKJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000012\",\r\n            \"vatRate\": \"27\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000013\",\r\n            \"name\": \"Tizenharmadik Jégkrém\",\r\n            \"shortName\": \"THJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000013\",\r\n            \"vatRate\": \"27\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000014\",\r\n            \"name\": \"Tizennegyedik Jégkrém\",\r\n            \"shortName\": \"TNJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000014\",\r\n            \"vatRate\": \"AM\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000015\",\r\n            \"name\": \"Tizenötödik Jégkrém\",\r\n            \"shortName\": \"TÖJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000015\",\r\n            \"vatRate\": \"27\",\r\n            \"price\": 999\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{zephyr_aru_url}}/items",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Items",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{app_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{app_device_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{zephyr_aru_url}}/items",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"items"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "partners",
+			"item": [
+				{
+					"name": "Overwrite Partner List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{integra_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{integra_device_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"storeCode\": \"0001\",\r\n            \"code\": \"000001\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Első Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0001\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0001\",\r\n            \"code\": \"000002\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Második Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0001\",\r\n            \"code\": \"000003\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Harmadik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0002\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0001\",\r\n            \"code\": \"000004\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Negyedik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0001\",\r\n            \"code\": \"000005\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Ötödik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0003\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0002\",\r\n            \"code\": \"000006\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Első Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0006\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0002\",\r\n            \"code\": \"000007\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Második Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0002\",\r\n            \"code\": \"000008\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Harmadik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0008\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0002\",\r\n            \"code\": \"000009\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Negyedik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0002\",\r\n            \"code\": \"000010\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Ötödik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0010\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0003\",\r\n            \"code\": \"000011\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Első Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0011\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0003\",\r\n            \"code\": \"000012\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Második Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0003\",\r\n            \"code\": \"000013\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Harmadik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0013\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0003\",\r\n            \"code\": \"000014\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Negyedik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0003\",\r\n            \"code\": \"000015\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Ötödik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0015\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0004\",\r\n            \"code\": \"000016\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Első Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0016\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0004\",\r\n            \"code\": \"000017\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Második Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0004\",\r\n            \"code\": \"000018\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Harmadik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0018\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0004\",\r\n            \"code\": \"000019\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Negyedik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0004\",\r\n            \"code\": \"000020\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Ötödik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0020\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0005\",\r\n            \"code\": \"000021\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Első Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0021\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0005\",\r\n            \"code\": \"000022\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Második Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0005\",\r\n            \"code\": \"000023\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Harmadik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0023\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0005\",\r\n            \"code\": \"000024\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Negyedik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0005\",\r\n            \"code\": \"000025\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Ötödik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0025\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        }\r\n\t]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{zephyr_aru_url}}/partners",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"partners"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Partners",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{app_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{app_device_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{zephyr_aru_url}}/partners",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"partners"
+							],
+							"query": [
+								{
+									"key": "details",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "receipts",
+			"item": [
+				{
+					"name": "Get All Receipts",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{integra_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{integra_device_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"filters\": [\r\n        {\r\n            \"key\": \"receiptNr\",\r\n            \"operator\": \"gte\",\r\n            \"value\": \"1/23\"\r\n        }\r\n    ],\r\n    \"limit\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{zephyr_aru_url}}/receipts",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"receipts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Store New Receipts",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{app_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{app_device_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"userId\": 3,\r\n            \"storeCode\": \"0001\",\r\n            \"partnerCode\": \"000001\",\r\n            \"siteCode\": \"0001\",\r\n            \"serialNumber\": 10001,\r\n            \"yearCode\": 23,\r\n            \"totalAmount\": 29999,\r\n            \"createdAt\": \"2023-02-07\",\r\n            \"items\": [\r\n                {\r\n                    \"articleNumber\": \"0000000000000001\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07-31\",\r\n                            \"quantity\": 5,\r\n                            \"itemAmount\": 14999\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000003\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07-31\",\r\n                            \"quantity\": 5,\r\n                            \"itemAmount\": 5000\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08-31\",\r\n                            \"quantity\": 15,\r\n                            \"itemAmount\": 10000\r\n                        }\r\n                    ]\r\n                }\r\n            ],\r\n            \"orderItems\": [\r\n                {\r\n                    \"articleNumber\": \"0000000000000002\",\r\n                    \"quantity\": 42\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{zephyr_aru_url}}/receipts",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"receipts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "stores",
+			"item": [
+				{
+					"name": "Get stores to list rounds",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{app_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{app_device_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{zephyr_aru_url}}/stores",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"stores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get store details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{app_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{app_device_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{zephyr_aru_url}}/stores/0001",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"stores",
+								"0001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Overwrite Store List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{integra_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{integra_device_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"code\": \"0001\",\r\n            \"name\": \"1. kör\",\r\n            \"firstAvailableSerialNumber\": 10000,\r\n            \"lastAvailableSerialNumber\": 19999,\r\n            \"yearCode\": 23,\r\n            \"items\": [\r\n                {\r\n                    \"articleNumber\": \"0000000000000001\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000002\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000003\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000004\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000005\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000006\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000007\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000008\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000009\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000010\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000011\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000012\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000013\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000014\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000015\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"code\": \"0002\",\r\n            \"name\": \"2. kör\",\r\n            \"firstAvailableSerialNumber\": 20000,\r\n            \"lastAvailableSerialNumber\": 29999,\r\n            \"yearCode\": 23,\r\n            \"items\": [\r\n                {\r\n                    \"articleNumber\": \"0000000000000001\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000002\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000003\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000004\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000005\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000006\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000007\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000008\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000009\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000010\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000011\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000012\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000013\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000014\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000015\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"code\": \"0003\",\r\n            \"name\": \"3. kör\",\r\n            \"firstAvailableSerialNumber\": 30000,\r\n            \"lastAvailableSerialNumber\": 39999,\r\n            \"yearCode\": 23,\r\n            \"items\": [\r\n                {\r\n                    \"articleNumber\": \"0000000000000001\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000002\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000003\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000004\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000005\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000006\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000007\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000008\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000009\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000010\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000011\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000012\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000013\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000014\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000015\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"code\": \"0004\",\r\n            \"name\": \"4. kör\",\r\n            \"firstAvailableSerialNumber\": 40000,\r\n            \"lastAvailableSerialNumber\": 49999,\r\n            \"yearCode\": 23,\r\n            \"items\": [\r\n                {\r\n                    \"articleNumber\": \"0000000000000001\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000002\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000003\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000004\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000005\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000006\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000007\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000008\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000009\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000010\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000011\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000012\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000013\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000014\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000015\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"code\": \"0005\",\r\n            \"name\": \"5. kör\",\r\n            \"firstAvailableSerialNumber\": 50000,\r\n            \"lastAvailableSerialNumber\": 59999,\r\n            \"yearCode\": 23,\r\n            \"items\": [\r\n                {\r\n                    \"articleNumber\": \"0000000000000001\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000002\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000003\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000004\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000005\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000006\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000007\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000008\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000009\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000010\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000011\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000012\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000013\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000014\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000015\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{zephyr_aru_url}}/stores",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"stores"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "users",
 			"item": [
 				{
@@ -70,7 +493,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"phoneNumber\": \"+36301234567\",\r\n    \"userType\": \"I\"\r\n}",
+							"raw": "{\r\n    \"phoneNumber\": \"+36301234567\",\r\n    \"userType\": \"A\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -98,7 +521,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{user_token}}",
+									"value": "{{app_token}}",
 									"type": "string"
 								}
 							]
@@ -113,7 +536,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"deviceId\": \"bbcbfb07-b429-437a-a4e5-05abbb4d538f\"\r\n}",
+							"raw": "{\r\n    \"deviceId\": \"a073c2a6-35dc-4a44-b2c2-90900a506742\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -148,7 +571,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{user_token}}",
+									"value": "{{integra_token}}",
 									"type": "string"
 								}
 							]
@@ -162,7 +585,7 @@
 							},
 							{
 								"key": "X-Device-Id",
-								"value": "{{user_device_id}}",
+								"value": "{{integra_device_id}}",
 								"type": "text"
 							}
 						],
@@ -180,19 +603,19 @@
 					"response": []
 				},
 				{
-					"name": "Search Users",
+					"name": "Get All Users",
 					"request": {
 						"auth": {
 							"type": "bearer",
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{user_token}}",
+									"value": "{{integra_token}}",
 									"type": "string"
 								}
 							]
 						},
-						"method": "POST",
+						"method": "GET",
 						"header": [
 							{
 								"key": "Accept",
@@ -201,27 +624,17 @@
 							},
 							{
 								"key": "X-Device-Id",
-								"value": "{{user_device_id}}",
+								"value": "{{integra_device_id}}",
 								"type": "text"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"filters\": [\r\n        {\r\n            \"key\": \"type\",\r\n            \"operator\": \"eq\",\r\n            \"value\": \"I\"\r\n        }\r\n    ],\r\n    \"limit\": 10\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
-							"raw": "{{zephyr_aru_url}}/users/all",
+							"raw": "{{zephyr_aru_url}}/users",
 							"host": [
 								"{{zephyr_aru_url}}"
 							],
 							"path": [
-								"users",
-								"all"
+								"users"
 							]
 						}
 					},
@@ -235,7 +648,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{user_token}}",
+									"value": "{{integra_token}}",
 									"type": "string"
 								}
 							]
@@ -249,7 +662,7 @@
 							},
 							{
 								"key": "X-Device-Id",
-								"value": "{{user_device_id}}",
+								"value": "{{integra_device_id}}",
 								"type": "text"
 							}
 						],
@@ -267,355 +680,6 @@
 					"response": []
 				}
 			]
-		},
-		{
-			"name": "items",
-			"item": [
-				{
-					"name": "Overwrite Items List",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{user_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Device-Id",
-								"value": "{{user_device_id}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"articleNumber\": \"0000000000000001\",\r\n            \"name\": \"Első Jégkrém\",\r\n            \"shortName\": \"EJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000001\",\r\n            \"vatRate\": \"27\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000002\",\r\n            \"name\": \"Második Jégkrém\",\r\n            \"shortName\": \"MJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000002\",\r\n            \"vatRate\": \"18\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000003\",\r\n            \"name\": \"Harmadik Jégkrém\",\r\n            \"shortName\": \"HJ01\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000003\",\r\n            \"vatRate\": \"AM\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000004\",\r\n            \"name\": \"Negyedik Jégkrém\",\r\n            \"shortName\": \"NJ01\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000004\",\r\n            \"vatRate\": \"27\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000005\",\r\n            \"name\": \"Ötödik Jégkrém\",\r\n            \"shortName\": \"ÖJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000005\",\r\n            \"vatRate\": \"27\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000006\",\r\n            \"name\": \"Hatodik Jégkrém\",\r\n            \"shortName\": \"HJ02\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000006\",\r\n            \"vatRate\": \"18\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000007\",\r\n            \"name\": \"Hetedik Jégkrém\",\r\n            \"shortName\": \"HJ03\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000007\",\r\n            \"vatRate\": \"AM\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000008\",\r\n            \"name\": \"Nyolcadik Jégkrém\",\r\n            \"shortName\": \"NJ02\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000008\",\r\n            \"vatRate\": \"05\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000009\",\r\n            \"name\": \"Kilencedik Jégkrém\",\r\n            \"shortName\": \"KJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000009\",\r\n            \"vatRate\": \"05\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000010\",\r\n            \"name\": \"Tizedik Jégkrém\",\r\n            \"shortName\": \"TJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000010\",\r\n            \"vatRate\": \"27\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000011\",\r\n            \"name\": \"Tizenegyedik Jégkrém\",\r\n            \"shortName\": \"TEJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000011\",\r\n            \"vatRate\": \"27\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000012\",\r\n            \"name\": \"Tizenkettedik Jégkrém\",\r\n            \"shortName\": \"TKJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000012\",\r\n            \"vatRate\": \"27\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000013\",\r\n            \"name\": \"Tizenharmadik Jégkrém\",\r\n            \"shortName\": \"THJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000013\",\r\n            \"vatRate\": \"27\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000014\",\r\n            \"name\": \"Tizennegyedik Jégkrém\",\r\n            \"shortName\": \"TNJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000014\",\r\n            \"vatRate\": \"AM\",\r\n            \"price\": 999\r\n        },\r\n        {\r\n            \"articleNumber\": \"0000000000000015\",\r\n            \"name\": \"Tizenötödik Jégkrém\",\r\n            \"shortName\": \"TÖJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000015\",\r\n            \"vatRate\": \"27\",\r\n            \"price\": 999\r\n        }\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/items",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"items"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "stores",
-			"item": [
-				{
-					"name": "Overwrite Store List",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{user_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Device-Id",
-								"value": "{{user_device_id}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"code\": \"0001\",\r\n            \"name\": \"1. kör\",\r\n            \"firstAvailableSerialNumber\": 10000,\r\n            \"lastAvailableSerialNumber\": 19999,\r\n            \"yearCode\": 23,\r\n            \"items\": [\r\n                {\r\n                    \"articleNumber\": \"0000000000000001\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000002\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000003\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000004\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000005\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000006\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000007\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000008\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000009\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000010\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000011\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000012\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000013\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000014\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000015\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"code\": \"0002\",\r\n            \"name\": \"2. kör\",\r\n            \"firstAvailableSerialNumber\": 20000,\r\n            \"lastAvailableSerialNumber\": 29999,\r\n            \"yearCode\": 23,\r\n            \"items\": [\r\n                {\r\n                    \"articleNumber\": \"0000000000000001\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000002\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000003\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000004\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000005\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000006\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000007\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000008\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000009\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000010\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000011\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000012\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000013\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000014\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000015\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"code\": \"0003\",\r\n            \"name\": \"3. kör\",\r\n            \"firstAvailableSerialNumber\": 30000,\r\n            \"lastAvailableSerialNumber\": 39999,\r\n            \"yearCode\": 23,\r\n            \"items\": [\r\n                {\r\n                    \"articleNumber\": \"0000000000000001\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000002\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000003\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000004\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000005\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000006\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000007\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000008\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000009\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000010\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000011\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000012\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000013\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000014\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000015\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"code\": \"0004\",\r\n            \"name\": \"4. kör\",\r\n            \"firstAvailableSerialNumber\": 40000,\r\n            \"lastAvailableSerialNumber\": 49999,\r\n            \"yearCode\": 23,\r\n            \"items\": [\r\n                {\r\n                    \"articleNumber\": \"0000000000000001\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000002\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000003\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000004\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000005\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000006\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000007\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000008\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000009\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000010\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000011\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000012\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000013\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000014\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000015\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"code\": \"0005\",\r\n            \"name\": \"5. kör\",\r\n            \"firstAvailableSerialNumber\": 50000,\r\n            \"lastAvailableSerialNumber\": 59999,\r\n            \"yearCode\": 23,\r\n            \"items\": [\r\n                {\r\n                    \"articleNumber\": \"0000000000000001\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000002\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000003\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000004\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000005\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000006\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000007\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000008\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000009\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000010\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000011\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000012\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000013\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000014\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        },\r\n                        {\r\n                            \"expiresAt\": \"2023-08\",\r\n                            \"quantity\": 15\r\n                        }\r\n                    ]\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000000000000015\",\r\n                    \"expirations\": [\r\n                        {\r\n                            \"expiresAt\": \"2023-07\",\r\n                            \"quantity\": 10\r\n                        }\r\n                    ]\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/stores",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"stores"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "partners",
-			"item": [
-				{
-					"name": "Overwrite Partner List",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{user_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-Device-Id",
-								"value": "{{user_device_id}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"storeCode\": \"0001\",\r\n            \"code\": \"000001\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Első Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0001\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0001\",\r\n            \"code\": \"000002\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Második Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0001\",\r\n            \"code\": \"000003\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Harmadik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0002\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0001\",\r\n            \"code\": \"000004\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Negyedik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0001\",\r\n            \"code\": \"000005\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Ötödik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0003\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0002\",\r\n            \"code\": \"000006\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Első Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0006\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0002\",\r\n            \"code\": \"000007\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Második Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0002\",\r\n            \"code\": \"000008\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Harmadik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0008\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0002\",\r\n            \"code\": \"000009\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Negyedik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0002\",\r\n            \"code\": \"000010\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Ötödik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0010\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0003\",\r\n            \"code\": \"000011\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Első Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0011\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0003\",\r\n            \"code\": \"000012\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Második Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0003\",\r\n            \"code\": \"000013\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Harmadik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0013\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0003\",\r\n            \"code\": \"000014\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Negyedik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0003\",\r\n            \"code\": \"000015\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Ötödik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0015\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0004\",\r\n            \"code\": \"000016\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Első Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0016\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0004\",\r\n            \"code\": \"000017\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Második Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0004\",\r\n            \"code\": \"000018\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Harmadik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0018\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0004\",\r\n            \"code\": \"000019\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Negyedik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0004\",\r\n            \"code\": \"000020\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Ötödik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0020\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0005\",\r\n            \"code\": \"000021\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Első Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0021\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0005\",\r\n            \"code\": \"000022\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Második Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0005\",\r\n            \"code\": \"000023\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Harmadik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0023\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0005\",\r\n            \"code\": \"000024\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Negyedik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\"\r\n        },\r\n\t\t{\r\n            \"storeCode\": \"0005\",\r\n            \"code\": \"000025\",\r\n            \"siteCode\": \"0001\",\r\n            \"name\": \"Ötödik Partner\",\r\n            \"country\": \"HU\",\r\n            \"postalCode\": \"1234\",\r\n            \"city\": \"Alsógöröngyös\",\r\n            \"address\": \"Kossuth utca 1.\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"iban\": \"HU12\",\r\n            \"bankAccount\": \"12345678-12345678\",\r\n            \"priceList\": {\r\n                \"code\": \"0025\",\r\n                \"items\": [\r\n                    {\r\n                        \"articleNumber\": \"0000000000000001\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000003\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000004\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000005\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000006\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000008\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000011\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000013\",\r\n                        \"price\": 899\r\n                    },{\r\n                        \"articleNumber\": \"0000000000000015\",\r\n                        \"price\": 899\r\n                    }\r\n                ]\r\n            }\r\n        }\r\n\t]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/partners",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"partners"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Receipts",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{user_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "X-Device-Id",
-						"value": "{{user_device_id}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"filters\": [\r\n        {\r\n            \"key\": \"receiptNr\",\r\n            \"operator\": \"gte\",\r\n            \"value\": \"1/23\"\r\n        }\r\n    ],\r\n    \"limit\": 10\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{zephyr_aru_url}}/receipts/all",
-					"host": [
-						"{{zephyr_aru_url}}"
-					],
-					"path": [
-						"receipts",
-						"all"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Receipt",
-			"protocolProfileBehavior": {
-				"disabledSystemHeaders": {
-					"accept": true
-				}
-			},
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{user_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "X-Device-Id",
-						"value": "{{user_device_id}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{zephyr_aru_url}}/receipts/1",
-					"host": [
-						"{{zephyr_aru_url}}"
-					],
-					"path": [
-						"receipts",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Receipt",
-			"protocolProfileBehavior": {
-				"disabledSystemHeaders": {
-					"accept": true
-				}
-			},
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{user_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "X-Device-Id",
-						"value": "{{user_device_id}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"roundId\": 1,\r\n    \"clientId\": 1,\r\n    \"receiptNr\": \"83094/23\",\r\n    \"transactions\": [\r\n        {\r\n            \"productId\": \"9558296925671\",\r\n            \"purchases\": [\r\n                {\r\n                    \"expiresAt\": \"2023-08-31\",\r\n                    \"quantity\": 4,\r\n                    \"itemAmount\": 2729\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2023-04-30\",\r\n                    \"quantity\": 1,\r\n                    \"itemAmount\": 1394\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"productId\": \"9558297925671\",\r\n            \"purchases\": [\r\n                {\r\n                    \"expiresAt\": \"2023-03-31\",\r\n                    \"quantity\": 1,\r\n                    \"itemAmount\": 799\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2023-05-31\",\r\n                    \"quantity\": 3,\r\n                    \"itemAmount\": 4590\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"totalAmount\": 10788,\r\n    \"createdAt\": \"2023-01-19 19:42:24\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{zephyr_aru_url}}/receipts",
-					"host": [
-						"{{zephyr_aru_url}}"
-					],
-					"path": [
-						"receipts"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Receipt",
-			"protocolProfileBehavior": {
-				"disabledSystemHeaders": {
-					"accept": true
-				}
-			},
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{user_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "X-Device-Id",
-						"value": "{{user_device_id}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{zephyr_aru_url}}/receipts?ids[eq]=[3002, 3003]",
-					"host": [
-						"{{zephyr_aru_url}}"
-					],
-					"path": [
-						"receipts"
-					],
-					"query": [
-						{
-							"key": "ids[eq]",
-							"value": "[3002, 3003]"
-						}
-					]
-				}
-			},
-			"response": []
 		}
 	]
 }
