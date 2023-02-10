@@ -32,6 +32,10 @@ class PartnersController extends Controller
 
             $partners = $sender->company->partners()->with('price_list.price_list_items')->get();
 
+            if ($request->details) {
+                $partners->load('orders.items', 'receipts.expirations.stock_item.item');
+            }
+
             Log::insert([
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
