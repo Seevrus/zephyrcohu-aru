@@ -170,47 +170,26 @@ class UserController extends Controller
         return new UserResource($sender);
     }
 
-    public function search(Request $request)
+    public function viewAll(Request $request)
     {
         try {
-            $this->authorize('viewAny', User::class);
+            $this->authorize('viewAll', User::class);
 
             $user = $request->user();
             $user->last_active = date('Y-m-d H:i:s');
             $user->save();
 
-            $filter = new UsersFilter();
-            $query_items = $filter->transform($request);
-            $limit = $request->limit ?? 100;
-
-            $company_id = $user->company_id;
-
-            if (count($query_items['where_in_query'])) {
-                $users = Company::find($company_id)
-                    ->users()
-                    ->where($query_items['where_query'])
-                    ->whereIn($query_items['where_in_query'][0], $query_items['where_in_query'][1])
-                    ->whereNull($query_items['where_null_query'])
-                    ->orderBy('id')
-                    ->paginate($limit);
-            } else {
-                $users = Company::find($company_id)
-                    ->users()
-                    ->where($query_items['where_query'])
-                    ->whereNull($query_items['where_null_query'])
-                    ->orderBy('id')
-                    ->paginate($limit);
-            }
+            $companyUsers = $user->company->users()->get();
 
             Log::insert([
                 'company_id' => $user->company_id,
                 'user_id' => $user->id,
                 'token_id' => $user->currentAccessToken()->id,
-                'action' => 'Accessed ' . $users->count() . ' users',
+                'action' => 'Accessed ' . $companyUsers->count() . ' users',
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 
-            return new UserCollection($users);
+            return new UserCollection($companyUsers);
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException

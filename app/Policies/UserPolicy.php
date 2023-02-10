@@ -28,12 +28,12 @@ class UserPolicy
     }
 
     /**
-     * Determines whether the user can view any users.
+     * Determines whether the user can view other users.
      *
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAll(User $user)
     {
         if (!Hash::check(request()->header('X-Device-Id'), $user->device_id)) {
             throw new UnauthorizedHttpException(random_bytes(32));

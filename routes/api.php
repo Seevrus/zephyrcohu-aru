@@ -34,7 +34,7 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
     Route::get('/check-token', 'check_token')
         ->middleware(['auth:sanctum', 'ability:master,app,integra']);
 
-    Route::post('/search', 'search')
+    Route::get('/', 'viewAll')
         ->middleware(['auth:sanctum', 'ability:integra']);
 
     Route::delete('/{id}', 'delete')
