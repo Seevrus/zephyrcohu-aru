@@ -14,17 +14,38 @@ class ReceiptResource extends JsonResource
      */
     public function toArray($request)
     {
+        $items = [];
+
+        foreach ($this->expirations as $expiration) {
+            $item_id = $expiration['stock_item']['item_id'];
+
+            if (array_key_exists($item_id, $items)) {
+                array_push($items[$item_id]['expirations'], [
+                    'expiresAt' => $expiration['expires_at'],
+                    'quantity' => $expiration['pivot']['quantity'],
+                    'itemAmount' => $expiration['pivot']['item_amount'],
+                ]);
+            } else {
+                $items[$item_id] = [
+                    'articleNumber' => $expiration['stock_item']['item']['article_number'],
+                    'expirations' => [[
+                        'expiresAt' => $expiration['expires_at'],
+                        'quantity' => $expiration['pivot']['quantity'],
+                        'itemAmount' => $expiration['pivot']['item_amount'],
+                    ]],
+                ];
+            }
+        }
+
         return [
-            'id' => $this->id,
-            'driverId' => $this->user_id,
-            'driverPhoneNumber' => $this->user->phone_number,
-            'roundId' => $this->round_id,
-            'clientId' => $this->client_id,
-            'receiptNr' => $this->receipt_nr,
-            'transactions' => TransactionResource::collection($this->transactions),
+            'serialNumber' => $this->serial_number,
+            'yearCode' => $this->year_code,
+            'partnerCode' => $this->partner->code,
+            'partnerSiteCode' => $this->partner->site_code,
             'totalAmount' => $this->total_amount,
             'createdAt' => $this->created_at,
             'lastDownloadedAt' => $this->last_downloaded_at,
+            'items' => array_values($items),
         ];
     }
 }

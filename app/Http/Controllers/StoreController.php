@@ -35,7 +35,7 @@ class StoreController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . count($stores) . ' stores',
+                'action' => 'Accessed ' . $stores->count() . ' stores',
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 

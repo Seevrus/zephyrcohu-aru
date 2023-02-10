@@ -58,11 +58,8 @@ Route::controller(PartnersController::class)->prefix('partners')->group(function
 });
 
 Route::controller(ReceiptController::class)->prefix('receipts')->group(function () {
-    Route::post('/search', 'search')
-        ->middleware(['auth:sanctum', 'ability:get-receipts']);
-    Route::get('/{id}', 'show')
-        ->middleware(['auth:sanctum', 'ability:get-receipts']);
-
+    Route::get('/', 'viewAll')
+        ->middleware(['auth:sanctum', 'ability:integra']);
     Route::post('/', 'store')
         ->middleware(['auth:sanctum', 'ability:app']);
 });

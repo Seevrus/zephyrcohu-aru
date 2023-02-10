@@ -33,4 +33,9 @@ class Company extends Model
     {
         return $this->hasMany(PriceList::class);
     }
+
+    public function receipts()
+    {
+        return $this->hasManyThrough(Receipt::class, Partner::class);
+    }
 }

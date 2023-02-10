@@ -32,7 +32,7 @@ class ItemsController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . count($items) . ' items',
+                'action' => 'Accessed ' . $items->count() . ' items',
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 

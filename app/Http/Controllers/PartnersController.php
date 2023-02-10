@@ -36,7 +36,7 @@ class PartnersController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . count($partners) . ' partners',
+                'action' => 'Accessed ' . $partners->count() . ' partners',
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 

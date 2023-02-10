@@ -2,11 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\Company;
-use App\Models\Receipt;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class ReceiptPolicy
 {
@@ -18,26 +17,12 @@ class ReceiptPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
-    {
-        return Hash::check(request()->header('X-Device-Id'), $user->device_id);
-    }
-
-    /**
-     * Determine whether the user can view the receipt.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Receipt  $receipt
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function view(User $user, Receipt $receipt)
+    public function viewAll(User $user)
     {
         if (!Hash::check(request()->header('X-Device-Id'), $user->device_id)) {
-            return false;
+            throw new UnauthorizedHttpException(random_bytes(32));
         }
 
-        return Company::find($user->company_id)
-            ->receipts
-            ->contains($receipt->id);
+        return true;
     }
 }

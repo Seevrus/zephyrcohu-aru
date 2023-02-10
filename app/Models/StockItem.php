@@ -12,6 +12,11 @@ class StockItem extends Pivot
     protected $table = 'stock_item';
     public $incrementing = true;
 
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
+    }
+
     public function expirations()
     {
         return $this->hasMany(Expiration::class);

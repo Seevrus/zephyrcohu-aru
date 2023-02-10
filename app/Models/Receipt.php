@@ -32,6 +32,6 @@ class Receipt extends Model
 
     public function expirations()
     {
-        return $this->belongsToMany(Expiration::class, 'receipt_expiration')->withPivot('quantity');
+        return $this->belongsToMany(Expiration::class, 'receipt_expiration')->withPivot('quantity', 'item_amount');
     }
 }
