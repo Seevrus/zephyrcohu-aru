@@ -4,16 +4,16 @@ import axios, { AxiosResponse } from 'axios';
 import env from '../../env.json';
 import { LocalStorage, setLocalStorage } from '../async-storage';
 import { ErrorResponseT } from '../base-types';
-import { FetchStoresRequest, FetchStoresResponse } from './store-list-slice-types';
+import { FetchStoreRequest, FetchStoreResponse } from './store-slice-types';
 
-const fetchStores = createAsyncThunk<
-  FetchStoresResponse,
-  FetchStoresRequest,
+const fetchStore = createAsyncThunk<
+  FetchStoreResponse,
+  FetchStoreRequest,
   { rejectValue: ErrorResponseT }
->('storeList/fetchStores', async (requestData, { rejectWithValue }) => {
-  let response: AxiosResponse<FetchStoresResponse>;
+>('store/fetchStore', async (requestData, { rejectWithValue }) => {
+  let response: AxiosResponse<FetchStoreResponse>;
   try {
-    response = await axios.get(`${env.api_url}/stores`, {
+    response = await axios.get(`${env.api_url}/stores/${requestData.code}`, {
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${requestData.token}`,
@@ -26,7 +26,7 @@ const fetchStores = createAsyncThunk<
 
   try {
     await setLocalStorage({
-      storeList: { fetched: true, data: response.data.data },
+      store: response.data,
     } as Partial<LocalStorage>);
   } catch (e) {
     return rejectWithValue({
@@ -39,4 +39,4 @@ const fetchStores = createAsyncThunk<
   return response.data;
 });
 
-export default fetchStores;
+export default fetchStore;

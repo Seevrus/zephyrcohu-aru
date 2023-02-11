@@ -1,9 +1,9 @@
-export type FetchStoreRequest = {
+export type FetchStoresRequest = {
   deviceId: string;
   token: string;
 };
 
-export type FetchStoreResponse = {
+export type FetchStoresResponse = {
   data: StoreList['data'];
 };
 

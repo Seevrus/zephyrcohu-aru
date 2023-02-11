@@ -1,3 +1,11 @@
+export type FetchStoreRequest = {
+  deviceId: string;
+  token: string;
+  code: string;
+};
+
+export type FetchStoreResponse = Store;
+
 type StoreItem = {
   id: number;
   code: string;
