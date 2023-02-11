@@ -3,85 +3,79 @@ import { Button, StyleSheet, Text, View } from 'react-native';
 import colors from '../../constants/colors';
 import fontSizes from '../../constants/fontSizes';
 
-const html = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bizonylat</title>
-
-    <style>
-      body {
-        font-family: 'Lucida Console';
-        width: 90vw;
-      }
-
-      section {
-        margin: 10px;
-      }
-    </style>
-  </head>
-  <body>
-    <main>
-      <section>
-        <div style="font-size: 20pt">Betűtípus ellenőrzés</div>
-        <div style="font-size: 20pt">áÁéÉíÍóÓőŐűŰ<>#;</div>
-      </section>
-      <section>
-        <div style="font-size: 10pt">Betűméret: 10pt</div>
-        <div style="font-size: 10pt">
-          XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*
-        </div>
-      </section>
-      <section>
-        <div style="font-size: 12pt">Betűméret: 12pt</div>
-        <div style="font-size: 12pt">
-          XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*
-        </div>
-      </section>
-      <section>
-        <div style="font-size: 14pt">Betűméret: 14pt</div>
-        <div style="font-size: 14pt">
-          XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*
-        </div>
-      </section>
-      <section>
-        <div style="font-size: 16pt">Betűméret: 16pt</div>
-        <div style="font-size: 16pt">
-          XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*
-        </div>
-      </section>
-      <section>
-        <div style="font-size: 18pt">Betűméret: 18pt</div>
-        <div style="font-size: 18pt">
-          XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*
-        </div>
-      </section>
-      <section>
-        <div style="font-size: 20pt">Betűméret: 20pt</div>
-        <div style="font-size: 20pt">
-          XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*
-        </div>
-      </section>
-      <section>
-        <div style="font-size: 22pt">Betűméret: 22pt</div>
-        <div style="font-size: 22pt">
-          XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*
-        </div>
-      </section>
-      <section>
-        <div style="font-size: 24pt">Betűméret: 24pt</div>
-        <div style="font-size: 24pt">
-          XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*
-        </div>
-      </section>
-    </main>
-  </body>
-</html>
-`;
-
 export default function EndErrand() {
+  const html = `<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Bizonylat</title>
+
+        <style>
+          body {
+            font-family: 'Lucida Console';
+            margin: 0;
+          }
+
+          section {
+            margin: 10px;
+          }
+        </style>
+      </head>
+      <body>
+        <main>
+          <section>
+            <div style="font-size: 20pt">Betűtípus ellenőrzés</div>
+            <div style="font-size: 20pt">áÁéÉíÍóÓőŐűŰ<>#;</div>
+          </section>
+          <section>
+            <div style="font-size: 2pt">Betűméret: 2pt</div>
+            <div style="font-size: 2pt">
+              XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*
+            </div>
+          </section>
+          <section>
+            <div style="font-size: 4pt">Betűméret: 4pt</div>
+            <div style="font-size: 4pt">
+              XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*
+            </div>
+          </section>
+          <section>
+            <div style="font-size: 6pt">Betűméret: 6pt</div>
+            <div style="font-size: 6pt">
+              XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*
+            </div>
+          </section>
+          <section>
+            <div style="font-size: 8pt">Betűméret: 8pt</div>
+            <div style="font-size: 8pt">
+              XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*
+            </div>
+          </section>
+          <section>
+            <div style="font-size: 10pt">Betűméret: 10pt</div>
+            <div style="font-size: 10pt">
+              XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*
+            </div>
+          </section>
+          <section>
+            <div style="font-size: 12pt">Betűméret: 12pt</div>
+            <div style="font-size: 12pt">
+              XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*
+            </div>
+          </section>
+          <section>
+            <div style="font-size: 14pt">Betűméret: 14pt</div>
+            <div style="font-size: 14pt">
+              XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*XXXXXXXXX*
+            </div>
+          </section>
+        </main>
+      </body>
+    </html>
+    `;
+
   const print = async () => {
     await Print.printAsync({
       html,
