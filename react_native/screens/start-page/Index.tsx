@@ -38,11 +38,13 @@ export default function Index({ navigation }: IndexProps) {
   const numberOfReceipts = useAppSelector((state) => state.round.receipts).length;
 
   const tiles = getTiles({
+    isInternetReachable,
     selectPartnerTile,
     receiptsTile,
     startErrandTile,
     endErrandTile,
     numberOfReceipts,
+    navigation,
   });
 
   if (isInternetReachable && !isTokenValid && !tokenValidationError) {

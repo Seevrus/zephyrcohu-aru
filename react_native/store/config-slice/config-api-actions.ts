@@ -25,7 +25,7 @@ export const registerDevice = createAsyncThunk<
         deviceId: requestData.deviceId,
       },
       {
-        headers: { Authorization: `Bearer ${requestData.token}` },
+        headers: { Accept: 'application/json', Authorization: `Bearer ${requestData.token}` },
       }
     );
   } catch (e) {
@@ -58,6 +58,7 @@ export const checkToken = createAsyncThunk<
   try {
     response = await axios.get(`${env.api_url}/users/check-token`, {
       headers: {
+        Accept: 'application/json',
         Authorization: `Bearer ${requestData.token}`,
         'X-Device-Id': requestData.deviceId,
       },

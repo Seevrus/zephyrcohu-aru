@@ -33,3 +33,5 @@ export type ReviewProps = NativeStackScreenProps<StackParams, 'Review'>;
 export type SummaryProps = NativeStackScreenProps<StackParams, 'Summary'>;
 
 export type ReceiptListProps = NativeStackScreenProps<StackParams, 'ReceiptList'>;
+
+export type StartErrandProps = NativeStackScreenProps<StackParams, 'StartErrand'>;

@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { Alert } from 'react-native';
 import { SvgProps } from 'react-native-svg';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
   EndErrandTile,
@@ -13,6 +14,7 @@ import EndErrandLogo from '../../assets/svg/end-errand.svg';
 import PurchaseLogo from '../../assets/svg/purchase.svg';
 import ReceiptsLogo from '../../assets/svg/receipts.svg';
 import StartErrandLogo from '../../assets/svg/start-errand.svg';
+import { StackParams } from '../screen-types';
 
 export type TileT = {
   id: string;
@@ -23,17 +25,21 @@ export type TileT = {
 };
 
 export const getTiles = ({
+  isInternetReachable,
   selectPartnerTile,
   receiptsTile,
   startErrandTile,
   endErrandTile,
   numberOfReceipts,
+  navigation,
 }: {
+  isInternetReachable: boolean;
   selectPartnerTile: SelectPartnerTile;
   receiptsTile: ReceiptsTile;
   startErrandTile: StartErrandTile;
   endErrandTile: EndErrandTile;
   numberOfReceipts: number;
+  navigation: NativeStackNavigationProp<StackParams, 'Index'>;
 }) => {
   const TILES: TileT[] = [
     {
@@ -71,7 +77,10 @@ export const getTiles = ({
       variant: startErrandTile,
       onPress: () => {
         if (startErrandTile === StartErrandTile.Disabled) {
-          Alert.alert('Funkció nem elérhető', 'Már van elkészült bizonylat', [{ text: 'Értem' }]);
+          const alertMessage = isInternetReachable
+            ? 'Már van elkészült bizonylat.'
+            : 'Az alkalmazás jelenleg internetkapcsolat nélkül működik.';
+          Alert.alert('Funkció nem elérhető', alertMessage, [{ text: 'Értem' }]);
         } else if (startErrandTile === StartErrandTile.Warning) {
           Alert.alert('Megerősítés szükséges', 'Biztosan szeretne új kört indítani?', [
             { text: 'Mégsem' },
@@ -83,7 +92,7 @@ export const getTiles = ({
             },
           ]);
         } else {
-          // Navigálás...
+          navigation.navigate('StartErrand');
         }
       },
     },
