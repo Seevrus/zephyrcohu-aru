@@ -5,12 +5,14 @@ import { Config } from '../config-slice/config-slice-types';
 import { Items } from '../items-slice/items-slice-types';
 import { Partners } from '../partners-slice/partners-slice-types';
 import { Round } from '../round-slice/round-slice-types';
+import { StoreList } from '../store-list-slice/store-list-slice-types';
 import { Store } from '../store-slice/store-slice-types';
 
 export type LocalStorage = {
   config?: Config;
   partners?: Partners;
   items?: Items;
+  storeList?: StoreList;
   store?: Store;
   round?: Round;
 };

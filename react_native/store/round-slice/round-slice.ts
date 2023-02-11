@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { mergeDeepRight } from 'ramda';
+import { mergeDeepLeft } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
 import { Round } from './round-slice-types';
@@ -15,7 +15,7 @@ const roundSlice = createSlice({
   initialState,
   reducers: {
     mergeLocalState: (state, action: PayloadAction<LocalStorage['round']>) => {
-      state = mergeDeepRight(state, action.payload) as Round;
+      state = mergeDeepLeft(state, action.payload ?? {}) as Round;
     },
     initializeRound: () => {},
     addNewReceipt: () => {},

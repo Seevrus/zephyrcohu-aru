@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 
 import { getLocalStorage } from '../store/async-storage';
-import { clientsActions } from '../store/partners-slice/partners-slice';
-import { companyActions } from '../store/company-slice/company-slice';
 import { configActions } from '../store/config-slice/config-slice';
 import { useAppDispatch } from '../store/hooks';
-import { productsActions } from '../store/items-slice/items-slice';
+import { itemsActions } from '../store/items-slice/items-slice';
+import { partnersActions } from '../store/partners-slice/partners-slice';
 import { roundActions } from '../store/round-slice/round-slice';
-import { roundsActions } from '../store/store-slice/store-slice';
+import { storeListActions } from '../store/store-list-slice/store-list-slice';
+import { storeActions } from '../store/store-slice/store-slice';
 
 const useLocalStorage = (canGetLocalState: boolean) => {
   const dispatch = useAppDispatch();
@@ -22,14 +22,14 @@ const useLocalStorage = (canGetLocalState: boolean) => {
         const importedStore = await getLocalStorage();
 
         dispatch(configActions.mergeLocalState(importedStore.config));
-        dispatch(companyActions.mergeLocalState(importedStore.company));
-        dispatch(clientsActions.mergeLocalState(importedStore.clients));
-        dispatch(roundsActions.mergeLocalState(importedStore.rounds));
-        dispatch(productsActions.mergeLocalState(importedStore.products));
+        dispatch(partnersActions.mergeLocalState(importedStore.partners));
+        dispatch(itemsActions.mergeLocalState(importedStore.items));
+        dispatch(storeActions.mergeLocalState(importedStore.store));
+        dispatch(storeListActions.mergeLocalState(importedStore.storeList));
         dispatch(roundActions.mergeLocalState(importedStore.round));
 
         setIsLocalStateMerged(true);
-      } catch (_) {
+      } catch (e) {
         setLocalStateError(true);
       }
     };
