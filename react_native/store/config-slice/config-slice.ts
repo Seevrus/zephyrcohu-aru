@@ -23,6 +23,7 @@ const configSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(registerDevice.fulfilled, (state, { payload }) => {
       state.userType = payload.data?.type;
+      state.company = payload.data?.company;
     });
     builder.addCase(registerDevice.rejected, (_, { payload }) => {
       switch (payload.status) {
@@ -41,6 +42,7 @@ const configSlice = createSlice({
 
     builder.addCase(checkToken.fulfilled, (state, { payload }) => {
       state.userType = payload.data?.type;
+      state.company = payload.data?.company;
     });
     builder.addCase(checkToken.rejected, (_, { payload }) => {
       switch (payload.status) {

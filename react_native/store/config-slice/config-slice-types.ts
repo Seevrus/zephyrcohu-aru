@@ -27,7 +27,7 @@ export type RegisterDeviceRequestT = {
 };
 
 export type RegisterDeviceResponseT = {
-  data: { type: (typeof userTypes)[keyof typeof userTypes] };
+  data: { type: (typeof userTypes)[keyof typeof userTypes]; company: Company };
 };
 
 export type CheckTokenRequestT = {
@@ -36,5 +36,5 @@ export type CheckTokenRequestT = {
 };
 
 export type CheckTokenResponseT = {
-  data: { type: (typeof userTypes)[keyof typeof userTypes] };
+  data: { type: (typeof userTypes)[keyof typeof userTypes]; company: Company };
 };

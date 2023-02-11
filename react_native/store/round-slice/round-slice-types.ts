@@ -24,6 +24,7 @@ type Receipt = {
 };
 
 export type Round = {
+  storeId: number;
   nextAvailableSerialNumber: number;
   receipts: Receipt[];
 };

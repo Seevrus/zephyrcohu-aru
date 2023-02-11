@@ -6,6 +6,7 @@ import { LocalStorage } from '../async-storage';
 import { Round } from './round-slice-types';
 
 const initialState: Round = {
+  storeId: undefined,
   nextAvailableSerialNumber: undefined,
   receipts: [],
 };
