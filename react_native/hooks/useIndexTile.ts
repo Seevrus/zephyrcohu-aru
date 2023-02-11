@@ -1,4 +1,5 @@
 import { useNetInfo } from '@react-native-community/netinfo';
+import { isNil } from 'ramda';
 import { useEffect, useState } from 'react';
 
 import { useAppSelector } from '../store/hooks';
@@ -25,9 +26,9 @@ export enum EndErrandTile {
 }
 
 const useIndexTile = () => {
-  const { type: netWorkType } = useNetInfo();
+  const { isInternetReachable } = useNetInfo();
 
-  const isRoundStarted = !!useAppSelector((state) => state.round.id);
+  const isRoundStarted = !isNil(useAppSelector((state) => state.round.storeId));
   const numberOfReceipts = useAppSelector((state) => state.round.receipts).length;
 
   const [selectPartnerTile, setSelectPartnerTile] = useState<SelectPartnerTile>(
@@ -54,14 +55,14 @@ const useIndexTile = () => {
   }, [numberOfReceipts]);
 
   useEffect(() => {
-    if (netWorkType === 'wifi' && !isRoundStarted) {
+    if (isInternetReachable && !isRoundStarted) {
       setStartErrandTile(StartErrandTile.Ok);
-    } else if (netWorkType === 'wifi' && isRoundStarted && !numberOfReceipts) {
+    } else if (isInternetReachable && isRoundStarted && !numberOfReceipts) {
       setStartErrandTile(StartErrandTile.Warning);
     } else {
       setStartErrandTile(StartErrandTile.Disabled);
     }
-  }, [isRoundStarted, netWorkType, numberOfReceipts]);
+  }, [isInternetReachable, isRoundStarted, numberOfReceipts]);
 
   useEffect(() => {
     if (isRoundStarted) {

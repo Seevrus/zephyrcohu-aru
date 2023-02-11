@@ -1,27 +1,19 @@
 import { useNetInfo } from '@react-native-community/netinfo';
+import { useEffect } from 'react';
 import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
-import { useEffect } from 'react';
 import useCheckToken from '../../hooks/useCheckToken';
+import useIndexTile from '../../hooks/useIndexTile';
 import useToken from '../../hooks/useToken';
 
 import { useAppSelector } from '../../store/hooks';
 
-import EndErrandLogo from '../../assets/svg/end-errand.svg';
-import PurchaseLogo from '../../assets/svg/purchase.svg';
-import ReceiptsLogo from '../../assets/svg/receipts.svg';
-import StartErrandLogo from '../../assets/svg/start-errand.svg';
 import TextCard from '../../components/info-cards/TextCard';
 import Loading from '../../components/Loading';
 import Tile from '../../components/Tile';
 import colors from '../../constants/colors';
 import { IndexProps } from '../screen-types';
-import { TileT } from './getTiles';
-
-// 1. Helyre kell állítani a state-et lokálból, ha van
-// 2. Ha nincs aktív kör, kell egy check token
-// 2.1. Ha nincs beállítva a telephely, be kell állíttatnunk
-// 2.2. Be kell húzni a konfigurációs fájlt helyi hálózatról
+import { getTiles, TileT } from './getTiles';
 
 export default function Index({ navigation }: IndexProps) {
   const { isInternetReachable } = useNetInfo();
@@ -33,7 +25,7 @@ export default function Index({ navigation }: IndexProps) {
     deviceId,
     token
   );
-  // const { selectPartnerTile, receiptsTile, startErrandTile, endErrandTile } = useIndexTile();
+  const { selectPartnerTile, receiptsTile, startErrandTile, endErrandTile } = useIndexTile();
 
   useEffect(() => {
     if (tokenValidationError) {
@@ -45,44 +37,13 @@ export default function Index({ navigation }: IndexProps) {
 
   const numberOfReceipts = useAppSelector((state) => state.round.receipts).length;
 
-  const TILES = [
-    {
-      id: 't0',
-      title: 'Árulevétel',
-      icon: PurchaseLogo,
-      variant: 'neutral',
-      onPress: () => {
-        navigation.navigate('SelectPartner');
-      },
-    },
-    {
-      id: 't1',
-      title: `Bizonylatok (${numberOfReceipts})`,
-      icon: ReceiptsLogo,
-      variant: 'neutral',
-      onPress: () => {
-        navigation.navigate('ReceiptList');
-      },
-    },
-    {
-      id: 't2',
-      title: 'Kör indítása',
-      icon: StartErrandLogo,
-      variant: 'neutral',
-      onPress: () => {
-        navigation.navigate('StartErrand');
-      },
-    },
-    {
-      id: 't3',
-      title: 'Kör zárása',
-      icon: EndErrandLogo,
-      variant: 'neutral',
-      onPress: () => {
-        navigation.navigate('EndErrand');
-      },
-    },
-  ];
+  const tiles = getTiles({
+    selectPartnerTile,
+    receiptsTile,
+    startErrandTile,
+    endErrandTile,
+    numberOfReceipts,
+  });
 
   if (isInternetReachable && !isTokenValid && !tokenValidationError) {
     return <Loading />;
@@ -105,7 +66,7 @@ export default function Index({ navigation }: IndexProps) {
         </View>
       )}
       <FlatList
-        data={TILES}
+        data={tiles}
         keyExtractor={(tile) => tile.id}
         numColumns={2}
         renderItem={renderTile}

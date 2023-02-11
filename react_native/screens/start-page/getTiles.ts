@@ -1,4 +1,3 @@
-import { NetInfoStateType } from '@react-native-community/netinfo';
 import { FC } from 'react';
 import { Alert } from 'react-native';
 import { SvgProps } from 'react-native-svg';
@@ -29,14 +28,12 @@ export const getTiles = ({
   startErrandTile,
   endErrandTile,
   numberOfReceipts,
-  networkType,
 }: {
   selectPartnerTile: SelectPartnerTile;
   receiptsTile: ReceiptsTile;
   startErrandTile: StartErrandTile;
   endErrandTile: EndErrandTile;
   numberOfReceipts: number;
-  networkType: NetInfoStateType;
 }) => {
   const TILES: TileT[] = [
     {
@@ -74,11 +71,7 @@ export const getTiles = ({
       variant: startErrandTile,
       onPress: () => {
         if (startErrandTile === StartErrandTile.Disabled) {
-          const alertMessage =
-            networkType === 'wifi'
-              ? 'A készülék nem kapcsolódik a helyi hálózathoz'
-              : 'Már van elkészült bizonylat';
-          Alert.alert('Funkció nem elérhető', alertMessage, [{ text: 'Értem' }]);
+          Alert.alert('Funkció nem elérhető', 'Már van elkészült bizonylat', [{ text: 'Értem' }]);
         } else if (startErrandTile === StartErrandTile.Warning) {
           Alert.alert('Megerősítés szükséges', 'Biztosan szeretne új kört indítani?', [
             { text: 'Mégsem' },
