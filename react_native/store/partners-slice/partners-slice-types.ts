@@ -1,3 +1,10 @@
+export type FetchPartnersRequest = {
+  deviceId: string;
+  token: string;
+};
+
+export type FetchPartnersResponse = Partners;
+
 type PriceList = {
   id: number;
   code: string;
@@ -25,4 +32,6 @@ type Partner = {
   priceList?: PriceList;
 };
 
-export type Partners = Partner[];
+export type Partners = {
+  data: Partner[];
+};
