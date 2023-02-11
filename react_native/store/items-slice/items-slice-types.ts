@@ -1,3 +1,10 @@
+export type FetchItemsRequest = {
+  deviceId: string;
+  token: string;
+};
+
+export type FetchItemsResponse = Items;
+
 type Item = {
   id: number;
   articleNumber: string;
@@ -10,4 +17,6 @@ type Item = {
   price: number;
 };
 
-export type Items = Item[];
+export type Items = {
+  data: Item[];
+};
