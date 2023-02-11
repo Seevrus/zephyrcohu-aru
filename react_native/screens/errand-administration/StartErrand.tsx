@@ -13,6 +13,7 @@ import Button from '../../components/ui/buttons/Button';
 import colors from '../../constants/colors';
 import fetchStores from '../../store/store-list-slice/store-list-api-actions';
 import { StartErrandProps } from '../screen-types';
+import Loading from '../../components/Loading';
 
 type RoundListItem = {
   id: number;
@@ -77,6 +78,10 @@ export default function StartErrand({ navigation }: StartErrandProps) {
       </Button>
     </View>
   );
+
+  if (!storesFetched) {
+    return <Loading />;
+  }
 
   return (
     <View style={styles.container}>
