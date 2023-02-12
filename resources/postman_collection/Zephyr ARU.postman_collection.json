@@ -571,7 +571,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{integra_token}}",
+									"value": "{{app_token}}",
 									"type": "string"
 								}
 							]
@@ -585,7 +585,7 @@
 							},
 							{
 								"key": "X-Device-Id",
-								"value": "{{integra_device_id}}",
+								"value": "{{app_device_id}}",
 								"type": "text"
 							}
 						],
