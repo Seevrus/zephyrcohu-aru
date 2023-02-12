@@ -15,8 +15,9 @@ const storeListSlice = createSlice({
   name: 'storeList',
   initialState,
   reducers: {
-    mergeLocalState: (state, action: PayloadAction<LocalStorage['storeList']>) => {
-      state = mergeDeepLeft(state, action.payload ?? {}) as StoreList;
+    mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['storeList']>) => {
+      state.fetched = payload.fetched ?? false;
+      state.data = mergeDeepLeft(state.data, payload.data ?? {}) as StoreList['data'];
     },
   },
   extraReducers: (builder) => {

@@ -1,19 +1,24 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { prop, sortBy } from 'ramda';
+import { find, pipe, prop, propEq, sortBy } from 'ramda';
 import { useEffect, useState } from 'react';
 import { Animated, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
 import useToken from '../../hooks/useToken';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { fetchStores } from '../../store/store-list-slice/store-list-api-actions';
+import { fetchStore } from '../../store/store-slice/store-api-actions';
 
 import ErrorCard from '../../components/info-cards/ErrorCard';
 import ListItem from '../../components/ListItem';
+import Loading from '../../components/Loading';
 import Button from '../../components/ui/buttons/Button';
 import colors from '../../constants/colors';
-import fetchStores from '../../store/store-list-slice/store-list-api-actions';
+import { fetchItems } from '../../store/items-slice/items-api-actions';
+import { fetchPartners } from '../../store/partners-slice/partners-api-actions';
+import { initializeRound } from '../../store/round-slice/round-api-actions';
 import { StartErrandProps } from '../screen-types';
-import Loading from '../../components/Loading';
+import { FetchStoreResponse } from '../../store/store-slice/store-slice-types';
 
 type RoundListItem = {
   id: number;
@@ -24,18 +29,25 @@ export default function StartErrand({ navigation }: StartErrandProps) {
   const dispatch = useAppDispatch();
   const { isInternetReachable } = useNetInfo();
   const { deviceId, token, credentialsAvailable, tokenStorageError } = useToken();
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [selectedRoundId, setSelectedRoundId] = useState<number>(-1);
-
   const storesFetched = useAppSelector((state) => state.storeList.fetched);
   const storeList = useAppSelector((state) => state.storeList.data);
+  const currentStoreId = useAppSelector((state) => state.round.storeId);
+
+  const [selectedRoundId, setSelectedRoundId] = useState<number>(currentStoreId ?? -1);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingMessage, setLoadingMessage] = useState<string>('');
+  const [itemsError, setItemsError] = useState<string>('');
+  const [partnersError, setPartnersError] = useState<string>('');
+  const [storesError, setStoresError] = useState<string>('');
+  const [storeError, setStoreError] = useState<string>('');
+  const [roundError, setRoundError] = useState<string>('');
 
   const roundListItems: RoundListItem[] = sortBy(prop('name'), storeList);
   const confirmButtonvariant = selectedRoundId > 0 ? 'ok' : 'disabled';
 
   useEffect(() => {
     if (isInternetReachable === false || tokenStorageError) {
-      navigation.replace('Index');
+      navigation.pop();
     }
   }, [isInternetReachable, navigation, tokenStorageError]);
 
@@ -43,13 +55,17 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     const getStores = async () => {
       try {
         await dispatch(fetchStores({ deviceId, token }));
-        setErrorMessage('');
+        setStoresError('');
+        setLoading(false);
       } catch (err) {
-        setErrorMessage(err.message);
+        setStoresError(err.message);
+        setLoading(false);
       }
     };
 
     if (credentialsAvailable && !storesFetched) {
+      setLoading(true);
+      setLoadingMessage('Raktárak adatainak betöltése...');
       getStores();
     }
   }, [credentialsAvailable, deviceId, dispatch, storesFetched, token]);
@@ -58,7 +74,57 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     setSelectedRoundId(id);
   };
 
-  const confirmPartnerHandler = () => {};
+  const confirmPartnerHandler = async () => {
+    setLoading(true);
+    setLoadingMessage('Körindításhoz szükséges adatok letöltése folyamatban...');
+
+    const selectedStoreCode: string = pipe(
+      find(propEq('id', selectedRoundId)),
+      prop('code')
+    )(storeList);
+
+    try {
+      await dispatch(fetchItems({ deviceId, token }));
+      setItemsError('');
+    } catch (err) {
+      setItemsError(err.message);
+    }
+
+    try {
+      await dispatch(fetchPartners({ deviceId, token }));
+      setPartnersError('');
+    } catch (err) {
+      setPartnersError(err.message);
+    }
+
+    let fetchedStore: FetchStoreResponse | undefined;
+    try {
+      fetchedStore = await dispatch(
+        fetchStore({ deviceId, token, code: selectedStoreCode })
+      ).unwrap();
+      setStoreError('');
+    } catch (err) {
+      setStoreError(err.message);
+    }
+
+    if (fetchedStore) {
+      try {
+        await dispatch(
+          initializeRound({
+            storeId: selectedRoundId,
+            nextAvailableSerialNumber: fetchedStore.firstAvailableSerialNumber,
+          })
+        );
+        setRoundError('');
+      } catch (err) {
+        setRoundError(err.message);
+      }
+    }
+
+    if (!(itemsError || partnersError || storeError || roundError)) {
+      navigation.pop();
+    }
+  };
 
   const renderRoundItem: ListRenderItem<RoundListItem> = (
     info: ListRenderItemInfo<RoundListItem>
@@ -79,24 +145,46 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     </View>
   );
 
-  if (!storesFetched) {
-    return <Loading />;
+  if (loading) {
+    return <Loading message={loadingMessage} />;
   }
 
   return (
     <View style={styles.container}>
-      {!!errorMessage && (
+      {!!itemsError && (
         <View style={styles.error}>
-          <ErrorCard>{errorMessage}</ErrorCard>
+          <ErrorCard>{storeError}</ErrorCard>
         </View>
       )}
-      <Animated.FlatList
-        data={roundListItems}
-        extraData={selectedRoundId}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={renderRoundItem}
-        ListFooterComponent={renderSelectButton}
-      />
+      {!!partnersError && (
+        <View style={styles.error}>
+          <ErrorCard>{storeError}</ErrorCard>
+        </View>
+      )}
+      {!!storesError && (
+        <View style={styles.error}>
+          <ErrorCard>{storesError}</ErrorCard>
+        </View>
+      )}
+      {!!storeError && (
+        <View style={styles.error}>
+          <ErrorCard>{storeError}</ErrorCard>
+        </View>
+      )}
+      {!!roundError && (
+        <View style={styles.error}>
+          <ErrorCard>{roundError}</ErrorCard>
+        </View>
+      )}
+      <View style={styles.listContainer}>
+        <Animated.FlatList
+          data={roundListItems}
+          extraData={selectedRoundId}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={renderRoundItem}
+          ListFooterComponent={renderSelectButton}
+        />
+      </View>
     </View>
   );
 }
@@ -107,7 +195,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   error: {
-    marginVertical: 30,
+    marginTop: 30,
+  },
+  listContainer: {
+    marginTop: 15,
   },
   buttonContainer: {
     marginTop: 30,

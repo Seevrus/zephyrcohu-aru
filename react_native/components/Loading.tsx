@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
   message: {
     color: 'white',
-    fontFamily: 'Muli',
+    fontFamily: 'Roboto',
     fontSize: fontSizes.body,
     fontWeight: 'bold',
     textAlign: 'center',

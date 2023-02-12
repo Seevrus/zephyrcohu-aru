@@ -1,3 +1,13 @@
+export type InitializeRoundRequest = {
+  storeId: number;
+  nextAvailableSerialNumber: number;
+};
+
+export type InitializeRoundResponse = {
+  storeId: number;
+  nextAvailableSerialNumber: number;
+};
+
 type Item = {
   id: number;
   articleNumber: string;

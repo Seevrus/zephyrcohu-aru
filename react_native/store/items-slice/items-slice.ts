@@ -14,8 +14,8 @@ const itemsSlice = createSlice({
   name: 'items',
   initialState,
   reducers: {
-    mergeLocalState: (state, action: PayloadAction<LocalStorage['items']>) => {
-      state = mergeDeepLeft(state, action.payload ?? {}) as Items;
+    mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['items']>) => {
+      state.data = mergeDeepLeft(state.data, payload.data ?? []) as Items['data'];
     },
   },
   extraReducers: (builder) => {

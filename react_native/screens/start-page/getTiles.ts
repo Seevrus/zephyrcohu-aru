@@ -87,7 +87,7 @@ export const getTiles = ({
             {
               text: 'Igen',
               onPress: () => {
-                /** Navigálás... */
+                navigation.navigate('StartErrand');
               },
             },
           ]);

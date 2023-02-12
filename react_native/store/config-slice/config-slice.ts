@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { mergeDeepLeft } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
 import { checkToken, registerDevice, unregisterDevice } from './config-api-actions';
@@ -16,8 +15,10 @@ const configSlice = createSlice({
   name: 'config',
   initialState,
   reducers: {
-    mergeLocalState: (state, action: PayloadAction<LocalStorage['config']>) => {
-      state = mergeDeepLeft(state, action.payload ?? {}) as Config;
+    mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['config']>) => {
+      state.isDemoMode = payload.isDemoMode ?? false;
+      state.userType = payload.userType;
+      state.company = payload.company;
     },
   },
   extraReducers: (builder) => {
