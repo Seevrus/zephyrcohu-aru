@@ -1,24 +1,32 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { find, pipe, prop, propEq, sortBy } from 'ramda';
-import { useEffect, useState } from 'react';
-import { Animated, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import {
+  Animated,
+  ListRenderItem,
+  ListRenderItemInfo,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 import useToken from '../../hooks/useToken';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { fetchItems } from '../../store/items-slice/items-api-actions';
+import { fetchPartners } from '../../store/partners-slice/partners-api-actions';
+import { initializeRound } from '../../store/round-slice/round-api-actions';
 import { fetchStores } from '../../store/store-list-slice/store-list-api-actions';
 import { fetchStore } from '../../store/store-slice/store-api-actions';
+import { FetchStoreResponse } from '../../store/store-slice/store-slice-types';
 
 import ErrorCard from '../../components/info-cards/ErrorCard';
 import ListItem from '../../components/ListItem';
 import Loading from '../../components/Loading';
 import Button from '../../components/ui/buttons/Button';
 import colors from '../../constants/colors';
-import { fetchItems } from '../../store/items-slice/items-api-actions';
-import { fetchPartners } from '../../store/partners-slice/partners-api-actions';
-import { initializeRound } from '../../store/round-slice/round-api-actions';
 import { StartErrandProps } from '../screen-types';
-import { FetchStoreResponse } from '../../store/store-slice/store-slice-types';
 
 type RoundListItem = {
   id: number;
@@ -45,36 +53,7 @@ export default function StartErrand({ navigation }: StartErrandProps) {
   const roundListItems: RoundListItem[] = sortBy(prop('name'), storeList);
   const confirmButtonvariant = selectedRoundId > 0 ? 'ok' : 'disabled';
 
-  useEffect(() => {
-    if (isInternetReachable === false || tokenStorageError) {
-      navigation.pop();
-    }
-  }, [isInternetReachable, navigation, tokenStorageError]);
-
-  useEffect(() => {
-    const getStores = async () => {
-      try {
-        await dispatch(fetchStores({ deviceId, token }));
-        setStoresError('');
-        setLoading(false);
-      } catch (err) {
-        setStoresError(err.message);
-        setLoading(false);
-      }
-    };
-
-    if (credentialsAvailable && !storesFetched) {
-      setLoading(true);
-      setLoadingMessage('Raktárak adatainak betöltése...');
-      getStores();
-    }
-  }, [credentialsAvailable, deviceId, dispatch, storesFetched, token]);
-
-  const selectRoundHandler = (id: number) => {
-    setSelectedRoundId(id);
-  };
-
-  const confirmPartnerHandler = async () => {
+  const confirmPartnerHandler = useCallback(async () => {
     setLoading(true);
     setLoadingMessage('Körindításhoz szükséges adatok letöltése folyamatban...');
 
@@ -124,6 +103,65 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     if (!(itemsError || partnersError || storeError || roundError)) {
       navigation.pop();
     }
+  }, [
+    deviceId,
+    dispatch,
+    itemsError,
+    navigation,
+    partnersError,
+    roundError,
+    selectedRoundId,
+    storeError,
+    storeList,
+    token,
+  ]);
+
+  useLayoutEffect(() => {
+    const renderHeaderNext = () => (
+      <Pressable
+        style={({ pressed }) => [pressed && { opacity: 0.75 }]}
+        onPress={confirmPartnerHandler}
+      >
+        <MaterialIcons
+          name="arrow-forward"
+          size={28}
+          color={selectedRoundId > 0 ? colors.ok : colors.disabled}
+        />
+      </Pressable>
+    );
+
+    navigation.setOptions({
+      headerRight: renderHeaderNext,
+    });
+  }, [confirmPartnerHandler, navigation, selectedRoundId]);
+
+  useEffect(() => {
+    if (isInternetReachable === false || tokenStorageError) {
+      navigation.pop();
+    }
+  }, [isInternetReachable, navigation, tokenStorageError]);
+
+  useEffect(() => {
+    const getStores = async () => {
+      try {
+        await dispatch(fetchStores({ deviceId, token }));
+        setStoresError('');
+        setLoading(false);
+      } catch (err) {
+        setStoresError(err.message);
+        setLoading(false);
+      }
+    };
+
+    if (credentialsAvailable && storesFetched === false) {
+      setLoading(true);
+      setLoadingMessage('Raktárak adatainak betöltése...');
+      getStores();
+    }
+  }, [credentialsAvailable, deviceId, dispatch, storesFetched, token]);
+
+  const selectRoundHandler = (id: number) => {
+    setSelectedRoundId(id);
   };
 
   const renderRoundItem: ListRenderItem<RoundListItem> = (

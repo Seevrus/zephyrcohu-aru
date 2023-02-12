@@ -1,13 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { mergeDeepLeft } from 'ramda';
+import { mergeDeepLeft, pipe, propOr, values } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
 import { fetchStores, removeStores } from './store-list-api-actions';
 import { StoreList } from './store-list-slice-types';
 
 const initialState: StoreList = {
-  fetched: false,
+  fetched: undefined,
   data: [],
 };
 
@@ -16,8 +16,10 @@ const storeListSlice = createSlice({
   initialState,
   reducers: {
     mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['storeList']>) => {
-      state.fetched = payload.fetched ?? false;
-      state.data = mergeDeepLeft(state.data, payload.data ?? {}) as StoreList['data'];
+      state.data = pipe(
+        mergeDeepLeft(state.data),
+        values
+      )(propOr([], 'data', payload) as StoreList['data']);
     },
   },
   extraReducers: (builder) => {
@@ -38,6 +40,7 @@ const storeListSlice = createSlice({
     });
 
     builder.addCase(removeStores.fulfilled, (state) => {
+      state.fetched = false;
       state.data = [];
     });
     builder.addCase(removeStores.rejected, (_, { payload }) => {
