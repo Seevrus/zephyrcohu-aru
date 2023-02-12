@@ -1,36 +1,44 @@
-import { useState } from 'react';
+import { last } from 'ramda';
+import { useEffect, useState } from 'react';
 import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 import ListItem from '../../components/ListItem';
 import Button from '../../components/ui/buttons/Button';
 import colors from '../../constants/colors';
-import { SelectPartnerProps } from '../screen-types';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { roundActions } from '../../store/round-slice/round-slice';
+import { PartnerList, SelectPartnerProps } from '../screen-types';
 
 type Partner = {
   id: number;
   name: string;
 };
 
-const PARTNERS: Partner[] = [
-  {
-    id: 1,
-    name: 'Ügyfél 1',
-  },
-  {
-    id: 2,
-    name: 'Ügyfél 2 Valami Nagyon-Nagyon Hosszú Éssss Kiolvashtatalan Névvel',
-  },
-  {
-    id: 3,
-    name: 'Ügyfél 3',
-  },
-];
+export default function SelectPartnerFromAll({ route, navigation }: SelectPartnerProps) {
+  const dispatch = useAppDispatch();
 
-export default function SelectPartner({ navigation }: SelectPartnerProps) {
-  const [selectedPartnerId, setSelectedPartnerId] = useState<number>(-1);
-  const confirmButtonvariant = selectedPartnerId > 0 ? 'ok' : 'disabled';
+  const partnerListType = route.params.partners;
+  const partners = useAppSelector((state) => {
+    if (partnerListType === PartnerList.ALL) {
+      return state.partners.data;
+    }
+
+    return state.partners.data.filter((partner) => partner.storeId === state.round.storeId);
+  });
+
+  const receipts = useAppSelector((state) => state.round.receipts);
+  const [selectedPartnerId, setSelectedPartnerId] = useState<number>(
+    last(receipts)?.isSent ? -1 : last(receipts)?.partnerId ?? -1
+  );
+
+  useEffect(() => {
+    if (receipts.length === 0 || last(receipts).isSent) {
+      dispatch(roundActions.addNewReceipt());
+    }
+  }, [dispatch, receipts]);
 
   const confirmPartnerHandler = () => {
     if (selectedPartnerId > -1) {
+      dispatch(roundActions.selectPartner(selectedPartnerId));
       navigation.navigate('SelectGoods');
     }
   };
@@ -44,20 +52,22 @@ export default function SelectPartner({ navigation }: SelectPartnerProps) {
       id={info.item.id}
       title={info.item.name}
       selected={info.item.id === selectedPartnerId}
-      onPress={selectPartnerHandler}
+      onPress={info.item.id === selectedPartnerId ? confirmPartnerHandler : selectPartnerHandler}
     />
   );
+
+  const confirmButtonVariant = selectedPartnerId > 0 ? 'ok' : 'disabled';
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={PARTNERS}
+        data={partners}
         extraData={selectedPartnerId}
         keyExtractor={(item) => String(item.id)}
         renderItem={renderPartner}
         ListFooterComponent={
           <View style={styles.buttonContainer}>
-            <Button variant={confirmButtonvariant} onPress={confirmPartnerHandler}>
+            <Button variant={confirmButtonVariant} onPress={confirmPartnerHandler}>
               Tovább
             </Button>
           </View>

@@ -53,7 +53,7 @@ export const getTiles = ({
             { text: 'Értem' },
           ]);
         } else {
-          // Navigálás...
+          navigation.navigate('SelectPartner');
         }
       },
     },

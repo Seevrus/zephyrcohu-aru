@@ -1,15 +1,7 @@
-import { MaterialIcons } from '@expo/vector-icons';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { find, pipe, prop, propEq, sortBy } from 'ramda';
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import {
-  Animated,
-  ListRenderItem,
-  ListRenderItemInfo,
-  Pressable,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { useEffect, useState } from 'react';
+import { Animated, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
 import useToken from '../../hooks/useToken';
 
@@ -53,7 +45,7 @@ export default function StartErrand({ navigation }: StartErrandProps) {
   const roundListItems: RoundListItem[] = sortBy(prop('name'), storeList);
   const confirmButtonvariant = selectedRoundId > 0 ? 'ok' : 'disabled';
 
-  const confirmPartnerHandler = useCallback(async () => {
+  const confirmPartnerHandler = async () => {
     setLoading(true);
     setLoadingMessage('Körindításhoz szükséges adatok letöltése folyamatban...');
 
@@ -103,37 +95,7 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     if (!(itemsError || partnersError || storeError || roundError)) {
       navigation.pop();
     }
-  }, [
-    deviceId,
-    dispatch,
-    itemsError,
-    navigation,
-    partnersError,
-    roundError,
-    selectedRoundId,
-    storeError,
-    storeList,
-    token,
-  ]);
-
-  useLayoutEffect(() => {
-    const renderHeaderNext = () => (
-      <Pressable
-        style={({ pressed }) => [pressed && { opacity: 0.75 }]}
-        onPress={confirmPartnerHandler}
-      >
-        <MaterialIcons
-          name="arrow-forward"
-          size={28}
-          color={selectedRoundId > 0 ? colors.ok : colors.disabled}
-        />
-      </Pressable>
-    );
-
-    navigation.setOptions({
-      headerRight: renderHeaderNext,
-    });
-  }, [confirmPartnerHandler, navigation, selectedRoundId]);
+  };
 
   useEffect(() => {
     if (isInternetReachable === false || tokenStorageError) {
@@ -171,7 +133,7 @@ export default function StartErrand({ navigation }: StartErrandProps) {
       id={info.item.id}
       title={info.item.name}
       selected={info.item.id === selectedRoundId}
-      onPress={selectRoundHandler}
+      onPress={info.item.id === selectedRoundId ? confirmPartnerHandler : selectRoundHandler}
     />
   );
 

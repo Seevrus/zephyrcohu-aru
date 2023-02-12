@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { mergeDeepLeft } from 'ramda';
+import { mergeDeepLeft, pipe, propOr, values } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
 import { fetchStore, removeStore } from './store-api-actions';
@@ -28,8 +28,14 @@ const storeSlice = createSlice({
       state.firstAvailableSerialNumber = payload.firstAvailableSerialNumber;
       state.lastAvailableSerialNumber = payload.lastAvailableSerialNumber;
       state.yearCode = payload.yearCode;
-      state.items = mergeDeepLeft(state.items, payload.items ?? {}) as Store['items'];
-      state.partners = mergeDeepLeft(state.partners, payload.partners ?? {}) as Store['partners'];
+      state.items = pipe(
+        mergeDeepLeft(state.items),
+        values
+      )(propOr([], 'items', payload) as Store['items']) as Store['items'];
+      state.partners = pipe(
+        mergeDeepLeft(state.partners),
+        values
+      )(propOr([], 'partners', payload) as Store['partners']);
     },
   },
   extraReducers: (builder) => {

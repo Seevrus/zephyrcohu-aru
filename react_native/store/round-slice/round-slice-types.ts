@@ -25,6 +25,7 @@ type OrderItem = {
 };
 
 type Receipt = {
+  partnerId: number;
   serialNumber: number;
   totalAmount: number;
   createdAt: string;

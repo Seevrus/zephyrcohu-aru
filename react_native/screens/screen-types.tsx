@@ -1,3 +1,5 @@
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export type StackParams = {
@@ -27,7 +29,6 @@ export type StartupErrorProps = NativeStackScreenProps<StackParams, 'StartupErro
 
 export type IndexProps = NativeStackScreenProps<StackParams, 'Index'>;
 
-export type SelectPartnerProps = NativeStackScreenProps<StackParams, 'SelectPartner'>;
 export type SelectGoodsProps = NativeStackScreenProps<StackParams, 'SelectGoods'>;
 export type ReviewProps = NativeStackScreenProps<StackParams, 'Review'>;
 export type SummaryProps = NativeStackScreenProps<StackParams, 'Summary'>;
@@ -35,3 +36,20 @@ export type SummaryProps = NativeStackScreenProps<StackParams, 'Summary'>;
 export type ReceiptListProps = NativeStackScreenProps<StackParams, 'ReceiptList'>;
 
 export type StartErrandProps = NativeStackScreenProps<StackParams, 'StartErrand'>;
+
+export enum PartnerList {
+  STORE,
+  ALL,
+}
+
+export type TabParams = {
+  SelectPartnerFromStore: {
+    partners: PartnerList;
+  };
+  SelectPartnerFromAll: {
+    partners: PartnerList;
+  };
+  SelectGoods: NavigatorScreenParams<StackParams>;
+};
+
+export type SelectPartnerProps = BottomTabScreenProps<TabParams, 'SelectPartnerFromStore'>;

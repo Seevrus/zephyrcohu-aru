@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { mergeDeepLeft } from 'ramda';
+import { mergeDeepLeft, pipe, propOr, values } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
 import { fetchPartners, removePartners } from './partners-api-actions';
@@ -15,7 +15,10 @@ const partnersSlice = createSlice({
   initialState,
   reducers: {
     mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['partners']>) => {
-      state.data = mergeDeepLeft(state.data, payload.data ?? []) as Partners['data'];
+      state.data = pipe(
+        mergeDeepLeft(state.data),
+        values
+      )(propOr([], 'data', payload) as Partners['data']) as Partners['data'];
     },
   },
   extraReducers: (builder) => {
