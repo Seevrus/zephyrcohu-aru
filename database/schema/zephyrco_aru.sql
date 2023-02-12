@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2023. Feb 05. 21:28
+-- Létrehozás ideje: 2023. Feb 12. 06:34
 -- Kiszolgáló verziója: 10.4.27-MariaDB
 -- PHP verzió: 8.0.25
 
@@ -195,6 +195,7 @@ CREATE TABLE `personal_access_tokens` (
 DROP TABLE IF EXISTS `price_lists`;
 CREATE TABLE `price_lists` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `company_id` bigint(20) UNSIGNED NOT NULL,
   `code` varchar(4) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -228,7 +229,8 @@ CREATE TABLE `receipts` (
   `serial_number` mediumint(8) UNSIGNED NOT NULL,
   `year_code` smallint(5) UNSIGNED NOT NULL,
   `total_amount` int(10) UNSIGNED NOT NULL,
-  `created_at` date NOT NULL
+  `created_at` date NOT NULL,
+  `last_downloaded_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -365,21 +367,24 @@ ALTER TABLE `partners`
 ALTER TABLE `personal_access_tokens`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
-  ADD KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`);
+  ADD KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`),
+  ADD KEY `personal_access_tokens_tokenable_id_foreign` (`tokenable_id`);
 
 --
 -- A tábla indexei `price_lists`
 --
 ALTER TABLE `price_lists`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `price_lists_code_unique` (`code`);
+  ADD UNIQUE KEY `price_lists_code_unique` (`code`),
+  ADD KEY `price_lists_company_id_foreign` (`company_id`);
 
 --
 -- A tábla indexei `price_list_items`
 --
 ALTER TABLE `price_list_items`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `price_list_items_price_list_id_foreign` (`price_list_id`);
+  ADD KEY `price_list_items_price_list_id_foreign` (`price_list_id`),
+  ADD KEY `price_list_items_item_id_foreign` (`item_id`);
 
 --
 -- A tábla indexei `receipts`
@@ -547,9 +552,22 @@ ALTER TABLE `partners`
   ADD CONSTRAINT `partners_store_id_foreign` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
+-- Megkötések a táblához `personal_access_tokens`
+--
+ALTER TABLE `personal_access_tokens`
+  ADD CONSTRAINT `personal_access_tokens_tokenable_id_foreign` FOREIGN KEY (`tokenable_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Megkötések a táblához `price_lists`
+--
+ALTER TABLE `price_lists`
+  ADD CONSTRAINT `price_lists_company_id_foreign` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Megkötések a táblához `price_list_items`
 --
 ALTER TABLE `price_list_items`
+  ADD CONSTRAINT `price_list_items_item_id_foreign` FOREIGN KEY (`item_id`) REFERENCES `items` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `price_list_items_price_list_id_foreign` FOREIGN KEY (`price_list_id`) REFERENCES `price_lists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
