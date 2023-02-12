@@ -33,15 +33,14 @@ export default function Button({ variant, onPress, children }: ButtonProps) {
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       <Pressable
         disabled={variant === 'disabled'}
         onPress={onPress}
+        style={[styles.buttonContainer, buttonBackgroundStyle]}
         android_ripple={{ color: rippleColors[variant] }}
       >
-        <View style={[styles.button, buttonBackgroundStyle]}>
-          <Text style={styles.buttonText}>{children}</Text>
-        </View>
+        <Text style={styles.buttonText}>{children}</Text>
       </Pressable>
     </View>
   );
@@ -49,20 +48,20 @@ export default function Button({ variant, onPress, children }: ButtonProps) {
 Button.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
-  button: {
+  container: {
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  buttonContainer: {
+    padding: 15,
+    elevation: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 8,
-    padding: 10,
   },
   buttonText: {
     color: 'white',
     fontFamily: 'Muli',
     fontSize: fontSizes.input,
     fontWeight: 'bold',
-  },
-  pressed: {
-    opacity: 0.75,
-    borderRadius: 4,
   },
 });

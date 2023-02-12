@@ -24,17 +24,15 @@ export default function ListItem({ id, title, selected, onPress }: ListItemProps
         style={[styles.item, backgroundStyle]}
         android_ripple={{ color: rippleColor }}
       >
-        <View style={styles.innerContainer}>
-          <View style={styles.checkboxContainer}>
-            {selected ? (
-              <MaterialIcons name="radio-button-checked" size={24} color="white" />
-            ) : (
-              <MaterialIcons name="radio-button-unchecked" size={24} color="white" />
-            )}
-          </View>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>{title}</Text>
-          </View>
+        <View style={styles.checkboxContainer}>
+          {selected ? (
+            <MaterialIcons name="radio-button-checked" size={24} color="white" />
+          ) : (
+            <MaterialIcons name="radio-button-unchecked" size={24} color="white" />
+          )}
+        </View>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{title}</Text>
         </View>
       </Pressable>
     </View>
@@ -46,13 +44,11 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: '7%',
     marginVertical: 10,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
   item: {
-    flex: 1,
     justifyContent: 'flex-start',
-    borderRadius: 10,
-  },
-  innerContainer: {
     flexDirection: 'row',
   },
   checkboxContainer: {
