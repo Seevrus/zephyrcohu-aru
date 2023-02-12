@@ -6,7 +6,7 @@ import { LocalStorage, setLocalStorage } from '../async-storage';
 import { ErrorResponseT } from '../base-types';
 import { FetchPartnersRequest, FetchPartnersResponse } from './partners-slice-types';
 
-const fetchPartners = createAsyncThunk<
+export const fetchPartners = createAsyncThunk<
   FetchPartnersResponse,
   FetchPartnersRequest,
   { rejectValue: ErrorResponseT }
@@ -39,4 +39,23 @@ const fetchPartners = createAsyncThunk<
   return response.data;
 });
 
-export default fetchPartners;
+export const removePartners = createAsyncThunk<boolean, never, { rejectValue: ErrorResponseT }>(
+  'partners/removePartners',
+  async (_, { rejectWithValue }) => {
+    try {
+      await setLocalStorage({
+        partners: {
+          data: [],
+        },
+      } as Partial<LocalStorage>);
+    } catch (e) {
+      return rejectWithValue({
+        status: 507,
+        codeName: 'Insufficient Storage',
+        message: e.message,
+      });
+    }
+
+    return true;
+  }
+);

@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { mergeDeepLeft } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
-import fetchItems from './items-api-actions';
+import { fetchItems, removeItems } from './items-api-actions';
 import { Items } from './items-slice-types';
 
 const initialState: Items = {
@@ -31,6 +31,13 @@ const itemsSlice = createSlice({
         default:
           throw new Error('Váratlan hiba lépett fel a termékek adatainak lekérése során.');
       }
+    });
+
+    builder.addCase(removeItems.fulfilled, (state) => {
+      state.data = [];
+    });
+    builder.addCase(removeItems.rejected, (_, { payload }) => {
+      throw new Error(payload.message);
     });
   },
 });

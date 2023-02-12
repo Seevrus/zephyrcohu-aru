@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { mergeDeepLeft } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
-import fetchPartners from './partners-api-actions';
+import { fetchPartners, removePartners } from './partners-api-actions';
 import { Partners } from './partners-slice-types';
 
 const initialState: Partners = {
@@ -31,6 +31,13 @@ const partnersSlice = createSlice({
         default:
           throw new Error('Váratlan hiba lépett fel a termékek adatainak lekérése során.');
       }
+    });
+
+    builder.addCase(removePartners.fulfilled, (state) => {
+      state.data = [];
+    });
+    builder.addCase(removePartners.rejected, (_, { payload }) => {
+      throw new Error(payload.message);
     });
   },
 });

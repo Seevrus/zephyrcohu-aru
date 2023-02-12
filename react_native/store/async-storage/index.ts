@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { mergeDeepRight } from 'ramda';
+import { mergeRight } from 'ramda';
 
 import { Config } from '../config-slice/config-slice-types';
 import { Items } from '../items-slice/items-slice-types';
@@ -32,7 +32,7 @@ export const setLocalStorage = async (items) => {
     const jsonStore = await AsyncStorage.getItem('boreal-store');
     const importedStore: LocalStorage = jsonStore ? JSON.parse(jsonStore) : {};
 
-    const newState = mergeDeepRight(importedStore, items);
+    const newState = mergeRight(importedStore, items);
     await AsyncStorage.setItem('boreal-store', JSON.stringify(newState));
   } catch (_) {
     throw new Error('Probléma lépett fel az alkalmazás állapotának eltárolása során.');
