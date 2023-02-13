@@ -12,7 +12,7 @@ export type StackParams = {
   Index: undefined;
 
   SelectPartner: undefined;
-  SelectGoods: undefined;
+  SelectItems: undefined;
   Review: undefined;
   Summary: undefined;
 
@@ -29,7 +29,6 @@ export type StartupErrorProps = NativeStackScreenProps<StackParams, 'StartupErro
 
 export type IndexProps = NativeStackScreenProps<StackParams, 'Index'>;
 
-export type SelectGoodsProps = NativeStackScreenProps<StackParams, 'SelectGoods'>;
 export type ReviewProps = NativeStackScreenProps<StackParams, 'Review'>;
 export type SummaryProps = NativeStackScreenProps<StackParams, 'Summary'>;
 
@@ -42,14 +41,30 @@ export enum PartnerList {
   ALL,
 }
 
-export type TabParams = {
+export type PartnerTabParams = {
   SelectPartnerFromStore: {
     partners: PartnerList;
   };
   SelectPartnerFromAll: {
     partners: PartnerList;
   };
-  SelectGoods: NavigatorScreenParams<StackParams>;
+  SelectItems: NavigatorScreenParams<StackParams>;
 };
 
-export type SelectPartnerProps = BottomTabScreenProps<TabParams, 'SelectPartnerFromStore'>;
+export type SelectPartnerProps = BottomTabScreenProps<PartnerTabParams, 'SelectPartnerFromStore'>;
+
+export enum ItemsList {
+  STORE,
+  ALL,
+}
+
+export type ItemsTabParams = {
+  SelectItemsFromStore: {
+    items: ItemsList;
+  };
+  SelectItemsFromAll: {
+    items: ItemsList;
+  };
+};
+
+export type SelectItemsProps = BottomTabScreenProps<ItemsTabParams, 'SelectItemsFromStore'>;

@@ -17,17 +17,24 @@ import StartErrand from './react_native/screens/errand-administration/StartErran
 import StartupError from './react_native/screens/errors/StartupError';
 import Receipt from './react_native/screens/receipts/Receipt';
 import ReceiptList from './react_native/screens/receipts/ReceiptList';
-import { PartnerList, StackParams, TabParams } from './react_native/screens/screen-types';
+import {
+  ItemsList,
+  ItemsTabParams,
+  PartnerList,
+  PartnerTabParams,
+  StackParams,
+} from './react_native/screens/screen-types';
 import Review from './react_native/screens/sell/Review';
-import SelectGoods from './react_native/screens/sell/SelectGoods';
+import SelectItems from './react_native/screens/sell/SelectItems';
+import SelectPartner from './react_native/screens/sell/SelectPartner';
 import Summary from './react_native/screens/sell/Summary';
 import Index from './react_native/screens/start-page/Index';
 import RegisterDevice from './react_native/screens/startup/RegisterDevice';
 import StartupCheck from './react_native/screens/startup/StartupCheck';
-import SelectPartner from './react_native/screens/sell/SelectPartner';
 
 const Stack = createNativeStackNavigator<StackParams>();
-const Tab = createBottomTabNavigator<TabParams>();
+const PartnerTab = createBottomTabNavigator<PartnerTabParams>();
+const ItemsTab = createBottomTabNavigator<ItemsTabParams>();
 
 function Settings() {
   return (
@@ -45,7 +52,7 @@ function Partners() {
   );
 
   return (
-    <Tab.Navigator
+    <PartnerTab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
@@ -59,7 +66,7 @@ function Partners() {
         },
       }}
     >
-      <Tab.Screen
+      <PartnerTab.Screen
         name="SelectPartnerFromStore"
         component={SelectPartner}
         options={{ title: 'Kör Partnerei', tabBarIcon: storePartnersIcon }}
@@ -67,7 +74,7 @@ function Partners() {
           partners: PartnerList.STORE,
         }}
       />
-      <Tab.Screen
+      <PartnerTab.Screen
         name="SelectPartnerFromAll"
         component={SelectPartner}
         options={{
@@ -78,7 +85,52 @@ function Partners() {
           partners: PartnerList.ALL,
         }}
       />
-    </Tab.Navigator>
+    </PartnerTab.Navigator>
+  );
+}
+
+function Items() {
+  const storeItemsIcon = ({ color }) => <MaterialIcons name="icecream" size={36} color={color} />;
+
+  const allItemsIcon = ({ color }) => (
+    <MaterialIcons name="all-inclusive" size={36} color={color} />
+  );
+
+  return (
+    <ItemsTab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          height: 80,
+          backgroundColor: colors.neutral,
+        },
+        tabBarActiveTintColor: colors.blue200,
+        tabBarInactiveTintColor: 'white',
+        tabBarLabelStyle: {
+          fontSize: fontSizes.body,
+        },
+      }}
+    >
+      <ItemsTab.Screen
+        name="SelectItemsFromStore"
+        component={SelectItems}
+        options={{ title: 'Raktárkészlet', tabBarIcon: storeItemsIcon }}
+        initialParams={{
+          items: ItemsList.STORE,
+        }}
+      />
+      <ItemsTab.Screen
+        name="SelectItemsFromAll"
+        component={SelectItems}
+        options={{
+          title: 'Minden tétel',
+          tabBarIcon: allItemsIcon,
+        }}
+        initialParams={{
+          items: ItemsList.ALL,
+        }}
+      />
+    </ItemsTab.Navigator>
   );
 }
 
@@ -141,10 +193,10 @@ function Main() {
             }}
           />
           <Stack.Screen
-            name="SelectGoods"
-            component={SelectGoods}
+            name="SelectItems"
+            component={Items}
             options={{
-              headerTitle: 'Termékek választása',
+              headerTitle: 'Tételek',
             }}
           />
           <Stack.Screen

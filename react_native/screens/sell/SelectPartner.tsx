@@ -26,7 +26,7 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
   });
 
   const receipts = useAppSelector((state) => state.round.receipts);
-  const lastPartnerId = last(receipts)?.isSent ? -1 : last(receipts)?.partnerId ?? -1;
+  const lastPartnerId = useAppSelector((state) => state.round.currentReceipt?.partnerId);
   const [selectedPartnerId, setSelectedPartnerId] = useState<number>(lastPartnerId);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
   const confirmPartnerHandler = () => {
     if (selectedPartnerId > -1) {
       dispatch(roundActions.selectPartner(selectedPartnerId));
-      navigation.navigate('SelectGoods');
+      navigation.navigate('SelectItems');
     }
   };
 
@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flex: 0.1,
     marginVertical: 20,
-    height: 150,
     justifyContent: 'space-between',
     alignItems: 'center',
   },
