@@ -26,15 +26,20 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
   });
 
   const receipts = useAppSelector((state) => state.round.receipts);
-  const [selectedPartnerId, setSelectedPartnerId] = useState<number>(
-    last(receipts)?.isSent ? -1 : last(receipts)?.partnerId ?? -1
-  );
+  const lastPartnerId = last(receipts)?.isSent ? -1 : last(receipts)?.partnerId ?? -1;
+  const [selectedPartnerId, setSelectedPartnerId] = useState<number>(lastPartnerId);
 
   useEffect(() => {
     if (receipts.length === 0 || last(receipts).isSent) {
       dispatch(roundActions.addNewReceipt());
     }
   }, [dispatch, receipts]);
+
+  useEffect(() => {
+    navigation.addListener('blur', () => {
+      setSelectedPartnerId(lastPartnerId);
+    });
+  }, [lastPartnerId, navigation]);
 
   const confirmPartnerHandler = () => {
     if (selectedPartnerId > -1) {
@@ -52,7 +57,7 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
       id={info.item.id}
       title={info.item.name}
       selected={info.item.id === selectedPartnerId}
-      onPress={info.item.id === selectedPartnerId ? confirmPartnerHandler : selectPartnerHandler}
+      onPress={selectPartnerHandler}
     />
   );
 
@@ -60,19 +65,19 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={partners}
-        extraData={selectedPartnerId}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={renderPartner}
-        ListFooterComponent={
-          <View style={styles.buttonContainer}>
-            <Button variant={confirmButtonVariant} onPress={confirmPartnerHandler}>
-              Tovább
-            </Button>
-          </View>
-        }
-      />
+      <View style={styles.buttonContainer}>
+        <Button variant={confirmButtonVariant} onPress={confirmPartnerHandler}>
+          Partner kiválasztása
+        </Button>
+      </View>
+      <View style={styles.listContainer}>
+        <FlatList
+          data={partners}
+          extraData={selectedPartnerId}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={renderPartner}
+        />
+      </View>
     </View>
   );
 }
@@ -83,9 +88,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   buttonContainer: {
-    marginTop: 30,
+    flex: 0.1,
+    marginVertical: 20,
     height: 150,
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  listContainer: {
+    flex: 0.9,
   },
 });

@@ -133,16 +133,8 @@ export default function StartErrand({ navigation }: StartErrandProps) {
       id={info.item.id}
       title={info.item.name}
       selected={info.item.id === selectedRoundId}
-      onPress={info.item.id === selectedRoundId ? confirmPartnerHandler : selectRoundHandler}
+      onPress={selectRoundHandler}
     />
-  );
-
-  const renderSelectButton = () => (
-    <View style={styles.buttonContainer}>
-      <Button variant={confirmButtonvariant} onPress={confirmPartnerHandler}>
-        Partner kiválasztása és kör indítása
-      </Button>
-    </View>
   );
 
   if (loading) {
@@ -151,38 +143,42 @@ export default function StartErrand({ navigation }: StartErrandProps) {
 
   return (
     <View style={styles.container}>
-      {!!itemsError && (
-        <View style={styles.error}>
-          <ErrorCard>{storeError}</ErrorCard>
-        </View>
-      )}
-      {!!partnersError && (
-        <View style={styles.error}>
-          <ErrorCard>{storeError}</ErrorCard>
-        </View>
-      )}
-      {!!storesError && (
-        <View style={styles.error}>
-          <ErrorCard>{storesError}</ErrorCard>
-        </View>
-      )}
-      {!!storeError && (
-        <View style={styles.error}>
-          <ErrorCard>{storeError}</ErrorCard>
-        </View>
-      )}
-      {!!roundError && (
-        <View style={styles.error}>
-          <ErrorCard>{roundError}</ErrorCard>
-        </View>
-      )}
+      <View style={styles.buttonContainer}>
+        <Button variant={confirmButtonvariant} onPress={confirmPartnerHandler}>
+          Partner kiválasztása és kör indítása
+        </Button>
+      </View>
       <View style={styles.listContainer}>
+        {!!itemsError && (
+          <View style={styles.error}>
+            <ErrorCard>{storeError}</ErrorCard>
+          </View>
+        )}
+        {!!partnersError && (
+          <View style={styles.error}>
+            <ErrorCard>{storeError}</ErrorCard>
+          </View>
+        )}
+        {!!storesError && (
+          <View style={styles.error}>
+            <ErrorCard>{storesError}</ErrorCard>
+          </View>
+        )}
+        {!!storeError && (
+          <View style={styles.error}>
+            <ErrorCard>{storeError}</ErrorCard>
+          </View>
+        )}
+        {!!roundError && (
+          <View style={styles.error}>
+            <ErrorCard>{roundError}</ErrorCard>
+          </View>
+        )}
         <Animated.FlatList
           data={roundListItems}
           extraData={selectedRoundId}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderRoundItem}
-          ListFooterComponent={renderSelectButton}
         />
       </View>
     </View>
@@ -197,13 +193,14 @@ const styles = StyleSheet.create({
   error: {
     marginTop: 30,
   },
-  listContainer: {
-    marginTop: 15,
-  },
   buttonContainer: {
-    marginTop: 30,
+    flex: 0.1,
+    marginTop: 20,
     height: 150,
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  listContainer: {
+    flex: 0.9,
   },
 });
