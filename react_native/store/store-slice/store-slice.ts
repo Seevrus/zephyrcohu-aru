@@ -22,12 +22,12 @@ const storeSlice = createSlice({
   initialState,
   reducers: {
     mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['store']>) => {
-      state.id = payload.id;
-      state.code = payload.code;
-      state.name = payload.name;
-      state.firstAvailableSerialNumber = payload.firstAvailableSerialNumber;
-      state.lastAvailableSerialNumber = payload.lastAvailableSerialNumber;
-      state.yearCode = payload.yearCode;
+      state.id = payload?.id;
+      state.code = payload?.code;
+      state.name = payload?.name;
+      state.firstAvailableSerialNumber = payload?.firstAvailableSerialNumber;
+      state.lastAvailableSerialNumber = payload?.lastAvailableSerialNumber;
+      state.yearCode = payload?.yearCode;
       state.items = pipe(
         mergeDeepLeft(state.items),
         values

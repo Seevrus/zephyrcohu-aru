@@ -16,9 +16,9 @@ const configSlice = createSlice({
   initialState,
   reducers: {
     mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['config']>) => {
-      state.isDemoMode = payload.isDemoMode ?? false;
-      state.userType = payload.userType;
-      state.company = payload.company;
+      state.isDemoMode = payload?.isDemoMode ?? false;
+      state.userType = payload?.userType;
+      state.company = payload?.company;
     },
   },
   extraReducers: (builder) => {

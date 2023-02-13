@@ -37,5 +37,6 @@ type Receipt = {
 export type Round = {
   storeId: number;
   nextAvailableSerialNumber: number;
+  currentReceipt: Partial<Receipt>;
   receipts: Receipt[];
 };
