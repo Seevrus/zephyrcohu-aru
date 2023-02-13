@@ -1,19 +1,21 @@
-import { useEffect, useMemo } from 'react';
-import { Animated, Pressable, Text, View } from 'react-native';
+import { not } from 'ramda';
+import { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+
+import colors from '../constants/colors';
+import fontSizes from '../constants/fontSizes';
 
 type AnimatedListItemProps = {
-  expanded: boolean;
-  id: number;
+  selected: boolean;
   title: string;
-  onTitlePress: (id: number) => void;
 };
 
 export default function AnimatedListItem({
-  expanded,
-  id,
+  selected,
   title,
-  onTitlePress,
-}: AnimatedListItemProps) {
+  children,
+}: PropsWithChildren<AnimatedListItemProps>) {
+  const [expanded, setExpanded] = useState<boolean>(selected);
   const height = useMemo(() => new Animated.Value(0), []);
 
   useEffect(() => {
@@ -24,16 +26,50 @@ export default function AnimatedListItem({
     }).start();
   }, [expanded, height]);
 
+  const backgroundStyle = {
+    backgroundColor: expanded ? colors.ok : colors.neutral,
+  };
+
+  const rippleColor = expanded ? colors.okRipple : colors.neutralRipple;
+
   return (
-    <View>
-      <Pressable onPress={() => onTitlePress(id)}>
-        <View>
-          <Text>{title}</Text>
+    <View style={styles.container}>
+      <Pressable
+        onPress={() => setExpanded(not)}
+        style={[styles.item, backgroundStyle]}
+        android_ripple={{ color: rippleColor }}
+      >
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{title}</Text>
         </View>
       </Pressable>
-      <Animated.View style={{ height, backgroundColor: 'orange' }}>
-        <Text>További adatok a jégkrémről lenyitható módon</Text>
-      </Animated.View>
+      <Animated.View style={[styles.childContainer, { height }]}>{children}</Animated.View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginHorizontal: '7%',
+    marginVertical: 10,
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  item: {
+    justifyContent: 'flex-start',
+  },
+  titleContainer: {
+    padding: 10,
+  },
+  title: {
+    color: 'white',
+    fontFamily: 'Muli',
+    fontSize: fontSizes.body,
+    fontWeight: 'bold',
+    marginRight: '18%',
+  },
+  childContainer: {
+    backgroundColor: colors.neutral,
+  },
+});

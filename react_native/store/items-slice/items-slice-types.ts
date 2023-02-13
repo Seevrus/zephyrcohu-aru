@@ -5,7 +5,7 @@ export type FetchItemsRequest = {
 
 export type FetchItemsResponse = Items;
 
-type Item = {
+export type Item = {
   id: number;
   articleNumber: string;
   name: string;
