@@ -1,5 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { append, equals, indexOf, reject } from 'ramda';
+import { append, assoc, equals, indexOf, propOr, reject } from 'ramda';
 import { useState } from 'react';
 import { Animated, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 import AnimatedListItem from '../../components/AnimatedListItem';
@@ -54,14 +54,28 @@ function SelectItem({
 export default function SelectItems({ route, navigation }: SelectItemsProps) {
   const itemsListType = route.params.items;
 
+  const partnerId = useAppSelector((state) => state.round.currentReceipt.partnerId);
+  const priceList = useAppSelector(
+    (state) => state.partners.data.find((partner) => partner.id === partnerId).priceList
+  );
+
+  const mapItemPrice = (item: Item) => {
+    if (!priceList || priceList?.items?.length === 0) return item;
+
+    const priceListItem = priceList?.items?.find((pi) => pi.itemId === item.id);
+    return assoc('price', propOr(item.price, 'price', priceListItem), item);
+  };
+
   const items = useAppSelector((state) => {
     if (itemsListType === ItemsList.STORE) {
-      return state.items.data.filter(
-        (item) => state.store.items.findIndex((storeItem) => storeItem.id === item.id) !== -1
-      );
+      return state.items.data
+        .filter(
+          (item) => state.store.items.findIndex((storeItem) => storeItem.id === item.id) !== -1
+        )
+        .map(mapItemPrice) as Item[];
     }
 
-    return state.items.data;
+    return state.items.data.map(mapItemPrice) as Item[];
   });
 
   const [selectedItemIds, setSelectedItemIds] = useState<number[]>([]);
