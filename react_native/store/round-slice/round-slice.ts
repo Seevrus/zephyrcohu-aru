@@ -5,7 +5,7 @@ import { mergeDeepLeft, pipe, propOr, values } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
 import { initializeRound } from './round-api-actions';
-import { Round } from './round-slice-types';
+import { Item, OrderItem, Round } from './round-slice-types';
 
 const initialState: Round = {
   storeId: undefined,
@@ -40,6 +40,14 @@ const roundSlice = createSlice({
     },
     selectPartner: (state, { payload }: PayloadAction<number>) => {
       state.currentReceipt.partnerId = payload;
+      state.currentReceipt.items = [];
+      state.currentReceipt.orderItems = [];
+    },
+    putItems: (state, { payload }: PayloadAction<Item[]>) => {
+      state.currentReceipt.items = payload;
+    },
+    putOrderItems: (state, { payload }: PayloadAction<OrderItem[]>) => {
+      state.currentReceipt.orderItems = payload;
     },
     removeLastUnsentReceipt: (state) => {
       state.currentReceipt = undefined;

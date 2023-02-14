@@ -8,26 +8,28 @@ import fontSizes from '../constants/fontSizes';
 type AnimatedListItemProps = {
   selected: boolean;
   title: string;
+  height: number;
 };
 
 export default function AnimatedListItem({
   selected,
   title,
+  height,
   children,
 }: PropsWithChildren<AnimatedListItemProps>) {
   const [expanded, setExpanded] = useState<boolean>(selected);
-  const height = useMemo(() => new Animated.Value(0), []);
+  const heightValue = useMemo(() => new Animated.Value(0), []);
 
   useEffect(() => {
-    Animated.timing(height, {
-      toValue: expanded ? 100 : 0,
+    Animated.timing(heightValue, {
+      toValue: expanded ? height : 0,
       duration: 500,
       useNativeDriver: false,
     }).start();
-  }, [expanded, height]);
+  }, [expanded, height, heightValue]);
 
   const backgroundStyle = {
-    backgroundColor: expanded ? colors.ok : colors.neutral,
+    backgroundColor: selected ? colors.ok : colors.neutral,
   };
 
   const rippleColor = expanded ? colors.okRipple : colors.neutralRipple;
@@ -43,7 +45,9 @@ export default function AnimatedListItem({
           <Text style={styles.title}>{title}</Text>
         </View>
       </Pressable>
-      <Animated.View style={[styles.childContainer, { height }]}>{children}</Animated.View>
+      <Animated.View style={[styles.childContainer, { height: heightValue }]}>
+        <View>{children}</View>
+      </Animated.View>
     </View>
   );
 }

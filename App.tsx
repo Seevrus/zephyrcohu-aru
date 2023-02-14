@@ -25,7 +25,7 @@ import {
   StackParams,
 } from './react_native/screens/screen-types';
 import Review from './react_native/screens/sell/Review';
-import SelectItems from './react_native/screens/sell/SelectItems';
+import SelectItems from './react_native/screens/sell/select-items/SelectItems';
 import SelectPartner from './react_native/screens/sell/SelectPartner';
 import Summary from './react_native/screens/sell/Summary';
 import Index from './react_native/screens/start-page/Index';

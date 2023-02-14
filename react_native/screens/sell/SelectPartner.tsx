@@ -1,10 +1,13 @@
 import { last } from 'ramda';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+
+import { RootState } from '../../store';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+
 import ListItem from '../../components/ListItem';
 import Button from '../../components/ui/buttons/Button';
 import colors from '../../constants/colors';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { roundActions } from '../../store/round-slice/round-slice';
 import { PartnerList, SelectPartnerProps } from '../screen-types';
 
@@ -17,13 +20,17 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
   const dispatch = useAppDispatch();
 
   const partnerListType = route.params.partners;
-  const partners = useAppSelector((state) => {
-    if (partnerListType === PartnerList.ALL) {
-      return state.partners.data;
-    }
+  const selectPartners = useCallback(
+    (state: RootState) => {
+      if (partnerListType === PartnerList.ALL) {
+        return state.partners.data;
+      }
 
-    return state.partners.data.filter((partner) => partner.storeId === state.round.storeId);
-  });
+      return state.partners.data.filter((partner) => partner.storeId === state.round.storeId);
+    },
+    [partnerListType]
+  );
+  const partners = useAppSelector(selectPartners);
 
   const receipts = useAppSelector((state) => state.round.receipts);
   const lastPartnerId = useAppSelector((state) => state.round.currentReceipt?.partnerId);

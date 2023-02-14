@@ -5,19 +5,24 @@ import fontSizes from '../../constants/fontSizes';
 type InputProps = {
   label: string;
   invalid?: boolean;
+  textAlign?: 'left' | 'auto' | 'center' | 'right' | 'justify';
   config?: TextInputProps;
 };
 
 const defaultProps = {
   invalid: false,
+  textAlign: 'left',
   config: {},
 };
 
-export default function Input({ label, invalid, config }: InputProps) {
+export default function Input({ label, invalid, textAlign, config }: InputProps) {
   return (
     <View>
       <Text style={[styles.label, invalid && styles.invalidLabel]}>{label}</Text>
-      <TextInput style={[styles.input, config?.multiline && styles.multiline]} {...config} />
+      <TextInput
+        style={[styles.input, config?.multiline && styles.multiline, { textAlign }]}
+        {...config}
+      />
     </View>
   );
 }
@@ -39,7 +44,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.input,
     color: 'white',
     fontSize: 24,
-    fontFamily: 'Muli',
+    fontFamily: 'Roboto',
   },
   multiline: {
     minHeight: 150,

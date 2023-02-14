@@ -2,9 +2,13 @@ import { StyleSheet, Text, View } from 'react-native';
 import Button from '../../components/ui/buttons/Button';
 import colors from '../../constants/colors';
 import fontSizes from '../../constants/fontSizes';
+import { useAppSelector } from '../../store/hooks';
 import { ReviewProps } from '../screen-types';
 
 export default function Review({ navigation }: ReviewProps) {
+  const receipt = useAppSelector((state) => state.round.currentReceipt);
+  console.log(receipt);
+
   const onPressNextHandler = () => {
     navigation.navigate('Summary');
   };

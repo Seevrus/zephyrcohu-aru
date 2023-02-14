@@ -8,7 +8,7 @@ export type InitializeRoundResponse = {
   nextAvailableSerialNumber: number;
 };
 
-type Item = {
+export type Item = {
   id: number;
   articleNumber: string;
   expirations: {
@@ -18,7 +18,7 @@ type Item = {
   }[];
 };
 
-type OrderItem = {
+export type OrderItem = {
   id: number;
   articleNumber: string;
   quantity: number;

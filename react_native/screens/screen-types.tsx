@@ -65,6 +65,7 @@ export type ItemsTabParams = {
   SelectItemsFromAll: {
     items: ItemsList;
   };
+  Review: NavigatorScreenParams<StackParams>;
 };
 
 export type SelectItemsProps = BottomTabScreenProps<ItemsTabParams, 'SelectItemsFromStore'>;
