@@ -1,15 +1,32 @@
-import { all, append, assoc, isNil, map, pipe, prop, propEq, propOr, reject } from 'ramda';
+import {
+  all,
+  assoc,
+  assocPath,
+  dissoc,
+  has,
+  isEmpty,
+  isNil,
+  not,
+  pipe,
+  propOr,
+  propSatisfies,
+  values,
+} from 'ramda';
 import { useCallback, useState } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
-import Button from '../../../components/ui/buttons/Button';
-import colors from '../../../constants/colors';
+import { Animated, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+
 import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { Item } from '../../../store/items-slice/items-slice-types';
 import { roundActions } from '../../../store/round-slice/round-slice';
 import { Item as ReceiptItem, OrderItem } from '../../../store/round-slice/round-slice-types';
+
+import Button from '../../../components/ui/buttons/Button';
+import colors from '../../../constants/colors';
 import { ItemsList, SelectItemsProps } from '../../screen-types';
 import SelectItem from './SelectItem';
+
+const keyExtractor = (item: Item) => String(item.id);
 
 export default function SelectItems({ route, navigation }: SelectItemsProps) {
   const dispatch = useAppDispatch();
@@ -33,9 +50,7 @@ export default function SelectItems({ route, navigation }: SelectItemsProps) {
 
       if (itemsListType === ItemsList.STORE) {
         return state.items.data
-          .filter(
-            (item) => state.store.items.findIndex((storeItem) => storeItem.id === item.id) !== -1
-          )
+          .filter((item) => has(String(item.id), state.store.items))
           .map(mapItemPrice) as Item[];
       }
 
@@ -45,30 +60,46 @@ export default function SelectItems({ route, navigation }: SelectItemsProps) {
   );
   const items = useAppSelector(selectItems);
 
-  const [selectedItems, setSelectedItems] = useState<ReceiptItem[]>([]);
-  const [selectedOrderItems, setSelectedOrderItems] = useState<OrderItem[]>([]);
+  const [selectedItems, setSelectedItems] = useState<ReceiptItem>({});
+  const [selectedOrderItems, setSelectedOrderItems] = useState<OrderItem>({});
 
-  const upsertSelectedItem = (selectedItem: ReceiptItem) => {
-    if (selectedItems.findIndex((si) => si.id === selectedItem.id) === -1) {
-      setSelectedItems(append(selectedItem));
-    } else if (all(pipe(prop('quantity'), isNil), selectedItem.expirations)) {
-      setSelectedItems(reject(propEq('id', selectedItem.id)));
+  const upsertSelectedItem = useCallback(
+    (id: string, expiresAt: string, quantity: number, itemAmount: number) => {
+      if (!quantity) {
+        setSelectedItems((currentItems) => {
+          const itemsWithNewQuantity = assocPath(
+            [id, expiresAt],
+            { quantity, itemAmount },
+            currentItems
+          );
+
+          const areAllQuantitiesZero = pipe(
+            values,
+            all(propSatisfies(isNil, 'quantity'))
+          )(itemsWithNewQuantity[id]);
+
+          if (areAllQuantitiesZero) {
+            return dissoc(id, currentItems);
+          }
+
+          return itemsWithNewQuantity;
+        });
+      } else {
+        setSelectedItems(assocPath([id, expiresAt], { quantity, itemAmount }));
+      }
+    },
+    []
+  );
+
+  const upsertOrderItem = useCallback((id: string, quantity: number) => {
+    if (!quantity) {
+      setSelectedOrderItems(dissoc(id));
     } else {
-      setSelectedItems(map((i) => (i.id === selectedItem.id ? selectedItem : i)));
+      setSelectedOrderItems(assoc(id, quantity));
     }
-  };
+  }, []);
 
-  const upsertOrderItem = (selectedItem: OrderItem) => {
-    if (selectedOrderItems.findIndex((si) => si.id === selectedItem.id) === -1) {
-      setSelectedOrderItems(append(selectedItem));
-    } else if (isNil(selectedItem.quantity)) {
-      setSelectedItems(reject(propEq('id', selectedItem.id)));
-    } else {
-      setSelectedOrderItems(map((i) => (i.id === selectedItem.id ? selectedItem : i)));
-    }
-  };
-
-  const canConfirmItems = selectedItems.length > 0;
+  const canConfirmItems = not(isEmpty(selectItems));
   const confirmButtonVariant = canConfirmItems ? 'ok' : 'disabled';
   const confirmItemsHandler = () => {
     if (canConfirmItems) {
@@ -76,6 +107,20 @@ export default function SelectItems({ route, navigation }: SelectItemsProps) {
       dispatch(roundActions.putOrderItems(selectedOrderItems));
       navigation.navigate('Review');
     }
+  };
+
+  const renderItem = (info: ListRenderItemInfo<Item>) => {
+    const selected =
+      !!selectedItems[String(info.item.id)] || !!selectedOrderItems[String(info.item.id)];
+
+    return (
+      <SelectItem
+        info={info}
+        selected={selected}
+        upsertSelectedItem={upsertSelectedItem}
+        upsertOrderItem={upsertOrderItem}
+      />
+    );
   };
 
   return (
@@ -86,19 +131,7 @@ export default function SelectItems({ route, navigation }: SelectItemsProps) {
         </Button>
       </View>
       <View style={styles.listContainer}>
-        <Animated.FlatList
-          data={items}
-          keyExtractor={(item) => String(item.id)}
-          renderItem={(info) => (
-            <SelectItem
-              info={info}
-              selectedItem={selectedItems.find((si) => si.id === info.item.id)}
-              upsertSelectedItem={upsertSelectedItem}
-              selectedOrderItem={selectedOrderItems.find((si) => si.id === info.item.id)}
-              upsertOrderItem={upsertOrderItem}
-            />
-          )}
-        />
+        <Animated.FlatList data={items} keyExtractor={keyExtractor} renderItem={renderItem} />
       </View>
     </View>
   );

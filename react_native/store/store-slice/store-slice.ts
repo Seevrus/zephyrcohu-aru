@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { mergeDeepLeft, pipe, propOr, values } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
 import { fetchStore, removeStore } from './store-api-actions';
@@ -13,7 +12,7 @@ const initialState: Store = {
   firstAvailableSerialNumber: undefined,
   lastAvailableSerialNumber: undefined,
   yearCode: undefined,
-  items: [],
+  items: {},
   partners: [],
 };
 
@@ -28,14 +27,8 @@ const storeSlice = createSlice({
       state.firstAvailableSerialNumber = payload?.firstAvailableSerialNumber;
       state.lastAvailableSerialNumber = payload?.lastAvailableSerialNumber;
       state.yearCode = payload?.yearCode;
-      state.items = pipe(
-        mergeDeepLeft(state.items),
-        values
-      )(propOr([], 'items', payload) as Store['items']) as Store['items'];
-      state.partners = pipe(
-        mergeDeepLeft(state.partners),
-        values
-      )(propOr([], 'partners', payload) as Store['partners']);
+      state.items = payload?.items;
+      state.partners = payload?.partners;
     },
   },
   extraReducers: (builder) => {
@@ -69,7 +62,7 @@ const storeSlice = createSlice({
       state.firstAvailableSerialNumber = undefined;
       state.lastAvailableSerialNumber = undefined;
       state.yearCode = undefined;
-      state.items = [];
+      state.items = {};
       state.partners = [];
     });
     builder.addCase(removeStore.rejected, (_, { payload }) => {

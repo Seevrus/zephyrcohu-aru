@@ -21,11 +21,12 @@ export default function Selection({ info, onQuantityModified }: SelectionProps) 
       Number.isNaN(formattedQuantity) || !formattedQuantity ? null : formattedQuantity;
 
     if (formattedQuantity < 0 || formattedQuantity > info.item.quantity) {
-      return;
+      setSelectedQuantity(info.item.quantity);
+      onQuantityModified(info.item.expiresAt, info.item.quantity);
+    } else {
+      setSelectedQuantity(nullIshFormattedQuantity);
+      onQuantityModified(info.item.expiresAt, nullIshFormattedQuantity);
     }
-
-    setSelectedQuantity(nullIshFormattedQuantity);
-    onQuantityModified(info.item.expiresAt, nullIshFormattedQuantity);
   };
 
   return (

@@ -34,19 +34,19 @@ const roundSlice = createSlice({
         serialNumber: state.nextAvailableSerialNumber,
         totalAmount: 0,
         createdAt: format(new Date(), 'yyyy-MM-dd'),
-        items: [],
-        orderItems: [],
+        items: {},
+        orderItems: {},
       };
     },
     selectPartner: (state, { payload }: PayloadAction<number>) => {
       state.currentReceipt.partnerId = payload;
-      state.currentReceipt.items = [];
-      state.currentReceipt.orderItems = [];
+      state.currentReceipt.items = {};
+      state.currentReceipt.orderItems = {};
     },
-    putItems: (state, { payload }: PayloadAction<Item[]>) => {
+    putItems: (state, { payload }: PayloadAction<Item>) => {
       state.currentReceipt.items = payload;
     },
-    putOrderItems: (state, { payload }: PayloadAction<OrderItem[]>) => {
+    putOrderItems: (state, { payload }: PayloadAction<OrderItem>) => {
       state.currentReceipt.orderItems = payload;
     },
     removeLastUnsentReceipt: (state) => {

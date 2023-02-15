@@ -8,29 +8,28 @@ export type InitializeRoundResponse = {
   nextAvailableSerialNumber: number;
 };
 
-export type Item = {
-  id: number;
-  articleNumber: string;
-  expirations: {
-    expiresAt: string;
-    quantity: number;
-    itemAmount: number;
-  }[];
+export type ExpirationItem = {
+  quantity: number;
+  itemAmount: number;
 };
 
-export type OrderItem = {
-  id: number;
-  articleNumber: string;
-  quantity: number;
-};
+export type Item = Record<
+  string, // item id
+  Record<
+    string, // expiresAt
+    ExpirationItem
+  >
+>;
+
+export type OrderItem = Record<string, number>; // item id, quantity
 
 type Receipt = {
   partnerId: number;
   serialNumber: number;
   totalAmount: number;
   createdAt: string;
-  items: Item[];
-  orderItems: OrderItem[];
+  items: Item;
+  orderItems: OrderItem;
   isSent: boolean;
 };
 

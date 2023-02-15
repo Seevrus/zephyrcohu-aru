@@ -11,7 +11,7 @@ import { fetchPartners } from '../../store/partners-slice/partners-api-actions';
 import { initializeRound } from '../../store/round-slice/round-api-actions';
 import { fetchStores } from '../../store/store-list-slice/store-list-api-actions';
 import { fetchStore } from '../../store/store-slice/store-api-actions';
-import { FetchStoreResponse } from '../../store/store-slice/store-slice-types';
+import { Store } from '../../store/store-slice/store-slice-types';
 
 import ErrorCard from '../../components/info-cards/ErrorCard';
 import ListItem from '../../components/ListItem';
@@ -68,7 +68,7 @@ export default function StartErrand({ navigation }: StartErrandProps) {
       setPartnersError(err.message);
     }
 
-    let fetchedStore: FetchStoreResponse | undefined;
+    let fetchedStore: Store | undefined;
     try {
       fetchedStore = await dispatch(
         fetchStore({ deviceId, token, code: selectedStoreCode })

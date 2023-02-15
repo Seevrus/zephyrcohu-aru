@@ -4,15 +4,32 @@ export type FetchStoreRequest = {
   code: string;
 };
 
-export type FetchStoreResponse = Store;
+export type FetchStoreResponseItem = {
+  id: number;
+  code: string;
+  expirations: Expiration[];
+};
+
+export type FetchStoreResponse = {
+  id: number;
+  code: string;
+  name: string;
+  firstAvailableSerialNumber: number;
+  lastAvailableSerialNumber: number;
+  yearCode: number;
+  items: FetchStoreResponseItem[];
+  partners: number[];
+};
+
+export type Expiration = {
+  expiresAt: string;
+  quantity: number;
+};
 
 type StoreItem = {
   id: number;
   code: string;
-  expirations: {
-    expiresAt: string;
-    quantity: number;
-  }[];
+  expirations: Record<string, Expiration>;
 };
 
 export type Store = {
@@ -22,6 +39,6 @@ export type Store = {
   firstAvailableSerialNumber: number;
   lastAvailableSerialNumber: number;
   yearCode: number;
-  items: StoreItem[];
+  items: Record<string, StoreItem>; // id, StoreItem
   partners: number[];
 };
