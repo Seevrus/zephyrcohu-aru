@@ -1,4 +1,4 @@
-import { last } from 'ramda';
+import { filter, includes, pipe, prop, take, toLower } from 'ramda';
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
@@ -17,6 +17,8 @@ type Partner = {
   name: string;
 };
 
+const NUM_PARTNERS_SHOWN = 10;
+
 export default function SelectPartnerFromAll({ route, navigation }: SelectPartnerProps) {
   const dispatch = useAppDispatch();
 
@@ -32,16 +34,19 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
     [partnerListType]
   );
   const partners = useAppSelector(selectPartners);
+  const [partnersShown, setPartnersShown] = useState<Partner[]>(
+    take<Partner>(NUM_PARTNERS_SHOWN, partners)
+  );
 
-  const receipts = useAppSelector((state) => state.round.receipts);
+  const currentReceipt = useAppSelector((state) => state.round.currentReceipt);
   const lastPartnerId = useAppSelector((state) => state.round.currentReceipt?.partnerId);
   const [selectedPartnerId, setSelectedPartnerId] = useState<number>(lastPartnerId);
 
   useEffect(() => {
-    if (receipts.length === 0 || last(receipts).isSent) {
+    if (!currentReceipt) {
       dispatch(roundActions.addNewReceipt());
     }
-  }, [dispatch, receipts]);
+  }, [currentReceipt, dispatch]);
 
   useEffect(() => {
     navigation.addListener('blur', () => {
@@ -49,15 +54,24 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
     });
   }, [lastPartnerId, navigation]);
 
+  const searchInputHandler = (inputValue: string) => {
+    setPartnersShown(
+      pipe(
+        filter(pipe(prop('name'), toLower, includes(inputValue.toLowerCase()))),
+        take<Partner>(NUM_PARTNERS_SHOWN)
+      )(partners)
+    );
+  };
+
+  const selectPartnerHandler = (id: number) => {
+    setSelectedPartnerId(id);
+  };
+
   const confirmPartnerHandler = () => {
     if (selectedPartnerId > -1) {
       dispatch(roundActions.selectPartner(selectedPartnerId));
       navigation.navigate('SelectItems');
     }
-  };
-
-  const selectPartnerHandler = (id: number) => {
-    setSelectedPartnerId(id);
   };
 
   const renderPartner: ListRenderItem<Partner> = (info: ListRenderItemInfo<Partner>) => (
@@ -75,12 +89,18 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <View style={styles.searchInputContainer}>
-          <Input label="Keresés" labelPosition="left" />
+          <Input
+            label="Keresés"
+            labelPosition="left"
+            config={{
+              onChangeText: searchInputHandler,
+            }}
+          />
         </View>
       </View>
       <View style={styles.listContainer}>
         <FlatList
-          data={partners}
+          data={partnersShown}
           extraData={selectedPartnerId}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderPartner}
