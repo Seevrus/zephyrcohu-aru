@@ -53,10 +53,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   buttonContainer: {
-    padding: 15,
+    height: 50,
     elevation: 2,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 10,
   },
   buttonText: {
     color: 'white',
