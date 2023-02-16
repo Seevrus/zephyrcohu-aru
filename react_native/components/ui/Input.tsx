@@ -4,23 +4,40 @@ import fontSizes from '../../constants/fontSizes';
 
 type InputProps = {
   label: string;
+  labelPosition?: 'left' | 'top';
   invalid?: boolean;
   textAlign?: 'left' | 'auto' | 'center' | 'right' | 'justify';
   config?: TextInputProps;
 };
 
 const defaultProps = {
+  labelPosition: 'top',
   invalid: false,
   textAlign: 'left',
   config: {},
 };
 
-export default function Input({ label, invalid, textAlign, config }: InputProps) {
+export default function Input({ label, labelPosition, invalid, textAlign, config }: InputProps) {
+  const dynamicStyles = StyleSheet.create({
+    container: {
+      flexDirection: labelPosition === 'left' ? 'row' : 'column',
+    },
+    label: {
+      ...(labelPosition === 'left' && { marginRight: 10 }),
+      ...(labelPosition === 'top' && { marginBottom: 4 }),
+    },
+    input: {
+      textAlign,
+    },
+  });
+
   return (
-    <View>
-      <Text style={[styles.label, invalid && styles.invalidLabel]}>{label}</Text>
+    <View style={[styles.container, dynamicStyles.container]}>
+      <Text style={[dynamicStyles.label, styles.label, invalid && styles.invalidLabel]}>
+        {label}
+      </Text>
       <TextInput
-        style={[styles.input, config?.multiline && styles.multiline, { textAlign }]}
+        style={[styles.input, config?.multiline && styles.multiline, dynamicStyles.input]}
         {...config}
       />
     </View>
@@ -29,16 +46,22 @@ export default function Input({ label, invalid, textAlign, config }: InputProps)
 Input.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   label: {
     fontSize: fontSizes.body,
     fontWeight: 'bold',
     color: 'white',
-    marginBottom: 4,
   },
   invalidLabel: {
     color: colors.red300,
   },
   input: {
+    flex: 1,
     padding: 8,
     borderRadius: 8,
     backgroundColor: colors.input,
