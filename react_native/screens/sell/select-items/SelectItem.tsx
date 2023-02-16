@@ -1,5 +1,4 @@
 import { append, pipe, values } from 'ramda';
-import { memo } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 import AnimatedListItem from '../../../components/AnimatedListItem';
 import { useAppSelector } from '../../../store/hooks';
@@ -7,7 +6,7 @@ import { Item } from '../../../store/items-slice/items-slice-types';
 import { Expiration } from '../../../store/store-slice/store-slice-types';
 import Selection from './Selection';
 
-function SelectItem({
+export default function SelectItem({
   info,
   selected,
   upsertSelectedItem,
@@ -74,5 +73,3 @@ const styles = StyleSheet.create({
     width: '50%',
   },
 });
-
-export default memo(SelectItem);

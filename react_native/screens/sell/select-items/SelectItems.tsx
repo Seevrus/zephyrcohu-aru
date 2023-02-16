@@ -3,13 +3,18 @@ import {
   assoc,
   assocPath,
   dissoc,
+  filter,
   has,
+  includes,
   isEmpty,
   isNil,
   not,
   pipe,
+  prop,
   propOr,
   propSatisfies,
+  take,
+  toLower,
   values,
 } from 'ramda';
 import { useCallback, useState } from 'react';
@@ -28,6 +33,7 @@ import SelectItem from './SelectItem';
 import Input from '../../../components/ui/Input';
 
 const keyExtractor = (item: Item) => String(item.id);
+const NUM_ITEMS_SHOWN = 10;
 
 export default function SelectItems({ route, navigation }: SelectItemsProps) {
   const dispatch = useAppDispatch();
@@ -60,6 +66,7 @@ export default function SelectItems({ route, navigation }: SelectItemsProps) {
     [itemsListType, priceList]
   );
   const items = useAppSelector(selectItems);
+  const [itemsShown, setItemsShown] = useState<Item[]>(take<Item>(NUM_ITEMS_SHOWN, items));
 
   const [selectedItems, setSelectedItems] = useState<ReceiptItem>({});
   const [selectedOrderItems, setSelectedOrderItems] = useState<OrderItem>({});
@@ -100,6 +107,15 @@ export default function SelectItems({ route, navigation }: SelectItemsProps) {
     }
   }, []);
 
+  const searchInputHandler = (inputValue: string) => {
+    setItemsShown(
+      pipe(
+        filter(pipe(prop('name'), toLower, includes(inputValue.toLowerCase()))),
+        take<Item>(NUM_ITEMS_SHOWN)
+      )(items)
+    );
+  };
+
   const canConfirmItems = not(isEmpty(selectedItems));
   const confirmButtonVariant = canConfirmItems ? 'ok' : 'disabled';
   const confirmItemsHandler = () => {
@@ -128,11 +144,15 @@ export default function SelectItems({ route, navigation }: SelectItemsProps) {
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <View style={styles.searchInputContainer}>
-          <Input label="Keresés" labelPosition="left" />
+          <Input
+            label="Keresés"
+            labelPosition="left"
+            config={{ onChangeText: searchInputHandler }}
+          />
         </View>
       </View>
       <View style={styles.listContainer}>
-        <Animated.FlatList data={items} keyExtractor={keyExtractor} renderItem={renderItem} />
+        <Animated.FlatList data={itemsShown} keyExtractor={keyExtractor} renderItem={renderItem} />
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.buttonContainer}>

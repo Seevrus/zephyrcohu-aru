@@ -27,6 +27,7 @@ export default function Input({ label, labelPosition, invalid, textAlign, config
       ...(labelPosition === 'top' && { marginBottom: 4 }),
     },
     input: {
+      ...(labelPosition === 'top' && { width: '100%' }),
       textAlign,
     },
   });
@@ -48,7 +49,7 @@ Input.defaultProps = defaultProps;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 8,
+    padding: 4,
     justifyContent: 'center',
     alignItems: 'center',
   },

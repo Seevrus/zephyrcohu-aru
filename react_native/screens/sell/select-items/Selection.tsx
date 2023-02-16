@@ -72,13 +72,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'flex-end',
-    marginVertical: 5,
   },
   selectIcon: {
     marginHorizontal: 30,
     marginBottom: 5,
   },
   quantityContainer: {
+    height: 90,
     width: '50%',
   },
 });
