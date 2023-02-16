@@ -4,7 +4,6 @@ import {
   assocPath,
   dissoc,
   filter,
-  has,
   includes,
   isEmpty,
   isNil,
@@ -27,17 +26,20 @@ import { roundActions } from '../../../store/round-slice/round-slice';
 import { Item as ReceiptItem, OrderItem } from '../../../store/round-slice/round-slice-types';
 
 import Button from '../../../components/ui/buttons/Button';
-import colors from '../../../constants/colors';
-import { ItemsList, SelectItemsProps } from '../../screen-types';
-import SelectItem from './SelectItem';
 import Input from '../../../components/ui/Input';
+import colors from '../../../constants/colors';
+import { SelectItemsProps } from '../../screen-types';
+import SelectItem from './SelectItem';
+import { ItemAvailability } from '../../../components/AnimatedListItem';
 
 const keyExtractor = (item: Item) => String(item.id);
 const NUM_ITEMS_SHOWN = 10;
 
-export default function SelectItems({ route, navigation }: SelectItemsProps) {
+export default function SelectItems({ navigation }: SelectItemsProps) {
   const dispatch = useAppDispatch();
-  const itemsListType = route.params.items;
+
+  const selectStoreItems = useCallback((state: RootState) => state.store.items, []);
+  const storeItems = useAppSelector(selectStoreItems);
 
   const partnerId = useAppSelector((state) => state.round.currentReceipt.partnerId);
   const selectPriceList = useCallback(
@@ -55,15 +57,9 @@ export default function SelectItems({ route, navigation }: SelectItemsProps) {
         return assoc('price', propOr(item.price, 'price', priceListItem), item);
       };
 
-      if (itemsListType === ItemsList.STORE) {
-        return state.items.data
-          .filter((item) => has(String(item.id), state.store.items))
-          .map(mapItemPrice) as Item[];
-      }
-
       return state.items.data.map(mapItemPrice) as Item[];
     },
-    [itemsListType, priceList]
+    [priceList]
   );
   const items = useAppSelector(selectItems);
   const [itemsShown, setItemsShown] = useState<Item[]>(take<Item>(NUM_ITEMS_SHOWN, items));
@@ -127,13 +123,20 @@ export default function SelectItems({ route, navigation }: SelectItemsProps) {
   };
 
   const renderItem = (info: ListRenderItemInfo<Item>) => {
-    const selected =
-      !!selectedItems[String(info.item.id)] || !!selectedOrderItems[String(info.item.id)];
+    let type: ItemAvailability;
+    if (!!selectedItems[String(info.item.id)] || !!selectedOrderItems[String(info.item.id)]) {
+      type = ItemAvailability.IN_RECEIPT;
+    } else if (storeItems[info.item.id]) {
+      // TODO: map it to current quantity
+      type = ItemAvailability.AVAILABLE;
+    } else {
+      type = ItemAvailability.ONLY_ORDER;
+    }
 
     return (
       <SelectItem
         info={info}
-        selected={selected}
+        type={type}
         upsertSelectedItem={upsertSelectedItem}
         upsertOrderItem={upsertOrderItem}
       />

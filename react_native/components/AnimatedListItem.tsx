@@ -5,19 +5,25 @@ import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import colors from '../constants/colors';
 import fontSizes from '../constants/fontSizes';
 
+export enum ItemAvailability {
+  IN_RECEIPT,
+  AVAILABLE,
+  ONLY_ORDER,
+}
+
 type AnimatedListItemProps = {
-  selected: boolean;
+  type: ItemAvailability;
   title: string;
   height: number;
 };
 
 export default function AnimatedListItem({
-  selected,
+  type,
   title,
   height,
   children,
 }: PropsWithChildren<AnimatedListItemProps>) {
-  const [expanded, setExpanded] = useState<boolean>(selected);
+  const [expanded, setExpanded] = useState<boolean>(type === ItemAvailability.IN_RECEIPT);
   const heightValue = useMemo(() => new Animated.Value(0), []);
 
   useEffect(() => {
@@ -28,18 +34,17 @@ export default function AnimatedListItem({
     }).start();
   }, [expanded, height, heightValue]);
 
-  const backgroundStyle = {
-    backgroundColor: selected ? colors.ok : colors.neutral,
-  };
+  const backgroundColor = [colors.ok, colors.neutral, colors.warning];
 
-  const rippleColor = expanded ? colors.okRipple : colors.neutralRipple;
+  const backgroundStyle = {
+    backgroundColor: backgroundColor[type],
+  };
 
   return (
     <View style={styles.container}>
       <Pressable
         onPress={() => setExpanded(not)}
-        style={[styles.item, backgroundStyle]}
-        android_ripple={{ color: rippleColor }}
+        style={({ pressed }) => [styles.item, backgroundStyle, pressed && { opacity: 0.75 }]}
       >
         <View style={styles.titleContainer}>
           <Text style={styles.title}>{title}</Text>

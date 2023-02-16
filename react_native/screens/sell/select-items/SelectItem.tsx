@@ -1,6 +1,6 @@
 import { append, pipe, values } from 'ramda';
 import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
-import AnimatedListItem from '../../../components/AnimatedListItem';
+import AnimatedListItem, { ItemAvailability } from '../../../components/AnimatedListItem';
 import { useAppSelector } from '../../../store/hooks';
 import { Item } from '../../../store/items-slice/items-slice-types';
 import { Expiration } from '../../../store/store-slice/store-slice-types';
@@ -8,12 +8,12 @@ import Selection from './Selection';
 
 export default function SelectItem({
   info,
-  selected,
+  type,
   upsertSelectedItem,
   upsertOrderItem,
 }: {
   info: ListRenderItemInfo<Item>;
-  selected: boolean;
+  type: ItemAvailability;
   upsertSelectedItem: (id: string, expiresAt: string, quantity: number, itemAmount: number) => void;
   upsertOrderItem: (id: string, quantity: number) => void;
 }) {
@@ -41,7 +41,7 @@ export default function SelectItem({
   };
 
   return (
-    <AnimatedListItem selected={selected} title={info.item.name} height={expirations.length * 98}>
+    <AnimatedListItem type={type} title={info.item.name} height={expirations.length * 98}>
       <View style={styles.selectItemContainer}>
         <FlatList
           data={expirations}
