@@ -25,6 +25,7 @@ import Button from '../../../components/ui/buttons/Button';
 import colors from '../../../constants/colors';
 import { ItemsList, SelectItemsProps } from '../../screen-types';
 import SelectItem from './SelectItem';
+import Input from '../../../components/ui/Input';
 
 const keyExtractor = (item: Item) => String(item.id);
 
@@ -99,7 +100,7 @@ export default function SelectItems({ route, navigation }: SelectItemsProps) {
     }
   }, []);
 
-  const canConfirmItems = not(isEmpty(selectItems));
+  const canConfirmItems = not(isEmpty(selectedItems));
   const confirmButtonVariant = canConfirmItems ? 'ok' : 'disabled';
   const confirmItemsHandler = () => {
     if (canConfirmItems) {
@@ -125,13 +126,20 @@ export default function SelectItems({ route, navigation }: SelectItemsProps) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.buttonContainer}>
-        <Button variant={confirmButtonVariant} onPress={confirmItemsHandler}>
-          Tétellista véglegesítése
-        </Button>
+      <View style={styles.headerContainer}>
+        <View style={styles.searchInputContainer}>
+          <Input label="Keresés" labelPosition="left" />
+        </View>
       </View>
       <View style={styles.listContainer}>
         <Animated.FlatList data={items} keyExtractor={keyExtractor} renderItem={renderItem} />
+      </View>
+      <View style={styles.footerContainer}>
+        <View style={styles.buttonContainer}>
+          <Button variant={confirmButtonVariant} onPress={confirmItemsHandler}>
+            Tétellista véglegesítése
+          </Button>
+        </View>
       </View>
     </View>
   );
@@ -142,13 +150,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  headerContainer: {
+    height: 65,
+    marginVertical: 10,
+  },
   buttonContainer: {
-    flex: 0.1,
-    marginVertical: 20,
+    flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  searchInputContainer: {
+    flex: 1,
+    marginHorizontal: '7%',
+  },
   listContainer: {
-    flex: 0.9,
+    flex: 1,
+  },
+  footerContainer: {
+    height: 50,
+    marginVertical: 10,
   },
 });

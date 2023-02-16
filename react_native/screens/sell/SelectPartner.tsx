@@ -10,6 +10,7 @@ import Button from '../../components/ui/buttons/Button';
 import colors from '../../constants/colors';
 import { roundActions } from '../../store/round-slice/round-slice';
 import { PartnerList, SelectPartnerProps } from '../screen-types';
+import Input from '../../components/ui/Input';
 
 type Partner = {
   id: number;
@@ -72,10 +73,10 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
 
   return (
     <View style={styles.container}>
-      <View style={styles.buttonContainer}>
-        <Button variant={confirmButtonVariant} onPress={confirmPartnerHandler}>
-          Partner kiválasztása
-        </Button>
+      <View style={styles.headerContainer}>
+        <View style={styles.searchInputContainer}>
+          <Input label="Keresés" labelPosition="left" />
+        </View>
       </View>
       <View style={styles.listContainer}>
         <FlatList
@@ -84,6 +85,13 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
           keyExtractor={(item) => String(item.id)}
           renderItem={renderPartner}
         />
+      </View>
+      <View style={styles.footerContainer}>
+        <View style={styles.buttonContainer}>
+          <Button variant={confirmButtonVariant} onPress={confirmPartnerHandler}>
+            Partner kiválasztása
+          </Button>
+        </View>
       </View>
     </View>
   );
@@ -94,13 +102,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  headerContainer: {
+    height: 65,
+    marginVertical: 10,
+  },
   buttonContainer: {
-    flex: 0.1,
-    marginVertical: 20,
+    flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  searchInputContainer: {
+    flex: 1,
+    marginHorizontal: '7%',
+  },
   listContainer: {
-    flex: 0.9,
+    flex: 1,
+  },
+  footerContainer: {
+    height: 50,
+    marginVertical: 10,
   },
 });
