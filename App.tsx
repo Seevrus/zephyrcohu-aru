@@ -45,10 +45,10 @@ function Settings() {
 }
 
 function Partners() {
-  const storePartnersIcon = ({ color }) => <MaterialIcons name="store" size={36} color={color} />;
+  const storePartnersIcon = ({ color }) => <MaterialIcons name="store" size={30} color={color} />;
 
   const allPartnersIcon = ({ color }) => (
-    <MaterialIcons name="all-inclusive" size={36} color={color} />
+    <MaterialIcons name="all-inclusive" size={30} color={color} />
   );
 
   return (
@@ -56,13 +56,13 @@ function Partners() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          height: 80,
+          height: 60,
           backgroundColor: colors.neutral,
         },
         tabBarActiveTintColor: colors.blue200,
         tabBarInactiveTintColor: 'white',
         tabBarLabelStyle: {
-          fontSize: fontSizes.body,
+          fontSize: fontSizes.footer,
         },
       }}
     >
@@ -90,10 +90,10 @@ function Partners() {
 }
 
 function Items() {
-  const storeItemsIcon = ({ color }) => <MaterialIcons name="icecream" size={36} color={color} />;
+  const storeItemsIcon = ({ color }) => <MaterialIcons name="icecream" size={30} color={color} />;
 
   const allItemsIcon = ({ color }) => (
-    <MaterialIcons name="all-inclusive" size={36} color={color} />
+    <MaterialIcons name="all-inclusive" size={30} color={color} />
   );
 
   return (
@@ -101,13 +101,13 @@ function Items() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          height: 80,
+          height: 60,
           backgroundColor: colors.neutral,
         },
         tabBarActiveTintColor: colors.blue200,
         tabBarInactiveTintColor: 'white',
         tabBarLabelStyle: {
-          fontSize: fontSizes.body,
+          fontSize: fontSizes.footer,
         },
       }}
     >
