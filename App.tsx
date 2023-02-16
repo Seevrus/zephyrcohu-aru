@@ -17,13 +17,7 @@ import StartErrand from './react_native/screens/errand-administration/StartErran
 import StartupError from './react_native/screens/errors/StartupError';
 import Receipt from './react_native/screens/receipts/Receipt';
 import ReceiptList from './react_native/screens/receipts/ReceiptList';
-import {
-  ItemsList,
-  ItemsTabParams,
-  PartnerList,
-  PartnerTabParams,
-  StackParams,
-} from './react_native/screens/screen-types';
+import { PartnerList, PartnerTabParams, StackParams } from './react_native/screens/screen-types';
 import Review from './react_native/screens/sell/Review';
 import SelectItems from './react_native/screens/sell/select-items/SelectItems';
 import SelectPartner from './react_native/screens/sell/SelectPartner';
@@ -34,7 +28,6 @@ import StartupCheck from './react_native/screens/startup/StartupCheck';
 
 const Stack = createNativeStackNavigator<StackParams>();
 const PartnerTab = createBottomTabNavigator<PartnerTabParams>();
-const ItemsTab = createBottomTabNavigator<ItemsTabParams>();
 
 function Settings() {
   return (
@@ -86,51 +79,6 @@ function Partners() {
         }}
       />
     </PartnerTab.Navigator>
-  );
-}
-
-function Items() {
-  const storeItemsIcon = ({ color }) => <MaterialIcons name="icecream" size={30} color={color} />;
-
-  const allItemsIcon = ({ color }) => (
-    <MaterialIcons name="all-inclusive" size={30} color={color} />
-  );
-
-  return (
-    <ItemsTab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          height: 60,
-          backgroundColor: colors.neutral,
-        },
-        tabBarActiveTintColor: colors.blue200,
-        tabBarInactiveTintColor: 'white',
-        tabBarLabelStyle: {
-          fontSize: fontSizes.footer,
-        },
-      }}
-    >
-      <ItemsTab.Screen
-        name="SelectItemsFromStore"
-        component={SelectItems}
-        options={{ title: 'Raktárkészlet', tabBarIcon: storeItemsIcon }}
-        initialParams={{
-          items: ItemsList.STORE,
-        }}
-      />
-      <ItemsTab.Screen
-        name="SelectItemsFromAll"
-        component={SelectItems}
-        options={{
-          title: 'Minden tétel',
-          tabBarIcon: allItemsIcon,
-        }}
-        initialParams={{
-          items: ItemsList.ALL,
-        }}
-      />
-    </ItemsTab.Navigator>
   );
 }
 
@@ -194,7 +142,7 @@ function Main() {
           />
           <Stack.Screen
             name="SelectItems"
-            component={Items}
+            component={SelectItems}
             options={{
               headerTitle: 'Tételek',
             }}

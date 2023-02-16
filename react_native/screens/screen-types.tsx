@@ -29,6 +29,7 @@ export type StartupErrorProps = NativeStackScreenProps<StackParams, 'StartupErro
 
 export type IndexProps = NativeStackScreenProps<StackParams, 'Index'>;
 
+export type SelectItemsProps = BottomTabScreenProps<StackParams, 'SelectItems'>;
 export type ReviewProps = NativeStackScreenProps<StackParams, 'Review'>;
 export type SummaryProps = NativeStackScreenProps<StackParams, 'Summary'>;
 
@@ -52,20 +53,3 @@ export type PartnerTabParams = {
 };
 
 export type SelectPartnerProps = BottomTabScreenProps<PartnerTabParams, 'SelectPartnerFromStore'>;
-
-export enum ItemsList {
-  STORE,
-  ALL,
-}
-
-export type ItemsTabParams = {
-  SelectItemsFromStore: {
-    items: ItemsList;
-  };
-  SelectItemsFromAll: {
-    items: ItemsList;
-  };
-  Review: NavigatorScreenParams<StackParams>;
-};
-
-export type SelectItemsProps = BottomTabScreenProps<ItemsTabParams, 'SelectItemsFromStore'>;
