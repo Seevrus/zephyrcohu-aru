@@ -105,7 +105,7 @@ export const getTiles = ({
         if (endErrandTile === EndErrandTile.Disabled) {
           Alert.alert('Funkció nem elérhető', 'Nincs kör indítva.', [{ text: 'Értem' }]);
         } else {
-          // Navigálás...
+          navigation.navigate('EndErrand');
         }
       },
     },
