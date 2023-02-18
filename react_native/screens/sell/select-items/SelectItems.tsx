@@ -30,7 +30,7 @@ import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
 import { SelectItemsProps } from '../../screen-types';
 import SelectItem from './SelectItem';
-import { ItemAvailability } from '../../../components/AnimatedListItem';
+import { ItemAvailability } from '../../../components/ui/AnimatedListItem';
 
 const keyExtractor = (item: Item) => String(item.id);
 const NUM_ITEMS_SHOWN = 10;

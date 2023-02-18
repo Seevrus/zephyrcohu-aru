@@ -5,7 +5,7 @@ import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from '
 import { RootState } from '../../store';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
-import ListItem from '../../components/ListItem';
+import ListItem from '../../components/ui/ListItem';
 import Button from '../../components/ui/buttons/Button';
 import colors from '../../constants/colors';
 import { roundActions } from '../../store/round-slice/round-slice';

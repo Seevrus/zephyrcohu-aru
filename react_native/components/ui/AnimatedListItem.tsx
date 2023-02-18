@@ -2,8 +2,8 @@ import { not } from 'ramda';
 import { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import colors from '../constants/colors';
-import fontSizes from '../constants/fontSizes';
+import colors from '../../constants/colors';
+import fontSizes from '../../constants/fontSizes';
 
 export enum ItemAvailability {
   IN_RECEIPT,

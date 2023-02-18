@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import colors from '../constants/colors';
-import fontSizes from '../constants/fontSizes';
+import colors from '../../constants/colors';
+import fontSizes from '../../constants/fontSizes';
 
 type ListItemProps = {
   id: number;

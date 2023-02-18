@@ -1,6 +1,6 @@
 import { append, pipe, values } from 'ramda';
 import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
-import AnimatedListItem, { ItemAvailability } from '../../../components/AnimatedListItem';
+import AnimatedListItem, { ItemAvailability } from '../../../components/ui/AnimatedListItem';
 import { useAppSelector } from '../../../store/hooks';
 import { Item } from '../../../store/items-slice/items-slice-types';
 import { Expiration } from '../../../store/store-slice/store-slice-types';

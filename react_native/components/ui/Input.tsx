@@ -21,6 +21,7 @@ export default function Input({ label, labelPosition, invalid, textAlign, config
   const dynamicStyles = StyleSheet.create({
     container: {
       flexDirection: labelPosition === 'left' ? 'row' : 'column',
+      alignItems: labelPosition === 'left' ? 'center' : 'flex-start',
     },
     label: {
       ...(labelPosition === 'left' && { marginRight: 10 }),
@@ -51,7 +52,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 4,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   label: {
     fontSize: fontSizes.body,
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: colors.input,
     color: 'white',
-    fontSize: 24,
+    fontSize: fontSizes.input,
     fontFamily: 'Roboto',
   },
   multiline: {
