@@ -22,6 +22,7 @@ class CompanyResource extends JsonResource
             'postalCode' => $this->postal_code,
             'city' => $this->city,
             'address' => $this->address,
+            'felir' => $this->felir,
             'vatNumber' => $this->vat_number,
             'iban' => $this->iban,
             'bankAccount' => $this->bank_account,

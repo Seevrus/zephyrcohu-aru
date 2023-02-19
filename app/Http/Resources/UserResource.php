@@ -22,6 +22,7 @@ class UserResource extends JsonResource
                 'phoneNumber' => $this->phone_number,
                 'type' => $this->type,
                 'createdAt' => $this->created_at,
+                'updatedAt' => $this->updated_at,
                 'lastActive' => $this->last_active,
                 'company' => new CompanyResource($this->company),
             ] : [
