@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\ItemsController;
+use App\Http\Controllers\PartnerListController;
 use App\Http\Controllers\PartnersController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\StoreController;
@@ -52,14 +53,19 @@ Route::controller(ItemsController::class)->prefix('items')->group(function () {
     Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
 });
 
-Route::controller(StoreController::class)->prefix('/stores')->group(function () {
+Route::controller(PartnersController::class)->prefix('partners')->group(function () {
     Route::get('/', 'viewAll')->middleware(['auth:sanctum', 'ability:app,integra']);
-    Route::get('/{code}', 'view')->middleware(['auth:sanctum', 'ability:app,integra']);
     Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
 });
 
-Route::controller(PartnersController::class)->prefix('partners')->group(function () {
+Route::controller(PartnerListController::class)->prefix('partner-lists')->group(function () {
     Route::get('/', 'viewAll')->middleware(['auth:sanctum', 'ability:app,integra']);
+    Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
+});
+
+Route::controller(StoreController::class)->prefix('/stores')->group(function () {
+    Route::get('/', 'viewAll')->middleware(['auth:sanctum', 'ability:app,integra']);
+    Route::get('/{code}', 'view')->middleware(['auth:sanctum', 'ability:app,integra']);
     Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
 });
 
