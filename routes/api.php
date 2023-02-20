@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AgentController;
 use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\PartnersController;
 use App\Http\Controllers\ReceiptController;
@@ -39,6 +40,11 @@ Route::controller(UserController::class)->prefix('tokens')->group(function () {
 
     Route::delete('/{id}', 'delete')
         ->middleware(['auth:sanctum', 'ability:integra']);
+});
+
+Route::controller(AgentController::class)->prefix('users')->group(function () {
+    Route::get('/', 'viewAll')->middleware(['auth:sanctum', 'ability:app,integra']);
+    Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
 });
 
 Route::controller(ItemsController::class)->prefix('items')->group(function () {
