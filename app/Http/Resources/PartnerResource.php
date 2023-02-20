@@ -20,23 +20,17 @@ class PartnerResource extends JsonResource
             'code' => $this->code,
             'siteCode' => $this->site_code,
             'name' => $this->name,
-            'country' => $this->country,
-            'postalCode' => $this->postal_code,
-            'city' => $this->city,
-            'address' => $this->address,
             'vatNumber' => $this->vat_number,
+            'invoiceType' => $this->invoice_type,
+            'invoiceCopies' => $this->invoice_copies,
+            'payment_days' => $this->payment_days,
             'iban' => $this->iban,
             'bankAccount' => $this->bank_account,
             'phoneNumber' => $this->phone_number,
             'email' => $this->email,
+            'locations' => new PartnerLocationCollection($this->partner_locations),
+            'priceList' => new PriceListItemCollection($this->items),
         ];
-
-        if ($request->details) {
-            $partner['receipts'] = new ReceiptCollection($this->receipts);
-            $partner['orders'] = new OrderCollection($this->orders);
-        } else {
-            $partner['priceList'] = new PriceListResource($this->price_list);
-        }
 
         return $partner;
     }

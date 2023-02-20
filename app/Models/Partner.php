@@ -11,18 +11,16 @@ class Partner extends Model
 
     protected $fillable = [
         'company_id',
-        'store_id',
-        'price_list_id',
         'code',
         'site_code',
         'name',
-        'country',
-        'postal_code',
-        'city',
-        'address',
         'vat_number',
         'iban',
         'bank_account',
+        'invoice_type',
+        'invoice_copies',
+        'payment_days',
+        'original_copies',
         'phone_number',
         'email',
     ];
@@ -32,23 +30,18 @@ class Partner extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function store()
+    public function partner_locations()
     {
-        return $this->belongsTo(Store::class);
+        return $this->hasMany(PartnerLocation::class);
     }
 
-    public function price_list()
+    public function partner_lists()
     {
-        return $this->belongsTo(PriceList::class);
+        return $this->belongsToMany(PartnerList::class, 'partner_partner_list');
     }
 
-    public function receipts()
+    public function items()
     {
-        return $this->hasMany(Receipt::class);
-    }
-
-    public function orders()
-    {
-        return $this->hasMany(Order::class);
+        return $this->belongsToMany(Item::class, 'price_lists')->withPivot('net_price');
     }
 }

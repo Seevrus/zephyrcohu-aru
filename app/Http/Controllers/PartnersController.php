@@ -7,9 +7,6 @@ use App\Http\Resources\PartnerCollection;
 use App\Models\Item;
 use App\Models\Log;
 use App\Models\Partner;
-use App\Models\PriceList;
-use App\Models\PriceListItem;
-use App\Models\Store;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
@@ -30,11 +27,7 @@ class PartnersController extends Controller
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $partners = $sender->company->partners()->with('price_list.price_list_items')->get();
-
-            if ($request->details) {
-                $partners->load('orders.items', 'receipts.expirations.stock_item.item');
-            }
+            $partners = $sender->company->partners()->with('partner_locations', 'items')->get();
 
             Log::insert([
                 'company_id' => $sender->company_id,
@@ -70,51 +63,37 @@ class PartnersController extends Controller
 
             $company = $sender->company;
             $company->partners()->delete();
-            $company->price_lists()->delete();
 
             foreach ($request->data as $partnerRequest) {
-                $store = $partnerRequest['storeCode']
-                    ? Store::firstWhere('code', $partnerRequest['storeCode'])
-                    : null;
-
-                $price_list = array_key_exists('priceList', $partnerRequest)
-                    ? new PriceList([
-                        'company_id' => $company->id,
-                        'code' => $partnerRequest['priceList']['code'],
-                    ])
-                    : null;
-
-                if ($price_list) {
-                    $price_list->save();
-
-                    foreach ($partnerRequest['priceList']['items'] as $priceListItemRequest) {
-                        $dbItem = Item::firstWhere('article_number', $priceListItemRequest['articleNumber']);
-
-                        PriceListItem::create([
-                            'price_list_id' => $price_list->id,
-                            'item_id' => $dbItem->id,
-                            'price' => $priceListItemRequest['price'],
-                        ]);
-                    }
-                }
-
-                Partner::create([
+                $partner = Partner::create([
                     'company_id' => $company->id,
-                    'store_id' => $store ? $store->id : null,
-                    'price_list_id' => $price_list ? $price_list->id : null,
                     'code' => $partnerRequest['code'],
                     'site_code' => $partnerRequest['siteCode'],
                     'name' => $partnerRequest['name'],
-                    'country' => $partnerRequest['country'],
-                    'postal_code' => $partnerRequest['postalCode'],
-                    'city' => $partnerRequest['city'],
-                    'address' => $partnerRequest['address'],
                     'vat_number' => $partnerRequest['vatNumber'],
+                    'invoice_type' => $partnerRequest['invoiceType'],
+                    'invoice_copies' => $partnerRequest['invoiceCopies'],
+                    'payment_days' => $partnerRequest['paymentDays'],
                     'iban' => $partnerRequest['iban'],
                     'bank_account' => $partnerRequest['bankAccount'],
                     'phone_number' => $partnerRequest['phoneNumber'] ?? null,
                     'email' => $partnerRequest['email'] ?? null,
                 ]);
+
+                $partner->partner_locations()->createMany(array_map(function ($locationRequest) {
+                    return [
+                        'location_type' => $locationRequest['locationType'],
+                        'country' => $locationRequest['country'],
+                        'postal_code' => $locationRequest['postalCode'],
+                        'city' => $locationRequest['city'],
+                        'address' => $locationRequest['address'],
+                    ];
+                }, $partnerRequest['locations']));
+
+                foreach ($partnerRequest['priceList'] ?? [] as $priceRequest) {
+                    $item = Item::firstWhere('article_number', $priceRequest['articleNumber']);
+                    $partner->items()->attach($item, ['net_price' => $priceRequest['netPrice']]);
+                }
             }
 
             Log::insert([
