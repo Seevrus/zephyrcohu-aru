@@ -23,13 +23,8 @@ class Store extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function partners()
+    public function expirations()
     {
-        return $this->hasMany(Partner::class);
-    }
-
-    public function items()
-    {
-        return $this->belongsToMany(Item::class, 'stock_item')->using(StockItem::class)->withPivot('id')->withTimestamps();
+        return $this->belongsToMany(Expiration::class)->withPivot('quantity');
     }
 }

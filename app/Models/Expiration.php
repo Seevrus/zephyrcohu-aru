@@ -10,15 +10,17 @@ class Expiration extends Model
     use HasFactory;
 
     protected $fillable = [
-        'stock_item_id',
+        'item_id',
         'expires_at',
-        'quantity',
     ];
 
-    public $timestamps = false;
-
-    public function stock_item()
+    public function item()
     {
-        return $this->belongsTo(StockItem::class);
+        return $this->belongsTo(Item::class);
+    }
+
+    public function stores()
+    {
+        return $this->belongsToMany(Store::class)->withPivot('quantity');
     }
 }
