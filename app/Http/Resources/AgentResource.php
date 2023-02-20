@@ -18,8 +18,8 @@ class AgentResource extends JsonResource
             'code' => $this->code,
             'name' => $this->name,
             'phoneNumber' => $this->phone_number,
-            'createdAt' => $this->created_at,
-            'updatedAt' => $this->updated_at,
+            'createdAt' => $this->created_at->toDateTimeString(),
+            'updatedAt' => $this->updated_at->toDateTimeString(),
             'lastActive' => $this->last_active,
         ];
     }

@@ -30,6 +30,8 @@ class PartnerResource extends JsonResource
             'email' => $this->email,
             'locations' => new PartnerLocationCollection($this->partner_locations),
             'priceList' => new PriceListItemCollection($this->items),
+            'createdAt' => $this->created_at->toDateTimeString(),
+            'updatedAt' => $this->updated_at->toDateTimeString(),
         ];
 
         return $partner;

@@ -21,8 +21,8 @@ class UserResource extends JsonResource
                 'id' => $this->id,
                 'phoneNumber' => $this->phone_number,
                 'type' => $this->type,
-                'createdAt' => $this->created_at,
-                'updatedAt' => $this->updated_at,
+                'createdAt' => $this->created_at->toDateTimeString(),
+                'updatedAt' => $this->updated_at->toDateTimeString(),
                 'lastActive' => $this->last_active,
                 'company' => new CompanyResource($this->company),
             ] : [
