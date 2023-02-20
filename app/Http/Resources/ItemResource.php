@@ -16,6 +16,7 @@ class ItemResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'CNCode' => $this->cn_code,
             'articleNumber' => $this->article_number,
             'name' => $this->name,
             'shortName' => $this->short_name,
@@ -23,7 +24,9 @@ class ItemResource extends JsonResource
             'unitName' => $this->unit_name,
             'productCatalogCode' => $this->product_catalog_code,
             'vatRate' => $this->vat_rate,
-            'price' => $this->price,
+            'netPprice' => $this->net_price,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
         ];
     }
 }

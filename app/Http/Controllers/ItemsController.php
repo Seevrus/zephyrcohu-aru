@@ -63,17 +63,18 @@ class ItemsController extends Controller
             $company = $sender->company;
             $company->items()->delete();
 
-            foreach ($request->data as $store) {
+            foreach ($request->data as $item) {
                 Item::create([
                     'company_id' => $company->id,
-                    'article_number' => $store['articleNumber'],
-                    'name' => $store['name'],
-                    'short_name' => $store['shortName'],
-                    'category' => $store['category'],
-                    'unit_name' => $store['unitName'],
-                    'product_catalog_code' => $store['productCatalogCode'],
-                    'vat_rate' => $store['vatRate'],
-                    'price' => $store['price'],
+                    'cn_code' => $item['CNCode'],
+                    'article_number' => $item['articleNumber'],
+                    'name' => $item['name'],
+                    'short_name' => $item['shortName'],
+                    'category' => $item['category'],
+                    'unit_name' => $item['unitName'],
+                    'product_catalog_code' => $item['productCatalogCode'],
+                    'vat_rate' => $item['vatRate'],
+                    'net_price' => $item['netPrice'],
                 ]);
             }
 
