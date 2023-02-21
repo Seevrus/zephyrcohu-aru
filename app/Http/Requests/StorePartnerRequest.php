@@ -50,7 +50,7 @@ class StorePartnerRequest extends FormRequest
             'data.*.locations.*.address' => 'required_with:data.*.locations.*|string|max:40',
             'data.*.priceList' => 'array',
             'data.*.priceList.*.articleNumber' => 'required_with:data.*.priceList|string|size:16|exists:items,article_number',
-            'data.*.priceList.*.netPrice' => 'required_with:data.*.priceList|numeric|min:0',
+            'data.*.priceList.*.netPrice' => 'required_with:data.*.priceList|integer|min:0|max:2147483647',
         ];
     }
 }
