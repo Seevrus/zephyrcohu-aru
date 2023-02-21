@@ -51,7 +51,7 @@ class PartnersController extends Controller
     /**
      * Delete previous partners and store the new array in the database
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\StorePartnerRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StorePartnerRequest $request)

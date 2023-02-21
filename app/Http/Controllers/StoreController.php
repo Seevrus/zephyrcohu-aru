@@ -86,7 +86,7 @@ class StoreController extends Controller
     /**
      * Delete previous stores and saves the new data.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\StoreStoreRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreStoreRequest $request)

@@ -50,7 +50,7 @@ class AgentController extends Controller
     /**
      * Delete previous agents and store the new array in the database
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\StoreAgentRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreAgentRequest $request)

@@ -2,43 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePartnerListRequest;
-use App\Http\Resources\PartnerListCollection;
+use App\Http\Requests\StoreOrderRequest;
+use App\Http\Resources\OrderCollection;
 use App\Models\Log;
-use App\Models\Partner;
-use App\Models\PartnerList;
-use Error;
+use App\Models\Order;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
-class PartnerListController extends Controller
+class OrderController extends Controller
 {
     /**
-     * View all partner lists
+     * Display all orders.
+     *
+     * @return \Illuminate\Http\Response
      */
     public function viewAll(Request $request)
     {
         try {
-            $this->authorize('viewAll', Partner::class);
+            $this->authorize('viewAll', Receipt::class);
 
             $sender = $request->user();
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $partnerLists = $sender->company->partner_lists()->with('partners')->get();
+            $orders = $sender->company->orders()->with('order_items')->get();
 
             Log::insert([
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $partnerLists->count() . ' partner lists',
+                'action' => 'Accessed ' . $orders->count() . ' receipts',
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 
-            return new PartnerListCollection($partnerLists);
+            return new OrderCollection($orders);
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
@@ -50,38 +50,29 @@ class PartnerListController extends Controller
     }
 
     /**
-     * Delete previous partner lists and store the new array in the database
+     * Upload an array of new orders.
      *
-     * @param  \Illuminate\Http\StorePartnerListRequest  $request
+     * @param  \App\Http\Requests\StoreOrderRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StorePartnerListRequest $request)
+    public function store(StoreOrderRequest $request)
     {
         try {
             $sender = $request->user();
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $company = $sender->company;
-            $company->partner_lists()->delete();
-
-            foreach ($request->data as $partnerListRequest) {
-                $partnerList = PartnerList::create([
-                    'company_id' => $company->id,
-                    'name' => $partnerListRequest['name'],
+            foreach ($request->data as $orderRequest) {
+                $order = Order::create([
+                    'company_id' => $sender->company->id,
+                    'order_date' => $orderRequest['orderDate'],
                 ]);
 
-                foreach ($partnerListRequest['partners'] as $list) {
-                    $partner = Partner::firstWhere([
-                        'code' => $list['code'],
-                        'site_code' => $list['siteCode'],
+                foreach ($orderRequest['items'] as $orderItem) {
+                    $order->order_items()->create([
+                        'article_number' => $orderItem['articleNumber'],
+                        'quantity' => $orderItem['quantity'],
                     ]);
-
-                    if (!$partner) {
-                        throw new Error('Partner could not be found.');
-                    }
-
-                    $partnerList->partners()->attach($partner);
                 }
             }
 
@@ -89,7 +80,7 @@ class PartnerListController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Stored ' . count($request->data) . ' partner lists',
+                'action' => 'Uploaded ' . count($request->data) . ' new orders',
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
         } catch (Exception $e) {

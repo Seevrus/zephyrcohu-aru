@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class StoreReceiptRequest extends FormRequest
 {
@@ -14,7 +15,11 @@ class StoreReceiptRequest extends FormRequest
      */
     public function authorize()
     {
-        return Hash::check(request()->header('X-Device-Id'), $this->user()->device_id);
+        if (!Hash::check(request()->header('X-Device-Id'), $this->user()->device_id)) {
+            throw new UnauthorizedHttpException(random_bytes(32));
+        }
+
+        return true;
     }
 
     /**

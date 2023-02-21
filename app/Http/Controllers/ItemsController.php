@@ -50,7 +50,7 @@ class ItemsController extends Controller
     /**
      * Delete previous items and saves the new data.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\StoreItemRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreItemRequest $request)

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\ItemsController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PartnerListController;
 use App\Http\Controllers\PartnersController;
 use App\Http\Controllers\ReceiptController;
@@ -70,6 +71,13 @@ Route::controller(StoreController::class)->prefix('/stores')->group(function () 
 });
 
 Route::controller(ReceiptController::class)->prefix('receipts')->group(function () {
+    Route::get('/', 'viewAll')
+        ->middleware(['auth:sanctum', 'ability:integra']);
+    Route::post('/', 'store')
+        ->middleware(['auth:sanctum', 'ability:app']);
+});
+
+Route::controller(OrderController::class)->prefix('orders')->group(function () {
     Route::get('/', 'viewAll')
         ->middleware(['auth:sanctum', 'ability:integra']);
     Route::post('/', 'store')
