@@ -16,14 +16,12 @@ class PartnerResource extends JsonResource
     {
         $partner = [
             'id' => $this->id,
-            'storeId' => $this->store_id,
             'code' => $this->code,
             'siteCode' => $this->site_code,
-            'name' => $this->name,
             'vatNumber' => $this->vat_number,
             'invoiceType' => $this->invoice_type,
             'invoiceCopies' => $this->invoice_copies,
-            'payment_days' => $this->payment_days,
+            'paymentDays' => $this->payment_days,
             'iban' => $this->iban,
             'bankAccount' => $this->bank_account,
             'phoneNumber' => $this->phone_number,

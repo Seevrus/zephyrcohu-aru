@@ -69,7 +69,6 @@ class PartnersController extends Controller
                     'company_id' => $company->id,
                     'code' => $partnerRequest['code'],
                     'site_code' => $partnerRequest['siteCode'],
-                    'name' => $partnerRequest['name'],
                     'vat_number' => $partnerRequest['vatNumber'],
                     'invoice_type' => $partnerRequest['invoiceType'],
                     'invoice_copies' => $partnerRequest['invoiceCopies'],
@@ -82,6 +81,7 @@ class PartnersController extends Controller
 
                 $partner->partner_locations()->createMany(array_map(function ($locationRequest) {
                     return [
+                        'name' => $locationRequest['name'],
                         'location_type' => $locationRequest['locationType'],
                         'country' => $locationRequest['country'],
                         'postal_code' => $locationRequest['postalCode'],

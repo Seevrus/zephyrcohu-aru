@@ -15,6 +15,7 @@ class PartnerLocationResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'name' => $this->name,
             'locationType' => $this->location_type,
             'country' => $this->country,
             'postalCode' => $this->postal_code,

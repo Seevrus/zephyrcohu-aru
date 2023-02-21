@@ -13,7 +13,6 @@ class Partner extends Model
         'company_id',
         'code',
         'site_code',
-        'name',
         'vat_number',
         'iban',
         'bank_account',

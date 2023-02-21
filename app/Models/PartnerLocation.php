@@ -11,6 +11,7 @@ class PartnerLocation extends Model
 
     protected $fillable = [
         'partner_id',
+        'name',
         'location_type', // C(enter), D(elivery)
         'country',
         'postal_code',
