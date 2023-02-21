@@ -16,7 +16,7 @@ class ReceiptItem extends Model
         'expires_at',
         'name',
         'quantity',
-        'unit',
+        'unit_name',
         'net_price',
         'net_amount',
         'vat_rate',

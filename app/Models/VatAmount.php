@@ -9,6 +9,13 @@ class VatAmount extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'vat_rate',
+        'net_amount',
+        'vat_amount',
+        'gross_amount',
+    ];
+
     public function receipt()
     {
         return $this->belongsTo(Receipt::class);

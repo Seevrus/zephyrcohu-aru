@@ -14,38 +14,58 @@ class ReceiptResource extends JsonResource
      */
     public function toArray($request)
     {
-        $items = [];
-
-        foreach ($this->expirations as $expiration) {
-            $item_id = $expiration['stock_item']['item_id'];
-
-            if (array_key_exists($item_id, $items)) {
-                array_push($items[$item_id]['expirations'], [
-                    'expiresAt' => $expiration['expires_at'],
-                    'quantity' => $expiration['pivot']['quantity'],
-                    'itemAmount' => $expiration['pivot']['item_amount'],
-                ]);
-            } else {
-                $items[$item_id] = [
-                    'articleNumber' => $expiration['stock_item']['item']['article_number'],
-                    'expirations' => [[
-                        'expiresAt' => $expiration['expires_at'],
-                        'quantity' => $expiration['pivot']['quantity'],
-                        'itemAmount' => $expiration['pivot']['item_amount'],
-                    ]],
-                ];
-            }
-        }
-
         return [
+            'companyCode' => $this->company_code,
+            'partnerCode' => $this->partner_code,
+            'partnerSiteCode' => $this->partner_site_code,
+            'CISerialNumber' => $this->ci_serial_number,
+            'CIYearCode' => $this->ci_year_code,
             'serialNumber' => $this->serial_number,
             'yearCode' => $this->year_code,
-            'partnerCode' => $this->partner->code,
-            'partnerSiteCode' => $this->partner->site_code,
-            'totalAmount' => $this->total_amount,
-            'createdAt' => $this->created_at,
-            'lastDownloadedAt' => $this->last_downloaded_at,
-            'items' => array_values($items),
+            'originalCopiesPrinted' => $this->original_copies_printed,
+            'vendor' => [
+                'name' => $this->vendor_name,
+                'country' => $this->vendor_country,
+                'postalCode' => $this->vendor_postal_code,
+                'city' => $this->vendor_city,
+                'address' => $this->vendor_address,
+                'felir' => $this->vendor_felir,
+                'iban' => $this->vendor_iban,
+                'bankAccount' => $this->vendor_bank_account,
+                'vatNumber' => $this->vendor_vat_number,
+            ],
+            'buyer' => [
+                'name' => $this->buyer_name,
+                'country' => $this->buyer_country,
+                'postalCode' => $this->buyer_postal_code,
+                'city' => $this->buyer_city,
+                'address' => $this->buyer_address,
+                'iban' => $this->buyer_iban,
+                'bankAccount' => $this->buyer_bank_account,
+                'vatNumber' => $this->buyer_vat_number,
+                'deliveryName' => $this->buyer_delivery_name,
+                'deliveryCountry' => $this->buyer_delivery_country,
+                'deliveryPostalCode' => $this->buyer_delivery_postal_code,
+                'deliveryCity' => $this->buyer_delivery_city,
+                'deliveryAddress' => $this->buyer_delivery_address,
+            ],
+            'invoiceDate' => $this->invoice_date,
+            'fulfillmentDate' => $this->fulfillment_date,
+            'invoiceType' => $this->invoice_type,
+            'paidDate' => $this->paid_date,
+            'agent' => [
+                'code' => $this->agent_code,
+                'name' => $this->agent_name,
+                'phoneNumber' => $this->agent_phone_number,
+            ],
+            'items' => new ReceiptItemCollection($this->receipt_items),
+            'quantity' => $this->quantity,
+            'netAmount' => $this->net_amount,
+            'vatAmount' => $this->vat_amount,
+            'grossAmount' => $this->gross_amount,
+            'vatAmounts' => new VatAmountCollection($this->vat_amounts),
+            'roundAmount' => $this->round_amount,
+            'roundedAmount' => $this->rounded_amount,
         ];
     }
 }

@@ -35,9 +35,9 @@ class ReceiptController extends Controller
             $sender->save();
 
             if ($request->downloaded === '0') {
-                $receipts = $sender->company->receipts()->whereNull('last_downloaded_at')->with('partner', 'expirations.stock_item.item')->get();
+                $receipts = $sender->company->receipts()->whereNull('last_downloaded_at')->with('receipt_items', 'vat_amounts')->get();
             } else {
-                $receipts = $sender->company->receipts()->with('partner', 'expirations.stock_item.item')->get();
+                $receipts = $sender->company->receipts()->with('receipt_items', 'vat_amounts')->get();
             }
 
             if (!$receipts->isEmpty()) {
@@ -79,49 +79,93 @@ class ReceiptController extends Controller
             $sender->save();
 
             foreach ($request->data as $receiptRequest) {
-                $dbReceipt = Receipt::where('serial_number', $receiptRequest['serialNumber'])->where('year_code', $receiptRequest['yearCode'])->first();
-
-                if ($dbReceipt) continue;
-
-                $partner = Partner::where('code', $receiptRequest['partnerCode'])->where('site_code', $receiptRequest['siteCode'])->first();
-                $store = Store::firstWhere('code', $receiptRequest['storeCode']);
-
-                $receipt = new Receipt([
-                    'partner_id' => $partner->id,
-                    'user_id' => $sender->id,
-                    'serial_number' => $receiptRequest['serialNumber'],
-                    'year_code' => $receiptRequest['yearCode'],
-                    'total_amount' => $receiptRequest['totalAmount'],
-                    'created_at' => $receiptRequest['createdAt'],
-                ]);
-                $receipt->save();
+                $receipt = Receipt::updateOrCreate(
+                    [
+                        'serial_number' => $receiptRequest['serialNumber'],
+                        'year_code' => $receiptRequest['yearCode'],
+                    ],
+                    [
+                        'company_id' => $sender->company->id,
+                        'company_code' => $receiptRequest['companyCode'],
+                        'partner_code' => $receiptRequest['partnerCode'],
+                        'partner_site_code' => $receiptRequest['partnerSiteCode'],
+                        'ci_serial_number' => $receiptRequest['CISerialNumber'] ?? null,
+                        'ci_year_code' => $receiptRequest['CIYearCode'] ?? null,
+                        'serial_number' => $receiptRequest['serialNumber'],
+                        'year_code' => $receiptRequest['yearCode'],
+                        'original_copies_printed' => $receiptRequest['originalCopiesPrinted'],
+                        'vendor_name' => $receiptRequest['vendor']['name'],
+                        'vendor_country' => $receiptRequest['vendor']['country'],
+                        'vendor_postal_code' => $receiptRequest['vendor']['postalCode'],
+                        'vendor_city' => $receiptRequest['vendor']['city'],
+                        'vendor_address' => $receiptRequest['vendor']['address'],
+                        'vendor_felir' => $receiptRequest['vendor']['felir'],
+                        'vendor_iban' => $receiptRequest['vendor']['iban'],
+                        'vendor_bank_account' => $receiptRequest['vendor']['bankAccount'],
+                        'vendor_vat_number' => $receiptRequest['vendor']['vatNumber'],
+                        'buyer_name' => $receiptRequest['buyer']['name'],
+                        'buyer_country' => $receiptRequest['buyer']['country'],
+                        'buyer_postal_code' => $receiptRequest['buyer']['postalCode'],
+                        'buyer_city' => $receiptRequest['buyer']['city'],
+                        'buyer_address' => $receiptRequest['buyer']['address'],
+                        'buyer_iban' => $receiptRequest['buyer']['iban'],
+                        'buyer_bank_account' => $receiptRequest['buyer']['bankAccount'],
+                        'buyer_vat_number' => $receiptRequest['buyer']['vatNumber'],
+                        'buyer_delivery_name' => $receiptRequest['buyer']['deliveryName'] ?? null,
+                        'buyer_delivery_country' => $receiptRequest['buyer']['deliveryCountry'] ?? null,
+                        'buyer_delivery_postal_code' => $receiptRequest['buyer']['deliveryPostalCode'] ?? null,
+                        'buyer_delivery_city' => $receiptRequest['buyer']['deliveryCity'] ?? null,
+                        'buyer_delivery_address' => $receiptRequest['buyer']['deliveryAddress'] ?? null,
+                        'invoice_date' => $receiptRequest['invoiceDate'],
+                        'fulfillment_date' => $receiptRequest['fulfillmentDate'],
+                        'invoice_type' => $receiptRequest['invoiceType'],
+                        'paid_date' => $receiptRequest['paidDate'],
+                        'agent_code' => $receiptRequest['agent']['code'],
+                        'agent_name' => $receiptRequest['agent']['name'],
+                        'agent_phone_number' => $receiptRequest['agent']['phoneNumber'],
+                        'quantity' => $receiptRequest['quantity'],
+                        'net_amount' => $receiptRequest['netAmount'],
+                        'vat_amount' => $receiptRequest['vatAmount'] ?? null,
+                        'gross_amount' => $receiptRequest['grossAmount'],
+                        'round_amount' => $receiptRequest['roundAmount'],
+                        'rounded_amount' => $receiptRequest['roundedAmount'],
+                    ]
+                );
 
                 foreach ($receiptRequest['items'] as $receiptItem) {
-                    $dbItem = Item::firstWhere('article_number', $receiptItem['articleNumber']);
-                    $stock_item = $store->items()->firstWhere('item_id', $dbItem->id)->pivot;
-
-                    foreach ($receiptItem['expirations'] as $receiptItemExpiration) {
-                        $dbItemExpiration = Expiration::where('stock_item_id', $stock_item->id)
-                            ->where('expires_at', $receiptItemExpiration['expiresAt'])
-                            ->first();
-
-                        $receipt->expirations()->attach($dbItemExpiration->id, [
-                            'quantity' => $receiptItemExpiration['quantity'],
-                            'item_amount' => $receiptItemExpiration['itemAmount'],
-                        ]);
-                    }
+                    $receipt->receipt_items()->updateOrCreate(
+                        [
+                            'code' => $receiptItem['code'],
+                        ],
+                        [
+                            'code' => $receiptItem['code'],
+                            'cn_code' => $receiptItem['CNCode'],
+                            'article_number' => $receiptItem['articleNumber'],
+                            'expires_at' => date('Y-m-t', strtotime($receiptItem['expiresAt'])),
+                            'name' => $receiptItem['name'],
+                            'quantity' => $receiptItem['quantity'],
+                            'unit_name' => $receiptItem['unitName'],
+                            'net_price' => $receiptItem['netPrice'],
+                            'net_amount' => $receiptItem['netAmount'],
+                            'vat_rate' => $receiptItem['vatRate'],
+                            'vat_amount' => $receiptItem['vatAmount'] ?? null,
+                            'gross_amount' => $receiptItem['grossAmount'],
+                        ]
+                    );
                 }
 
-                $order = new Order([
-                    'partner_id' => $partner->id,
-                    'user_id' => $sender->id,
-                    'created_at' => $receiptRequest['createdAt'],
-                ]);
-                $order->save();
-
-                foreach ($receiptRequest['orderItems'] as $orderItem) {
-                    $dbItem = Item::firstWhere('article_number', $orderItem['articleNumber']);
-                    $order->items()->attach($dbItem->id, ['quantity' => $orderItem['quantity']]);
+                foreach ($receiptRequest['vatAmounts'] as $vatAmount) {
+                    $receipt->vat_amounts()->updateOrCreate(
+                        [
+                            'vat_rate' => $vatAmount['vatRate'],
+                        ],
+                        [
+                            'vat_rate' => $vatAmount['vatRate'],
+                            'net_amount' => $vatAmount['netAmount'],
+                            'vat_amount' => $vatAmount['vatAmount'],
+                            'gross_amount' => $vatAmount['grossAmount'],
+                        ]
+                    );
                 }
             }
 

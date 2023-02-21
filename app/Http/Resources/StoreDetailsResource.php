@@ -20,7 +20,7 @@ class StoreDetailsResource extends JsonResource
             $item_id = $expiration['item_id'];
             $tmp_key = '_' . $item_id;
             $article_number = $expiration['item']['article_number'];
-            $expires_at = $expiration['expires_at'];
+            $expires_at = date('Y-m', strtotime($expiration['expires_at']));
             $quantity = $expiration['pivot']['quantity'];
 
             if (array_key_exists($tmp_key, $items)) {
