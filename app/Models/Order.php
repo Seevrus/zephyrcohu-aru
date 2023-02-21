@@ -10,25 +10,17 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
-        'partner_id',
-        'user_id',
-        'created_at',
+        'company_id',
+        'order_date',
     ];
 
-    public $timestamps = false;
-
-    public function partner()
+    public function company()
     {
-        return $this->belongsTo(Partner::class);
+        return $this->belongsTo(Company::class);
     }
 
-    public function user()
+    public function order_items()
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function items()
-    {
-        return $this->belongsToMany(Item::class, 'order_item')->withPivot('quantity');
+        return $this->hasMany(OrderItem::class);
     }
 }
