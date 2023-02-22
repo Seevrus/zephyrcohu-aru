@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
 import env from '../../env.json';
-import { removeLocalStorage, setLocalStorage } from '../async-storage';
+import { LocalStorage, removeLocalStorage, setLocalStorage } from '../async-storage';
 import { ErrorResponseT } from '../base-types';
 import {
   CheckTokenRequestT,
@@ -20,7 +20,7 @@ export const registerDevice = createAsyncThunk<
   let response: AxiosResponse<RegisterDeviceResponseT>;
   try {
     response = await axios.post(
-      `${env.api_url}/users/register-device`,
+      `${env.api_url}/tokens/register-device`,
       {
         deviceId: requestData.deviceId,
       },
@@ -56,7 +56,7 @@ export const checkToken = createAsyncThunk<
 >('config/checkToken', async (requestData, { rejectWithValue }) => {
   let response: AxiosResponse<CheckTokenResponseT>;
   try {
-    response = await axios.get(`${env.api_url}/users/check-token`, {
+    response = await axios.get(`${env.api_url}/tokens/check-token`, {
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${requestData.token}`,
@@ -89,7 +89,7 @@ export const checkToken = createAsyncThunk<
         userType: response.data.data?.type,
         company: response.data.data?.company,
       },
-    });
+    } as Partial<LocalStorage>);
   } catch (e) {
     return rejectWithValue({
       status: 507,
@@ -107,6 +107,7 @@ export const unregisterDevice = createAsyncThunk<boolean, never, { rejectValue: 
     try {
       await SecureStore.deleteItemAsync('boreal-device-id');
       await SecureStore.deleteItemAsync('boreal-token');
+      await SecureStore.deleteItemAsync('boreal-store');
     } catch (e) {
       return rejectWithValue({
         status: 507,

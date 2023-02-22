@@ -6,7 +6,6 @@ import { checkToken, registerDevice, unregisterDevice } from './config-api-actio
 import { Config } from './config-slice-types';
 
 const initialState: Config = {
-  isDemoMode: false,
   userType: undefined,
   company: undefined,
 };
@@ -16,7 +15,6 @@ const configSlice = createSlice({
   initialState,
   reducers: {
     mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['config']>) => {
-      state.isDemoMode = payload?.isDemoMode ?? false;
       state.userType = payload?.userType;
       state.company = payload?.company;
     },

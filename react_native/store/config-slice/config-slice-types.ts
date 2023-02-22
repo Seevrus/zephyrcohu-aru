@@ -8,6 +8,7 @@ type Company = {
   postalCode: string;
   city: string;
   address: string;
+  felir: string;
   vatNumber: string;
   iban: string;
   bankAccount: string;
@@ -16,7 +17,6 @@ type Company = {
 };
 
 export type Config = {
-  isDemoMode: boolean;
   userType: (typeof userTypes)[keyof typeof userTypes];
   company: Company;
 };
