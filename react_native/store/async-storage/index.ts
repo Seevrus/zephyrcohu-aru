@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { mergeRight } from 'ramda';
 
+import { Agents } from '../agents-slice/agents-slice-types';
 import { Config } from '../config-slice/config-slice-types';
 import { Items } from '../items-slice/items-slice-types';
 import { Partners } from '../partners-slice/partners-slice-types';
@@ -10,6 +11,7 @@ import { Store } from '../store-slice/store-slice-types';
 
 export type LocalStorage = {
   config?: Config;
+  agents?: Agents;
   partners?: Partners;
   items?: Items;
   storeList?: StoreList;
