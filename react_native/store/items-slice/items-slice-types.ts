@@ -7,6 +7,7 @@ export type FetchItemsResponse = Items;
 
 export type Item = {
   id: number;
+  CNCode: string;
   articleNumber: string;
   name: string;
   shortName: string;
@@ -14,7 +15,7 @@ export type Item = {
   unitName: string;
   productCatalogCode: string;
   vatRate: string;
-  price: number;
+  netPrice: number;
 };
 
 export type Items = {
