@@ -5,15 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Receipt;
 use App\Http\Requests\StoreReceiptRequest;
 use App\Http\Resources\ReceiptCollection;
-use App\Http\Resources\ReceiptResource;
-use App\Models\Expiration;
-use App\Models\Item;
 use App\Models\Log;
-use App\Models\Order;
-use App\Models\Partner;
-use App\Models\Store;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
@@ -184,5 +179,33 @@ class ReceiptController extends Controller
 
             throw new UnprocessableEntityHttpException();
         }
+    }
+
+    /**
+     * Delete an array of receipts
+     * 
+     */
+    public function delete(Request $request)
+    {
+        if (!Gate::allows('check-device-id')) {
+            throw new UnauthorizedHttpException(random_bytes(32));
+        }
+
+        $sender = $request->user();
+        $sender->last_active = date('Y-m-d H:i:s');
+        $sender->save();
+
+        $receipt_ids = json_decode($request->ids);
+
+        if (!is_array($receipt_ids) || !count($receipt_ids)) {
+            throw new UnprocessableEntityHttpException();
+        }
+
+        foreach ($receipt_ids as $id) {
+            $receipt = Receipt::findOrFail($id);
+            $this->authorize('delete', $receipt);
+        }
+
+        Receipt::destroy($receipt_ids);
     }
 }

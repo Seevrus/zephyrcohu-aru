@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Order;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Hash;
@@ -24,5 +25,13 @@ class Orderpolicy
         }
 
         return true;
+    }
+
+    /**
+     * Determine whether the user can delete an order
+     */
+    public function delete(User $user, Order $order)
+    {
+        return $user->company->id === $order->company->id;
     }
 }

@@ -75,6 +75,8 @@ Route::controller(ReceiptController::class)->prefix('receipts')->group(function 
         ->middleware(['auth:sanctum', 'ability:integra']);
     Route::post('/', 'store')
         ->middleware(['auth:sanctum', 'ability:app']);
+    Route::delete('/', 'delete')
+        ->middleware(['auth:sanctum', 'ability:integra']);
 });
 
 Route::controller(OrderController::class)->prefix('orders')->group(function () {
@@ -82,4 +84,6 @@ Route::controller(OrderController::class)->prefix('orders')->group(function () {
         ->middleware(['auth:sanctum', 'ability:integra']);
     Route::post('/', 'store')
         ->middleware(['auth:sanctum', 'ability:app']);
+    Route::delete('/', 'delete')
+        ->middleware(['auth:sanctum', 'ability:integra']);
 });

@@ -200,6 +200,50 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Delete Orders",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{integra_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{integra_device_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{zephyr_aru_url}}/orders?ids=[1, 2, 3]",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"orders"
+							],
+							"query": [
+								{
+									"key": "ids",
+									"value": "[1, 2, 3]"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -483,6 +527,50 @@
 							],
 							"path": [
 								"receipts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Receipts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{integra_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{integra_device_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{zephyr_aru_url}}/receipts?ids=[1, 2, 3]",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"receipts"
+							],
+							"query": [
+								{
+									"key": "ids",
+									"value": "[1, 2, 3]"
+								}
 							]
 						}
 					},

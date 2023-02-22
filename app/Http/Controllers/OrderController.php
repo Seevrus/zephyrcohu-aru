@@ -9,6 +9,7 @@ use App\Models\Order;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
@@ -91,5 +92,33 @@ class OrderController extends Controller
 
             throw new UnprocessableEntityHttpException();
         }
+    }
+
+    /**
+     * Delete an array of receipts
+     * 
+     */
+    public function delete(Request $request)
+    {
+        if (!Gate::allows('check-device-id')) {
+            throw new UnauthorizedHttpException(random_bytes(32));
+        }
+
+        $sender = $request->user();
+        $sender->last_active = date('Y-m-d H:i:s');
+        $sender->save();
+
+        $order_ids = json_decode($request->ids);
+
+        if (!is_array($order_ids) || !count($order_ids)) {
+            throw new UnprocessableEntityHttpException();
+        }
+
+        foreach ($order_ids as $id) {
+            $receipt = Order::findOrFail($id);
+            $this->authorize('delete', $receipt);
+        }
+
+        Order::destroy($order_ids);
     }
 }
