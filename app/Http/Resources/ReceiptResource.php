@@ -15,6 +15,7 @@ class ReceiptResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id' => $this->id,
             'companyCode' => $this->company_code,
             'partnerCode' => $this->partner_code,
             'partnerSiteCode' => $this->partner_site_code,

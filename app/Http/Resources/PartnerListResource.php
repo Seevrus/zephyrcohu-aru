@@ -15,6 +15,7 @@ class PartnerListResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id' => $this->id,
             'name' => $this->name,
             'partners' => new PartnerListPartnerCollection($this->partners),
             'createdAt' => $this->created_at->toDateTimeString(),
