@@ -1,32 +1,35 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 
 import env from '../../env.json';
 import { LocalStorage, setLocalStorage } from '../async-storage';
 import { ErrorResponseT } from '../base-types';
-import { FetchPartnersRequest, FetchPartnersResponse } from './partners-slice-types';
+import { mapFetchPartnersResponse } from './partners-api-mappers';
+import { FetchPartnersRequest, Partners } from './partners-slice-types';
 
 export const fetchPartners = createAsyncThunk<
-  FetchPartnersResponse,
+  Partners,
   FetchPartnersRequest,
   { rejectValue: ErrorResponseT }
 >('partners/fetchPartners', async (requestData, { rejectWithValue }) => {
-  let response: AxiosResponse<FetchPartnersResponse>;
+  let partners: Partners;
   try {
-    response = await axios.get(`${env.api_url}/partners`, {
+    const response = await axios.get(`${env.api_url}/partners`, {
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${requestData.token}`,
         'X-Device-Id': requestData.deviceId,
       },
     });
+
+    partners = mapFetchPartnersResponse(response);
   } catch (e) {
     return rejectWithValue(e.response.data);
   }
 
   try {
     await setLocalStorage({
-      partners: response.data,
+      partners,
     } as Partial<LocalStorage>);
   } catch (e) {
     return rejectWithValue({
@@ -36,7 +39,7 @@ export const fetchPartners = createAsyncThunk<
     });
   }
 
-  return response.data;
+  return partners;
 });
 
 export const removePartners = createAsyncThunk<boolean, never, { rejectValue: ErrorResponseT }>(

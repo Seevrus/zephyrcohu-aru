@@ -3,33 +3,55 @@ export type FetchPartnersRequest = {
   token: string;
 };
 
-export type FetchPartnersResponse = Partners;
-
-type PriceList = {
+type PartnerResponse = {
   id: number;
-  code: string;
-  items: {
-    itemId: number;
-    price: number;
-  }[];
-};
-
-type Partner = {
-  id: number;
-  storeId?: number;
   code: string;
   siteCode: string;
-  name: string;
-  country: string;
-  postalCode: string;
-  city: string;
-  address: string;
   vatNumber: string;
+  invoiceType: 'E' | 'P';
+  invoiceCopies: number;
+  paymentDays: number;
   iban: string;
   bankAccount: string;
   phoneNumber?: string;
   email?: string;
-  priceList?: PriceList;
+  locations: PartnerLocation[];
+  priceList: PriceListItem[];
+};
+
+export type FetchPartnersResponse = {
+  data: PartnerResponse[];
+};
+
+type PriceListItem = {
+  itemId: number;
+  articleNumber: string;
+  netPrice: number;
+};
+
+type PartnerLocation = {
+  name: string;
+  locationType: 'C' | 'D';
+  country: string;
+  postalCode: string;
+  city: string;
+  address: string;
+};
+
+type Partner = {
+  id: number;
+  code: string;
+  siteCode: string;
+  vatNumber: string;
+  invoiceType: 'E' | 'P';
+  invoiceCopies: number;
+  paymentDays: number;
+  iban: string;
+  bankAccount: string;
+  phoneNumber?: string;
+  email?: string;
+  locations: Record<PartnerLocation['locationType'], PartnerLocation>;
+  priceList: Record<number, PriceListItem>; // id, PriceListItem
 };
 
 export type Partners = {
