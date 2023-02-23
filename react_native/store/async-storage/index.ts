@@ -4,7 +4,7 @@ import { mergeRight } from 'ramda';
 import { Agents } from '../agents-slice/agents-slice-types';
 import { Config } from '../config-slice/config-slice-types';
 import { Items } from '../items-slice/items-slice-types';
-import { Partners } from '../partners-slice/partners-slice-types';
+import { PartnersSlice } from '../partners-slice/partners-slice-types';
 import { Round } from '../round-slice/round-slice-types';
 import { StoreList } from '../store-list-slice/store-list-slice-types';
 import { Store } from '../store-slice/store-slice-types';
@@ -12,7 +12,7 @@ import { Store } from '../store-slice/store-slice-types';
 export type LocalStorage = {
   config?: Config;
   agents?: Agents;
-  partners?: Partners;
+  partners?: PartnersSlice;
   items?: Items;
   storeList?: StoreList;
   store?: Store;

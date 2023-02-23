@@ -1,3 +1,12 @@
+export type FetchPartnerListRequest = {
+  deviceId: string;
+  token: string;
+};
+
+export type FetchPartnerListResponse = {
+  data: PartnerList[];
+};
+
 export type FetchPartnersRequest = {
   deviceId: string;
   token: string;
@@ -23,6 +32,18 @@ export type FetchPartnersResponse = {
   data: PartnerResponse[];
 };
 
+type Partner = {
+  id: number;
+  code: string;
+  siteCode: string;
+};
+
+type PartnerList = {
+  id: number;
+  name: string;
+  partners: Partner[];
+};
+
 type PriceListItem = {
   itemId: number;
   articleNumber: string;
@@ -38,7 +59,7 @@ type PartnerLocation = {
   address: string;
 };
 
-type Partner = {
+export type PartnerDetails = {
   id: number;
   code: string;
   siteCode: string;
@@ -54,6 +75,7 @@ type Partner = {
   priceList: Record<number, PriceListItem>; // id, PriceListItem
 };
 
-export type Partners = {
-  data: Partner[];
+export type PartnersSlice = {
+  partnerLists: PartnerList[];
+  partners: PartnerDetails[];
 };
