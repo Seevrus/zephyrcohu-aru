@@ -5,16 +5,14 @@ import { configReducer } from './config-slice/config-slice';
 import { itemsReducer } from './items-slice/items-slice';
 import { partnersReducer } from './partners-slice/partners-slice';
 import { roundReducer } from './round-slice/round-slice';
-import { storeListReducer } from './store-list-slice/store-list-slice';
-import { storeReducer } from './store-slice/store-slice';
+import { storesReducer } from './stores-slice/stores-slice';
 
 const store = configureStore({
   reducer: {
     config: configReducer,
     agents: agentsReducer,
     partners: partnersReducer,
-    storeList: storeListReducer,
-    store: storeReducer,
+    stores: storesReducer,
     items: itemsReducer,
     round: roundReducer,
   },

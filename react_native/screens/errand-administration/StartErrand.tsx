@@ -21,8 +21,8 @@ import { fetchItems } from '../../store/items-slice/items-api-actions';
 import { fetchPartners } from '../../store/partners-slice/partners-api-actions';
 import { initializeRound } from '../../store/round-slice/round-api-actions';
 import { fetchStores } from '../../store/store-list-slice/store-list-api-actions';
-import { fetchStore } from '../../store/store-slice/store-api-actions';
-import { Store } from '../../store/store-slice/store-slice-types';
+import { fetchStore } from '../../store/stores-slice/stores-api-actions';
+import { Store } from '../../store/stores-slice/stores-slice-types';
 
 import ErrorCard from '../../components/info-cards/ErrorCard';
 import ListItem from '../../components/ui/ListItem';

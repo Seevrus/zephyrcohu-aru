@@ -6,16 +6,14 @@ import { Config } from '../config-slice/config-slice-types';
 import { Items } from '../items-slice/items-slice-types';
 import { PartnersSlice } from '../partners-slice/partners-slice-types';
 import { Round } from '../round-slice/round-slice-types';
-import { StoreList } from '../store-list-slice/store-list-slice-types';
-import { Store } from '../store-slice/store-slice-types';
+import { StoresSlice } from '../stores-slice/stores-slice-types';
 
 export type LocalStorage = {
   config?: Config;
   agents?: Agents;
   partners?: PartnersSlice;
   items?: Items;
-  storeList?: StoreList;
-  store?: Store;
+  stores?: StoresSlice;
   round?: Round;
 };
 

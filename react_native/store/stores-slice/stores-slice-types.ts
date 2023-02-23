@@ -1,3 +1,18 @@
+export type FetchStoreListRequest = {
+  deviceId: string;
+  token: string;
+};
+
+export type FetchStoreListResponse = {
+  data: Store[];
+};
+
+type Store = {
+  id: number;
+  code: string;
+  name: string;
+};
+
 export type FetchStoreRequest = {
   deviceId: string;
   token: string;
@@ -6,19 +21,20 @@ export type FetchStoreRequest = {
 
 export type FetchStoreResponseItem = {
   id: number;
-  code: string;
+  articleNumber: string;
   expirations: Expiration[];
 };
 
 export type FetchStoreResponse = {
-  id: number;
-  code: string;
-  name: string;
-  firstAvailableSerialNumber: number;
-  lastAvailableSerialNumber: number;
-  yearCode: number;
-  items: FetchStoreResponseItem[];
-  partners: number[];
+  data: {
+    id: number;
+    code: string;
+    name: string;
+    firstAvailableSerialNumber: number;
+    lastAvailableSerialNumber: number;
+    yearCode: number;
+    items: FetchStoreResponseItem[];
+  };
 };
 
 export type Expiration = {
@@ -28,11 +44,11 @@ export type Expiration = {
 
 type StoreItem = {
   id: number;
-  code: string;
+  articleNumber: string;
   expirations: Record<string, Expiration>;
 };
 
-export type Store = {
+export type StoreDetails = {
   id: number;
   code: string;
   name: string;
@@ -40,5 +56,9 @@ export type Store = {
   lastAvailableSerialNumber: number;
   yearCode: number;
   items: Record<string, StoreItem>; // id, StoreItem
-  partners: number[];
+};
+
+export type StoresSlice = {
+  storeList: Store[];
+  store: StoreDetails;
 };

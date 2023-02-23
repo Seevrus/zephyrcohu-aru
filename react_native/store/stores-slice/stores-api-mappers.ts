@@ -1,8 +1,8 @@
 import { assoc, indexBy, map, pipe, prop } from 'ramda';
-import { FetchStoreResponse, FetchStoreResponseItem, Store } from './store-slice-types';
+import { FetchStoreResponse, FetchStoreResponseItem, StoreDetails } from './stores-slice-types';
 
 // eslint-disable-next-line import/prefer-default-export
-export const mapFetchStoreResponse = (response: FetchStoreResponse): Store =>
+export const mapFetchStoreResponse = (response: FetchStoreResponse): StoreDetails =>
   assoc(
     'items',
     pipe(
@@ -10,6 +10,6 @@ export const mapFetchStoreResponse = (response: FetchStoreResponse): Store =>
         assoc('expirations', indexBy(prop('expiresAt'), it.expirations), it)
       ),
       indexBy(prop('id'))
-    )(response.items),
-    response
+    )(response.data.items),
+    prop('data', response)
   );
