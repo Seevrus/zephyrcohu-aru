@@ -20,8 +20,8 @@ const partnersSlice = createSlice({
   initialState,
   reducers: {
     mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['partners']>) => {
-      if (!state.partnerLists) state.partnerLists = payload.partnerLists;
-      if (!state.partners) state.partners = payload.partners;
+      if (!state.partnerLists) state.partnerLists = payload?.partnerLists;
+      if (!state.partners) state.partners = payload?.partners;
     },
   },
   extraReducers: (builder) => {

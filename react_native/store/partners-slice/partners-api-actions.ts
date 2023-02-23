@@ -20,7 +20,7 @@ export const fetchPartnerList = createAsyncThunk<
 >('partners/fetchPartnerList', async (requestData, { rejectWithValue }) => {
   let response: AxiosResponse<FetchPartnerListResponse>;
   try {
-    response = await axios.get(`${env.api_url}/partner-list`, {
+    response = await axios.get(`${env.api_url}/partner-lists`, {
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${requestData.token}`,

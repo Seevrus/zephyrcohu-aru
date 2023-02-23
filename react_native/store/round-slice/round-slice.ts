@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { format } from 'date-fns';
 import { mergeDeepLeft, pipe, propOr, values } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
@@ -8,7 +7,11 @@ import { initializeRound } from './round-api-actions';
 import { Item, OrderItem, Round } from './round-slice-types';
 
 const initialState: Round = {
+  started: undefined,
+  agentId: undefined,
   storeId: undefined,
+  partnerListId: undefined,
+  date: undefined,
   nextAvailableSerialNumber: undefined,
   currentReceipt: undefined,
   receipts: [],
@@ -19,7 +22,11 @@ const roundSlice = createSlice({
   initialState,
   reducers: {
     mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['round']>) => {
+      state.started = payload?.started;
+      state.agentId = payload?.agentId;
       state.storeId = payload?.storeId;
+      state.partnerListId = payload?.partnerListId;
+      state.date = payload.date;
       state.nextAvailableSerialNumber = payload?.nextAvailableSerialNumber;
       state.currentReceipt = payload?.currentReceipt;
       state.receipts = pipe(
@@ -33,7 +40,7 @@ const roundSlice = createSlice({
         partnerId: undefined,
         serialNumber: state.nextAvailableSerialNumber,
         totalAmount: 0,
-        createdAt: format(new Date(), 'yyyy-MM-dd'),
+        originalCopiesPrinted: 0,
         items: {},
         orderItems: {},
       };
@@ -55,7 +62,11 @@ const roundSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(initializeRound.fulfilled, (state, { payload }) => {
+      state.started = true;
+      state.agentId = payload.agentId;
       state.storeId = payload.storeId;
+      state.partnerListId = payload.partnerListId;
+      state.date = payload.date;
       state.nextAvailableSerialNumber = payload.nextAvailableSerialNumber;
       state.receipts = [];
     });

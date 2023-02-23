@@ -1,10 +1,16 @@
 export type InitializeRoundRequest = {
+  agentId: number;
   storeId: number;
+  partnerListId: number;
+  date: string;
   nextAvailableSerialNumber: number;
 };
 
 export type InitializeRoundResponse = {
+  agentId: number;
   storeId: number;
+  partnerListId: number;
+  date: string;
   nextAvailableSerialNumber: number;
 };
 
@@ -24,17 +30,21 @@ export type Item = Record<
 export type OrderItem = Record<string, number>; // item id, quantity
 
 type Receipt = {
+  isSent: boolean;
   partnerId: number;
   serialNumber: number;
   totalAmount: number;
-  createdAt: string;
+  originalCopiesPrinted: number;
   items: Item;
   orderItems: OrderItem;
-  isSent: boolean;
 };
 
 export type Round = {
+  started: boolean;
+  agentId: number;
   storeId: number;
+  partnerListId: number;
+  date: string;
   nextAvailableSerialNumber: number;
   currentReceipt: Partial<Receipt>;
   receipts: Receipt[];

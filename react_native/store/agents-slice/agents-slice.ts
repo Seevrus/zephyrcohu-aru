@@ -1,13 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { mergeDeepLeft, pipe, propOr, values } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
 import { fetchAgents, removeAgents } from './agents-api-actions';
 import { Agents } from './agents-slice-types';
 
 const initialState: Agents = {
-  data: [],
+  data: undefined,
 };
 
 const agentsSlice = createSlice({
@@ -15,10 +14,7 @@ const agentsSlice = createSlice({
   initialState,
   reducers: {
     mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['agents']>) => {
-      state.data = pipe(
-        mergeDeepLeft(state.data),
-        values
-      )(propOr([], 'data', payload) as Agents['data']);
+      if (!state.data) state.data = payload.data;
     },
   },
   extraReducers: (builder) => {

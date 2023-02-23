@@ -13,7 +13,11 @@ export const initializeRound = createAsyncThunk<
   try {
     await setLocalStorage({
       round: {
+        started: true,
+        agentId: requestData.agentId,
         storeId: requestData.storeId,
+        partnerListId: requestData.partnerListId,
+        date: requestData.date,
         nextAvailableSerialNumber: requestData.nextAvailableSerialNumber,
         receipts: [],
       },

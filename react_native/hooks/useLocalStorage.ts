@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { agentsActions } from '../store/agents-slice/agents-slice';
 
 import { getLocalStorage } from '../store/async-storage';
 import { configActions } from '../store/config-slice/config-slice';
@@ -21,6 +22,7 @@ const useLocalStorage = (canGetLocalState: boolean) => {
         const importedStore = await getLocalStorage();
 
         dispatch(configActions.mergeLocalState(importedStore.config));
+        dispatch(agentsActions.mergeLocalState(importedStore.agents));
         dispatch(partnersActions.mergeLocalState(importedStore.partners));
         dispatch(itemsActions.mergeLocalState(importedStore.items));
         dispatch(storesActions.mergeLocalState(importedStore.stores));

@@ -1,4 +1,3 @@
-import { isNil } from 'ramda';
 import { useEffect, useState } from 'react';
 
 import { checkToken } from '../store/config-slice/config-api-actions';
@@ -13,7 +12,7 @@ const useCheckToken = (
   const dispatch = useAppDispatch();
   const [isTokenValid, setIsTokenValid] = useState<boolean>(false);
   const [tokenValidationError, setTokenValidationError] = useState<boolean>(false);
-  const isRoundStarted = !isNil(useAppSelector((state) => state.round.storeId));
+  const isRoundStarted = useAppSelector((state) => state.round.started);
 
   useEffect(() => {
     const checkCredentials = async () => {

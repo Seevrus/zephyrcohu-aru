@@ -1,5 +1,4 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { Dispatch, SetStateAction } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 
@@ -15,14 +14,22 @@ type DropdownProps = {
   label: string;
   labelPosition?: 'left' | 'top';
   data: DropdownItem[];
-  onSelect: Dispatch<SetStateAction<string>>;
+  defaultOption?: DropdownItem;
+  onSelect: (key: string) => void;
 };
 
 const defaultProps = {
   labelPosition: 'top',
+  defaultOption: {},
 };
 
-export default function Dropdown({ label, labelPosition, data, onSelect }: DropdownProps) {
+export default function Dropdown({
+  label,
+  labelPosition,
+  data,
+  defaultOption,
+  onSelect,
+}: DropdownProps) {
   const dynamicStyles = StyleSheet.create({
     container: {
       flexDirection: labelPosition === 'left' ? 'row' : 'column',
@@ -41,6 +48,7 @@ export default function Dropdown({ label, labelPosition, data, onSelect }: Dropd
       <Text style={[dynamicStyles.label, styles.label]}>{label}</Text>
       <SelectList
         data={data}
+        defaultOption={defaultOption}
         save="key"
         setSelected={onSelect}
         fontFamily="Muli"

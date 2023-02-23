@@ -1,115 +1,51 @@
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { find, pipe, prop, propEq, sortBy } from 'ramda';
-import { useEffect, useState } from 'react';
-import {
-  Animated,
-  ListRenderItem,
-  ListRenderItemInfo,
-  Pressable,
-  StyleSheet,
-  View,
-} from 'react-native';
-
-import { SelectList } from 'react-native-dropdown-select-list';
-import { MaterialIcons } from '@expo/vector-icons';
-import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
+import { any, find, isNil, pipe, prop, propEq } from 'ramda';
+import { useEffect, useState } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
+
 import useToken from '../../hooks/useToken';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { fetchItems } from '../../store/items-slice/items-api-actions';
-import { fetchPartners } from '../../store/partners-slice/partners-api-actions';
-import { initializeRound } from '../../store/round-slice/round-api-actions';
-import { fetchStores } from '../../store/store-list-slice/store-list-api-actions';
-import { fetchStore } from '../../store/stores-slice/stores-api-actions';
-import { Store } from '../../store/stores-slice/stores-slice-types';
+import { fetchPartnerList, fetchPartners } from '../../store/partners-slice/partners-api-actions';
+import { fetchStore, fetchStoreList } from '../../store/stores-slice/stores-api-actions';
 
 import ErrorCard from '../../components/info-cards/ErrorCard';
-import ListItem from '../../components/ui/ListItem';
 import Loading from '../../components/Loading';
 import Button from '../../components/ui/buttons/Button';
-import colors from '../../constants/colors';
-import { StartErrandProps } from '../screen-types';
-import fontSizes from '../../constants/fontSizes';
 import Dropdown from '../../components/ui/Dropdown';
 import Input from '../../components/ui/Input';
-
-type RoundListItem = {
-  id: number;
-  name: string;
-};
+import colors from '../../constants/colors';
+import { fetchAgents } from '../../store/agents-slice/agents-api-actions';
+import { fetchItems } from '../../store/items-slice/items-api-actions';
+import { initializeRound } from '../../store/round-slice/round-api-actions';
+import { StartErrandProps } from '../screen-types';
 
 export default function StartErrand({ navigation }: StartErrandProps) {
   const dispatch = useAppDispatch();
   const { isInternetReachable } = useNetInfo();
   const { deviceId, token, credentialsAvailable, tokenStorageError } = useToken();
-  const storesFetched = useAppSelector((state) => state.storeList.fetched);
-  const storeList = useAppSelector((state) => state.storeList.data);
-  const currentStoreId = useAppSelector((state) => state.round.storeId);
 
-  const [selectedRoundId, setSelectedRoundId] = useState<number>(currentStoreId ?? -1);
+  const agents = useAppSelector((state) => state.agents.data);
+  const currentAgentId = useAppSelector((state) => state.round.agentId);
+  const [agentId, setAgentId] = useState<number>(currentAgentId ?? -1);
+
+  const storeList = useAppSelector((state) => state.stores.storeList);
+  const currentStoreId = useAppSelector((state) => state.round.storeId);
+  const [storeId, setStoreId] = useState<number>(currentStoreId ?? -1);
+
+  const partnerLists = useAppSelector((state) => state.partners.partnerLists);
+  const currentPartnerListId = useAppSelector((state) => state.round.partnerListId);
+  const [partnerListId, setPartnerListId] = useState<number>(currentPartnerListId ?? -1);
+
+  const currentDate = useAppSelector((state) => state.round.date);
+  const [date, setDate] = useState<Date>(new Date(currentDate ?? Date.now()));
+
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
-  const [itemsError, setItemsError] = useState<string>('');
-  const [partnersError, setPartnersError] = useState<string>('');
-  const [storesError, setStoresError] = useState<string>('');
-  const [storeError, setStoreError] = useState<string>('');
-  const [roundError, setRoundError] = useState<string>('');
-
-  const roundListItems: RoundListItem[] = sortBy(prop('name'), storeList);
-  const confirmButtonvariant = selectedRoundId > 0 ? 'ok' : 'disabled';
-
-  // const confirmPartnerHandler = async () => {
-  //   setLoading(true);
-  //   setLoadingMessage('Körindításhoz szükséges adatok letöltése folyamatban...');
-
-  //   const selectedStoreCode: string = pipe(
-  //     find(propEq('id', selectedRoundId)),
-  //     prop('code')
-  //   )(storeList);
-
-  //   try {
-  //     await dispatch(fetchItems({ deviceId, token }));
-  //     setItemsError('');
-  //   } catch (err) {
-  //     setItemsError(err.message);
-  //   }
-
-  //   try {
-  //     await dispatch(fetchPartners({ deviceId, token }));
-  //     setPartnersError('');
-  //   } catch (err) {
-  //     setPartnersError(err.message);
-  //   }
-
-  //   let fetchedStore: Store | undefined;
-  //   try {
-  //     fetchedStore = await dispatch(
-  //       fetchStore({ deviceId, token, code: selectedStoreCode })
-  //     ).unwrap();
-  //     setStoreError('');
-  //   } catch (err) {
-  //     setStoreError(err.message);
-  //   }
-
-  //   if (fetchedStore) {
-  //     try {
-  //       await dispatch(
-  //         initializeRound({
-  //           storeId: selectedRoundId,
-  //           nextAvailableSerialNumber: fetchedStore.firstAvailableSerialNumber,
-  //         })
-  //       );
-  //       setRoundError('');
-  //     } catch (err) {
-  //       setRoundError(err.message);
-  //     }
-  //   }
-
-  //   if (!(itemsError || partnersError || storeError || roundError)) {
-  //     navigation.pop();
-  //   }
-  // };
+  const [roundDataError, setRoundDataError] = useState<string>('');
+  const [confirmRoundError, setConfirmRoundError] = useState<string>('');
 
   useEffect(() => {
     if (isInternetReachable === false || tokenStorageError) {
@@ -117,119 +53,163 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     }
   }, [isInternetReachable, navigation, tokenStorageError]);
 
-  // useEffect(() => {
-  //   const getStores = async () => {
-  //     try {
-  //       await dispatch(fetchStores({ deviceId, token }));
-  //       setStoresError('');
-  //       setLoading(false);
-  //     } catch (err) {
-  //       setStoresError(err.message);
-  //       setLoading(false);
-  //     }
-  //   };
+  useEffect(() => {
+    if (credentialsAvailable && !roundDataError && any(isNil, [agents, storeList, partnerLists])) {
+      setLoading(true);
+      setLoadingMessage('Körök adatainak betöltése...');
+      Promise.all([
+        dispatch(fetchAgents({ deviceId, token })),
+        dispatch(fetchStoreList({ deviceId, token })),
+        dispatch(fetchPartnerList({ deviceId, token })),
+      ])
+        .then(() => {
+          setRoundDataError('');
+        })
+        .catch((err) => {
+          setRoundDataError(err.message);
+        })
+        .finally(() => {
+          setLoading(false);
+          setLoadingMessage('');
+        });
+    }
+  }, [
+    agents,
+    credentialsAvailable,
+    deviceId,
+    dispatch,
+    partnerLists,
+    roundDataError,
+    storeList,
+    token,
+  ]);
 
-  //   if (credentialsAvailable && storesFetched === false) {
-  //     setLoading(true);
-  //     setLoadingMessage('Raktárak adatainak betöltése...');
-  //     getStores();
-  //   }
-  // }, [credentialsAvailable, deviceId, dispatch, storesFetched, token]);
+  const confirmRoundHandler = async () => {
+    setLoading(true);
+    setLoadingMessage('Körindításhoz szükséges adatok letöltése folyamatban...');
 
-  // const selectRoundHandler = (id: number) => {
-  //   setSelectedRoundId(id);
-  // };
+    const selectedStoreCode: string = pipe(find(propEq('id', storeId)), prop('code'))(storeList);
 
-  const [name, setName] = useState<string>('');
-  const [store, setStore] = useState<string>('');
-  const [partner, setPartner] = useState<string>('');
-  const [date, setDate] = useState<Date>(new Date());
-
-  const onChange = (_, selectedDate: Date) => {
-    setDate(selectedDate);
-  };
-
-  const showDatepicker = () => {
-    DateTimePickerAndroid.open({
-      value: date,
-      onChange,
-      mode: 'date',
-      is24Hour: true,
-      minimumDate: new Date(),
-    });
+    Promise.all([
+      dispatch(fetchItems({ deviceId, token })),
+      dispatch(fetchPartners({ deviceId, token })),
+      dispatch(fetchStore({ deviceId, token, code: selectedStoreCode })).unwrap(),
+    ])
+      .then(([, , fetchedStore]) => {
+        console.log(fetchedStore);
+        dispatch(
+          initializeRound({
+            agentId,
+            storeId,
+            partnerListId,
+            date: format(date, 'yyyy-MM-dd'),
+            nextAvailableSerialNumber: fetchedStore.firstAvailableSerialNumber,
+          })
+        ).then(() => {
+          navigation.pop();
+        });
+      })
+      .catch((err) => {
+        setConfirmRoundError(err.message);
+      });
   };
 
   if (loading) {
     return <Loading message={loadingMessage} />;
   }
 
-  const names = [
-    { key: '4', value: 'Denki Jusztin' },
-    { key: '2', value: 'Geregye Béla' },
-    { key: '5', value: 'Hétpróbás Töhötömné Palákovics Diána Kinga' },
-    { key: '1', value: 'Kis Jenő' },
-    { key: '3', value: 'Stohlman Márió' },
-  ];
+  const mapItemToOption = (item) => ({
+    key: String(item.id),
+    value: item.name,
+  });
 
-  const stores = [
-    { key: '1', value: 'ABC-123' },
-    { key: '2', value: 'ABC-124' },
-    { key: '3', value: 'ABC-125' },
-    { key: '4', value: 'ABC-126' },
-    { key: '5', value: 'ABC-127' },
-  ];
+  const displayNames = (agents ?? []).map(mapItemToOption);
+  const defaultName = displayNames.find((option) => +option.key === currentAgentId);
 
-  const partners = [
-    { key: '1', value: '1. kör' },
-    { key: '2', value: '2. kör' },
-    { key: '3', value: 'Harmadik kör' },
-    { key: '4', value: 'Egy újabb kör valami izgalmas névvel' },
-    { key: '5', value: 'Alsófelvégi Coop-ok' },
-  ];
+  const selectAgentHandler = (key: string) => {
+    setAgentId(+key);
+  };
+
+  const displayStores = (storeList ?? []).map((store) => ({
+    key: String(store.id),
+    value: store.name,
+  }));
+  const defaultStore = displayStores.find((option) => +option.key === currentStoreId);
+
+  const selectStoreHandler = (key: string) => {
+    setStoreId(+key);
+  };
+
+  const displayPartners = (partnerLists ?? []).map((partnerList) => ({
+    key: String(partnerList.id),
+    value: partnerList.name,
+  }));
+  const defaultPartners = displayPartners.find((option) => +option.key === currentPartnerListId);
+
+  const selectPartnerListHandler = (key: string) => {
+    setPartnerListId(+key);
+  };
+
+  const selectDateHandler = (_, selectedDate: Date) => {
+    setDate(selectedDate);
+  };
+
+  const showDatePicker = () => {
+    DateTimePickerAndroid.open({
+      value: date,
+      onChange: selectDateHandler,
+      mode: 'date',
+      is24Hour: true,
+      minimumDate: new Date(),
+    });
+  };
+
+  const confirmButtonvariant =
+    agentId > -1 && storeId > -1 && partnerListId > -1 ? 'ok' : 'disabled';
 
   return (
     <View style={styles.container}>
-      {/* {!!itemsError && (
-          <View style={styles.error}>
-            <ErrorCard>{storeError}</ErrorCard>
-          </View>
-        )}
-        {!!partnersError && (
-          <View style={styles.error}>
-            <ErrorCard>{storeError}</ErrorCard>
-          </View>
-        )}
-        {!!storesError && (
-          <View style={styles.error}>
-            <ErrorCard>{storesError}</ErrorCard>
-          </View>
-        )}
-        {!!storeError && (
-          <View style={styles.error}>
-            <ErrorCard>{storeError}</ErrorCard>
-          </View>
-        )}
-        {!!roundError && (
-          <View style={styles.error}>
-            <ErrorCard>{roundError}</ErrorCard>
-          </View>
-        )} */}
+      {!!roundDataError && (
+        <View style={styles.error}>
+          <ErrorCard>{roundDataError}</ErrorCard>
+        </View>
+      )}
+      {!!confirmRoundError && (
+        <View style={styles.error}>
+          <ErrorCard>{confirmRoundError}</ErrorCard>
+        </View>
+      )}
       <View style={styles.inputContainer}>
-        <Dropdown label="Felhasználó" data={names} onSelect={setName} />
+        <Dropdown
+          label="Felhasználó"
+          data={displayNames}
+          defaultOption={defaultName}
+          onSelect={selectAgentHandler}
+        />
       </View>
       <View style={styles.inputContainer}>
-        <Dropdown label="Raktár" data={stores} onSelect={setStore} />
+        <Dropdown
+          label="Raktár"
+          data={displayStores}
+          defaultOption={defaultStore}
+          onSelect={selectStoreHandler}
+        />
       </View>
       <View style={styles.inputContainer}>
-        <Dropdown label="Partnerlista" data={partners} onSelect={setPartner} />
+        <Dropdown
+          label="Partnerlista"
+          data={displayPartners}
+          defaultOption={defaultPartners}
+          onSelect={selectPartnerListHandler}
+        />
       </View>
       <View style={styles.dateContainer}>
-        <Pressable onPress={showDatepicker} style={styles.dateInnerContainer}>
+        <Pressable onPress={showDatePicker} style={styles.dateInnerContainer}>
           <Input label="Dátum" config={{ editable: false, value: format(date, 'yyyy-MM-dd') }} />
         </Pressable>
       </View>
       <View style={styles.buttonContainer}>
-        <Button variant={confirmButtonvariant} onPress={() => {}}>
+        <Button variant={confirmButtonvariant} onPress={confirmRoundHandler}>
           Kör indítása
         </Button>
       </View>

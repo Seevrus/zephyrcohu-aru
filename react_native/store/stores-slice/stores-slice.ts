@@ -6,7 +6,7 @@ import { fetchStore, fetchStoreList, removeStore, removeStoreList } from './stor
 import { StoresSlice } from './stores-slice-types';
 
 const initialState: StoresSlice = {
-  storeList: undefined,
+  storeList: [],
   store: undefined,
 };
 
@@ -15,8 +15,8 @@ const storesSlice = createSlice({
   initialState,
   reducers: {
     mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['stores']>) => {
-      if (!state.storeList) state.storeList = payload.storeList;
-      if (!state.store) state.store = payload.store;
+      if (!state.storeList) state.storeList = payload?.storeList;
+      if (!state.store) state.store = payload?.store;
     },
   },
   extraReducers: (builder) => {
@@ -35,7 +35,7 @@ const storesSlice = createSlice({
     });
 
     builder.addCase(removeStoreList.fulfilled, (state) => {
-      state.storeList = undefined;
+      state.storeList = [];
     });
     builder.addCase(removeStoreList.rejected, (_, { payload }) => {
       throw new Error(payload.message);
