@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 import env from '../../env.json';
 import { LocalStorage, setLocalStorage } from '../async-storage';
@@ -18,7 +18,7 @@ export const fetchPartnerList = createAsyncThunk<
   FetchPartnerListRequest,
   { rejectValue: ErrorResponseT }
 >('partners/fetchPartnerList', async (requestData, { rejectWithValue }) => {
-  let response: FetchPartnerListResponse;
+  let response: AxiosResponse<FetchPartnerListResponse>;
   try {
     response = await axios.get(`${env.api_url}/partner-list`, {
       headers: {
@@ -33,7 +33,7 @@ export const fetchPartnerList = createAsyncThunk<
 
   try {
     await setLocalStorage({
-      partners: { partnerLists: response.data },
+      partners: { partnerLists: response.data.data },
     } as Partial<LocalStorage>);
   } catch (e) {
     return rejectWithValue({
@@ -43,7 +43,7 @@ export const fetchPartnerList = createAsyncThunk<
     });
   }
 
-  return response;
+  return response.data;
 });
 
 export const removePartnerList = createAsyncThunk<boolean, never, { rejectValue: ErrorResponseT }>(
@@ -74,15 +74,18 @@ export const fetchPartners = createAsyncThunk<
 >('partners/fetchPartners', async (requestData, { rejectWithValue }) => {
   let partners: PartnerDetails[];
   try {
-    const response: FetchPartnersResponse = await axios.get(`${env.api_url}/partners`, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${requestData.token}`,
-        'X-Device-Id': requestData.deviceId,
-      },
-    });
+    const response: AxiosResponse<FetchPartnersResponse> = await axios.get(
+      `${env.api_url}/partners`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${requestData.token}`,
+          'X-Device-Id': requestData.deviceId,
+        },
+      }
+    );
 
-    partners = mapFetchPartnersResponse(response);
+    partners = mapFetchPartnersResponse(response.data);
   } catch (e) {
     return rejectWithValue(e.response.data);
   }
