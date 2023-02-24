@@ -23,9 +23,19 @@ const useLocalStorage = (canGetLocalState: boolean) => {
 
         dispatch(configActions.mergeLocalState(importedStore.config));
         dispatch(agentsActions.mergeLocalState(importedStore.agents));
-        dispatch(partnersActions.mergeLocalState(importedStore.partners));
+        dispatch(
+          partnersActions.mergeLocalState({
+            partnerLists: importedStore.partnerLists,
+            partners: importedStore.partners,
+          })
+        );
         dispatch(itemsActions.mergeLocalState(importedStore.items));
-        dispatch(storesActions.mergeLocalState(importedStore.stores));
+        dispatch(
+          storesActions.mergeLocalState({
+            storeList: importedStore.storeList,
+            store: importedStore.store,
+          })
+        );
         dispatch(roundActions.mergeLocalState(importedStore.round));
 
         setIsLocalStateMerged(true);

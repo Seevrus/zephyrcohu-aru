@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios, { AxiosResponse } from 'axios';
 
 import env from '../../env.json';
-import { LocalStorage, setLocalStorage } from '../async-storage';
+import { setLocalStorage } from '../async-storage';
 import { ErrorResponseT } from '../base-types';
 import { mapFetchStoreResponse } from './stores-api-mappers';
 import {
@@ -33,10 +33,8 @@ export const fetchStoreList = createAsyncThunk<
 
   try {
     await setLocalStorage({
-      stores: {
-        storeList: response.data.data,
-      },
-    } as Partial<LocalStorage>);
+      storeList: response.data.data,
+    });
   } catch (e) {
     return rejectWithValue({
       status: 507,
@@ -53,10 +51,8 @@ export const removeStoreList = createAsyncThunk<boolean, never, { rejectValue: E
   async (_, { rejectWithValue }) => {
     try {
       await setLocalStorage({
-        stores: {
-          storeList: undefined,
-        },
-      } as Partial<LocalStorage>);
+        storeList: undefined,
+      });
     } catch (e) {
       return rejectWithValue({
         status: 507,
@@ -94,10 +90,8 @@ export const fetchStore = createAsyncThunk<
 
   try {
     await setLocalStorage({
-      stores: {
-        store,
-      },
-    } as Partial<LocalStorage>);
+      store,
+    });
   } catch (e) {
     return rejectWithValue({
       status: 507,
@@ -114,10 +108,8 @@ export const removeStore = createAsyncThunk<boolean, never, { rejectValue: Error
   async (_, { rejectWithValue }) => {
     try {
       await setLocalStorage({
-        stores: {
-          store: undefined,
-        },
-      } as Partial<LocalStorage>);
+        store: undefined,
+      });
     } catch (e) {
       return rejectWithValue({
         status: 507,

@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios, { AxiosResponse } from 'axios';
 
 import env from '../../env.json';
-import { LocalStorage, setLocalStorage } from '../async-storage';
+import { setLocalStorage } from '../async-storage';
 import { ErrorResponseT } from '../base-types';
 import { mapFetchPartnersResponse } from './partners-api-mappers';
 import {
@@ -33,8 +33,8 @@ export const fetchPartnerList = createAsyncThunk<
 
   try {
     await setLocalStorage({
-      partners: { partnerLists: response.data.data },
-    } as Partial<LocalStorage>);
+      partnerLists: response.data.data,
+    });
   } catch (e) {
     return rejectWithValue({
       status: 507,
@@ -51,10 +51,8 @@ export const removePartnerList = createAsyncThunk<boolean, never, { rejectValue:
   async (_, { rejectWithValue }) => {
     try {
       await setLocalStorage({
-        partners: {
-          partnerLists: undefined,
-        },
-      } as Partial<LocalStorage>);
+        partnerLists: undefined,
+      });
     } catch (e) {
       return rejectWithValue({
         status: 507,
@@ -92,8 +90,8 @@ export const fetchPartners = createAsyncThunk<
 
   try {
     await setLocalStorage({
-      partners: { partners },
-    } as Partial<LocalStorage>);
+      partners,
+    });
   } catch (e) {
     return rejectWithValue({
       status: 507,
@@ -110,10 +108,8 @@ export const removePartners = createAsyncThunk<boolean, never, { rejectValue: Er
   async (_, { rejectWithValue }) => {
     try {
       await setLocalStorage({
-        partners: {
-          partners: undefined,
-        },
-      } as Partial<LocalStorage>);
+        partners: undefined,
+      });
     } catch (e) {
       return rejectWithValue({
         status: 507,

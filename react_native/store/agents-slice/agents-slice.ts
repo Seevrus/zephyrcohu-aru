@@ -14,7 +14,7 @@ const agentsSlice = createSlice({
   initialState,
   reducers: {
     mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['agents']>) => {
-      if (!state.data) state.data = payload.data;
+      if (!state.data) state.data = payload?.data;
     },
   },
   extraReducers: (builder) => {

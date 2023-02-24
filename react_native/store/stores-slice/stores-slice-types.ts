@@ -7,7 +7,7 @@ export type FetchStoreListResponse = {
   data: Store[];
 };
 
-type Store = {
+export type Store = {
   id: number;
   code: string;
   name: string;

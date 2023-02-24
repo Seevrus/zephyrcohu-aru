@@ -4,16 +4,18 @@ import { mergeRight } from 'ramda';
 import { Agents } from '../agents-slice/agents-slice-types';
 import { Config } from '../config-slice/config-slice-types';
 import { Items } from '../items-slice/items-slice-types';
-import { PartnersSlice } from '../partners-slice/partners-slice-types';
+import { PartnerDetails, PartnerList } from '../partners-slice/partners-slice-types';
 import { Round } from '../round-slice/round-slice-types';
-import { StoresSlice } from '../stores-slice/stores-slice-types';
+import { Store, StoreDetails } from '../stores-slice/stores-slice-types';
 
 export type LocalStorage = {
   config?: Config;
   agents?: Agents;
-  partners?: PartnersSlice;
+  partnerLists?: PartnerList[];
+  partners?: PartnerDetails[];
   items?: Items;
-  stores?: StoresSlice;
+  storeList?: Store[];
+  store?: StoreDetails;
   round?: Round;
 };
 
@@ -27,7 +29,7 @@ export const getLocalStorage = async () => {
   }
 };
 
-export const setLocalStorage = async (items) => {
+export const setLocalStorage = async (items: Partial<LocalStorage>) => {
   try {
     const jsonStore = await AsyncStorage.getItem('boreal-store');
     const importedStore: LocalStorage = jsonStore ? JSON.parse(jsonStore) : {};

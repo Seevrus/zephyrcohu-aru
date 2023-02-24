@@ -38,7 +38,7 @@ type Partner = {
   siteCode: string;
 };
 
-type PartnerList = {
+export type PartnerList = {
   id: number;
   name: string;
   partners: Partner[];

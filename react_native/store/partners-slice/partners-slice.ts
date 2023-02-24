@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { LocalStorage } from '../async-storage';
 import {
   fetchPartnerList,
   fetchPartners,
@@ -19,7 +18,7 @@ const partnersSlice = createSlice({
   name: 'partners',
   initialState,
   reducers: {
-    mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['partners']>) => {
+    mergeLocalState: (state, { payload }: PayloadAction<PartnersSlice>) => {
       if (!state.partnerLists) state.partnerLists = payload?.partnerLists;
       if (!state.partners) state.partners = payload?.partners;
     },

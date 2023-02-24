@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios, { AxiosResponse } from 'axios';
 
 import env from '../../env.json';
-import { LocalStorage, setLocalStorage } from '../async-storage';
+import { setLocalStorage } from '../async-storage';
 import { ErrorResponseT } from '../base-types';
 import { FetchAgentsRequest, FetchAgentsResponse } from './agents-slice-types';
 
@@ -27,7 +27,7 @@ export const fetchAgents = createAsyncThunk<
   try {
     await setLocalStorage({
       agents: response.data,
-    } as Partial<LocalStorage>);
+    });
   } catch (e) {
     return rejectWithValue({
       status: 507,
@@ -47,7 +47,7 @@ export const removeAgents = createAsyncThunk<boolean, never, { rejectValue: Erro
         agents: {
           data: undefined,
         },
-      } as Partial<LocalStorage>);
+      });
     } catch (e) {
       return rejectWithValue({
         status: 507,

@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
 import env from '../../env.json';
-import { LocalStorage, removeLocalStorage, setLocalStorage } from '../async-storage';
+import { removeLocalStorage, setLocalStorage } from '../async-storage';
 import { ErrorResponseT } from '../base-types';
 import {
   CheckTokenRequestT,
@@ -36,6 +36,7 @@ export const registerDevice = createAsyncThunk<
     await setLocalStorage({
       config: {
         userType: response.data.data?.type,
+        company: response.data.data?.company,
       },
     });
   } catch (e) {
@@ -72,8 +73,7 @@ export const checkToken = createAsyncThunk<
         },
         partners: undefined,
         items: undefined,
-        storeList: undefined,
-        store: undefined,
+        stores: undefined,
         round: undefined,
       });
     } catch (_) {
@@ -89,7 +89,7 @@ export const checkToken = createAsyncThunk<
         userType: response.data.data?.type,
         company: response.data.data?.company,
       },
-    } as Partial<LocalStorage>);
+    });
   } catch (e) {
     return rejectWithValue({
       status: 507,

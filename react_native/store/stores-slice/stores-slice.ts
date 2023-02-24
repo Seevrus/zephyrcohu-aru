@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { LocalStorage } from '../async-storage';
 import { fetchStore, fetchStoreList, removeStore, removeStoreList } from './stores-api-actions';
 import { StoresSlice } from './stores-slice-types';
 
@@ -14,7 +13,7 @@ const storesSlice = createSlice({
   name: 'stores',
   initialState,
   reducers: {
-    mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['stores']>) => {
+    mergeLocalState: (state, { payload }: PayloadAction<StoresSlice>) => {
       if (!state.storeList) state.storeList = payload?.storeList;
       if (!state.store) state.store = payload?.store;
     },
