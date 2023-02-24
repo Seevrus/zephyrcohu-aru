@@ -45,7 +45,7 @@ export const removeItems = createAsyncThunk<boolean, never, { rejectValue: Error
     try {
       await setLocalStorage({
         items: {
-          data: [],
+          data: undefined,
         },
       } as Partial<LocalStorage>);
     } catch (e) {

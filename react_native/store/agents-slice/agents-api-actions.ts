@@ -45,7 +45,7 @@ export const removeAgents = createAsyncThunk<boolean, never, { rejectValue: Erro
     try {
       await setLocalStorage({
         agents: {
-          data: [],
+          data: undefined,
         },
       } as Partial<LocalStorage>);
     } catch (e) {

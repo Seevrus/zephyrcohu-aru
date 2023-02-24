@@ -58,6 +58,7 @@ const configSlice = createSlice({
 
     builder.addCase(unregisterDevice.fulfilled, (state) => {
       state.userType = undefined;
+      state.company = undefined;
     });
     builder.addCase(unregisterDevice.rejected, (_, { payload }) => {
       throw new Error(payload.message);

@@ -6,7 +6,7 @@ import { fetchStore, fetchStoreList, removeStore, removeStoreList } from './stor
 import { StoresSlice } from './stores-slice-types';
 
 const initialState: StoresSlice = {
-  storeList: [],
+  storeList: undefined,
   store: undefined,
 };
 
@@ -35,7 +35,7 @@ const storesSlice = createSlice({
     });
 
     builder.addCase(removeStoreList.fulfilled, (state) => {
-      state.storeList = [];
+      state.storeList = undefined;
     });
     builder.addCase(removeStoreList.rejected, (_, { payload }) => {
       throw new Error(payload.message);
