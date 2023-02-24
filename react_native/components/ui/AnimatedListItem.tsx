@@ -12,18 +12,20 @@ export enum ItemAvailability {
 }
 
 type AnimatedListItemProps = {
-  type: ItemAvailability;
+  expandedInitially: boolean;
   title: string;
   height: number;
+  backgroundColor: string;
 };
 
 export default function AnimatedListItem({
-  type,
+  expandedInitially,
   title,
   height,
+  backgroundColor,
   children,
 }: PropsWithChildren<AnimatedListItemProps>) {
-  const [expanded, setExpanded] = useState<boolean>(type === ItemAvailability.IN_RECEIPT);
+  const [expanded, setExpanded] = useState<boolean>(expandedInitially);
   const heightValue = useMemo(() => new Animated.Value(0), []);
 
   useEffect(() => {
@@ -34,10 +36,8 @@ export default function AnimatedListItem({
     }).start();
   }, [expanded, height, heightValue]);
 
-  const backgroundColor = [colors.ok, colors.neutral, colors.warning];
-
   const backgroundStyle = {
-    backgroundColor: backgroundColor[type],
+    backgroundColor,
   };
 
   return (

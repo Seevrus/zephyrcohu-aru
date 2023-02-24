@@ -96,7 +96,6 @@ export default function StartErrand({ navigation }: StartErrandProps) {
       dispatch(fetchStore({ deviceId, token, code: selectedStoreCode })).unwrap(),
     ])
       .then(([, , fetchedStore]) => {
-        console.log(fetchedStore);
         dispatch(
           initializeRound({
             agentId,
