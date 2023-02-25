@@ -20,7 +20,10 @@ export default function Selection({ info, onQuantityModified }: SelectionProps) 
     const nullIshFormattedQuantity =
       Number.isNaN(formattedQuantity) || !formattedQuantity ? null : formattedQuantity;
 
-    if (formattedQuantity < 0 || formattedQuantity > info.item.quantity) {
+    if (formattedQuantity < 0) {
+      setSelectedQuantity(null);
+      onQuantityModified(info.item.expiresAt, null);
+    } else if (formattedQuantity > info.item.quantity) {
       setSelectedQuantity(info.item.quantity);
       onQuantityModified(info.item.expiresAt, info.item.quantity);
     } else {
