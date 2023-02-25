@@ -1,10 +1,10 @@
-import { keys, length, pipe } from 'ramda';
 import { useState } from 'react';
-import { LayoutChangeEvent, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import { LayoutChangeEvent, ListRenderItemInfo, StyleSheet, Text, View } from 'react-native';
 
 import AnimatedListItem from '../../../components/ui/AnimatedListItem';
 import Button from '../../../components/ui/buttons/Button';
 import colors from '../../../constants/colors';
+import fontSizes from '../../../constants/fontSizes';
 import { PartnerDetails } from '../../../store/partners-slice/partners-slice-types';
 import InfoItem from './InfoItem';
 
@@ -24,31 +24,19 @@ export default function Selection({
   const backgroundColor = selected ? colors.ok : colors.neutral;
   const partner = info.item;
   const { id, locations, phoneNumber } = partner;
-  const numberOfLocationsAvailable = pipe(keys, length)(locations);
 
-  let displayName: string;
-  let centralName: string;
-  let centralAddress: string;
-  let deliveryName: string | undefined;
-  let deliveryAddress: string | undefined;
-  if (numberOfLocationsAvailable === 2) {
-    displayName = locations.D.name;
-    centralName = locations.C.name;
-    centralAddress = `${locations.C.city}, ${locations.C.address}`;
-    deliveryName = locations.D.name;
-    deliveryAddress = `${locations.D.city}, ${locations.D.address}`;
-  } else {
-    displayName = locations.D.name;
-    centralName = displayName;
-    centralAddress = `${locations.D.city}, ${locations.D.address}`;
-  }
+  const deliveryName = locations.D?.name;
+  const deliveryAddress = `${locations.D?.postalCode} ${locations.D?.city}, ${locations.D?.address}`;
+  const hasCentralLocation = !!locations.C;
+  const centralName = locations.C?.name;
+  const centralAddress = `${locations.C?.postalCode} ${locations.C?.city}, ${locations.C?.address}`;
 
   const [dropdownHeight, setDropdownHeight] = useState(250);
 
   return (
     <AnimatedListItem
       id={id}
-      title={displayName}
+      title={deliveryName}
       expandedInitially={selected}
       height={dropdownHeight}
       backgroundColor={backgroundColor}
@@ -60,14 +48,14 @@ export default function Selection({
           setDropdownHeight(e.nativeEvent.layout.height);
         }}
       >
-        <View style={styles.infoGroup}>
-          <InfoItem label="Név" text={centralName} />
-          <InfoItem label="Cím" text={centralAddress} />
+        <View style={styles.firstInfoGroup}>
+          <Text style={styles.infoText}>{deliveryName}</Text>
+          <Text style={styles.infoText}>{deliveryAddress}</Text>
         </View>
-        {(deliveryName || deliveryAddress) && (
+        {hasCentralLocation && (
           <View style={styles.infoGroup}>
-            {deliveryName && <InfoItem label="Szállítási név" text={deliveryName} />}
-            {deliveryAddress && <InfoItem label="Szállítási cím" text={deliveryAddress} />}
+            <Text style={styles.infoText}>{centralName}</Text>
+            <Text style={styles.infoText}>{centralAddress}</Text>
           </View>
         )}
         {phoneNumber && (
@@ -92,8 +80,19 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignContent: 'flex-start',
   },
+  firstInfoGroup: {
+    marginTop: 10,
+  },
   infoGroup: {
     marginTop: 10,
+    paddingTop: 5,
+    borderTopColor: 'white',
+    borderTopWidth: 1,
+  },
+  infoText: {
+    color: 'white',
+    fontFamily: 'Muli',
+    fontSize: fontSizes.input,
   },
   buttonContainer: {
     alignSelf: 'center',
