@@ -32,6 +32,11 @@ function Selection({ info, onQuantityModified }: SelectionProps) {
     }
   };
 
+  const label =
+    info.item.expiresAt === 'Rendelés'
+      ? info.item.expiresAt
+      : `${info.item.expiresAt} (${info.item.quantity})`;
+
   return (
     <View style={styles.selectionContainer}>
       <Pressable onPress={() => quantityHandler(String(selectedQuantity - 1))}>
@@ -44,7 +49,7 @@ function Selection({ info, onQuantityModified }: SelectionProps) {
       </Pressable>
       <View style={styles.quantityContainer}>
         <Input
-          label={info.item.expiresAt}
+          label={label}
           textAlign="center"
           config={{
             autoCapitalize: 'none',
