@@ -1,19 +1,23 @@
 import {
   all,
+  any,
   assoc,
   assocPath,
   dissoc,
   filter,
+  gt,
   includes,
   isEmpty,
   isNil,
   not,
+  pathOr,
   pipe,
   prop,
   propSatisfies,
   take,
   toLower,
   values,
+  __,
 } from 'ramda';
 import { useCallback, useState } from 'react';
 import { Animated, ListRenderItemInfo, StyleSheet, View } from 'react-native';
@@ -29,6 +33,7 @@ import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
 import { SelectItemsProps } from '../../screen-types';
 import SelectItem, { ItemAvailability } from './SelectItem';
+import { Expiration } from '../../../store/stores-slice/stores-slice-types';
 
 const keyExtractor = (item: Item) => String(item.id);
 const NUM_ITEMS_SHOWN = 10;
@@ -123,10 +128,15 @@ export default function SelectItems({ navigation }: SelectItemsProps) {
 
   const renderItem = (info: ListRenderItemInfo<Item>) => {
     let type: ItemAvailability;
-    if (!!selectedItems[String(info.item.id)] || !!selectedOrderItems[String(info.item.id)]) {
+    if (!!selectedItems[info.item.id] || !!selectedOrderItems[info.item.id]) {
       type = ItemAvailability.IN_RECEIPT;
-    } else if (storeItems[info.item.id]) {
-      // TODO: map it to current quantity
+    } else if (
+      pipe(
+        pathOr<Record<string, Expiration>>({}, [info.item.id, 'expirations']),
+        values,
+        any(pipe(prop('quantity'), gt(__, 0)))
+      )(storeItems)
+    ) {
       type = ItemAvailability.AVAILABLE;
     } else {
       type = ItemAvailability.ONLY_ORDER;
