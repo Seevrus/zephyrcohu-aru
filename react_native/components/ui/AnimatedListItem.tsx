@@ -12,17 +12,25 @@ export enum ItemAvailability {
 }
 
 type AnimatedListItemProps = {
+  id: number;
   expandedInitially: boolean;
   title: string;
   height: number;
   backgroundColor: string;
+  onSelect?: (id: number) => void;
+};
+
+const defaultProps = {
+  onSelect: () => {},
 };
 
 export default function AnimatedListItem({
+  id,
   expandedInitially,
   title,
   height,
   backgroundColor,
+  onSelect,
   children,
 }: PropsWithChildren<AnimatedListItemProps>) {
   const [expanded, setExpanded] = useState<boolean>(expandedInitially);
@@ -40,10 +48,15 @@ export default function AnimatedListItem({
     backgroundColor,
   };
 
+  const itemPressHandler = () => {
+    setExpanded(not);
+    onSelect(id);
+  };
+
   return (
     <View style={styles.container}>
       <Pressable
-        onPress={() => setExpanded(not)}
+        onPress={itemPressHandler}
         style={({ pressed }) => [styles.item, backgroundStyle, pressed && { opacity: 0.75 }]}
       >
         <View style={styles.titleContainer}>
@@ -56,6 +69,7 @@ export default function AnimatedListItem({
     </View>
   );
 }
+AnimatedListItem.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
   container: {

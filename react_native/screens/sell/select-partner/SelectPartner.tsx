@@ -23,7 +23,7 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
       const { partnerLists, partners } = state.partners;
 
       const sortPartners = (p1: PartnerDetails, p2: PartnerDetails) =>
-        p1.locations.D.name.localeCompare(p2.locations.D.name);
+        p1.locations.D.name.localeCompare(p2.locations.D.name, 'HU-hu');
 
       if (partnerListType === PartnerList.ALL) {
         return sort(sortPartners, partners);
@@ -46,6 +46,7 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
 
   const currentReceipt = useAppSelector((state) => state.round.currentReceipt);
   const lastPartnerId = useAppSelector((state) => state.round.currentReceipt?.partnerId);
+  const [selectedPartnerId, setSelectedPartnerId] = useState(lastPartnerId);
 
   useEffect(() => {
     if (!currentReceipt) {
@@ -69,6 +70,10 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
     );
   };
 
+  const selectPartnerHandler = (id: number) => {
+    setSelectedPartnerId(id);
+  };
+
   const confirmPartnerHandler = (id: number) => {
     dispatch(roundActions.selectPartner(id));
     navigation.navigate('SelectItems');
@@ -79,7 +84,8 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
   ) => (
     <Selection
       info={info}
-      selected={info.item.id === lastPartnerId}
+      selected={info.item.id === selectedPartnerId}
+      onSelect={selectPartnerHandler}
       onConfirmSelection={confirmPartnerHandler}
     />
   );
