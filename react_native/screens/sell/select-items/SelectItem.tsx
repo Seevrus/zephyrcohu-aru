@@ -1,10 +1,18 @@
 import { append, pipe, values } from 'ramda';
 import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
-import AnimatedListItem, { ItemAvailability } from '../../../components/ui/AnimatedListItem';
+
+import AnimatedListItem from '../../../components/ui/AnimatedListItem';
+import colors from '../../../constants/colors';
 import { useAppSelector } from '../../../store/hooks';
 import { Item } from '../../../store/items-slice/items-slice-types';
 import { Expiration } from '../../../store/stores-slice/stores-slice-types';
 import Selection from './Selection';
+
+export enum ItemAvailability {
+  IN_RECEIPT,
+  AVAILABLE,
+  ONLY_ORDER,
+}
 
 export default function SelectItem({
   info,
@@ -17,7 +25,7 @@ export default function SelectItem({
   upsertSelectedItem: (id: string, expiresAt: string, quantity: number, itemAmount: number) => void;
   upsertOrderItem: (id: string, quantity: number) => void;
 }) {
-  const storeItem = useAppSelector((state) => state.store.items[info.item.id]);
+  const storeItem = useAppSelector((state) => state.stores.store.items[info.item.id]);
 
   const expirations: Expiration[] = pipe(
     values,
@@ -35,13 +43,25 @@ export default function SelectItem({
         String(info.item.id),
         expiresAt,
         newQuantity,
-        Math.round(newQuantity ?? 0 * info.item.price)
+        Math.round(newQuantity ?? 0 * info.item.netPrice)
       );
     }
   };
 
+  const backgroundColors = {
+    [ItemAvailability.AVAILABLE]: colors.neutral,
+    [ItemAvailability.IN_RECEIPT]: colors.ok,
+    [ItemAvailability.ONLY_ORDER]: colors.warning,
+  };
+
   return (
-    <AnimatedListItem type={type} title={info.item.name} height={expirations.length * 98}>
+    <AnimatedListItem
+      id={info.item.id}
+      expandedInitially={false}
+      title={info.item.name}
+      height={expirations.length * 100}
+      backgroundColor={backgroundColors[type]}
+    >
       <View style={styles.selectItemContainer}>
         <FlatList
           data={expirations}

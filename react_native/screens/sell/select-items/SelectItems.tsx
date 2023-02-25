@@ -10,7 +10,6 @@ import {
   not,
   pipe,
   prop,
-  propOr,
   propSatisfies,
   take,
   toLower,
@@ -29,8 +28,7 @@ import Button from '../../../components/ui/buttons/Button';
 import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
 import { SelectItemsProps } from '../../screen-types';
-import SelectItem from './SelectItem';
-import { ItemAvailability } from '../../../components/ui/AnimatedListItem';
+import SelectItem, { ItemAvailability } from './SelectItem';
 
 const keyExtractor = (item: Item) => String(item.id);
 const NUM_ITEMS_SHOWN = 10;
@@ -38,12 +36,13 @@ const NUM_ITEMS_SHOWN = 10;
 export default function SelectItems({ navigation }: SelectItemsProps) {
   const dispatch = useAppDispatch();
 
-  const selectStoreItems = useCallback((state: RootState) => state.store.items, []);
+  const selectStoreItems = useCallback((state: RootState) => state.stores.store.items, []);
   const storeItems = useAppSelector(selectStoreItems);
 
   const partnerId = useAppSelector((state) => state.round.currentReceipt.partnerId);
   const selectPriceList = useCallback(
-    (state: RootState) => state.partners.data.find((partner) => partner.id === partnerId).priceList,
+    (state: RootState) =>
+      state.partners.partners.find((partner) => partner.id === partnerId).priceList,
     [partnerId]
   );
   const priceList = useAppSelector(selectPriceList);
@@ -51,13 +50,13 @@ export default function SelectItems({ navigation }: SelectItemsProps) {
   const selectItems = useCallback(
     (state: RootState) => {
       const mapItemPrice = (item: Item) => {
-        if (!priceList || priceList?.items?.length === 0) return item;
+        const priceListItem = priceList[item.id];
+        if (!priceListItem) return item;
 
-        const priceListItem = priceList?.items?.find((pi) => pi.itemId === item.id);
-        return assoc('price', propOr(item.price, 'price', priceListItem), item);
+        return assoc('netPrice', prop('netPrice', priceListItem), item);
       };
 
-      return state.items.data.map(mapItemPrice) as Item[];
+      return state.items.data.map(mapItemPrice);
     },
     [priceList]
   );

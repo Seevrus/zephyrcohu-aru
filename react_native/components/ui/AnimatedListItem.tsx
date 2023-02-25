@@ -5,12 +5,6 @@ import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import colors from '../../constants/colors';
 import fontSizes from '../../constants/fontSizes';
 
-export enum ItemAvailability {
-  IN_RECEIPT,
-  AVAILABLE,
-  ONLY_ORDER,
-}
-
 type AnimatedListItemProps = {
   id: number;
   expandedInitially: boolean;
