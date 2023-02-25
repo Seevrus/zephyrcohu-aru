@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { pipe, replace, trim } from 'ramda';
-import { useState } from 'react';
+import { eqProps, pipe, replace, trim } from 'ramda';
+import { memo, useState } from 'react';
 import { ListRenderItemInfo, Pressable, StyleSheet, View } from 'react-native';
 import Input from '../../../components/ui/Input';
 
@@ -12,7 +12,7 @@ type SelectionProps = {
   onQuantityModified: (expiresAt: string, newQuantity: number) => void;
 };
 
-export default function Selection({ info, onQuantityModified }: SelectionProps) {
+function Selection({ info, onQuantityModified }: SelectionProps) {
   const [selectedQuantity, setSelectedQuantity] = useState<number>(null);
 
   const quantityHandler = (newQuantity: string) => {
@@ -85,3 +85,9 @@ const styles = StyleSheet.create({
     width: '50%',
   },
 });
+
+function arePropsEqual(oldProps: SelectionProps, newProps: SelectionProps) {
+  return eqProps('info', oldProps, newProps);
+}
+
+export default memo(Selection, arePropsEqual);
