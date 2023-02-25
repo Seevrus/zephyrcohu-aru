@@ -1,4 +1,5 @@
-import { append, pipe, values } from 'ramda';
+import { append, eqProps, pipe, values } from 'ramda';
+import { memo } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
 import AnimatedListItem from '../../../components/ui/AnimatedListItem';
@@ -14,17 +15,14 @@ export enum ItemAvailability {
   ONLY_ORDER,
 }
 
-export default function SelectItem({
-  info,
-  type,
-  upsertSelectedItem,
-  upsertOrderItem,
-}: {
+type SelectItemProps = {
   info: ListRenderItemInfo<Item>;
   type: ItemAvailability;
   upsertSelectedItem: (id: string, expiresAt: string, quantity: number, itemAmount: number) => void;
   upsertOrderItem: (id: string, quantity: number) => void;
-}) {
+};
+
+function SelectItem({ info, type, upsertSelectedItem, upsertOrderItem }: SelectItemProps) {
   const storeItem = useAppSelector((state) => state.stores.store.items[info.item.id]);
 
   const expirations: Expiration[] = pipe(
@@ -93,3 +91,9 @@ const styles = StyleSheet.create({
     width: '50%',
   },
 });
+
+function arePropsEqual(oldProps: SelectItemProps, newProps: SelectItemProps) {
+  return eqProps('info', oldProps, newProps) && eqProps('type', oldProps, newProps);
+}
+
+export default memo(SelectItem, arePropsEqual);
