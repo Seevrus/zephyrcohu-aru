@@ -49,7 +49,6 @@ export default function Selection({
         }}
       >
         <View style={styles.firstInfoGroup}>
-          <Text style={styles.infoText}>{deliveryName}</Text>
           <Text style={styles.infoText}>{deliveryAddress}</Text>
         </View>
         {hasCentralLocation && (
