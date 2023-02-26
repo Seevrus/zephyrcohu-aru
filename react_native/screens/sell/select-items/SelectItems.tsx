@@ -44,10 +44,10 @@ export default function SelectItems({ navigation }: SelectItemsProps) {
   const selectStoreItems = useCallback((state: RootState) => state.stores.store.items, []);
   const storeItems = useAppSelector(selectStoreItems);
 
-  const partnerId = useAppSelector((state) => state.round.currentReceipt.partnerId);
+  const partnerId = useAppSelector((state) => state.round.currentReceipt?.partnerId);
   const selectPriceList = useCallback(
     (state: RootState) =>
-      state.partners.partners.find((partner) => partner.id === partnerId).priceList,
+      state.partners.partners.find((partner) => partner.id === partnerId)?.priceList || {},
     [partnerId]
   );
   const priceList = useAppSelector(selectPriceList);
@@ -112,8 +112,8 @@ export default function SelectItems({ navigation }: SelectItemsProps) {
     );
   };
 
-  useEffect(() => {
-    navigation.addListener('beforeRemove', (e) => {
+  const customBackHandler = useCallback(
+    (e) => {
       if (isEmpty(selectedItems)) return;
 
       e.preventDefault();
@@ -129,8 +129,14 @@ export default function SelectItems({ navigation }: SelectItemsProps) {
           },
         ]
       );
-    });
-  }, [navigation, selectedItems]);
+    },
+    [navigation, selectedItems]
+  );
+
+  useEffect(
+    () => navigation.addListener('beforeRemove', customBackHandler),
+    [customBackHandler, navigation]
+  );
 
   const canConfirmItems = not(isEmpty(selectedItems));
   const confirmButtonVariant = canConfirmItems ? 'ok' : 'disabled';
@@ -138,6 +144,7 @@ export default function SelectItems({ navigation }: SelectItemsProps) {
     if (canConfirmItems) {
       dispatch(roundActions.putItems(selectedItems));
       dispatch(roundActions.putOrderItems(selectedOrderItems));
+      navigation.removeListener('beforeRemove', customBackHandler);
       navigation.navigate('Review');
     }
   };
@@ -215,7 +222,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   footerContainer: {
-    height: 50,
-    marginVertical: 10,
+    height: 70,
+    paddingVertical: 10,
+    borderTopColor: 'white',
+    borderTopWidth: 2,
   },
 });

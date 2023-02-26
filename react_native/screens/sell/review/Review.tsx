@@ -43,7 +43,7 @@ export default function Review({ navigation }: ReviewProps) {
   const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
 
   const receiptRows = useAppSelector((state) => {
-    const receiptItems = state.round.currentReceipt.items;
+    const receiptItems = state.round.currentReceipt?.items;
 
     return pipe(
       pathOr<Item>({}, ['round', 'currentReceipt', 'items']),
@@ -91,8 +91,11 @@ export default function Review({ navigation }: ReviewProps) {
 
   useEffect(() => {
     if (receiptRows.length === 0) {
-      dispatch(roundActions.removeLastUnsentReceipt);
-      navigation.replace('Index');
+      dispatch(roundActions.removeLastUnsentReceipt());
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Index' }],
+      });
     }
   }, [dispatch, navigation, receiptRows.length]);
 
@@ -105,8 +108,11 @@ export default function Review({ navigation }: ReviewProps) {
         {
           text: 'Biztosan ezt szeretném',
           onPress: () => {
-            dispatch(roundActions.removeLastUnsentReceipt);
-            navigation.replace('Index');
+            dispatch(roundActions.removeLastUnsentReceipt());
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Index' }],
+            });
           },
         },
       ]
@@ -120,7 +126,11 @@ export default function Review({ navigation }: ReviewProps) {
   return (
     <View style={styles.container}>
       <View style={styles.receiptContainer}>
-        <FlatList data={receiptRows} renderItem={renderReceiptRow} />
+        <FlatList
+          data={receiptRows}
+          renderItem={renderReceiptRow}
+          keyExtractor={(item) => `${item.id}-${item.expiresAt}`}
+        />
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.grossAmountContainer}>
