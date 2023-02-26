@@ -24,7 +24,7 @@ class ItemResource extends JsonResource
             'unitName' => $this->unit_name,
             'productCatalogCode' => $this->product_catalog_code,
             'vatRate' => $this->vat_rate,
-            'netPprice' => $this->net_price,
+            'netPrice' => $this->net_price,
             'createdAt' => $this->created_at->toDateTimeString(),
             'updatedAt' => $this->updated_at->toDateTimeString(),
         ];
