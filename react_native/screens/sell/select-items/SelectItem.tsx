@@ -18,8 +18,8 @@ export enum ItemAvailability {
 type SelectItemProps = {
   info: ListRenderItemInfo<Item>;
   type: ItemAvailability;
-  upsertSelectedItem: (id: string, expiresAt: string, quantity: number, itemAmount: number) => void;
-  upsertOrderItem: (id: string, quantity: number) => void;
+  upsertSelectedItem: (id: string, name: string, expiresAt: string, quantity: number) => void;
+  upsertOrderItem: (id: string, name: string, quantity: number) => void;
 };
 
 function SelectItem({ info, type, upsertSelectedItem, upsertOrderItem }: SelectItemProps) {
@@ -35,14 +35,9 @@ function SelectItem({ info, type, upsertSelectedItem, upsertOrderItem }: SelectI
 
   const modifyQuantity = (expiresAt: string, newQuantity: number) => {
     if (expiresAt === 'Rendelés') {
-      upsertOrderItem(String(info.item.id), newQuantity);
+      upsertOrderItem(String(info.item.id), info.item.name, newQuantity);
     } else {
-      upsertSelectedItem(
-        String(info.item.id),
-        expiresAt,
-        newQuantity,
-        Math.round(newQuantity ?? 0 * info.item.netPrice)
-      );
+      upsertSelectedItem(String(info.item.id), info.item.name, expiresAt, newQuantity);
     }
   };
 

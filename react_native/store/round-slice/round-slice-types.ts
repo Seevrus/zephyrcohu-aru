@@ -15,8 +15,8 @@ export type InitializeRoundResponse = {
 };
 
 export type ExpirationItem = {
+  name: string;
   quantity: number;
-  itemAmount: number;
 };
 
 export type Item = Record<
@@ -27,7 +27,13 @@ export type Item = Record<
   >
 >;
 
-export type OrderItem = Record<string, number>; // item id, quantity
+export type OrderItem = Record<
+  string,
+  {
+    name: string;
+    quantity: number;
+  }
+>; // item id, order data
 
 type Receipt = {
   isSent: boolean;

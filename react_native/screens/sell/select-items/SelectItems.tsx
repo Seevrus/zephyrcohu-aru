@@ -10,6 +10,7 @@ import {
   isEmpty,
   isNil,
   not,
+  or,
   pathOr,
   pipe,
   prop,
@@ -19,21 +20,21 @@ import {
   values,
   __,
 } from 'ramda';
-import { useCallback, useState } from 'react';
-import { Animated, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { Alert, Animated, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
 import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { Item } from '../../../store/items-slice/items-slice-types';
 import { roundActions } from '../../../store/round-slice/round-slice';
 import { Item as ReceiptItem, OrderItem } from '../../../store/round-slice/round-slice-types';
+import { Expiration } from '../../../store/stores-slice/stores-slice-types';
 
 import Button from '../../../components/ui/buttons/Button';
 import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
 import { SelectItemsProps } from '../../screen-types';
 import SelectItem, { ItemAvailability } from './SelectItem';
-import { Expiration } from '../../../store/stores-slice/stores-slice-types';
 
 const keyExtractor = (item: Item) => String(item.id);
 const NUM_ITEMS_SHOWN = 10;
@@ -72,14 +73,10 @@ export default function SelectItems({ navigation }: SelectItemsProps) {
   const [selectedOrderItems, setSelectedOrderItems] = useState<OrderItem>({});
 
   const upsertSelectedItem = useCallback(
-    (id: string, expiresAt: string, quantity: number, itemAmount: number) => {
+    (id: string, name: string, expiresAt: string, quantity: number) => {
       if (!quantity) {
         setSelectedItems((currentItems) => {
-          const itemsWithNewQuantity = assocPath(
-            [id, expiresAt],
-            { quantity, itemAmount },
-            currentItems
-          );
+          const itemsWithNewQuantity = assocPath([id, expiresAt], { name, quantity }, currentItems);
 
           const areAllQuantitiesZero = pipe(
             values,
@@ -93,17 +90,17 @@ export default function SelectItems({ navigation }: SelectItemsProps) {
           return itemsWithNewQuantity;
         });
       } else {
-        setSelectedItems(assocPath([id, expiresAt], { quantity, itemAmount }));
+        setSelectedItems(assocPath([id, expiresAt], { name, quantity }));
       }
     },
     []
   );
 
-  const upsertOrderItem = useCallback((id: string, quantity: number) => {
+  const upsertOrderItem = useCallback((id: string, name: string, quantity: number) => {
     if (!quantity) {
       setSelectedOrderItems(dissoc(id));
     } else {
-      setSelectedOrderItems(assoc(id, quantity));
+      setSelectedOrderItems(assoc(id, { name, quantity }));
     }
   }, []);
 
@@ -116,7 +113,27 @@ export default function SelectItems({ navigation }: SelectItemsProps) {
     );
   };
 
-  const canConfirmItems = not(isEmpty(selectedItems));
+  useEffect(() => {
+    navigation.addListener('beforeRemove', (e) => {
+      if (isEmpty(selectedItems)) return;
+
+      e.preventDefault();
+
+      Alert.alert(
+        'Tételek törlése',
+        'Ha visszalép a partner kiválasztására, a jelenleg kiválasztott tételek törlődnek. Biztosan folytatni szeretné?',
+        [
+          { text: 'Mégse' },
+          {
+            text: 'Biztosan ezt szeretném',
+            onPress: () => navigation.dispatch(e.data.action),
+          },
+        ]
+      );
+    });
+  }, [navigation, selectedItems]);
+
+  const canConfirmItems = or(not(isEmpty(selectedItems)), not(isEmpty(selectedOrderItems)));
   const confirmButtonVariant = canConfirmItems ? 'ok' : 'disabled';
   const confirmItemsHandler = () => {
     if (canConfirmItems) {
