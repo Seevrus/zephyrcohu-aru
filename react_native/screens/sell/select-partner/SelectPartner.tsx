@@ -2,13 +2,14 @@ import { filter, pipe, take } from 'ramda';
 import { useEffect, useState } from 'react';
 import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
+import usePartners from '../../../hooks/usePartners';
+
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { PartnerDetails } from '../../../store/partners-slice/partners-slice-types';
+import { roundActions } from '../../../store/round-slice/round-slice';
 
 import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
-import usePartners from '../../../hooks/usePartners';
-import { PartnerDetails } from '../../../store/partners-slice/partners-slice-types';
-import { roundActions } from '../../../store/round-slice/round-slice';
 import { SelectPartnerProps } from '../../screen-types';
 import Selection from './Selection';
 

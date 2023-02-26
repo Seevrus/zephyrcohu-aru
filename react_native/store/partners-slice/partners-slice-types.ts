@@ -44,7 +44,7 @@ export type PartnerList = {
   partners: Partner[];
 };
 
-type PriceListItem = {
+export type PriceListItem = {
   itemId: number;
   articleNumber: string;
   netPrice: number;
