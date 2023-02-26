@@ -5,7 +5,7 @@ import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
 
 type ButtonProps = {
-  variant: 'neutral' | 'ok' | 'error' | 'disabled';
+  variant: 'neutral' | 'ok' | 'warning' | 'error' | 'disabled';
   onPress?: (event: GestureResponderEvent) => void;
   children: ReactNode;
 };
@@ -18,6 +18,7 @@ export default function Button({ variant, onPress, children }: ButtonProps) {
   const buttonVariants = {
     neutral: colors.neutral,
     ok: colors.ok,
+    warning: colors.warning,
     error: colors.error,
     disabled: colors.disabled,
   };
@@ -29,6 +30,7 @@ export default function Button({ variant, onPress, children }: ButtonProps) {
   const rippleColors = {
     neutral: colors.neutralRipple,
     ok: colors.okRipple,
+    warning: colors.warningRipple,
     error: colors.errorRipple,
   };
 
