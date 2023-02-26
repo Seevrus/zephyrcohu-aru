@@ -1,15 +1,15 @@
-import { filter, pipe, sort, take } from 'ramda';
-import { useCallback, useEffect, useState } from 'react';
+import { filter, pipe, take } from 'ramda';
+import { useEffect, useState } from 'react';
 import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
-import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 
 import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
+import usePartners from '../../../hooks/usePartners';
 import { PartnerDetails } from '../../../store/partners-slice/partners-slice-types';
 import { roundActions } from '../../../store/round-slice/round-slice';
-import { PartnerList, SelectPartnerProps } from '../../screen-types';
+import { SelectPartnerProps } from '../../screen-types';
 import Selection from './Selection';
 
 const NUM_PARTNERS_SHOWN = 10;
@@ -18,28 +18,7 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
   const dispatch = useAppDispatch();
 
   const partnerListType = route.params.partners;
-  const selectPartners = useCallback(
-    (state: RootState) => {
-      const { partnerLists, partners } = state.partners;
-
-      const sortPartners = (p1: PartnerDetails, p2: PartnerDetails) =>
-        p1.locations.D.name.localeCompare(p2.locations.D.name, 'HU-hu');
-
-      if (partnerListType === PartnerList.ALL) {
-        return sort(sortPartners, partners);
-      }
-
-      const partnerList = partnerLists.find((list) => list.id === state.round.partnerListId);
-      const partnerListIds = partnerList.partners.map((p) => p.id);
-
-      return pipe(
-        filter<PartnerDetails>((partner) => partnerListIds.includes(partner.id)),
-        sort(sortPartners)
-      )(partners);
-    },
-    [partnerListType]
-  );
-  const partners = useAppSelector(selectPartners);
+  const partners = usePartners(partnerListType);
   const [partnersShown, setPartnersShown] = useState<PartnerDetails[]>(
     take<PartnerDetails>(NUM_PARTNERS_SHOWN, partners)
   );
