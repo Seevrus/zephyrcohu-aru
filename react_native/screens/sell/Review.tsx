@@ -35,7 +35,7 @@ type ReceiptRow = {
 
 export default function Review() {
   // TODO: handle the case with only order items present
-  const receiptRows: ReceiptRow = useAppSelector((state) => {
+  const receiptRows = useAppSelector((state) => {
     const receiptItems = state.round.currentReceipt.items;
 
     return pipe(
@@ -67,14 +67,14 @@ export default function Review() {
       ),
       flatten,
       sortWith([ascend(prop('name')), ascend(prop('expiresAt'))]),
-      addIndex(map)((item, idx) => {
+      addIndex<Partial<ReceiptRow>>(map)((item, idx) => {
         const indexLength = String(idx).length;
         const numLeadingZeros = 3 - indexLength;
         const code = join('', repeat('0', numLeadingZeros)) + (idx + 1);
         return assoc('code', code, item);
       })
     )(state);
-  });
+  }) as unknown as ReceiptRow; // needed because of addIndex
 
   console.log(receiptRows);
 
