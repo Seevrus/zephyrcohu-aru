@@ -137,7 +137,7 @@ function Main() {
             name="SelectPartner"
             component={Partners}
             options={{
-              headerTitle: 'Partner választása',
+              headerTitle: 'Partner kiválasztása',
             }}
           />
           <Stack.Screen
