@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { mergeDeepLeft, pipe, propOr, values } from 'ramda';
+import { dissocPath, mergeDeepLeft, pipe, propOr, values } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
 import { initializeRound } from './round-api-actions';
@@ -52,6 +52,12 @@ const roundSlice = createSlice({
     },
     putItems: (state, { payload }: PayloadAction<Item>) => {
       state.currentReceipt.items = payload;
+    },
+    removeItem: (state, { payload }: PayloadAction<{ id: number; expiresAt: string }>) => {
+      state.currentReceipt.items = dissocPath(
+        [payload.id, payload.expiresAt],
+        state.currentReceipt.items
+      );
     },
     putOrderItems: (state, { payload }: PayloadAction<OrderItem>) => {
       state.currentReceipt.orderItems = payload;

@@ -1,4 +1,5 @@
 import {
+  add,
   addIndex,
   ascend,
   assoc,
@@ -10,21 +11,37 @@ import {
   pathOr,
   pipe,
   prop,
+  reduce,
   repeat,
   sortWith,
   __,
 } from 'ramda';
-import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import { useEffect } from 'react';
+import {
+  Alert,
+  FlatList,
+  ListRenderItem,
+  ListRenderItemInfo,
+  StyleSheet,
+  View,
+} from 'react-native';
+import { formatCurrency } from 'react-native-format-currency';
 
-import { useAppSelector } from '../../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { ExpirationItem, Item } from '../../../store/round-slice/round-slice-types';
 
 import Button from '../../../components/ui/Button';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
 import ReceiptRow, { ReceiptRowProps } from './ReceiptRow';
+import { roundActions } from '../../../store/round-slice/round-slice';
+import LabeledItem from '../../../components/ui/LabeledItem';
+import { ReviewProps } from '../../screen-types';
 
-export default function Review() {
+export default function Review({ navigation }: ReviewProps) {
+  const dispatch = useAppDispatch();
+  const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
+
   const receiptRows = useAppSelector((state) => {
     const receiptItems = state.round.currentReceipt.items;
 
@@ -42,6 +59,7 @@ export default function Review() {
             const vatAmount = Math.round(netAmount * (vatRateNumeric / 100));
 
             return {
+              id: itemId,
               name: receiptItems[itemId][expiresAt].name,
               expiresAt,
               quantity: receiptItems[itemId][expiresAt].quantity,
@@ -64,11 +82,40 @@ export default function Review() {
         return assoc('code', code, item);
       })
     )(state);
-  }) as unknown as ReceiptRowProps[]; // needed because of addIndex
+  }) as unknown as ReceiptRowProps['item'][]; // needed because of addIndex
 
-  const renderReceiptRow: ListRenderItem<ReceiptRowProps> = (
-    info: ListRenderItemInfo<ReceiptRowProps>
-  ) => <ReceiptRow item={info.item} />;
+  const grossAmount = reduce((acc, value) => add(prop('grossAmount', value), acc), 0, receiptRows);
+
+  const removeItemHandler = ({ id, expiresAt }: { id: number; expiresAt: string }) =>
+    dispatch(roundActions.removeItem({ id, expiresAt }));
+
+  useEffect(() => {
+    if (receiptRows.length === 0) {
+      dispatch(roundActions.removeLastUnsentReceipt);
+      navigation.replace('Index');
+    }
+  }, [dispatch, navigation, receiptRows.length]);
+
+  const removeReceiptHandler = () => {
+    Alert.alert(
+      'Folyamat törlése',
+      'Ez a lépés törli a jelenlegi árulevételi munkamenetet és visszairányít a kezdőoldalra. Biztosan folytatni szeretné?',
+      [
+        { text: 'Mégse' },
+        {
+          text: 'Biztosan ezt szeretném',
+          onPress: () => {
+            dispatch(roundActions.removeLastUnsentReceipt);
+            navigation.replace('Index');
+          },
+        },
+      ]
+    );
+  };
+
+  const renderReceiptRow: ListRenderItem<ReceiptRowProps['item']> = (
+    info: ListRenderItemInfo<ReceiptRowProps['item']>
+  ) => <ReceiptRow item={info.item} onRemoveItem={removeItemHandler} />;
 
   return (
     <View style={styles.container}>
@@ -76,9 +123,14 @@ export default function Review() {
         <FlatList data={receiptRows} renderItem={renderReceiptRow} />
       </View>
       <View style={styles.footerContainer}>
-        <View style={styles.buttonContainer}>
+        <View style={styles.grossAmountContainer}>
+          <LabeledItem label="Bruttó összeg" text={formatPrice(grossAmount)} />
+        </View>
+        <View style={styles.buttonsContainer}>
           <Button variant="ok">Számla készítése</Button>
-          <Button variant="warning">Törlés</Button>
+          <Button variant="warning" onPress={removeReceiptHandler}>
+            Törlés
+          </Button>
         </View>
       </View>
     </View>
@@ -126,10 +178,16 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   footerContainer: {
-    height: 50,
+    height: 110,
+    marginTop: 5,
+    borderTopColor: 'white',
+    borderTopWidth: 2,
+  },
+  grossAmountContainer: {
+    marginHorizontal: '7%',
     marginVertical: 10,
   },
-  buttonContainer: {
+  buttonsContainer: {
     flex: 1,
     flexDirection: 'row',
     marginHorizontal: '7%',
