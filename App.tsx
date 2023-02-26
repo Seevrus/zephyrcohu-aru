@@ -18,7 +18,7 @@ import StartupError from './react_native/screens/errors/StartupError';
 import Receipt from './react_native/screens/receipts/Receipt';
 import ReceiptList from './react_native/screens/receipts/ReceiptList';
 import { PartnerList, PartnerTabParams, StackParams } from './react_native/screens/screen-types';
-import Review from './react_native/screens/sell/Review';
+import Review from './react_native/screens/sell/review/Review';
 import SelectItems from './react_native/screens/sell/select-items/SelectItems';
 import SelectPartner from './react_native/screens/sell/select-partner/SelectPartner';
 import Summary from './react_native/screens/sell/Summary';

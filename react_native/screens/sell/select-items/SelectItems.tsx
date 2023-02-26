@@ -10,7 +10,6 @@ import {
   isEmpty,
   isNil,
   not,
-  or,
   pathOr,
   pipe,
   prop,
@@ -30,7 +29,7 @@ import { roundActions } from '../../../store/round-slice/round-slice';
 import { Item as ReceiptItem, OrderItem } from '../../../store/round-slice/round-slice-types';
 import { Expiration } from '../../../store/stores-slice/stores-slice-types';
 
-import Button from '../../../components/ui/buttons/Button';
+import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
 import { SelectItemsProps } from '../../screen-types';
@@ -133,7 +132,7 @@ export default function SelectItems({ navigation }: SelectItemsProps) {
     });
   }, [navigation, selectedItems]);
 
-  const canConfirmItems = or(not(isEmpty(selectedItems)), not(isEmpty(selectedOrderItems)));
+  const canConfirmItems = not(isEmpty(selectedItems));
   const confirmButtonVariant = canConfirmItems ? 'ok' : 'disabled';
   const confirmItemsHandler = () => {
     if (canConfirmItems) {

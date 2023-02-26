@@ -13,7 +13,7 @@ import { fetchStore, fetchStoreList } from '../../store/stores-slice/stores-api-
 
 import ErrorCard from '../../components/info-cards/ErrorCard';
 import Loading from '../../components/Loading';
-import Button from '../../components/ui/buttons/Button';
+import Button from '../../components/ui/Button';
 import Dropdown from '../../components/ui/Dropdown';
 import Input from '../../components/ui/Input';
 import colors from '../../constants/colors';

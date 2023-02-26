@@ -1,13 +1,13 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import fontSizes from '../../../constants/fontSizes';
+import fontSizes from '../../constants/fontSizes';
 
-type InfoItemProps = {
+type LabeledItemProps = {
   label: string;
   text: string;
 };
 
-export default function InfoItem({ label, text }: InfoItemProps) {
+export default function LabeledItem({ label, text }: LabeledItemProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.infoLabel}>{label}:</Text>

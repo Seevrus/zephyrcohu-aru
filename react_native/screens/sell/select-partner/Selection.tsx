@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { LayoutChangeEvent, ListRenderItemInfo, StyleSheet, Text, View } from 'react-native';
 
 import AnimatedListItem from '../../../components/ui/AnimatedListItem';
-import Button from '../../../components/ui/buttons/Button';
+import Button from '../../../components/ui/Button';
+import LabeledItem from '../../../components/ui/LabeledItem';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
 import { PartnerDetails } from '../../../store/partners-slice/partners-slice-types';
-import InfoItem from './InfoItem';
 
 type SelectionProps = {
   selected: boolean;
@@ -59,7 +59,7 @@ export default function Selection({
         )}
         {phoneNumber && (
           <View style={styles.infoGroup}>
-            <InfoItem label="Telefon" text={phoneNumber} />
+            <LabeledItem label="Telefon" text={phoneNumber} />
           </View>
         )}
         <View style={styles.buttonContainer}>

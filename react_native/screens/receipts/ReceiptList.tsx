@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
-import Button from '../../components/ui/buttons/Button';
+import Button from '../../components/ui/Button';
 import colors from '../../constants/colors';
 import fontSizes from '../../constants/fontSizes';
 import { ReceiptListProps } from '../screen-types';

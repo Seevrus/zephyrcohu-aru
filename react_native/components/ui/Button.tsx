@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
 import { GestureResponderEvent, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import colors from '../../../constants/colors';
-import fontSizes from '../../../constants/fontSizes';
+import colors from '../../constants/colors';
+import fontSizes from '../../constants/fontSizes';
 
 type ButtonProps = {
   variant: 'neutral' | 'ok' | 'warning' | 'error' | 'disabled';

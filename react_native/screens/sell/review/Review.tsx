@@ -2,6 +2,7 @@ import {
   addIndex,
   ascend,
   assoc,
+  defaultTo,
   flatten,
   join,
   keys,
@@ -13,28 +14,17 @@ import {
   sortWith,
   __,
 } from 'ramda';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import Button from '../../components/ui/buttons/Button';
-import colors from '../../constants/colors';
-import fontSizes from '../../constants/fontSizes';
-import { useAppSelector } from '../../store/hooks';
-import { ExpirationItem, Item } from '../../store/round-slice/round-slice-types';
+import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
-type ReceiptRow = {
-  code: string;
-  name: string;
-  expiresAt: string;
-  quantity: number;
-  unitName: string;
-  netPrice: number;
-  netAmount: number;
-  vatRate: string;
-  vatAmount: number;
-  grossAmount: number;
-};
+import { useAppSelector } from '../../../store/hooks';
+import { ExpirationItem, Item } from '../../../store/round-slice/round-slice-types';
+
+import Button from '../../../components/ui/Button';
+import colors from '../../../constants/colors';
+import fontSizes from '../../../constants/fontSizes';
+import ReceiptRow, { ReceiptRowProps } from './ReceiptRow';
 
 export default function Review() {
-  // TODO: handle the case with only order items present
   const receiptRows = useAppSelector((state) => {
     const receiptItems = state.round.currentReceipt.items;
 
@@ -48,7 +38,7 @@ export default function Review() {
           map((expiresAt) => {
             const item = state.items.data.find((itm) => itm.id === +itemId);
             const netAmount = item.netPrice * receiptItems[itemId][expiresAt].quantity;
-            const vatRateNumeric = Number.isNaN(+item.vatRate) ? 0 : +item.vatRate;
+            const vatRateNumeric = defaultTo(0, +item.vatRate);
             const vatAmount = Math.round(netAmount * (vatRateNumeric / 100));
 
             return {
@@ -67,21 +57,23 @@ export default function Review() {
       ),
       flatten,
       sortWith([ascend(prop('name')), ascend(prop('expiresAt'))]),
-      addIndex<Partial<ReceiptRow>>(map)((item, idx) => {
+      addIndex<Partial<ReceiptRowProps[]>>(map)((item, idx) => {
         const indexLength = String(idx).length;
         const numLeadingZeros = 3 - indexLength;
         const code = join('', repeat('0', numLeadingZeros)) + (idx + 1);
         return assoc('code', code, item);
       })
     )(state);
-  }) as unknown as ReceiptRow; // needed because of addIndex
+  }) as unknown as ReceiptRowProps[]; // needed because of addIndex
 
-  console.log(receiptRows);
+  const renderReceiptRow: ListRenderItem<ReceiptRowProps> = (
+    info: ListRenderItemInfo<ReceiptRowProps>
+  ) => <ReceiptRow item={info.item} />;
 
   return (
     <View style={styles.container}>
       <View style={styles.receiptContainer}>
-        <FlatList />
+        <FlatList data={receiptRows} renderItem={renderReceiptRow} />
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.buttonContainer}>
