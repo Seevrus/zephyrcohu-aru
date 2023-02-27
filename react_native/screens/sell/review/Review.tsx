@@ -1,19 +1,16 @@
 import {
   add,
-  addIndex,
   ascend,
-  assoc,
   defaultTo,
   flatten,
-  join,
   keys,
   map,
   pathOr,
   pipe,
   prop,
   reduce,
-  repeat,
   sortWith,
+  takeLast,
   __,
 } from 'ramda';
 import { useEffect } from 'react';
@@ -31,12 +28,13 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { ExpirationItem, Item } from '../../../store/round-slice/round-slice-types';
 
 import Button from '../../../components/ui/Button';
+import LabeledItem from '../../../components/ui/LabeledItem';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
-import ReceiptRow, { ReceiptRowProps } from './ReceiptRow';
 import { roundActions } from '../../../store/round-slice/round-slice';
-import LabeledItem from '../../../components/ui/LabeledItem';
 import { ReviewProps } from '../../screen-types';
+import ReceiptRow, { ReceiptRowProps } from './ReceiptRow';
+import ReceiptHeader from './ReceiptHeader';
 
 export default function Review({ navigation }: ReviewProps) {
   const dispatch = useAppDispatch();
@@ -59,30 +57,21 @@ export default function Review({ navigation }: ReviewProps) {
             const vatAmount = Math.round(netAmount * (vatRateNumeric / 100));
 
             return {
-              id: itemId,
-              name: receiptItems[itemId][expiresAt].name,
+              id: item.id,
+              articleNumber: takeLast(7, item.articleNumber),
+              name: item.name,
               expiresAt,
               quantity: receiptItems[itemId][expiresAt].quantity,
               unitName: item.unitName,
-              netPrice: item.netPrice,
-              netAmount,
-              vatRate: item.vatRate,
-              vatAmount,
               grossAmount: netAmount + vatAmount,
             };
           })
         )(itemId)
       ),
       flatten,
-      sortWith([ascend(prop('name')), ascend(prop('expiresAt'))]),
-      addIndex<Partial<ReceiptRowProps[]>>(map)((item, idx) => {
-        const indexLength = String(idx).length;
-        const numLeadingZeros = 3 - indexLength;
-        const code = join('', repeat('0', numLeadingZeros)) + (idx + 1);
-        return assoc('code', code, item);
-      })
+      sortWith([ascend(prop('name')), ascend(prop('expiresAt'))])
     )(state);
-  }) as unknown as ReceiptRowProps['item'][]; // needed because of addIndex
+  });
 
   const grossAmount = reduce((acc, value) => add(prop('grossAmount', value), acc), 0, receiptRows);
 
@@ -119,6 +108,11 @@ export default function Review({ navigation }: ReviewProps) {
     );
   };
 
+  const confirmReceiptHandler = () => {
+    // dispatch(roundActions.finalizeCurrentReceipt());
+    // navigation.navigate('Summary');
+  };
+
   const renderReceiptRow: ListRenderItem<ReceiptRowProps['item']> = (
     info: ListRenderItemInfo<ReceiptRowProps['item']>
   ) => <ReceiptRow item={info.item} onRemoveItem={removeItemHandler} />;
@@ -128,18 +122,21 @@ export default function Review({ navigation }: ReviewProps) {
       <View style={styles.receiptContainer}>
         <FlatList
           data={receiptRows}
+          ListHeaderComponent={ReceiptHeader}
           renderItem={renderReceiptRow}
           keyExtractor={(item) => `${item.id}-${item.expiresAt}`}
         />
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.grossAmountContainer}>
-          <LabeledItem label="Bruttó összeg" text={formatPrice(grossAmount)} />
+          <LabeledItem label="Mindösszesen" text={formatPrice(grossAmount)} />
         </View>
         <View style={styles.buttonsContainer}>
-          <Button variant="ok">Számla készítése</Button>
+          <Button variant="ok" onPress={confirmReceiptHandler}>
+            Véglegesítés
+          </Button>
           <Button variant="warning" onPress={removeReceiptHandler}>
-            Törlés
+            Elvetés
           </Button>
         </View>
       </View>
@@ -152,7 +149,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-
   title: {
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -190,10 +186,12 @@ const styles = StyleSheet.create({
   footerContainer: {
     height: 110,
     marginTop: 5,
+    backgroundColor: colors.neutral,
     borderTopColor: 'white',
     borderTopWidth: 2,
   },
   grossAmountContainer: {
+    alignItems: 'flex-end',
     marginHorizontal: '7%',
     marginVertical: 10,
   },
