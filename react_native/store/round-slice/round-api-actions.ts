@@ -1,10 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { concat } from 'ramda';
 
-import { LocalStorage, setLocalStorage } from '../async-storage';
+import { setLocalStorage } from '../async-storage';
 import { ErrorResponseT } from '../base-types';
 import { InitializeRoundRequest, InitializeRoundResponse } from './round-slice-types';
 
-// eslint-disable-next-line import/prefer-default-export
 export const initializeRound = createAsyncThunk<
   InitializeRoundResponse,
   InitializeRoundRequest,
@@ -19,9 +19,10 @@ export const initializeRound = createAsyncThunk<
         partnerListId: requestData.partnerListId,
         date: requestData.date,
         nextAvailableSerialNumber: requestData.nextAvailableSerialNumber,
+        currentReceipt: undefined,
         receipts: [],
       },
-    } as Partial<LocalStorage>);
+    });
   } catch (e) {
     return rejectWithValue({
       status: 507,
@@ -32,3 +33,33 @@ export const initializeRound = createAsyncThunk<
 
   return requestData;
 });
+
+export const finalizeCurrentReceipt = createAsyncThunk<
+  boolean,
+  never,
+  { getState: () => any; rejectValue: ErrorResponseT }
+>('round/finalizeCurrentReceipt', async (_, { getState, rejectWithValue }) => {
+  try {
+    const state: any = getState();
+    const { currentReceipt } = state.round;
+
+    await setLocalStorage({
+      round: {
+        ...state.round,
+        nextAvailableSerialNumber: currentReceipt.serialNumber + 1,
+        currentReceipt: undefined,
+        receipts: concat(state.round.receipts, [currentReceipt]),
+      },
+    });
+  } catch (e) {
+    return rejectWithValue({
+      status: 507,
+      codeName: 'Insufficient Storage',
+      message: e.message,
+    });
+  }
+
+  return true;
+});
+
+export const upsertReceipts = () => {};

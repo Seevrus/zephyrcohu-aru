@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { dissocPath, mergeDeepLeft, pipe, propOr, values } from 'ramda';
+import { concat, dissocPath, mergeDeepLeft, pipe, propOr, values } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
-import { initializeRound } from './round-api-actions';
+import { finalizeCurrentReceipt, initializeRound } from './round-api-actions';
 import { Item, OrderItem, Round } from './round-slice-types';
 
 const initialState: Round = {
@@ -77,6 +77,15 @@ const roundSlice = createSlice({
       state.receipts = [];
     });
     builder.addCase(initializeRound.rejected, (_, { payload }) => {
+      throw new Error(payload.message);
+    });
+
+    builder.addCase(finalizeCurrentReceipt.fulfilled, (state) => {
+      state.receipts = concat(state.receipts, [state.currentReceipt]);
+      state.nextAvailableSerialNumber = state.currentReceipt.serialNumber + 1;
+      state.currentReceipt = undefined;
+    });
+    builder.addCase(finalizeCurrentReceipt.rejected, (_, { payload }) => {
       throw new Error(payload.message);
     });
   },

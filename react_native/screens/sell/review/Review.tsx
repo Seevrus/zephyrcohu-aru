@@ -13,7 +13,7 @@ import {
   takeLast,
   __,
 } from 'ramda';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -25,6 +25,7 @@ import {
 import { formatCurrency } from 'react-native-format-currency';
 
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { finalizeCurrentReceipt } from '../../../store/round-slice/round-api-actions';
 import { ExpirationItem, Item } from '../../../store/round-slice/round-slice-types';
 
 import Button from '../../../components/ui/Button';
@@ -33,12 +34,15 @@ import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
 import { roundActions } from '../../../store/round-slice/round-slice';
 import { ReviewProps } from '../../screen-types';
-import ReceiptRow, { ReceiptRowProps } from './ReceiptRow';
 import ReceiptHeader from './ReceiptHeader';
+import ReceiptRow, { ReceiptRowProps } from './ReceiptRow';
+import ErrorCard from '../../../components/info-cards/ErrorCard';
 
 export default function Review({ navigation }: ReviewProps) {
   const dispatch = useAppDispatch();
   const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
+
+  const [saveReceiptError, setSaveReceiptError] = useState<string>('');
 
   const receiptRows = useAppSelector((state) => {
     const receiptItems = state.round.currentReceipt?.items;
@@ -108,9 +112,16 @@ export default function Review({ navigation }: ReviewProps) {
     );
   };
 
-  const confirmReceiptHandler = () => {
-    // dispatch(roundActions.finalizeCurrentReceipt());
-    // navigation.navigate('Summary');
+  const confirmReceiptHandler = async () => {
+    try {
+      await dispatch(finalizeCurrentReceipt());
+      navigation.reset({
+        index: 1,
+        routes: [{ name: 'Index' }, { name: 'Summary' }],
+      });
+    } catch (err) {
+      setSaveReceiptError(err.message);
+    }
   };
 
   const renderReceiptRow: ListRenderItem<ReceiptRowProps['item']> = (
@@ -119,6 +130,11 @@ export default function Review({ navigation }: ReviewProps) {
 
   return (
     <View style={styles.container}>
+      {!!saveReceiptError && (
+        <View style={styles.error}>
+          <ErrorCard>{saveReceiptError}</ErrorCard>
+        </View>
+      )}
       <View style={styles.receiptContainer}>
         <FlatList
           data={receiptRows}
@@ -148,6 +164,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  error: {
+    marginTop: 30,
   },
   title: {
     fontWeight: '700',

@@ -52,6 +52,6 @@ export type Round = {
   partnerListId: number;
   date: string;
   nextAvailableSerialNumber: number;
-  currentReceipt: Partial<Receipt>;
+  currentReceipt: Receipt;
   receipts: Receipt[];
 };
