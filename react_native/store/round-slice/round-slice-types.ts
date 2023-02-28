@@ -35,11 +35,10 @@ export type OrderItem = Record<
   }
 >; // item id, order data
 
-type Receipt = {
+export type Receipt = {
   isSent: boolean;
   partnerId: number;
   serialNumber: number;
-  totalAmount: number;
   originalCopiesPrinted: number;
   items: Item;
   orderItems: OrderItem;
@@ -50,7 +49,7 @@ export type Round = {
   agentId: number;
   storeId: number;
   partnerListId: number;
-  date: string;
+  date: string; // yyyy-MM-dd
   nextAvailableSerialNumber: number;
   currentReceipt: Receipt;
   receipts: Receipt[];
