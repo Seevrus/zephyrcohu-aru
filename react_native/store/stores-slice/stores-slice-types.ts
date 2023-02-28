@@ -42,10 +42,10 @@ export type Expiration = {
   quantity: number;
 };
 
-type StoreItem = {
+export type StoreItem = {
   id: number;
   articleNumber: string;
-  expirations: Record<string, Expiration>;
+  expirations: Record<string, Expiration>; // expiresAt, Expiration
 };
 
 export type StoreDetails = {

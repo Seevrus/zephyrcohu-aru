@@ -1,7 +1,12 @@
-import { assoc, indexBy, map, pipe, prop } from 'ramda';
-import { FetchStoreResponse, FetchStoreResponseItem, StoreDetails } from './stores-slice-types';
+import { assoc, indexBy, map, mapObjIndexed, pipe, prop } from 'ramda';
+import { Receipt } from '../round-slice/round-slice-types';
+import {
+  FetchStoreResponse,
+  FetchStoreResponseItem,
+  StoreDetails,
+  StoreItem,
+} from './stores-slice-types';
 
-// eslint-disable-next-line import/prefer-default-export
 export const mapFetchStoreResponse = (response: FetchStoreResponse): StoreDetails =>
   assoc(
     'items',
@@ -12,4 +17,23 @@ export const mapFetchStoreResponse = (response: FetchStoreResponse): StoreDetail
       indexBy(prop('id'))
     )(response.data.items),
     prop('data', response)
+  );
+
+export const removeReceiptQuantitiesFromStore = (
+  storeItems: Record<string, StoreItem>,
+  currentReceipt: Receipt
+) =>
+  mapObjIndexed(
+    (storeItem: StoreItem, itemId: string) => ({
+      id: storeItem.id,
+      articleNumber: storeItem.articleNumber,
+      expirations: mapObjIndexed(
+        (expiration, expiresAt) => ({
+          expiresAt: expiration.expiresAt,
+          quantity: expiration.quantity - currentReceipt.items[itemId][expiresAt].quantity,
+        }),
+        storeItem.expirations
+      ),
+    }),
+    storeItems
   );

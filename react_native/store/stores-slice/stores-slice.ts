@@ -1,7 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { fetchStore, fetchStoreList, removeStore, removeStoreList } from './stores-api-actions';
+import {
+  fetchStore,
+  fetchStoreList,
+  removeItemsFromStore,
+  removeStore,
+  removeStoreList,
+} from './stores-api-actions';
 import { StoresSlice } from './stores-slice-types';
 
 const initialState: StoresSlice = {
@@ -60,6 +66,13 @@ const storesSlice = createSlice({
       state.store = undefined;
     });
     builder.addCase(removeStore.rejected, (_, { payload }) => {
+      throw new Error(payload.message);
+    });
+
+    builder.addCase(removeItemsFromStore.fulfilled, (state, { payload }) => {
+      state.store.items = payload;
+    });
+    builder.addCase(removeItemsFromStore.rejected, (_, { payload }) => {
       throw new Error(payload.message);
     });
   },

@@ -10,7 +10,6 @@ import {
   prop,
   reduce,
   sortWith,
-  takeLast,
   __,
 } from 'ramda';
 import { useEffect, useState } from 'react';
@@ -27,7 +26,9 @@ import { formatCurrency } from 'react-native-format-currency';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { finalizeCurrentReceipt } from '../../../store/round-slice/round-api-actions';
 import { ExpirationItem, Item } from '../../../store/round-slice/round-slice-types';
+import { removeItemsFromStore } from '../../../store/stores-slice/stores-api-actions';
 
+import ErrorCard from '../../../components/info-cards/ErrorCard';
 import Button from '../../../components/ui/Button';
 import LabeledItem from '../../../components/ui/LabeledItem';
 import colors from '../../../constants/colors';
@@ -36,7 +37,6 @@ import { roundActions } from '../../../store/round-slice/round-slice';
 import { ReviewProps } from '../../screen-types';
 import ReceiptHeader from './ReceiptHeader';
 import ReceiptRow, { ReceiptRowProps } from './ReceiptRow';
-import ErrorCard from '../../../components/info-cards/ErrorCard';
 
 export default function Review({ navigation }: ReviewProps) {
   const dispatch = useAppDispatch();
@@ -45,10 +45,9 @@ export default function Review({ navigation }: ReviewProps) {
   const [saveReceiptError, setSaveReceiptError] = useState<string>('');
 
   const receiptRows = useAppSelector((state) => {
-    const receiptItems = state.round.currentReceipt?.items;
+    const receiptItems = pathOr<Item>({}, ['round', 'currentReceipt', 'items'], state);
 
     return pipe(
-      pathOr<Item>({}, ['round', 'currentReceipt', 'items']),
       keys,
       map((itemId) =>
         pipe(
@@ -62,7 +61,7 @@ export default function Review({ navigation }: ReviewProps) {
 
             return {
               id: item.id,
-              articleNumber: takeLast(7, item.articleNumber),
+              articleNumber: item.articleNumber,
               name: item.name,
               expiresAt,
               quantity: receiptItems[itemId][expiresAt].quantity,
@@ -74,7 +73,7 @@ export default function Review({ navigation }: ReviewProps) {
       ),
       flatten,
       sortWith([ascend(prop('name')), ascend(prop('expiresAt'))])
-    )(state);
+    )(receiptItems);
   });
 
   const grossAmount = reduce((acc, value) => add(prop('grossAmount', value), acc), 0, receiptRows);
@@ -114,6 +113,7 @@ export default function Review({ navigation }: ReviewProps) {
 
   const confirmReceiptHandler = async () => {
     try {
+      await dispatch(removeItemsFromStore());
       await dispatch(finalizeCurrentReceipt());
       navigation.reset({
         index: 1,

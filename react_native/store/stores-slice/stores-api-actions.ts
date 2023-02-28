@@ -4,13 +4,14 @@ import axios, { AxiosResponse } from 'axios';
 import env from '../../env.json';
 import { setLocalStorage } from '../async-storage';
 import { ErrorResponseT } from '../base-types';
-import { mapFetchStoreResponse } from './stores-api-mappers';
+import { mapFetchStoreResponse, removeReceiptQuantitiesFromStore } from './stores-api-mappers';
 import {
   FetchStoreListRequest,
   FetchStoreListResponse,
   FetchStoreRequest,
   FetchStoreResponse,
   StoreDetails,
+  StoreItem,
 } from './stores-slice-types';
 
 export const fetchStoreList = createAsyncThunk<
@@ -121,3 +122,36 @@ export const removeStore = createAsyncThunk<boolean, never, { rejectValue: Error
     return true;
   }
 );
+
+export const removeItemsFromStore = createAsyncThunk<
+  Record<string, StoreItem>,
+  never,
+  { getState: () => any; rejectValue: ErrorResponseT }
+>('stores/removeItemsFromStore', async (_, { getState, rejectWithValue }) => {
+  let newItems: Record<string, StoreItem>;
+  try {
+    const state = getState() as any;
+
+    newItems = removeReceiptQuantitiesFromStore(
+      state.stores.store.items,
+      state.round.currentReceipt
+    );
+
+    await setLocalStorage({
+      store: {
+        ...state.stores.store,
+        items: newItems,
+      },
+    });
+  } catch (e) {
+    return rejectWithValue({
+      status: 507,
+      codeName: 'Insufficient Storage',
+      message: e.message,
+    });
+  }
+
+  return newItems;
+});
+
+export const upsertReceipts = () => {};

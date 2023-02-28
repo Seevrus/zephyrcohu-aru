@@ -39,7 +39,6 @@ const roundSlice = createSlice({
         isSent: false,
         partnerId: undefined,
         serialNumber: state.nextAvailableSerialNumber,
-        totalAmount: 0,
         originalCopiesPrinted: 0,
         items: {},
         orderItems: {},

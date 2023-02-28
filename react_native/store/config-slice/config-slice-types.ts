@@ -1,6 +1,6 @@
 import userTypes from '../../constants/userTypes';
 
-type Company = {
+export type Company = {
   id: number;
   code: string;
   name: string;
