@@ -24,8 +24,9 @@ function Selection({ info, onQuantityModified }: SelectionProps) {
       setSelectedQuantity(null);
       onQuantityModified(info.item.expiresAt, null);
     } else if (formattedQuantity > info.item.quantity) {
-      setSelectedQuantity(info.item.quantity);
-      onQuantityModified(info.item.expiresAt, info.item.quantity);
+      const newSelectedQuantity = info.item.quantity === 0 ? null : info.item.quantity;
+      setSelectedQuantity(newSelectedQuantity);
+      onQuantityModified(info.item.expiresAt, newSelectedQuantity);
     } else {
       setSelectedQuantity(nullIshFormattedQuantity);
       onQuantityModified(info.item.expiresAt, nullIshFormattedQuantity);

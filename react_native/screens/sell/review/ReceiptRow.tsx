@@ -47,16 +47,16 @@ function ReceiptRow({
     <View style={styles.container}>
       <View style={styles.itemContainer}>
         <View>
-          <Text style={styles.text}>Negyven karakter csak hogy MZ is boldogh</Text>
+          <Text style={styles.text}>{name}</Text>
         </View>
         <View style={styles.itemDetails}>
           <View style={[styles.detailsCellLeft, styles.detailsCell]}>
-            <Text style={[styles.detailsCellLeft, styles.text]}>CS_1234</Text>
-            <Text style={styles.text}>2023-07</Text>
+            <Text style={[styles.detailsCellLeft, styles.text]}>{articleNumber}</Text>
+            <Text style={styles.text}>{expiresAt}</Text>
           </View>
           <View style={styles.detailsCell}>
-            <Text style={[styles.detailsCellLeft, styles.text]}>2 karton</Text>
-            <Text style={styles.text}>1.200 Ft</Text>
+            <Text style={[styles.detailsCellLeft, styles.text]}>{`${quantity} ${unitName}`}</Text>
+            <Text style={styles.text}>{formatPrice(grossAmount)}</Text>
           </View>
         </View>
       </View>

@@ -1,4 +1,4 @@
-import { assoc, indexBy, map, mapObjIndexed, pipe, prop } from 'ramda';
+import { assoc, indexBy, map, mapObjIndexed, pathOr, pipe, prop } from 'ramda';
 import { Receipt } from '../round-slice/round-slice-types';
 import {
   FetchStoreResponse,
@@ -27,13 +27,14 @@ export const removeReceiptQuantitiesFromStore = (
     (storeItem: StoreItem, itemId: string) => ({
       id: storeItem.id,
       articleNumber: storeItem.articleNumber,
-      expirations: mapObjIndexed(
-        (expiration, expiresAt) => ({
+      expirations: mapObjIndexed((expiration, expiresAt) => {
+        const receiptQuantity = pathOr(0, ['items', itemId, expiresAt, 'quantity'], currentReceipt);
+
+        return {
           expiresAt: expiration.expiresAt,
-          quantity: expiration.quantity - currentReceipt.items[itemId][expiresAt].quantity,
-        }),
-        storeItem.expirations
-      ),
+          quantity: expiration.quantity - receiptQuantity,
+        };
+      }, storeItem.expirations),
     }),
     storeItems
   );
