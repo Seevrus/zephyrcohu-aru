@@ -116,11 +116,12 @@ export default `
       .items .item-odd-row,
       .items .item-even-row {
         display: grid;
-        margin: 5px 0;
+        row-gap: 2px;
+        column-gap: 3px;
       }
 
       .items .item-odd-row {
-        grid-template-columns: 4fr 9fr 9fr 8fr 40fr;
+        grid-template-columns: 4fr 7fr 8fr 7fr 40fr;
       }
 
       .items .item-odd-row.label {
@@ -136,7 +137,7 @@ export default `
       }
 
       .items .item-even-row {
-        grid-template-columns: 9fr 16fr 9fr 11fr 4fr 11fr 10fr;
+        grid-template-columns: 8fr 15fr 8fr 10fr 3fr 10fr 10fr;
         border-bottom: 1px solid black;
       }
 
@@ -152,7 +153,7 @@ export default `
         display: grid;
         padding: 5px 0;
         border-bottom: 2px solid black;
-        grid-template-columns: 9fr 16fr 9fr 11fr 4fr 11fr 10fr;
+        grid-template-columns: 8fr 15fr 8fr 10fr 3fr 10fr 10fr;
       }
 
       .total .amount {
