@@ -72,7 +72,7 @@ class StoreReceiptRequest extends FormRequest
             'data.*.items' => 'required|array|bail',
             'data.*.items.*.code' => 'required|string|size:3',
             'data.*.items.*.CNCode' => 'required|string|size:6',
-            'data.*.items.*.articleNumber' => 'required|string|size:16',
+            'data.*.items.*.articleNumber' => 'required|string|min:1|max:16',
             'data.*.items.*.expiresAt' => 'required|date_format:Y-m',
             'data.*.items.*.name' => 'required|string|max:60',
             'data.*.items.*.quantity' => 'required|integer|min:-2147483648|max:2147483647',
