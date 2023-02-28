@@ -3,6 +3,7 @@ import { memo } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { formatCurrency } from 'react-native-format-currency';
 
+import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
 
 export type ReceiptRowProps = {
@@ -46,22 +47,22 @@ function ReceiptRow({
     <View style={styles.container}>
       <View style={styles.itemContainer}>
         <View>
-          <Text style={styles.text}>{name}</Text>
+          <Text style={styles.text}>Negyven karakter csak hogy MZ is boldogh</Text>
         </View>
         <View style={styles.itemDetails}>
           <View style={[styles.detailsCellLeft, styles.detailsCell]}>
-            <Text style={[styles.detailsCellLeft, styles.text]}>{articleNumber}</Text>
-            <Text style={styles.text}>{expiresAt}</Text>
+            <Text style={[styles.detailsCellLeft, styles.text]}>CS_1234</Text>
+            <Text style={styles.text}>2023-07</Text>
           </View>
           <View style={styles.detailsCell}>
-            <Text style={[styles.detailsCellLeft, styles.text]}>{`${quantity} ${unitName}`}</Text>
-            <Text style={styles.text}>{formatPrice(grossAmount)}</Text>
+            <Text style={[styles.detailsCellLeft, styles.text]}>2 karton</Text>
+            <Text style={styles.text}>1.200 Ft</Text>
           </View>
         </View>
       </View>
       <View style={styles.deleteIconContainer}>
         <Pressable style={({ pressed }) => pressed && styles.pressed} onPress={deleteRowHandler}>
-          <MaterialIcons name="delete" size={30} color="white" />
+          <MaterialIcons name="close" size={30} color={colors.warning} />
         </Pressable>
       </View>
     </View>
@@ -79,7 +80,6 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     flex: 1,
-    marginRight: 5,
   },
   text: {
     color: 'white',
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   deleteIconContainer: {
-    width: 28,
+    width: 24,
     alignItems: 'center',
     justifyContent: 'center',
   },

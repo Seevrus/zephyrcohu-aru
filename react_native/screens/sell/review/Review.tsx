@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   receiptContainer: {
     flex: 1,
     marginTop: 10,
-    marginHorizontal: '7%',
+    marginHorizontal: '4%',
   },
   fieldContainer: {
     marginTop: 5,
