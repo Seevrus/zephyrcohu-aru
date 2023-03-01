@@ -107,7 +107,8 @@
 
       .payment .payment-deadline,
       .payment .payment-method,
-      .software .software-email {
+      .software .software-email,
+      .software .software-currency {
         border-left: 1px solid black;
         padding-left: 5px;
       }
@@ -176,8 +177,7 @@
         border-bottom: 2px solid black;
       }
 
-      .rounding .label,
-      .total-amount .label {
+      .rounding .label {
         grid-column: 1 / 7;
       }
 
@@ -188,8 +188,16 @@
       }
 
       .total-amount {
-        font-size: 9pt;
+        font-size: 8pt;
         font-weight: 700;
+      }
+
+      .total-amount .label {
+        grid-column: 1 / 6;
+      }
+
+      .total-amount .currency {
+        justify-self: center;
       }
 
       footer {
@@ -269,9 +277,9 @@
         <div class="agent-phone">+36xx-xxxxxxx</div>
       </section>
       <section class="software">
-        <div class="software-label">Szoftver:</div>
-        <div class="software-name">Zephyr Boreal 11.40.0000</div>
+        <div class="software-name">SW: Zephyr Boreal 11.40.0000</div>
         <div class="software-email">zephyr.bt@gmail.com</div>
+        <div class="software-currency">Pénznem: HUF</div>
       </section>
       <section class="items">
         <div class="item-odd-row label">
@@ -405,6 +413,7 @@
       </section>
       <section class="total-amount">
         <div class="label">Számla mindösszesen: (visszajáró)</div>
+        <div class="currency">(HUF)</div>
         <div class="amount">xxxxxxx10x</div>
       </section>
       <section class="packing-info">

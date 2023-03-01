@@ -1,13 +1,10 @@
 import { take, takeLast } from 'ramda';
-import { formatCurrency } from 'react-native-format-currency';
 import { PartnerDetails } from '../../../store/partners-slice/partners-slice-types';
 import {
   ReceiptPayloadItem,
   ReceiptPlayloadVatAmount,
   ReceiptRequestItem,
 } from '../../../store/round-slice/round-slice-types';
-
-const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
 
 const docType = '<!DOCTYPE html>';
 const head = `
@@ -118,7 +115,8 @@ const head = `
 
     .payment .payment-deadline,
     .payment .payment-method,
-    .software .software-email {
+    .software .software-email,
+    .software .software-currency {
       border-left: 1px solid black;
       padding-left: 5px;
     }
@@ -187,8 +185,7 @@ const head = `
       border-bottom: 2px solid black;
     }
 
-    .rounding .label,
-    .total-amount .label {
+    .rounding .label {
       grid-column: 1 / 7;
     }
 
@@ -199,8 +196,16 @@ const head = `
     }
 
     .total-amount {
-      font-size: 9pt;
+      font-size: 8pt;
       font-weight: 700;
+    }
+
+    .total-amount .label {
+      grid-column: 1 / 6;
+    }
+
+    .total-amount .currency {
+      justify-self: center;
     }
 
     footer {
@@ -240,9 +245,9 @@ const head = `
 
 const software = `
   <section class="software">
-    <div class="software-label">Szoftver:</div>
-    <div class="software-name">Zephyr Boreal 11.40.0000</div>
+    <div class="software-name">SW: Zephyr Boreal 11.40.0000</div>
     <div class="software-email">zephyr.bt@gmail.com</div>
+    <div class="software-currency">Pénznem: HUF</div>
   </section>
 `;
 
@@ -265,7 +270,7 @@ const footer = `
 function getItemsSection(items: ReceiptPayloadItem[]) {
   const itemRows = items.map((item) => {
     const displayedVatRate = item.vatAmount === 0 ? `${item.vatRate}` : `${item.vatRate}%`;
-    const displayedVatAmount = item.vatAmount === 0 ? '' : formatPrice(item.vatAmount);
+    const displayedVatAmount = item.vatAmount === 0 ? '' : item.vatAmount;
 
     return `
       <div class="item-odd-row">
@@ -277,11 +282,11 @@ function getItemsSection(items: ReceiptPayloadItem[]) {
       </div>
       <div class="item-even-row">
         <div class="amount">${item.quantity} ${item.unitName}</div>
-        <div>${formatPrice(item.netPrice)}</div>
-        <div>${formatPrice(item.netAmount)}</div>
+        <div>${item.netPrice}</div>
+        <div>${item.netAmount}</div>
         <div>${displayedVatRate}</div>
         <div>${displayedVatAmount}</div>
-        <div>${formatPrice(item.grossAmount)}</div>
+        <div>${item.grossAmount}</div>
       </div>
     `;
   });
@@ -310,14 +315,14 @@ function getItemsSection(items: ReceiptPayloadItem[]) {
 function getVatSection(vatAmounts: ReceiptPlayloadVatAmount[]) {
   const vatRows = vatAmounts.map((amount) => {
     const displayedVatRate = amount.vatAmount === 0 ? `${amount.vatRate}` : `${amount.vatRate}%`;
-    const displayedVatAmount = amount.vatAmount === 0 ? '' : formatPrice(amount.vatAmount);
+    const displayedVatAmount = amount.vatAmount === 0 ? '' : amount.vatAmount;
 
     return `
       <div class="label">ÁFA összesen</div>
-      <div class="amount">${formatPrice(amount.netAmount)}</div>
+      <div class="amount">${amount.netAmount}</div>
       <div class="vat-key">${displayedVatRate}</div>
       <div class="vat-amount">${displayedVatAmount}</div>
-      <div class="gross">${formatPrice(amount.grossAmount)}</div>
+      <div class="gross">${amount.grossAmount}</div>
     `;
   });
 
@@ -345,7 +350,9 @@ export default function createReceiptHtml({
       <div class="title">Számla</div>
       <div class="last-column"></div>
       <div>Számlaszám: ${receipt.serialNumber}/${receipt.yearCode}</div>
-      <div class="last-column">${receiptTypeDisplay}: ${receipt.originalCopiesPrinted + 1}./${partner.invoiceCopies} példány</div>
+      <div class="last-column">${receiptTypeDisplay}: ${receipt.originalCopiesPrinted + 1}./${
+    partner.invoiceCopies
+  } példány</div>
     </header>
   `;
 
@@ -401,14 +408,14 @@ export default function createReceiptHtml({
     </section>
   `;
 
-  const displayedVatAmount = receipt.vatAmount === 0 ? '' : formatPrice(receipt.vatAmount);
+  const displayedVatAmount = receipt.vatAmount === 0 ? '' : receipt.vatAmount;
   const total = `
     <section class="total">
       <div class="label">Összes:</div>
       <div class="quantity">${receipt.quantity}</div>
-      <div class="amount">${formatPrice(receipt.netAmount)}</div>
+      <div class="amount">${receipt.netAmount}</div>
       <div class="vat">${displayedVatAmount}</div>
-      <div class="gross">${formatPrice(receipt.grossAmount)}</div>
+      <div class="gross">${receipt.grossAmount}</div>
     </section>
   `;
 
@@ -416,14 +423,15 @@ export default function createReceiptHtml({
   const rounding = `
     <section class="rounding">
       <div class="label">Kerekítés (5 forintra) összege</div>
-      <div class="amount">${formatPrice(Math.abs(receipt.roundAmount))}</div>
+      <div class="amount">${Math.abs(receipt.roundAmount)}</div>
     </section>
   `;
 
   const totalAmount = `
     <section class="total-amount">
       <div class="label">Számla mindösszesen: (fizetendő)</div>
-      <div class="amount">${formatPrice(receipt.roundedAmount)}</div>
+      <div class="currency">(HUF)</div>
+      <div class="amount">${receipt.roundedAmount}</div>
     </section>
   `;
 
