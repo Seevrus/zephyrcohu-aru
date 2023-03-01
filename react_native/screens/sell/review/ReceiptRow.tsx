@@ -6,6 +6,8 @@ import { formatCurrency } from 'react-native-format-currency';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
 
+const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
+
 export type ReceiptRowProps = {
   item: {
     id: number;
@@ -23,10 +25,6 @@ function ReceiptRow({
   item: { id, articleNumber, name, expiresAt, quantity, unitName, grossAmount },
   onRemoveItem,
 }: ReceiptRowProps) {
-  const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
-  // const vatLabel = vatAmount === 0 ? 'ÁFA kulcsa' : 'ÁFA kulcsa és összege';
-  // const displayedVat = vatAmount === 0 ? `${vatRate}` : `${vatRate}%, ${formatPrice(vatAmount)}`;
-
   const deleteRowHandler = () => {
     Alert.alert(
       'Biztosan törölni szeretné?',

@@ -14,6 +14,84 @@ export type InitializeRoundResponse = {
   nextAvailableSerialNumber: number;
 };
 
+export type ReceiptPayloadItem = {
+  code: string;
+  CNCode: string;
+  articleNumber: string;
+  expiresAt: string;
+  name: string;
+  quantity: number;
+  unitName: string;
+  netPrice: number;
+  netAmount: number;
+  vatRate: string;
+  vatAmount: number;
+  grossAmount: number;
+};
+
+export type ReceiptPlayloadVatAmount = {
+  vatRate: string;
+  netAmount: number;
+  vatAmount: number;
+  grossAmount: number;
+};
+
+export type ReceiptRequestItem = {
+  companyCode: string;
+  partnerCode: string;
+  siteCode: string;
+  serialNumber: number;
+  yearCode: number;
+  originalCopiesPrinted: number;
+  vendor: {
+    name: string;
+    country: string;
+    postalCode: string;
+    city: string;
+    address: string;
+    felir: string;
+    iban: string;
+    bankAccount: string;
+    vatNumber: string;
+  };
+  buyer: {
+    name: string;
+    country: string;
+    postalCode: string;
+    city: string;
+    address: string;
+    iban: string;
+    bankAccount: string;
+    vatNumber: string;
+    deliveryName?: string;
+    deliveryCountry?: string;
+    deliveryPostalCode?: string;
+    deliveryCity?: string;
+    deliveryAddress?: string;
+  };
+  invoiceDate: string;
+  fulfillmentDate: string;
+  invoiceType: 'E' | 'P';
+  paidDate: string;
+  agent: {
+    code: string;
+    name: string;
+    phoneNumber: string;
+  };
+  items: ReceiptPayloadItem[];
+  quantity: number;
+  netAmount: number;
+  vatAmount: number;
+  grossAmount: number;
+  vatAmounts: ReceiptPlayloadVatAmount[];
+  roundAmount: number;
+  roundedAmount: number;
+};
+
+export type UpsertReceiptRequest = {
+  data: ReceiptRequestItem[];
+};
+
 export type ExpirationItem = {
   name: string;
   quantity: number;
