@@ -9,7 +9,10 @@ import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
 import useToken from '../../../hooks/useToken';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { upsertReceipts } from '../../../store/round-slice/round-api-actions';
+import {
+  increaseOriginalCopiesPrinted,
+  upsertReceipts,
+} from '../../../store/round-slice/round-api-actions';
 import { getLastReceiptPayload } from '../../../store/round-slice/round-api-mappers';
 import { SummaryProps } from '../../screen-types';
 import ErrorCard from '../../../components/info-cards/ErrorCard';
@@ -46,14 +49,18 @@ export default function Summary({ navigation }: SummaryProps) {
     }
   }, [credentialsAvailable, deviceId, dispatch, isInternetReachable, token]);
 
-  // Nyomtatás: megváltoztatHATja a kinyomtatott eredeti példányok számát. Ezt át kell írni, az isSent vissza false-ra, s mehet egy új beküldés, ha teljesülnek a feltételek.
+  const canPrintOriginalCopy = currentPartner.invoiceCopies > receiptPayload.originalCopiesPrinted;
+
   const printButtonHandler = async () => {
     await Print.printAsync({
       html: createReceiptHtml({ receipt: receiptPayload, partner: currentPartner }),
     });
-  };
 
-  const canPrintOriginalCopy = currentPartner.invoiceCopies > receiptPayload.originalCopiesPrinted;
+    // TODO: does useEffect run after this?
+    if (canPrintOriginalCopy) {
+      dispatch(increaseOriginalCopiesPrinted(receiptPayload.serialNumber));
+    }
+  };
 
   return (
     <View style={styles.container}>

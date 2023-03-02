@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { assoc, concat, map } from 'ramda';
 
+import env from '../../env.json';
 import { setLocalStorage } from '../async-storage';
 import { ErrorResponseT } from '../base-types';
 import { getUpsertReceiptsPayload } from './round-api-mappers';
@@ -10,7 +11,6 @@ import {
   InitializeRoundResponse,
   UpsertReceiptsRequestT,
 } from './round-slice-types';
-import env from '../../env.json';
 
 export const initializeRound = createAsyncThunk<
   InitializeRoundResponse,
@@ -109,4 +109,38 @@ export const upsertReceipts = createAsyncThunk<
   }
 
   return true;
+});
+
+export const increaseOriginalCopiesPrinted = createAsyncThunk<
+  number,
+  number,
+  { getState: () => any; rejectValue: ErrorResponseT }
+>('round/increaseOriginalCopiesPrinted', async (serialNumber, { getState, rejectWithValue }) => {
+  try {
+    const state: any = getState();
+    const receipts = state.round.receipts.map((receipt) => {
+      if (receipt.serialNumber !== serialNumber) return receipt;
+
+      return {
+        ...receipt,
+        isSent: false,
+        originalCopiesPrinted: receipt.originalCopiesPrinted + 1,
+      };
+    });
+
+    await setLocalStorage({
+      round: {
+        ...state.round,
+        receipts,
+      },
+    });
+  } catch (e) {
+    return rejectWithValue({
+      status: 507,
+      codeName: 'Insufficient Storage',
+      message: e.message,
+    });
+  }
+
+  return serialNumber;
 });

@@ -3,7 +3,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { assoc, concat, dissocPath, map, mergeDeepLeft, pipe, propOr, values } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
-import { finalizeCurrentReceipt, initializeRound, upsertReceipts } from './round-api-actions';
+import {
+  finalizeCurrentReceipt,
+  increaseOriginalCopiesPrinted,
+  initializeRound,
+  upsertReceipts,
+} from './round-api-actions';
 import { Item, OrderItem, Round } from './round-slice-types';
 
 const initialState: Round = {
@@ -104,6 +109,21 @@ const roundSlice = createSlice({
         default:
           throw new Error('Váratlan hiba lépett fel a kód feldolgozása során.');
       }
+    });
+
+    builder.addCase(increaseOriginalCopiesPrinted.fulfilled, (state, { payload: serialNumber }) => {
+      state.receipts = state.receipts.map((receipt) => {
+        if (receipt.serialNumber !== serialNumber) return receipt;
+
+        return {
+          ...receipt,
+          isSent: false,
+          originalCopiesPrinted: receipt.originalCopiesPrinted + 1,
+        };
+      });
+    });
+    builder.addCase(increaseOriginalCopiesPrinted.rejected, () => {
+      throw new Error('Váratlan hiba lépett fel a számlaadatok háttértárra mentése során.');
     });
   },
 });
