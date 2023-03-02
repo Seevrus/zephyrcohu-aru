@@ -92,7 +92,6 @@ const head = `
     }
 
     .vendor .vendor-felir {
-      font-size: 9pt;
       text-transform: uppercase;
     }
 
@@ -137,7 +136,7 @@ const head = `
     }
 
     .items .item-odd-row:not(.label) {
-      font-size: 9pt;
+      font-size: 7pt;
     }
 
     .items .item-odd-row:not(.label) .item-nr {
@@ -159,6 +158,7 @@ const head = `
 
     .total {
       display: grid;
+      column-gap: 3px;
       padding: 5px 0;
       border-bottom: 2px solid black;
       grid-template-columns: 8fr 15fr 8fr 10fr 3fr 10fr 10fr;
@@ -168,12 +168,17 @@ const head = `
       grid-column: 4 / 6;
     }
 
+    .total .vat {
+      border: 0;
+    }
+
     .vat,
     .rounding,
     .total-amount {
       display: grid;
+      column-gap: 3px;
       padding: 5px 0;
-      grid-template-columns: 9fr 16fr 9fr 11fr 4fr 11fr 10fr;
+      grid-template-columns: 8fr 15fr 8fr 10fr 3fr 10fr 10fr;
       border-bottom: 1px solid black;
     }
 
@@ -209,13 +214,13 @@ const head = `
     }
 
     footer {
+      margin-top: 40px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       column-gap: 20px;
     }
 
     footer .signature {
-      height: 40px;
       border-bottom: 1px solid black;
     }
 
@@ -343,16 +348,14 @@ export default function createReceiptHtml({
   const receiptTypeDisplay =
     receipt.invoiceType === 'E' || receipt.originalCopiesPrinted >= partner.invoiceCopies
       ? 'Másolat'
-      : 'Eredeti';
+      : `Eredeti: ${receipt.originalCopiesPrinted + 1}./${partner.invoiceCopies} példány`;
 
   const header = `
     <header>
       <div class="title">Számla</div>
       <div class="last-column"></div>
       <div>Számlaszám: ${receipt.serialNumber}/${receipt.yearCode}</div>
-      <div class="last-column">${receiptTypeDisplay}: ${receipt.originalCopiesPrinted + 1}./${
-    partner.invoiceCopies
-  } példány</div>
+      <div class="last-column">${receiptTypeDisplay}</div>
     </header>
   `;
 
@@ -419,7 +422,7 @@ export default function createReceiptHtml({
     </section>
   `;
 
-  const hasRounding = partner.paymentDays !== 0;
+  const hasRounding = partner.paymentDays === 0;
   const rounding = `
     <section class="rounding">
       <div class="label">Kerekítés (5 forintra) összege</div>

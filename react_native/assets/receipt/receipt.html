@@ -84,7 +84,6 @@
       }
 
       .vendor .vendor-felir {
-        font-size: 9pt;
         text-transform: uppercase;
       }
 
@@ -129,7 +128,7 @@
       }
 
       .items .item-odd-row:not(.label) {
-        font-size: 9pt;
+        font-size: 7pt;
       }
 
       .items .item-odd-row:not(.label) .item-nr {
@@ -151,6 +150,7 @@
 
       .total {
         display: grid;
+        column-gap: 3px;
         padding: 5px 0;
         border-bottom: 2px solid black;
         grid-template-columns: 8fr 15fr 8fr 10fr 3fr 10fr 10fr;
@@ -160,12 +160,17 @@
         grid-column: 4 / 6;
       }
 
+      .total .vat {
+        border: 0;
+      }
+
       .vat,
       .rounding,
       .total-amount {
         display: grid;
+        column-gap: 3px;
         padding: 5px 0;
-        grid-template-columns: 9fr 16fr 9fr 11fr 4fr 11fr 10fr;
+        grid-template-columns: 8fr 15fr 8fr 10fr 3fr 10fr 10fr;
         border-bottom: 1px solid black;
       }
 
@@ -201,13 +206,13 @@
       }
 
       footer {
+        padding-top: 40px;
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         column-gap: 20px;
       }
 
       footer .signature {
-        height: 40px;
         border-bottom: 1px solid black;
       }
 
