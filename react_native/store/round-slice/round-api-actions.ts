@@ -1,9 +1,16 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { concat } from 'ramda';
+import axios from 'axios';
+import { assoc, concat, map } from 'ramda';
 
 import { setLocalStorage } from '../async-storage';
 import { ErrorResponseT } from '../base-types';
-import { InitializeRoundRequest, InitializeRoundResponse } from './round-slice-types';
+import { getUpsertReceiptsPayload } from './round-api-mappers';
+import {
+  InitializeRoundRequest,
+  InitializeRoundResponse,
+  UpsertReceiptsRequestT,
+} from './round-slice-types';
+import env from '../../env.json';
 
 export const initializeRound = createAsyncThunk<
   InitializeRoundResponse,
@@ -62,4 +69,44 @@ export const finalizeCurrentReceipt = createAsyncThunk<
   return true;
 });
 
-export const upsertReceipts = () => {};
+export const upsertReceipts = createAsyncThunk<
+  boolean,
+  UpsertReceiptsRequestT,
+  { getState: () => any; rejectValue: ErrorResponseT }
+>('round/upsertReceipts', async (requestData, { getState, rejectWithValue }) => {
+  const state: any = getState();
+  const payload = getUpsertReceiptsPayload(state);
+
+  if (payload.length > 0) {
+    try {
+      await axios.post(
+        `${env.api_url}/receipts`,
+        {
+          data: payload,
+        },
+        {
+          headers: { Accept: 'application/json', Authorization: `Bearer ${requestData.token}` },
+        }
+      );
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+
+    try {
+      await setLocalStorage({
+        round: {
+          ...state.round,
+          receipts: map(assoc('isSent', true), state.round.receipts),
+        },
+      });
+    } catch (e) {
+      return rejectWithValue({
+        status: 507,
+        codeName: 'Insufficient Storage',
+        message: e.message,
+      });
+    }
+  }
+
+  return true;
+});

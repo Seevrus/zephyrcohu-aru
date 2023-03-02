@@ -14,6 +14,11 @@ export type InitializeRoundResponse = {
   nextAvailableSerialNumber: number;
 };
 
+export type UpsertReceiptsRequestT = {
+  token: string;
+  deviceId: string;
+};
+
 export type ReceiptPayloadItem = {
   code: string;
   CNCode: string;

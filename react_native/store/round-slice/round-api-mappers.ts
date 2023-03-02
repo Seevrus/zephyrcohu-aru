@@ -3,6 +3,7 @@ import {
   ascend,
   assoc,
   defaultTo,
+  filter,
   flatten,
   groupBy,
   keys,
@@ -14,24 +15,23 @@ import {
   pickAll,
   pipe,
   prop,
+  propEq,
   repeat,
   sortWith,
   values,
   __,
 } from 'ramda';
-import { RootState } from '..';
 
 import { Company } from '../config-slice/config-slice-types';
 import {
   ExpirationItem,
-  Item,
   Receipt,
   ReceiptPayloadItem,
   ReceiptPlayloadVatAmount,
   ReceiptRequestItem,
 } from './round-slice-types';
 
-const mapReceiptToPayload = (receipt: Receipt, state: RootState): ReceiptRequestItem => {
+const mapReceiptToPayload = (receipt: Receipt, state): ReceiptRequestItem => {
   const agent = state.agents.data.find((a) => a.id === state.round.agentId);
   const partner = state.partners.partners.find((p) => p.id === receipt.partnerId);
   const numberOfPartnerLocations = pipe(prop('locations'), keys, length)(partner);
@@ -42,8 +42,8 @@ const mapReceiptToPayload = (receipt: Receipt, state: RootState): ReceiptRequest
   const fulfillmentDate = add(invoiceDate, { days: paymentDays });
   const paidDate = fulfillmentDate;
 
-  const receiptItems: ReceiptPayloadItem[] = pipe(
-    pathOr<Item>({}, ['round', 'currentReceipt', 'items']),
+  const receiptItems = receipt?.items ?? {};
+  const receiptPayloadItems: ReceiptPayloadItem[] = pipe(
     keys,
     map((itemId) =>
       pipe(
@@ -81,9 +81,9 @@ const mapReceiptToPayload = (receipt: Receipt, state: RootState): ReceiptRequest
         const code = repeat('0', numLeadingZeros).join('') + codeWithoutZeros;
         return assoc('code', code, item);
       })
-  )(state);
+  )(receiptItems);
 
-  const totals = receiptItems.reduce(
+  const totals = receiptPayloadItems.reduce(
     (prev, item) => ({
       quantity: prev.quantity + item.quantity,
       netAmount: prev.netAmount + item.netAmount,
@@ -119,7 +119,7 @@ const mapReceiptToPayload = (receipt: Receipt, state: RootState): ReceiptRequest
       )
     ),
     values
-  )(receiptItems);
+  )(receiptPayloadItems);
 
   const roundedAmount =
     partner.paymentDays === 0 ? Math.round(totals.grossAmount / 5) * 5 : totals.grossAmount;
@@ -179,7 +179,7 @@ const mapReceiptToPayload = (receipt: Receipt, state: RootState): ReceiptRequest
       name: prop('name', agent),
       phoneNumber: prop('phoneNumber', agent),
     },
-    items: receiptItems,
+    items: receiptPayloadItems,
     ...totals,
     vatAmounts,
     roundAmount,
@@ -187,13 +187,14 @@ const mapReceiptToPayload = (receipt: Receipt, state: RootState): ReceiptRequest
   };
 };
 
-export const getUpsertReceiptsPayload = (state: RootState): ReceiptRequestItem[] =>
+export const getUpsertReceiptsPayload = (state): ReceiptRequestItem[] =>
   pipe(
     pathOr<Receipt[]>([], ['round', 'receipts']),
+    filter(propEq('isSent', false)),
     map((receipt) => mapReceiptToPayload(receipt, state))
   )(state);
 
-export const getLastReceiptPayload = (state: RootState): ReceiptRequestItem =>
+export const getLastReceiptPayload = (state): ReceiptRequestItem =>
   pipe(pathOr<Receipt[]>([], ['round', 'receipts']), last<Receipt>, (receipt) =>
     mapReceiptToPayload(receipt, state)
   )(state);

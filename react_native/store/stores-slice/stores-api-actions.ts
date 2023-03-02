@@ -153,5 +153,3 @@ export const removeItemsFromStore = createAsyncThunk<
 
   return newItems;
 });
-
-export const upsertReceipts = () => {};

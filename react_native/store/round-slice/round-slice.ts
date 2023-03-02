@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { concat, dissocPath, mergeDeepLeft, pipe, propOr, values } from 'ramda';
+import { assoc, concat, dissocPath, map, mergeDeepLeft, pipe, propOr, values } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
-import { finalizeCurrentReceipt, initializeRound } from './round-api-actions';
+import { finalizeCurrentReceipt, initializeRound, upsertReceipts } from './round-api-actions';
 import { Item, OrderItem, Round } from './round-slice-types';
 
 const initialState: Round = {
@@ -84,8 +84,26 @@ const roundSlice = createSlice({
       state.nextAvailableSerialNumber = state.currentReceipt.serialNumber + 1;
       state.currentReceipt = undefined;
     });
-    builder.addCase(finalizeCurrentReceipt.rejected, (_, { payload }) => {
-      throw new Error(payload.message);
+    builder.addCase(finalizeCurrentReceipt.rejected, () => {
+      throw new Error('Váratlan hiba lépett fel a számlaadatok háttértárra mentése során.');
+    });
+
+    builder.addCase(upsertReceipts.fulfilled, (state) => {
+      state.receipts = map(assoc('isSent', true), state.receipts);
+    });
+    builder.addCase(upsertReceipts.rejected, (_, { payload }) => {
+      switch (payload.status) {
+        case 401:
+          throw new Error('A beírt token érvénytelen.');
+        case 422:
+          throw new Error(
+            'A szerver visszautasította a számlát, mert annak formátuma nem megfelelő.'
+          );
+        case 507:
+          throw new Error('Váratlan hiba lépett fel a számlaadatok háttértárra mentése során.');
+        default:
+          throw new Error('Váratlan hiba lépett fel a kód feldolgozása során.');
+      }
     });
   },
 });

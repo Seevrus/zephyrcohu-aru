@@ -71,9 +71,11 @@ export const checkToken = createAsyncThunk<
           userType: undefined,
           company: undefined,
         },
+        partnerLists: undefined,
         partners: undefined,
         items: undefined,
-        stores: undefined,
+        storeList: undefined,
+        store: undefined,
         round: undefined,
       });
     } catch (_) {
