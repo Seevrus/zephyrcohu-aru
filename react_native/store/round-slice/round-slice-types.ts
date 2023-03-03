@@ -19,6 +19,11 @@ export type UpsertReceiptsRequestT = {
   deviceId: string;
 };
 
+export type UploadOrdersRequestT = {
+  token: string;
+  deviceId: string;
+};
+
 export type ReceiptPayloadItem = {
   code: string;
   CNCode: string;
@@ -91,6 +96,18 @@ export type ReceiptRequestItem = {
   vatAmounts: ReceiptPlayloadVatAmount[];
   roundAmount: number;
   roundedAmount: number;
+};
+
+type OrderPayloadItem = {
+  articleNumber: string;
+  quantity: number;
+};
+
+export type OrderRequestItem = {
+  partnerCode: string;
+  partnerSiteCode: string;
+  orderDate: string;
+  items: OrderPayloadItem[];
 };
 
 export type UpsertReceiptRequest = {

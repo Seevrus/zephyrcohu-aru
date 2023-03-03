@@ -7,6 +7,7 @@ import {
   finalizeCurrentReceipt,
   increaseOriginalCopiesPrinted,
   initializeRound,
+  uploadOrders,
   upsertReceipts,
 } from './round-api-actions';
 import { Item, OrderItem, Round } from './round-slice-types';
@@ -124,6 +125,24 @@ const roundSlice = createSlice({
     });
     builder.addCase(increaseOriginalCopiesPrinted.rejected, () => {
       throw new Error('Váratlan hiba lépett fel a számlaadatok háttértárra mentése során.');
+    });
+
+    builder.addCase(uploadOrders.fulfilled, (state) => {
+      state.receipts = map(assoc('orderItems', {}), state.receipts);
+    });
+    builder.addCase(uploadOrders.rejected, (_, { payload }) => {
+      switch (payload.status) {
+        case 401:
+          throw new Error('A beírt token érvénytelen.');
+        case 422:
+          throw new Error(
+            'A szerver visszautasította a rendelést, mert annak formátuma nem megfelelő.'
+          );
+        case 507:
+          throw new Error('Váratlan hiba lépett fel a beküldött rendelések eltávolítása során.');
+        default:
+          throw new Error('Váratlan hiba lépett fel a rendelés beküldése során.');
+      }
     });
   },
 });

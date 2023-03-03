@@ -6,10 +6,13 @@ import {
   filter,
   flatten,
   groupBy,
+  isEmpty,
   keys,
   last,
   length,
   map,
+  mapObjIndexed,
+  not,
   path,
   pathOr,
   pickAll,
@@ -23,8 +26,11 @@ import {
 } from 'ramda';
 
 import { Company } from '../config-slice/config-slice-types';
+import { Item } from '../items-slice/items-slice-types';
+import { PartnerDetails } from '../partners-slice/partners-slice-types';
 import {
   ExpirationItem,
+  OrderRequestItem,
   Receipt,
   ReceiptPayloadItem,
   ReceiptPlayloadVatAmount,
@@ -198,3 +204,31 @@ export const getLastReceiptPayload = (state): ReceiptRequestItem =>
   pipe(pathOr<Receipt[]>([], ['round', 'receipts']), last<Receipt>, (receipt) =>
     mapReceiptToPayload(receipt, state)
   )(state);
+
+export const getUploadOrdersPayload = (state): OrderRequestItem[] => {
+  const receipts: Receipt[] = pathOr([], ['round', 'receipts'], state);
+
+  return receipts
+    .filter((receipt) => not(isEmpty(receipt.orderItems)))
+    .map((receipt) => {
+      const partner: PartnerDetails = state.partners.partners.find(
+        (p) => p.id === receipt.partnerId
+      );
+
+      return {
+        partnerCode: partner.code,
+        partnerSiteCode: partner.siteCode,
+        orderDate: path<string>(['round', 'date'], state),
+        items: values(
+          mapObjIndexed((value, itemId) => {
+            const item: Item = state.items.data.find((itm) => itm.id === +itemId);
+
+            return {
+              articleNumber: item.articleNumber,
+              quantity: value.quantity,
+            };
+          }, receipt.orderItems)
+        ),
+      };
+    });
+};

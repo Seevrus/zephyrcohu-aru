@@ -5,10 +5,11 @@ import { assoc, concat, map } from 'ramda';
 import env from '../../env.json';
 import { setLocalStorage } from '../async-storage';
 import { ErrorResponseT } from '../base-types';
-import { getUpsertReceiptsPayload } from './round-api-mappers';
+import { getUploadOrdersPayload, getUpsertReceiptsPayload } from './round-api-mappers';
 import {
   InitializeRoundRequest,
   InitializeRoundResponse,
+  UploadOrdersRequestT,
   UpsertReceiptsRequestT,
 } from './round-slice-types';
 
@@ -147,4 +148,50 @@ export const increaseOriginalCopiesPrinted = createAsyncThunk<
   }
 
   return serialNumber;
+});
+
+export const uploadOrders = createAsyncThunk<
+  boolean,
+  UploadOrdersRequestT,
+  { getState: () => any; rejectValue: ErrorResponseT }
+>('round/uploadOrders', async (requestData, { getState, rejectWithValue }) => {
+  const state: any = getState();
+  const payload = getUploadOrdersPayload(state);
+
+  if (payload.length > 0) {
+    try {
+      await axios.post(
+        `${env.api_url}/orders`,
+        {
+          data: payload,
+        },
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${requestData.token}`,
+            'X-Device-Id': requestData.deviceId,
+          },
+        }
+      );
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+
+    try {
+      await setLocalStorage({
+        round: {
+          ...state.round,
+          receipts: map(assoc('orderItems', {}), state.round.receipts),
+        },
+      });
+    } catch (e) {
+      return rejectWithValue({
+        status: 507,
+        codeName: 'Insufficient Storage',
+        message: e.message,
+      });
+    }
+  }
+
+  return true;
 });
