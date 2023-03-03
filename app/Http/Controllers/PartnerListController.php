@@ -72,7 +72,7 @@ class PartnerListController extends Controller
                 ]);
 
                 foreach ($partnerListRequest['partners'] as $list) {
-                    $partner = Partner::firstWhere([
+                    $partner = $company->partners()->firstWhere([
                         'code' => $list['code'],
                         'site_code' => $list['siteCode'],
                     ]);

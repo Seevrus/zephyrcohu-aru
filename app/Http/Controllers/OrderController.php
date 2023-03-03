@@ -6,6 +6,7 @@ use App\Http\Requests\StoreOrderRequest;
 use App\Http\Resources\OrderCollection;
 use App\Models\Log;
 use App\Models\Order;
+use Error;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
@@ -63,9 +64,21 @@ class OrderController extends Controller
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
+            $company = $sender->company;
+
             foreach ($request->data as $orderRequest) {
+                $partner = $company->partners()->firstWhere([
+                    'code' => $orderRequest['partnerCode'],
+                    'site_code' => $orderRequest['partnerSiteCode'],
+                ]);
+
+                if (!$partner) {
+                    throw new Error('Partner could not be found.');
+                }
+
                 $order = Order::create([
-                    'company_id' => $sender->company->id,
+                    'company_id' => $company->id,
+                    'partner_id' => $partner->id,
                     'order_date' => $orderRequest['orderDate'],
                 ]);
 
@@ -78,7 +91,7 @@ class OrderController extends Controller
             }
 
             Log::insert([
-                'company_id' => $sender->company_id,
+                'company_id' => $company->id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
                 'action' => 'Uploaded ' . count($request->data) . ' new orders',

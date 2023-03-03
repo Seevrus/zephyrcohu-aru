@@ -31,6 +31,8 @@ class StoreOrderRequest extends FormRequest
     {
         return [
             'data' => 'required|array|bail',
+            'data.*.partnerCode' => 'required|string|size:6|exists:partners,code',
+            'data.*.partnerSiteCode' => 'required|string|size:4|exists:partners,site_code',
             'data.*.orderDate' => 'required|date_format:Y-m-d',
             'data.*.items' => 'required|array|bail',
             'data.*.items.*.articleNumber' => 'required|string|size:16',
