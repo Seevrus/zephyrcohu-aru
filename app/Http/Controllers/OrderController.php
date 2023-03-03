@@ -30,7 +30,7 @@ class OrderController extends Controller
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $orders = $sender->company->orders()->with('order_items')->get();
+            $orders = $sender->company->orders()->with(['partner', 'order_items'])->get();
 
             Log::insert([
                 'company_id' => $sender->company_id,

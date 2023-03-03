@@ -16,6 +16,8 @@ class OrderResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'partnerCode' => $this->partner->code,
+            'partnerSiteCode' => $this->partner->site_code,
             'orderDate' => $this->order_date,
             'items' => new OrderItemCollection($this->order_items),
         ];
