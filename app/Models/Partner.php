@@ -43,4 +43,9 @@ class Partner extends Model
     {
         return $this->belongsToMany(Item::class, 'price_lists')->withPivot('net_price');
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }
