@@ -17,6 +17,7 @@ import { getLastReceiptPayload } from '../../../store/round-slice/round-api-mapp
 import { SummaryProps } from '../../screen-types';
 import ErrorCard from '../../../components/info-cards/ErrorCard';
 import createReceiptHtml from './createReceiptHtml';
+import Loading from '../../../components/Loading';
 
 export default function Summary({ navigation }: SummaryProps) {
   const dispatch = useAppDispatch();
@@ -28,20 +29,22 @@ export default function Summary({ navigation }: SummaryProps) {
   );
   const receiptPayload = useAppSelector(getLastReceiptPayload);
 
+  const [loading, setLoading] = useState<boolean>(false);
   const [upsertReceiptSuccess, setUpsertReceiptSuccess] = useState<string>('');
   const [upsertReceiptError, setUpsertReceiptError] = useState<string>('');
 
-  // Ha van internet, beküldjük az összes még nem beküldött számlát.
   useEffect(() => {
     const dispatchReceipts = async () => {
+      setLoading(true);
       try {
-        // await dispatch(upsertReceipts({ deviceId, token }));
+        await dispatch(upsertReceipts({ deviceId, token }));
         setUpsertReceiptError('');
         setUpsertReceiptSuccess('Számla beküldése sikeres.');
       } catch (err) {
         setUpsertReceiptSuccess('');
         setUpsertReceiptError(err.message);
       }
+      setLoading(false);
     };
 
     if (isInternetReachable && credentialsAvailable) {
@@ -56,11 +59,14 @@ export default function Summary({ navigation }: SummaryProps) {
       html: createReceiptHtml({ receipt: receiptPayload, partner: currentPartner }),
     });
 
-    // TODO: does useEffect run after this?
     if (canPrintOriginalCopy) {
       dispatch(increaseOriginalCopiesPrinted(receiptPayload.serialNumber));
     }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <View style={styles.container}>
@@ -76,21 +82,26 @@ export default function Summary({ navigation }: SummaryProps) {
       )}
       {!!upsertReceiptError && (
         <View style={styles.textCardContainer}>
-          <ErrorCard>{upsertReceiptSuccess}</ErrorCard>
+          <ErrorCard>{upsertReceiptError}</ErrorCard>
         </View>
       )}
+      <Text style={styles.header}>Számla mentése sikeres!</Text>
+      <Text style={styles.text}>
+        Az eredeti számla formátuma:{' '}
+        <Text style={styles.numberOfReceipts}>
+          {currentPartner.invoiceType === 'E' ? 'elektronikus' : 'papír alapú'}
+        </Text>
+        .
+      </Text>
       {canPrintOriginalCopy ? (
         <Text style={styles.text}>
-          Számla mentése sikeres! A számlát{' '}
-          <Text style={styles.numberOfReceipts}>{currentPartner.invoiceCopies}</Text> eredeti
-          példányban van lehetőség kinyomtatni. Ebből eddig{' '}
+          A számlát <Text style={styles.numberOfReceipts}>{currentPartner.invoiceCopies}</Text>{' '}
+          eredeti példányban van lehetőség kinyomtatni. Ebből eddig{' '}
           <Text style={styles.numberOfReceipts}>{receiptPayload.originalCopiesPrinted}</Text>{' '}
           példány került nyomtatásra.
         </Text>
       ) : (
-        <Text style={styles.text}>
-          Számla mentése sikeres! Az alábbi gombra kattintva számlamásolat nyomtatható.
-        </Text>
+        <Text style={styles.text}>Az alábbi gombra kattintva számlamásolat nyomtatható.</Text>
       )}
       <View style={styles.buttonContainer}>
         <Button variant="ok" onPress={printButtonHandler}>
@@ -98,7 +109,14 @@ export default function Summary({ navigation }: SummaryProps) {
         </Button>
       </View>
       <View style={styles.buttonContainer}>
-        <Button variant="ok">Visszatérés a kezdőképernyőre</Button>
+        <Button
+          variant="ok"
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
+          Visszatérés a kezdőképernyőre
+        </Button>
       </View>
     </View>
   );
@@ -113,6 +131,13 @@ const styles = StyleSheet.create({
   },
   textCardContainer: {
     marginBottom: 30,
+  },
+  header: {
+    marginBottom: 20,
+    alignSelf: 'center',
+    color: 'white',
+    fontFamily: 'Muli',
+    fontSize: fontSizes.subtitle,
   },
   text: {
     color: 'white',

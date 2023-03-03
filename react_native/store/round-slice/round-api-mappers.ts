@@ -128,7 +128,7 @@ const mapReceiptToPayload = (receipt: Receipt, state): ReceiptRequestItem => {
   return {
     companyCode: path(['config', 'company', 'code'], state),
     partnerCode: prop('code', partner),
-    siteCode: prop('siteCode', partner),
+    partnerSiteCode: prop('siteCode', partner),
     serialNumber: prop('serialNumber', receipt),
     yearCode: prop('yearCode', store),
     originalCopiesPrinted: prop('originalCopiesPrinted', receipt),

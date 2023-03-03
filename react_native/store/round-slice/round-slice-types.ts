@@ -44,7 +44,7 @@ export type ReceiptPlayloadVatAmount = {
 export type ReceiptRequestItem = {
   companyCode: string;
   partnerCode: string;
-  siteCode: string;
+  partnerSiteCode: string;
   serialNumber: number;
   yearCode: number;
   originalCopiesPrinted: number;

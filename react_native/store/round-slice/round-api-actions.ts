@@ -85,11 +85,15 @@ export const upsertReceipts = createAsyncThunk<
           data: payload,
         },
         {
-          headers: { Accept: 'application/json', Authorization: `Bearer ${requestData.token}` },
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${requestData.token}`,
+            'X-Device-Id': requestData.deviceId,
+          },
         }
       );
     } catch (err) {
-      return rejectWithValue(err.message);
+      return rejectWithValue(err.response.data);
     }
 
     try {

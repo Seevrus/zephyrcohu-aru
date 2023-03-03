@@ -1,7 +1,7 @@
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { format } from 'date-fns';
-import { any, find, isNil, pipe, prop, propEq } from 'ramda';
+import { all, find, isNil, pipe, prop, propEq } from 'ramda';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -54,7 +54,7 @@ export default function StartErrand({ navigation }: StartErrandProps) {
   }, [isInternetReachable, navigation, tokenStorageError]);
 
   useEffect(() => {
-    if (credentialsAvailable && !roundDataError && any(isNil, [agents, storeList, partnerLists])) {
+    if (credentialsAvailable && !roundDataError && all(isNil, [agents, storeList, partnerLists])) {
       setLoading(true);
       setLoadingMessage('Körök adatainak betöltése...');
       Promise.all([

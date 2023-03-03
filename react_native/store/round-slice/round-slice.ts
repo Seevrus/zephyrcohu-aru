@@ -107,7 +107,7 @@ const roundSlice = createSlice({
         case 507:
           throw new Error('Váratlan hiba lépett fel a számlaadatok háttértárra mentése során.');
         default:
-          throw new Error('Váratlan hiba lépett fel a kód feldolgozása során.');
+          throw new Error('Váratlan hiba lépett fel a számlaadatok beküldése során.');
       }
     });
 
