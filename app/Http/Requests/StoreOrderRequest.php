@@ -35,7 +35,7 @@ class StoreOrderRequest extends FormRequest
             'data.*.partnerSiteCode' => 'required|string|size:4|exists:partners,site_code',
             'data.*.orderDate' => 'required|date_format:Y-m-d',
             'data.*.items' => 'required|array|bail',
-            'data.*.items.*.articleNumber' => 'required|string|size:16',
+            'data.*.items.*.articleNumber' => 'required|string|min:1|max:16',
             'data.*.items.*.quantity' => 'required|integer|min:0|max:32767',
         ];
     }
