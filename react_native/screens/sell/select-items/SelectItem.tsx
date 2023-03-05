@@ -52,7 +52,7 @@ function SelectItem({ info, type, upsertSelectedItem, upsertOrderItem }: SelectI
       id={info.item.id}
       expandedInitially={false}
       title={info.item.name}
-      height={expirations.length * 100}
+      height={expirations?.length ?? 0 * 100}
       backgroundColor={backgroundColors[type]}
     >
       <View style={styles.selectItemContainer}>

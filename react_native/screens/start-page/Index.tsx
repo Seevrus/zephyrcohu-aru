@@ -35,7 +35,7 @@ export default function Index({ navigation }: IndexProps) {
     }
   }, [navigation, tokenValidationError]);
 
-  const numberOfReceipts = useAppSelector((state) => state.round.receipts).length;
+  const numberOfReceipts = useAppSelector((state) => state.round.receipts)?.length ?? 0;
 
   const tiles = getTiles({
     isInternetReachable,

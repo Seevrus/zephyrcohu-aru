@@ -78,7 +78,7 @@ export const upsertReceipts = createAsyncThunk<
   const state: any = getState();
   const payload = getUpsertReceiptsPayload(state);
 
-  if (payload.length > 0) {
+  if (payload?.length > 0) {
     try {
       await axios.post(
         `${env.api_url}/receipts`,
@@ -158,7 +158,7 @@ export const uploadOrders = createAsyncThunk<
   const state: any = getState();
   const payload = getUploadOrdersPayload(state);
 
-  if (payload.length > 0) {
+  if (payload?.length > 0) {
     try {
       await axios.post(
         `${env.api_url}/orders`,

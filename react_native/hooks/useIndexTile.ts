@@ -29,7 +29,7 @@ const useIndexTile = () => {
   const { isInternetReachable } = useNetInfo();
 
   const isRoundStarted = !isNil(useAppSelector((state) => state.round.storeId));
-  const numberOfReceipts = useAppSelector((state) => state.round.receipts).length;
+  const numberOfReceipts = useAppSelector((state) => state.round.receipts)?.length ?? 0;
 
   const [selectPartnerTile, setSelectPartnerTile] = useState<SelectPartnerTile>(
     SelectPartnerTile.Disabled

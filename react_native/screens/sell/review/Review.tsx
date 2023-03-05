@@ -82,7 +82,7 @@ export default function Review({ navigation }: ReviewProps) {
     dispatch(roundActions.removeItem({ id, expiresAt }));
 
   useEffect(() => {
-    if (receiptRows.length === 0) {
+    if (receiptRows?.length === 0) {
       dispatch(roundActions.removeLastUnsentReceipt());
       navigation.reset({
         index: 0,
