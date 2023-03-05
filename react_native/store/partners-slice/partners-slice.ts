@@ -22,6 +22,10 @@ const partnersSlice = createSlice({
       if (!state.partnerLists) state.partnerLists = payload?.partnerLists;
       if (!state.partners) state.partners = payload?.partners;
     },
+    endErrand: (state) => {
+      state.partnerLists = undefined;
+      state.partners = undefined;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchPartnerList.fulfilled, (state, { payload }) => {

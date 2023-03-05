@@ -23,6 +23,10 @@ const storesSlice = createSlice({
       if (!state.storeList) state.storeList = payload?.storeList;
       if (!state.store) state.store = payload?.store;
     },
+    endErrand: (state) => {
+      state.storeList = undefined;
+      state.store = undefined;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchStoreList.fulfilled, (state, { payload }) => {

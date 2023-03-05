@@ -36,6 +36,7 @@ export type SummaryProps = NativeStackScreenProps<StackParams, 'Summary'>;
 export type ReceiptListProps = NativeStackScreenProps<StackParams, 'ReceiptList'>;
 
 export type StartErrandProps = NativeStackScreenProps<StackParams, 'StartErrand'>;
+export type EndErrandProps = NativeStackScreenProps<StackParams, 'EndErrand'>;
 
 export enum PartnerList {
   STORE,

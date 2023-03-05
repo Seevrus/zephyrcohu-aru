@@ -1,23 +1,25 @@
 import { useNetInfo } from '@react-native-community/netinfo';
+import * as Print from 'expo-print';
+import { last, prop } from 'ramda';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { last, prop } from 'ramda';
-import * as Print from 'expo-print';
-import TextCard from '../../../components/info-cards/TextCard';
-import Button from '../../../components/ui/Button';
-import colors from '../../../constants/colors';
-import fontSizes from '../../../constants/fontSizes';
-import useToken from '../../../hooks/useToken';
+
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
   increaseOriginalCopiesPrinted,
   upsertReceipts,
 } from '../../../store/round-slice/round-api-actions';
 import { getLastReceiptPayload } from '../../../store/round-slice/round-api-mappers';
-import { SummaryProps } from '../../screen-types';
+
 import ErrorCard from '../../../components/info-cards/ErrorCard';
-import createReceiptHtml from './createReceiptHtml';
+import TextCard from '../../../components/info-cards/TextCard';
 import Loading from '../../../components/Loading';
+import Button from '../../../components/ui/Button';
+import colors from '../../../constants/colors';
+import fontSizes from '../../../constants/fontSizes';
+import useToken from '../../../hooks/useToken';
+import { SummaryProps } from '../../screen-types';
+import createReceiptHtml from './createReceiptHtml';
 
 export default function Summary({ navigation }: SummaryProps) {
   const dispatch = useAppDispatch();

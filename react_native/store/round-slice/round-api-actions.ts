@@ -195,3 +195,28 @@ export const uploadOrders = createAsyncThunk<
 
   return true;
 });
+
+export const endErrand = createAsyncThunk<boolean, never, { rejectValue: ErrorResponseT }>(
+  'round/endErrand',
+  async (_, { rejectWithValue }) => {
+    try {
+      await setLocalStorage({
+        agents: undefined,
+        items: undefined,
+        partners: undefined,
+        partnerLists: undefined,
+        round: undefined,
+        storeList: undefined,
+        store: undefined,
+      });
+    } catch (e) {
+      return rejectWithValue({
+        status: 507,
+        codeName: 'Insufficient Storage',
+        message: e.message,
+      });
+    }
+
+    return true;
+  }
+);

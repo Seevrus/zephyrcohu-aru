@@ -16,6 +16,9 @@ const agentsSlice = createSlice({
     mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['agents']>) => {
       if (!state.data) state.data = payload?.data;
     },
+    endErrand: (state) => {
+      state.data = undefined;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchAgents.fulfilled, (state, { payload }) => {

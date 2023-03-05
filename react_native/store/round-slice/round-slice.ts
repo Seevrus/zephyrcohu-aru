@@ -4,6 +4,7 @@ import { assoc, concat, dissocPath, map, mergeDeepLeft, pipe, propOr, values } f
 
 import { LocalStorage } from '../async-storage';
 import {
+  endErrand,
   finalizeCurrentReceipt,
   increaseOriginalCopiesPrinted,
   initializeRound,
@@ -143,6 +144,20 @@ const roundSlice = createSlice({
         default:
           throw new Error('Váratlan hiba lépett fel a rendelés beküldése során.');
       }
+    });
+
+    builder.addCase(endErrand.fulfilled, (state) => {
+      state.started = false;
+      state.agentId = undefined;
+      state.storeId = undefined;
+      state.partnerListId = undefined;
+      state.date = undefined;
+      state.nextAvailableSerialNumber = undefined;
+      state.currentReceipt = undefined;
+      state.receipts = [];
+    });
+    builder.addCase(endErrand.rejected, (_, { payload }) => {
+      throw new Error(payload.message);
     });
   },
 });
