@@ -1,8 +1,8 @@
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { format } from 'date-fns';
-import { all, find, isNil, pipe, prop, propEq } from 'ramda';
-import { useEffect, useState } from 'react';
+import { find, isNil, pipe, prop, propEq } from 'ramda';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import useToken from '../../hooks/useToken';
@@ -53,36 +53,53 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     }
   }, [isInternetReachable, navigation, tokenStorageError]);
 
-  useEffect(() => {
-    if (credentialsAvailable && !roundDataError && all(isNil, [agents, storeList, partnerLists])) {
-      setLoading(true);
-      setLoadingMessage('Körök adatainak betöltése...');
-      Promise.all([
-        dispatch(fetchAgents({ deviceId, token })),
-        dispatch(fetchStoreList({ deviceId, token })),
-        dispatch(fetchPartnerList({ deviceId, token })),
-      ])
-        .then(() => {
-          setRoundDataError('');
-        })
-        .catch((err) => {
-          setRoundDataError(err.message);
-        })
-        .finally(() => {
-          setLoading(false);
-          setLoadingMessage('');
-        });
+  const fetchAgentsData = useCallback(async () => {
+    try {
+      await dispatch(fetchAgents({ deviceId, token }));
+    } catch (err) {
+      setRoundDataError(err.message);
     }
-  }, [
-    agents,
-    credentialsAvailable,
-    deviceId,
-    dispatch,
-    partnerLists,
-    roundDataError,
-    storeList,
-    token,
-  ]);
+  }, [deviceId, dispatch, token]);
+
+  const fetchStoreData = useCallback(async () => {
+    try {
+      await dispatch(fetchStoreList({ deviceId, token }));
+    } catch (err) {
+      setRoundDataError(err.message);
+    }
+  }, [deviceId, dispatch, token]);
+
+  const fetchPartnerListData = useCallback(async () => {
+    try {
+      await dispatch(fetchPartnerList({ deviceId, token }));
+    } catch (err) {
+      setRoundDataError(err.message);
+    }
+  }, [deviceId, dispatch, token]);
+
+  const fetchErrandData = () => {
+    fetchAgentsData();
+    fetchStoreData();
+    fetchPartnerListData();
+  };
+
+  useEffect(() => {
+    if (credentialsAvailable && !roundDataError && isNil(agents)) {
+      fetchAgentsData();
+    }
+  }, [agents, credentialsAvailable, fetchAgentsData, roundDataError]);
+
+  useEffect(() => {
+    if (credentialsAvailable && !roundDataError && isNil(storeList)) {
+      fetchStoreData();
+    }
+  }, [credentialsAvailable, fetchStoreData, roundDataError, storeList]);
+
+  useEffect(() => {
+    if (credentialsAvailable && !roundDataError && isNil(partnerLists)) {
+      fetchPartnerListData();
+    }
+  }, [credentialsAvailable, fetchPartnerListData, partnerLists, roundDataError]);
 
   const confirmRoundHandler = async () => {
     setLoading(true);
@@ -90,27 +107,27 @@ export default function StartErrand({ navigation }: StartErrandProps) {
 
     const selectedStoreCode: string = pipe(find(propEq('id', storeId)), prop('code'))(storeList);
 
-    Promise.all([
-      dispatch(fetchItems({ deviceId, token })),
-      dispatch(fetchPartners({ deviceId, token })),
-      dispatch(fetchStore({ deviceId, token, code: selectedStoreCode })).unwrap(),
-    ])
-      .then(([, , fetchedStore]) => {
-        dispatch(
-          initializeRound({
-            agentId,
-            storeId,
-            partnerListId,
-            date: format(date, 'yyyy-MM-dd'),
-            nextAvailableSerialNumber: fetchedStore.firstAvailableSerialNumber,
-          })
-        ).then(() => {
-          navigation.pop();
-        });
-      })
-      .catch((err) => {
-        setConfirmRoundError(err.message);
-      });
+    try {
+      await dispatch(fetchItems({ deviceId, token }));
+      await dispatch(fetchPartners({ deviceId, token }));
+      const fetchedStore = await dispatch(
+        fetchStore({ deviceId, token, code: selectedStoreCode })
+      ).unwrap();
+
+      await dispatch(
+        initializeRound({
+          agentId,
+          storeId,
+          partnerListId,
+          date: format(date, 'yyyy-MM-dd'),
+          nextAvailableSerialNumber: fetchedStore.firstAvailableSerialNumber,
+        })
+      );
+
+      navigation.pop();
+    } catch (err) {
+      setConfirmRoundError(err.message);
+    }
   };
 
   if (loading) {
@@ -210,6 +227,9 @@ export default function StartErrand({ navigation }: StartErrandProps) {
       <View style={styles.buttonContainer}>
         <Button variant={confirmButtonvariant} onPress={confirmRoundHandler}>
           Kör indítása
+        </Button>
+        <Button variant="warning" onPress={fetchErrandData}>
+          Adatok frissítése
         </Button>
       </View>
     </View>
