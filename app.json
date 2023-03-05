@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Boreal",
+    "name": "Zephyr Boreal",
     "slug": "zephyr-boreal",
-    "version": "0.1.2",
+    "version": "0.2.0",
     "orientation": "portrait",
     "icon": "./react_native/assets/zephyr-icon.png",
     "userInterfaceStyle": "dark",
@@ -14,11 +14,11 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false
     },
     "android": {
       "package": "com.zephyr.boreal",
-      "versionCode": 4,
+      "versionCode": 5,
       "adaptiveIcon": {
         "foregroundImage": "./react_native/assets/zephyr-icon.png",
         "backgroundColor": "#382E6B"
