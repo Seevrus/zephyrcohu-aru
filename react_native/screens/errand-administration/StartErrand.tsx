@@ -77,27 +77,38 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     }
   }, [deviceId, dispatch, token]);
 
-  const fetchErrandData = () => {
-    fetchAgentsData();
-    fetchStoreData();
-    fetchPartnerListData();
+  const fetchErrandData = async () => {
+    setLoading(true);
+    await fetchAgentsData();
+    await fetchStoreData();
+    await fetchPartnerListData();
+    setLoading(false);
   };
 
   useEffect(() => {
     if (credentialsAvailable && !roundDataError && isNil(agents)) {
-      fetchAgentsData();
+      setLoading(true);
+      fetchAgentsData().then(() => {
+        setLoading(false);
+      });
     }
   }, [agents, credentialsAvailable, fetchAgentsData, roundDataError]);
 
   useEffect(() => {
     if (credentialsAvailable && !roundDataError && isNil(storeList)) {
-      fetchStoreData();
+      setLoading(true);
+      fetchStoreData().then(() => {
+        setLoading(false);
+      });
     }
   }, [credentialsAvailable, fetchStoreData, roundDataError, storeList]);
 
   useEffect(() => {
     if (credentialsAvailable && !roundDataError && isNil(partnerLists)) {
-      fetchPartnerListData();
+      setLoading(true);
+      fetchPartnerListData().then(() => {
+        setLoading(false);
+      });
     }
   }, [credentialsAvailable, fetchPartnerListData, partnerLists, roundDataError]);
 
