@@ -47,12 +47,8 @@ const useIndexTile = () => {
   }, [isRoundStarted]);
 
   useEffect(() => {
-    if (numberOfReceipts) {
-      setReceiptsTile(ReceiptsTile.Neutral);
-    } else {
-      setReceiptsTile(ReceiptsTile.Disabled);
-    }
-  }, [numberOfReceipts]);
+    setReceiptsTile(ReceiptsTile.Disabled);
+  }, []);
 
   useEffect(() => {
     if (isInternetReachable && !isRoundStarted) {
@@ -65,12 +61,12 @@ const useIndexTile = () => {
   }, [isInternetReachable, isRoundStarted, numberOfReceipts]);
 
   useEffect(() => {
-    if (isRoundStarted) {
+    if (isInternetReachable && isRoundStarted) {
       setEndErrandTile(EndErrandTile.Warning);
     } else {
       setEndErrandTile(EndErrandTile.Disabled);
     }
-  }, [isRoundStarted]);
+  }, [isInternetReachable, isRoundStarted]);
 
   return {
     selectPartnerTile,

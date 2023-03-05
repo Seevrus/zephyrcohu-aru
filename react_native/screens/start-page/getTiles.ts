@@ -62,15 +62,12 @@ export const getTiles = ({
       title: `Bizonylatok (${numberOfReceipts})`,
       icon: ReceiptsLogo,
       variant: receiptsTile,
-      // onPress: () => {
-      //   if (receiptsTile === ReceiptsTile.Disabled) {
-      //     Alert.alert('Funkció nem elérhető', 'Nincs elkészült bizonylat.', [{ text: 'Értem' }]);
-      //   } else {
-      //     // Navigálás...
-      //   }
-      // },
       onPress: () => {
-        navigation.navigate('ReceiptList');
+        if (receiptsTile === ReceiptsTile.Disabled) {
+          Alert.alert('Funkció nem elérhető', 'Ez a funkció még fejlesztés alatt áll.', [
+            { text: 'Értem' },
+          ]);
+        }
       },
     },
     {
