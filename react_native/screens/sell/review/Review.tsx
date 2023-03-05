@@ -112,16 +112,28 @@ export default function Review({ navigation }: ReviewProps) {
   };
 
   const confirmReceiptHandler = async () => {
-    try {
-      await dispatch(removeItemsFromStore());
-      await dispatch(finalizeCurrentReceipt());
-      navigation.reset({
-        index: 1,
-        routes: [{ name: 'Index' }, { name: 'Summary' }],
-      });
-    } catch (err) {
-      setSaveReceiptError(err.message);
-    }
+    Alert.alert(
+      'Árulevétel véglegesítése',
+      'Ez a lépés számlakészítéssel jár, ezután már nem lesz lehetőség semmilyen módosításra. Biztosan folytatni szeretné?',
+      [
+        { text: 'Mégse' },
+        {
+          text: 'Biztosan ezt szeretném',
+          onPress: async () => {
+            try {
+              await dispatch(removeItemsFromStore());
+              await dispatch(finalizeCurrentReceipt());
+              navigation.reset({
+                index: 1,
+                routes: [{ name: 'Index' }, { name: 'Summary' }],
+              });
+            } catch (err) {
+              setSaveReceiptError(err.message);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const renderReceiptRow: ListRenderItem<ReceiptRowProps['item']> = (
