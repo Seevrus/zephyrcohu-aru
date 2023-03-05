@@ -65,23 +65,6 @@ export const checkToken = createAsyncThunk<
       },
     });
   } catch (e) {
-    try {
-      await setLocalStorage({
-        config: {
-          userType: undefined,
-          company: undefined,
-        },
-        partnerLists: undefined,
-        partners: undefined,
-        items: undefined,
-        storeList: undefined,
-        store: undefined,
-        round: undefined,
-      });
-    } catch (_) {
-      return rejectWithValue(e.response.data);
-    }
-
     return rejectWithValue(e.response.data);
   }
 
