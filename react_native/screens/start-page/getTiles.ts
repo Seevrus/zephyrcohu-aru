@@ -64,9 +64,9 @@ export const getTiles = ({
       variant: receiptsTile,
       onPress: () => {
         if (receiptsTile === ReceiptsTile.Disabled) {
-          Alert.alert('Funkció nem elérhető', 'Ez a funkció még fejlesztés alatt áll.', [
-            { text: 'Értem' },
-          ]);
+          Alert.alert('Funkció nem elérhető', 'Még nem készült bizonylat.', [{ text: 'Értem' }]);
+        } else {
+          navigation.navigate('ReceiptList');
         }
       },
     },

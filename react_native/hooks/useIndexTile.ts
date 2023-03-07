@@ -47,8 +47,12 @@ const useIndexTile = () => {
   }, [isRoundStarted]);
 
   useEffect(() => {
-    setReceiptsTile(ReceiptsTile.Disabled);
-  }, []);
+    if (numberOfReceipts === 0) {
+      setReceiptsTile(ReceiptsTile.Disabled);
+    } else {
+      setReceiptsTile(ReceiptsTile.Neutral);
+    }
+  }, [numberOfReceipts]);
 
   useEffect(() => {
     if (isInternetReachable && !isRoundStarted) {
