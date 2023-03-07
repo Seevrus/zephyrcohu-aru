@@ -40,6 +40,7 @@ import {
 const mapReceiptToPayload = (receipt: Receipt, state): ReceiptRequestItem => {
   const agent = state.agents.data.find((a) => a.id === state.round.agentId);
   const partner = state.partners.partners.find((p) => p.id === receipt.partnerId);
+  const priceList = state.partners.partners.find((p) => p.id === partner.id)?.priceList || {};
   const numberOfPartnerLocations = pipe(prop('locations'), keys, length)(partner);
   const { store } = state.stores;
 
@@ -57,7 +58,9 @@ const mapReceiptToPayload = (receipt: Receipt, state): ReceiptRequestItem => {
         keys,
         map((expiresAt) => {
           const item = state.items.data.find((itm) => itm.id === +itemId);
-          const netAmount = item.netPrice * receiptItems[itemId][expiresAt].quantity;
+          const priceListItem = priceList[item.id];
+          const netPrice = priceListItem.netPrice || item.netPrice;
+          const netAmount = netPrice * receiptItems[itemId][expiresAt].quantity;
           const vatRateNumeric = defaultTo(0, +item.vatRate);
           const vatAmount = Math.round(netAmount * (vatRateNumeric / 100));
 
@@ -69,7 +72,7 @@ const mapReceiptToPayload = (receipt: Receipt, state): ReceiptRequestItem => {
             name: item.name,
             quantity: receiptItems[itemId][expiresAt].quantity,
             unitName: item.unitName,
-            netPrice: item.netPrice,
+            netPrice,
             netAmount,
             vatRate: item.vatRate,
             vatAmount,
