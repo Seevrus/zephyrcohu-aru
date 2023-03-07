@@ -45,6 +45,9 @@ export default function Review({ navigation }: ReviewProps) {
   const [saveReceiptError, setSaveReceiptError] = useState<string>('');
 
   const receiptRows = useAppSelector((state) => {
+    const { currentReceipt } = state.round;
+    const partner = state.partners.partners.find((p) => p.id === currentReceipt.partnerId);
+    const priceList = partner?.priceList || {};
     const receiptItems = pathOr<Item>({}, ['round', 'currentReceipt', 'items'], state);
 
     return pipe(
@@ -55,7 +58,9 @@ export default function Review({ navigation }: ReviewProps) {
           keys,
           map((expiresAt) => {
             const item = state.items.data.find((itm) => itm.id === +itemId);
-            const netAmount = item.netPrice * receiptItems[itemId][expiresAt].quantity;
+            const priceListItem = priceList[item.id];
+            const netPrice = priceListItem?.netPrice || item.netPrice;
+            const netAmount = netPrice * receiptItems[itemId][expiresAt].quantity;
             const vatRateNumeric = defaultTo(0, +item.vatRate);
             const vatAmount = Math.round(netAmount * (vatRateNumeric / 100));
 
