@@ -4,6 +4,7 @@ import {
   assoc,
   defaultTo,
   filter,
+  find,
   flatten,
   groupBy,
   isEmpty,
@@ -206,6 +207,13 @@ export const getUpsertReceiptsPayload = (state): ReceiptRequestItem[] =>
 export const getLastReceiptPayload = (state): ReceiptRequestItem =>
   pipe(pathOr<Receipt[]>([], ['round', 'receipts']), last<Receipt>, (receipt) =>
     mapReceiptToPayload(receipt, state)
+  )(state);
+
+export const getReceiptPayloadBySn = (state, serialNumber: number): ReceiptRequestItem =>
+  pipe(
+    pathOr<Receipt[]>([], ['round', 'receipts']),
+    find<Receipt>(propEq('serialNumber', serialNumber)),
+    (receipt) => mapReceiptToPayload(receipt, state)
   )(state);
 
 export const getUploadOrdersPayload = (state): OrderRequestItem[] => {

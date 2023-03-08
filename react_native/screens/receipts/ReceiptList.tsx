@@ -12,11 +12,13 @@ import {
   __,
 } from 'ramda';
 import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
-import colors from '../../constants/colors';
-import fontSizes from '../../constants/fontSizes';
+
 import { useAppSelector } from '../../store/hooks';
 import { ExpirationItem } from '../../store/round-slice/round-slice-types';
 import { ReceiptListProps } from '../screen-types';
+
+import colors from '../../constants/colors';
+import fontSizes from '../../constants/fontSizes';
 import ReceiptListItem from './ReceiptListItem';
 
 type ReceiptSummaryItem = {
@@ -30,17 +32,14 @@ type ReceiptSummaryItem = {
 };
 
 type ReceiptSummary = {
-  receiptNr: string;
+  serialNumber: number;
+  yearCode: number;
   deliveryName: string;
   items: ReceiptSummaryItem[];
   total: number;
 };
 
 export default function ReceiptList({ navigation }: ReceiptListProps) {
-  const onPressNextHandler = () => {
-    navigation.navigate('ReceiptDetails');
-  };
-
   const receiptSummaryList: ReceiptSummary[] = useAppSelector((state) => {
     const { store } = state.stores;
     const { receipts } = state.round;
@@ -49,7 +48,6 @@ export default function ReceiptList({ navigation }: ReceiptListProps) {
       const partner = state.partners.partners.find((p) => p.id === receipt.partnerId);
       const priceList = partner?.priceList || {};
 
-      const receiptNr = `${receipt.serialNumber}/${store.yearCode}`;
       const deliveryName = partner.locations.D?.name;
       const receiptItems = receipt?.items ?? {};
       const displayedItems = pipe(
@@ -91,7 +89,8 @@ export default function ReceiptList({ navigation }: ReceiptListProps) {
       )(displayedItems);
 
       return {
-        receiptNr,
+        serialNumber: receipt.serialNumber,
+        yearCode: store.yearCode,
         deliveryName,
         items: displayedItems,
         total,
@@ -99,11 +98,17 @@ export default function ReceiptList({ navigation }: ReceiptListProps) {
     });
   });
 
+  const receiptListItemPressHandler = (serialNumber: number) => {
+    navigation.navigate('ReceiptDetails', { serialNumber });
+  };
+
   const renderReceiptListItem = (info: ListRenderItemInfo<ReceiptSummary>) => (
     <ReceiptListItem
       partnerName={info.item.deliveryName}
-      receiptNr={info.item.receiptNr}
+      serialNumber={info.item.serialNumber}
+      yearCode={info.item.yearCode}
       total={info.item.total}
+      onPress={receiptListItemPressHandler}
     />
   );
 
@@ -111,7 +116,7 @@ export default function ReceiptList({ navigation }: ReceiptListProps) {
     <View style={styles.container}>
       <FlatList
         data={receiptSummaryList}
-        keyExtractor={(item) => item.receiptNr}
+        keyExtractor={(item) => String(item.serialNumber)}
         renderItem={renderReceiptListItem}
       />
     </View>

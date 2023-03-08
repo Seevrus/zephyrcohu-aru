@@ -1,23 +1,36 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { formatCurrency } from 'react-native-format-currency';
+
 import colors from '../../constants/colors';
 import fontSizes from '../../constants/fontSizes';
 
 type ReceiptListItemProps = {
   partnerName: string;
-  receiptNr: string;
+  serialNumber: number;
+  yearCode: number;
   total: number;
+  onPress: (serialNumber: number) => void;
 };
 
-export default function ReceiptListItem({ partnerName, receiptNr, total }: ReceiptListItemProps) {
+export default function ReceiptListItem({
+  partnerName,
+  serialNumber,
+  yearCode,
+  total,
+  onPress,
+}: ReceiptListItemProps) {
   const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
 
   return (
     <View style={styles.container}>
-      <Pressable android_ripple={{ color: colors.neutralRipple }} style={styles.listItem}>
+      <Pressable
+        android_ripple={{ color: colors.neutralRipple }}
+        style={styles.listItem}
+        onPress={() => onPress(serialNumber)}
+      >
         <Text style={styles.text}>{partnerName}</Text>
         <View style={styles.row}>
-          <Text style={styles.text}>{receiptNr}</Text>
+          <Text style={styles.text}>{`${serialNumber}/${yearCode}`}</Text>
           <Text style={[styles.text, styles.total]}>{formatPrice(total)}</Text>
         </View>
       </Pressable>

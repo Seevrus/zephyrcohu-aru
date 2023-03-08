@@ -1,144 +1,67 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import * as Print from 'expo-print';
+import { StyleSheet, Text, View } from 'react-native';
+
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { increaseOriginalCopiesPrinted } from '../../store/round-slice/round-api-actions';
+import { getReceiptPayloadBySn } from '../../store/round-slice/round-api-mappers';
+
+import Button from '../../components/ui/Button';
 import colors from '../../constants/colors';
+import fontSizes from '../../constants/fontSizes';
+import { ReceiptDetailsProps } from '../screen-types';
+import createReceiptHtml from '../sell/summary/createReceiptHtml';
 
-export default function ReceiptDetails() {
-  const items = [
-    {
-      id: '001',
-      vtsz: '**** **',
-      articleNumber: '******8*',
-      expiresAt: '****.**',
-      name: '*************************************40*',
-      quantity: 'xxxxxx8x',
-      unitName: 'karton',
-      netPrice: 'xxxxxx8x',
-      netAmount: 'xxxxxxx10x',
-      vat: '27%',
-      vatAmount: 'xxxxxxx10x',
-      grossAmount: 'xxxxxxx10x',
-    },
-    {
-      id: '002',
-      vtsz: '**** **',
-      articleNumber: '******8*',
-      expiresAt: '****.**',
-      name: '*************************************40*',
-      quantity: 'xxxxxx8x',
-      unitName: 'karton',
-      netPrice: 'xxxxxx8x',
-      netAmount: 'xxxxxxx10x',
-      vat: '27%',
-      vatAmount: 'xxxxxxx10x',
-      grossAmount: 'xxxxxxx10x',
-    },
-    {
-      id: '003',
-      vtsz: '**** **',
-      articleNumber: '******8*',
-      expiresAt: '****.**',
-      name: '*************************************40*',
-      quantity: 'xxxxxx8x',
-      unitName: 'karton',
-      netPrice: 'xxxxxx8x',
-      netAmount: 'xxxxxxx10x',
-      vat: '27%',
-      vatAmount: 'xxxxxxx10x',
-      grossAmount: 'xxxxxxx10x',
-    },
-    {
-      id: '004',
-      vtsz: '**** **',
-      articleNumber: '******8*',
-      expiresAt: '****.**',
-      name: '*************************************40*',
-      quantity: 'xxxxxx8x',
-      unitName: 'karton',
-      netPrice: 'xxxxxx8x',
-      netAmount: 'xxxxxxx10x',
-      vat: '27%',
-      vatAmount: 'xxxxxxx10x',
-      grossAmount: 'xxxxxxx10x',
-    },
-    {
-      id: '005',
-      vtsz: '**** **',
-      articleNumber: '******8*',
-      expiresAt: '****.**',
-      name: '*************************************40*',
-      quantity: 'xxxxxx8x',
-      unitName: 'karton',
-      netPrice: 'xxxxxx8x',
-      netAmount: 'xxxxxxx10x',
-      vat: '27%',
-      vatAmount: 'xxxxxxx10x',
-      grossAmount: 'xxxxxxx10x',
-    },
-    {
-      id: '006',
-      vtsz: '**** **',
-      articleNumber: '******8*',
-      expiresAt: '****.**',
-      name: '*************************************40*',
-      quantity: 'xxxxxx8x',
-      unitName: 'karton',
-      netPrice: 'xxxxxx8x',
-      netAmount: 'xxxxxxx10x',
-      vat: '27%',
-      vatAmount: 'xxxxxxx10x',
-      grossAmount: 'xxxxxxx10x',
-    },
-  ];
+export default function ReceiptDetails({ route }: ReceiptDetailsProps) {
+  const { serialNumber } = route.params;
 
-  const header = () => (
-    <View>
-      <Text style={styles.text}>Storno számla</Text>
-      <Text style={styles.text}>Számlaszám: xxxxxxxx/xx</Text>
-      <Text style={styles.text}>Stornozott számla száma: xxxxxxxx/xx</Text>
-      <Text style={styles.text}>Vevő</Text>
-      <Text style={styles.text}>Neve: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx45x</Text>
-      <Text style={styles.text}>
-        Címe: xx4x xxxxxxxxxxxxxxxxx20x xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx38x
-      </Text>
-      <Text style={styles.text}>Bank: xxxx-xxxxxxxx-xxxxxxxx-xxxxxxxx</Text>
-      <Text style={styles.text}>Adószám: xxxxxxxx-x-xx</Text>
-      <Text style={styles.text}>Vevő szállítási címe</Text>
-      <Text style={styles.text}>Neve: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx45x</Text>
-      <Text style={styles.text}>
-        Címe: xx4x xxxxxxxxxxxxxxxxx20x xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx38x
-      </Text>
-      <Text style={styles.text}>Kelt: xxxx.xx.xx</Text>
-      <Text style={styles.text}>Teljesítés: xxxx.xx.xx</Text>
-      <Text style={styles.text}>Fizetés: Készpénz, xxxx.xx.xx</Text>
-    </View>
+  const dispatch = useAppDispatch();
+
+  const currentReceipt = useAppSelector((state) =>
+    state.round.receipts.find((r) => r.serialNumber === serialNumber)
   );
-
-  const renderItems = () => (
-    <View>
-      <Text style={styles.text}>001.</Text>
-      <Text style={styles.text}>Megnevezés</Text>
-      <Text style={styles.text}>Nettó egységár</Text>
-      <Text style={styles.text}>Mennyiség</Text>
-      <Text style={styles.text}>Nettó összeg</Text>
-      <Text style={styles.text}>Bruttó összeg</Text>
-    </View>
+  const currentPartner = useAppSelector((state) =>
+    state.partners.partners.find((p) => p.id === currentReceipt.partnerId)
   );
+  const receiptPayload = useAppSelector((state) => getReceiptPayloadBySn(state, serialNumber));
+  const canPrintOriginalCopy = currentPartner.invoiceCopies > receiptPayload.originalCopiesPrinted;
 
-  const footer = () => (
-    <View>
-      <Text style={styles.text}>Számla mindösszesen</Text>
-      <Text style={styles.text}>Kerekítés</Text>
-    </View>
-  );
+  const printButtonHandler = async () => {
+    await Print.printAsync({
+      html: createReceiptHtml({ receipt: receiptPayload, partner: currentPartner }),
+    });
+
+    if (canPrintOriginalCopy) {
+      dispatch(increaseOriginalCopiesPrinted(serialNumber));
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <FlatList
-        ListHeaderComponent={header}
-        data={items}
-        renderItem={renderItems}
-        keyExtractor={(item) => item.id}
-        ListFooterComponent={footer}
-      />
+      <Text
+        style={styles.header}
+      >{`${receiptPayload.serialNumber}/${receiptPayload.yearCode}`}</Text>
+      <Text style={styles.text}>
+        Az eredeti számla formátuma:{' '}
+        <Text style={styles.numberOfReceipts}>
+          {currentPartner.invoiceType === 'E' ? 'elektronikus' : 'papír alapú'}
+        </Text>
+        .
+      </Text>
+      {canPrintOriginalCopy ? (
+        <Text style={styles.text}>
+          A számlát <Text style={styles.numberOfReceipts}>{currentPartner.invoiceCopies}</Text>{' '}
+          eredeti példányban van lehetőség kinyomtatni. Ebből eddig{' '}
+          <Text style={styles.numberOfReceipts}>{receiptPayload.originalCopiesPrinted}</Text>{' '}
+          példány került nyomtatásra.
+        </Text>
+      ) : (
+        <Text style={styles.text}>Az alábbi gombra kattintva számlamásolat nyomtatható.</Text>
+      )}
+      <View style={styles.buttonContainer}>
+        <Button variant="ok" onPress={printButtonHandler}>
+          {canPrintOriginalCopy ? 'Eredeti példány nyomtatása' : 'Másolat nyomtatása'}
+        </Button>
+      </View>
     </View>
   );
 }
@@ -147,9 +70,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+    paddingHorizontal: '7%',
+    paddingTop: 20,
+  },
+  header: {
+    marginBottom: 20,
+    alignSelf: 'center',
+    color: 'white',
+    fontFamily: 'Muli',
+    fontSize: fontSizes.subtitle,
   },
   text: {
     color: 'white',
     fontFamily: 'Muli',
+    fontSize: fontSizes.body,
+  },
+  numberOfReceipts: {
+    color: colors.ok,
+    fontWeight: '700',
+  },
+  buttonContainer: {
+    marginTop: 50,
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });

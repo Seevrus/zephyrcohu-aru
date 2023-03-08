@@ -17,7 +17,9 @@ export type StackParams = {
   Summary: undefined;
 
   ReceiptList: undefined;
-  ReceiptDetails: undefined;
+  ReceiptDetails: {
+    serialNumber: number;
+  };
 
   StartErrand: undefined;
   EndErrand: undefined;
@@ -34,6 +36,7 @@ export type ReviewProps = NativeStackScreenProps<StackParams, 'Review'>;
 export type SummaryProps = NativeStackScreenProps<StackParams, 'Summary'>;
 
 export type ReceiptListProps = NativeStackScreenProps<StackParams, 'ReceiptList'>;
+export type ReceiptDetailsProps = NativeStackScreenProps<StackParams, 'ReceiptDetails'>;
 
 export type StartErrandProps = NativeStackScreenProps<StackParams, 'StartErrand'>;
 export type EndErrandProps = NativeStackScreenProps<StackParams, 'EndErrand'>;
