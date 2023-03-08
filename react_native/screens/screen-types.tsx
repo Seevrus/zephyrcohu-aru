@@ -17,7 +17,7 @@ export type StackParams = {
   Summary: undefined;
 
   ReceiptList: undefined;
-  Receipt: undefined;
+  ReceiptDetails: undefined;
 
   StartErrand: undefined;
   EndErrand: undefined;

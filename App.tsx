@@ -15,7 +15,7 @@ import fontSizes from './react_native/constants/fontSizes';
 import EndErrand from './react_native/screens/errand-administration/EndErrand';
 import StartErrand from './react_native/screens/errand-administration/StartErrand';
 import StartupError from './react_native/screens/errors/StartupError';
-import Receipt from './react_native/screens/receipts/Receipt';
+import ReceiptDetails from './react_native/screens/receipts/ReceiptDetails';
 import ReceiptList from './react_native/screens/receipts/ReceiptList';
 import { PartnerList, PartnerTabParams, StackParams } from './react_native/screens/screen-types';
 import Review from './react_native/screens/sell/review/Review';
@@ -169,8 +169,8 @@ function Main() {
             }}
           />
           <Stack.Screen
-            name="Receipt"
-            component={Receipt}
+            name="ReceiptDetails"
+            component={ReceiptDetails}
             options={{
               headerTitle: '',
             }}
