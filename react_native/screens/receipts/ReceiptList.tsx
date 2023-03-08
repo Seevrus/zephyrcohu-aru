@@ -11,15 +11,15 @@ import {
   when,
   __,
 } from 'ramda';
-import { StyleSheet, Text, View } from 'react-native';
-import Button from '../../components/ui/Button';
+import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 import colors from '../../constants/colors';
 import fontSizes from '../../constants/fontSizes';
 import { useAppSelector } from '../../store/hooks';
 import { ExpirationItem } from '../../store/round-slice/round-slice-types';
 import { ReceiptListProps } from '../screen-types';
+import ReceiptListItem from './ReceiptListItem';
 
-type ReceiptSummaryListItem = {
+type ReceiptSummaryItem = {
   id: number;
   articleNumber: string;
   name: string;
@@ -29,19 +29,19 @@ type ReceiptSummaryListItem = {
   grossAmount: number;
 };
 
-type ReceiptSummaryList = {
+type ReceiptSummary = {
   receiptNr: string;
   deliveryName: string;
-  items: ReceiptSummaryListItem[];
+  items: ReceiptSummaryItem[];
   total: number;
 };
 
 export default function ReceiptList({ navigation }: ReceiptListProps) {
   const onPressNextHandler = () => {
-    navigation.navigate('Receipt');
+    navigation.navigate('ReceiptDetails');
   };
 
-  const receiptSummaryList: ReceiptSummaryList = useAppSelector((state) => {
+  const receiptSummaryList: ReceiptSummary[] = useAppSelector((state) => {
     const { store } = state.stores;
     const { receipts } = state.round;
 
@@ -83,7 +83,7 @@ export default function ReceiptList({ navigation }: ReceiptListProps) {
       )(receiptItems);
 
       const total = pipe(
-        reduce<ReceiptSummaryListItem, number>((acc, value) => acc + value.grossAmount, 0),
+        reduce<ReceiptSummaryItem, number>((acc, value) => acc + value.grossAmount, 0),
         when(
           () => partner.paymentDays === 0,
           (t) => Math.round(t / 5) * 5
@@ -99,20 +99,21 @@ export default function ReceiptList({ navigation }: ReceiptListProps) {
     });
   });
 
-  console.log(receiptSummaryList);
+  const renderReceiptListItem = (info: ListRenderItemInfo<ReceiptSummary>) => (
+    <ReceiptListItem
+      partnerName={info.item.deliveryName}
+      receiptNr={info.item.receiptNr}
+      total={info.item.total}
+    />
+  );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>
-        Itt listázzuk a már elkészült bizonylatokat. Rájuk kattintva kiderülnek részletek egy másik
-        képernyőn, ahol majd sztornózni is lehet.
-      </Text>
-      <Text style={styles.text}>A Vissza gomb a Kör képernyőre vezet.</Text>
-      <View style={styles.buttonContainer}>
-        <Button variant="ok" onPress={onPressNextHandler}>
-          Tovább
-        </Button>
-      </View>
+      <FlatList
+        data={receiptSummaryList}
+        keyExtractor={(item) => item.receiptNr}
+        renderItem={renderReceiptListItem}
+      />
     </View>
   );
 }
@@ -121,6 +122,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+    paddingHorizontal: '7%',
   },
   text: {
     color: 'white',

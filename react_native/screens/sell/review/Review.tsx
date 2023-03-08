@@ -46,7 +46,7 @@ export default function Review({ navigation }: ReviewProps) {
 
   const receiptRows = useAppSelector((state) => {
     const { currentReceipt } = state.round;
-    const partner = state.partners.partners.find((p) => p.id === currentReceipt.partnerId);
+    const partner = state.partners.partners.find((p) => p.id === currentReceipt?.partnerId);
     const priceList = partner?.priceList || {};
     const receiptItems = pathOr<Item>({}, ['round', 'currentReceipt', 'items'], state);
 
