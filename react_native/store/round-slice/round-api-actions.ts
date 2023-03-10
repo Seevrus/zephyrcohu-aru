@@ -1,7 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { assoc, concat, map, path } from 'ramda';
-import { RootState } from '..';
 
 import env from '../../env.json';
 import { setLocalStorage } from '../async-storage';
@@ -10,6 +9,8 @@ import { getUploadOrdersPayload, getUpsertReceiptsPayload } from './round-api-ma
 import {
   InitializeRoundRequest,
   InitializeRoundResponse,
+  Receipt,
+  ReceiptTypeEnum,
   UploadOrdersRequestT,
   UpsertReceiptsRequestT,
 } from './round-slice-types';
@@ -75,6 +76,69 @@ export const finalizeCurrentReceipt = createAsyncThunk<
   }
 
   return true;
+});
+
+export const cancelReceipt = createAsyncThunk<
+  number,
+  number,
+  { getState: () => any; rejectValue: ErrorResponseT }
+>('round/cancelReceipt', async (serialNumber, { getState, rejectWithValue }) => {
+  try {
+    const state: any = getState();
+    const receiptToCancel = state.round.receipts.find((r) => r.serialNumber === serialNumber);
+
+    if (!receiptToCancel) {
+      return rejectWithValue({
+        status: 404,
+        codeName: 'Not Found',
+        message: 'Receipt not found.',
+      });
+    }
+
+    if (receiptToCancel.type === ReceiptTypeEnum.CANCEL) {
+      return rejectWithValue({
+        status: 400,
+        codeName: 'Bad Request',
+        message: 'Cannot cancel a Cancel Receipt.',
+      });
+    }
+
+    const cancelReceiptItems: any = map(
+      (expirations) =>
+        map(
+          (expirationItem) => assoc('quantity', expirationItem.quantity * -1, expirationItem),
+          expirations
+        ),
+      receiptToCancel.items
+    );
+
+    const canceler: Receipt = {
+      type: ReceiptTypeEnum.CANCEL,
+      isSent: false,
+      partnerId: receiptToCancel.partnerId,
+      serialNumber: state.round.nextAvailableSerialNumber,
+      originalCopiesPrinted: 0,
+      items: cancelReceiptItems,
+      orderItems: {},
+    };
+
+    await setLocalStorage({
+      round: {
+        ...state.round,
+        nextAvailableSerialNumber: canceler.serialNumber + 1,
+        currentReceipt: undefined,
+        receipts: concat(state.round.receipts, [canceler]),
+      },
+    });
+  } catch (e) {
+    return rejectWithValue({
+      status: 507,
+      codeName: 'Insufficient Storage',
+      message: e.message,
+    });
+  }
+
+  return serialNumber;
 });
 
 export const upsertReceipts = createAsyncThunk<

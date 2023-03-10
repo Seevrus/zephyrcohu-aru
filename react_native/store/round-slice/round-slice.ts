@@ -4,6 +4,7 @@ import { assoc, concat, dissocPath, map, mergeDeepLeft, pipe, prop, propOr, valu
 
 import { LocalStorage } from '../async-storage';
 import {
+  cancelReceipt,
   endErrand,
   finalizeCurrentReceipt,
   increaseOriginalCopiesPrinted,
@@ -11,7 +12,7 @@ import {
   uploadOrders,
   upsertReceipts,
 } from './round-api-actions';
-import { Item, OrderItem, ReceiptTypeEnum, Round } from './round-slice-types';
+import { Item, OrderItem, Receipt, ReceiptTypeEnum, Round } from './round-slice-types';
 
 const initialState: Round = {
   started: undefined,
@@ -100,6 +101,34 @@ const roundSlice = createSlice({
     });
     builder.addCase(finalizeCurrentReceipt.rejected, () => {
       throw new Error('Váratlan hiba lépett fel a számlaadatok háttértárra mentése során.');
+    });
+
+    builder.addCase(cancelReceipt.fulfilled, (state, { payload: serialNumber }) => {
+      const receiptToCancel = state.receipts.find((r) => r.serialNumber === serialNumber);
+      const cancelReceiptItems: any = map(
+        (expirations) =>
+          map(
+            (expirationItem) => assoc('quantity', expirationItem.quantity * -1, expirationItem),
+            expirations
+          ),
+        receiptToCancel.items
+      );
+
+      const canceler: Receipt = {
+        type: ReceiptTypeEnum.CANCEL,
+        isSent: false,
+        partnerId: receiptToCancel.partnerId,
+        serialNumber: state.nextAvailableSerialNumber,
+        originalCopiesPrinted: 0,
+        items: cancelReceiptItems,
+        orderItems: {},
+      };
+
+      state.receipts = concat(state.receipts, [canceler]);
+      state.nextAvailableSerialNumber = canceler.serialNumber + 1;
+    });
+    builder.addCase(cancelReceipt.rejected, () => {
+      throw new Error('Váratlan hiba lépett fel a storno számla háttértárra mentése során.');
     });
 
     builder.addCase(upsertReceipts.fulfilled, (state) => {
