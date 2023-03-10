@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { assoc, concat, map } from 'ramda';
+import { assoc, concat, map, path } from 'ramda';
+import { RootState } from '..';
 
 import env from '../../env.json';
 import { setLocalStorage } from '../async-storage';
@@ -51,12 +52,18 @@ export const finalizeCurrentReceipt = createAsyncThunk<
     const state: any = getState();
     const { currentReceipt } = state.round;
 
+    const receiptWithSerialNumber = assoc(
+      'serialNumber',
+      path(['round', 'nextAvailableSerialNumber'], state),
+      currentReceipt
+    );
+
     await setLocalStorage({
       round: {
         ...state.round,
-        nextAvailableSerialNumber: currentReceipt.serialNumber + 1,
+        nextAvailableSerialNumber: receiptWithSerialNumber.serialNumber + 1,
         currentReceipt: undefined,
-        receipts: concat(state.round.receipts, [currentReceipt]),
+        receipts: concat(state.round.receipts, [receiptWithSerialNumber]),
       },
     });
   } catch (e) {

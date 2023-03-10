@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { assoc, concat, dissocPath, map, mergeDeepLeft, pipe, propOr, values } from 'ramda';
+import { assoc, concat, dissocPath, map, mergeDeepLeft, pipe, prop, propOr, values } from 'ramda';
 
 import { LocalStorage } from '../async-storage';
 import {
@@ -11,7 +11,7 @@ import {
   uploadOrders,
   upsertReceipts,
 } from './round-api-actions';
-import { Item, OrderItem, Round } from './round-slice-types';
+import { Item, OrderItem, ReceiptTypeEnum, Round } from './round-slice-types';
 
 const initialState: Round = {
   started: undefined,
@@ -43,9 +43,10 @@ const roundSlice = createSlice({
     },
     addNewReceipt: (state) => {
       state.currentReceipt = {
+        type: ReceiptTypeEnum.NORMAL,
         isSent: false,
         partnerId: undefined,
-        serialNumber: state.nextAvailableSerialNumber,
+        serialNumber: -1,
         originalCopiesPrinted: 0,
         items: {},
         orderItems: {},
@@ -87,8 +88,14 @@ const roundSlice = createSlice({
     });
 
     builder.addCase(finalizeCurrentReceipt.fulfilled, (state) => {
-      state.receipts = concat(state.receipts, [state.currentReceipt]);
-      state.nextAvailableSerialNumber = state.currentReceipt.serialNumber + 1;
+      const { currentReceipt } = state;
+      const receiptWithSerialNumber = assoc(
+        'serialNumber',
+        prop('nextAvailableSerialNumber', state),
+        currentReceipt
+      );
+      state.receipts = concat(state.receipts, [receiptWithSerialNumber]);
+      state.nextAvailableSerialNumber = receiptWithSerialNumber.serialNumber + 1;
       state.currentReceipt = undefined;
     });
     builder.addCase(finalizeCurrentReceipt.rejected, () => {

@@ -135,10 +135,17 @@ export type OrderItem = Record<
   }
 >; // item id, order data
 
+export enum ReceiptTypeEnum {
+  NORMAL,
+  CANCEL,
+}
+
 export type Receipt = {
+  type: ReceiptTypeEnum;
   isSent: boolean;
   partnerId: number;
   serialNumber: number;
+  connectedSerialNumber?: number; // normal-cancel bidirectional connection, if there is one
   originalCopiesPrinted: number;
   items: Item;
   orderItems: OrderItem;
