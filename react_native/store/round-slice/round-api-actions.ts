@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { assoc, concat, map, path } from 'ramda';
+import { assoc, concat, map, path, pathOr, pipe, __ } from 'ramda';
 
 import env from '../../env.json';
 import { setLocalStorage } from '../async-storage';
@@ -112,22 +112,35 @@ export const cancelReceipt = createAsyncThunk<
       receiptToCancel.items
     );
 
+    const cancelSN = state.round.nextAvailableSerialNumber;
+
     const canceler: Receipt = {
       type: ReceiptTypeEnum.CANCEL,
       isSent: false,
       partnerId: receiptToCancel.partnerId,
-      serialNumber: state.round.nextAvailableSerialNumber,
+      serialNumber: cancelSN,
+      connectedSerialNumber: serialNumber,
       originalCopiesPrinted: 0,
       items: cancelReceiptItems,
       orderItems: {},
     };
+
+    const newReceipts = pipe(
+      pathOr<Receipt[]>([], ['round', 'receipts']),
+      map((receipt) => {
+        if (receipt.serialNumber !== serialNumber) return receipt;
+
+        return assoc('connectedSerialNumber', cancelSN, receipt);
+      }),
+      concat<Receipt[]>(__, [canceler])
+    )(state);
 
     await setLocalStorage({
       round: {
         ...state.round,
         nextAvailableSerialNumber: canceler.serialNumber + 1,
         currentReceipt: undefined,
-        receipts: concat(state.round.receipts, [canceler]),
+        receipts: newReceipts,
       },
     });
   } catch (e) {
