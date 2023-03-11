@@ -14,6 +14,11 @@ export type InitializeRoundResponse = {
   nextAvailableSerialNumber: number;
 };
 
+export type CancelReceiptResponse = {
+  serialNumber: number;
+  cancelSerialNumber: number;
+};
+
 export type UpsertReceiptsRequestT = {
   token: string;
   deviceId: string;
@@ -23,6 +28,11 @@ export type UploadOrdersRequestT = {
   token: string;
   deviceId: string;
 };
+
+export enum ReceiptTypeEnum {
+  NORMAL,
+  CANCEL,
+}
 
 export type ReceiptPayloadItem = {
   code: string;
@@ -50,6 +60,9 @@ export type ReceiptRequestItem = {
   companyCode: string;
   partnerCode: string;
   partnerSiteCode: string;
+  receiptType: ReceiptTypeEnum;
+  CISerialNumber?: number;
+  CIYearCode?: number;
   serialNumber: number;
   yearCode: number;
   originalCopiesPrinted: number;
@@ -134,11 +147,6 @@ export type OrderItem = Record<
     quantity: number;
   }
 >; // item id, order data
-
-export enum ReceiptTypeEnum {
-  NORMAL,
-  CANCEL,
-}
 
 export type Receipt = {
   type: ReceiptTypeEnum;

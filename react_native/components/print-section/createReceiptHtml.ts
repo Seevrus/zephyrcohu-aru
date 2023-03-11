@@ -4,6 +4,7 @@ import {
   ReceiptPayloadItem,
   ReceiptPlayloadVatAmount,
   ReceiptRequestItem,
+  ReceiptTypeEnum,
 } from '../../store/round-slice/round-slice-types';
 
 const docType = '<!DOCTYPE html>';
@@ -345,17 +346,24 @@ export default function createReceiptHtml({
   receipt: ReceiptRequestItem;
   partner: PartnerDetails;
 }) {
-  const receiptTypeDisplay =
+  const receiptType = receipt.receiptType === ReceiptTypeEnum.NORMAL ? 'Számla' : 'Storno számla';
+  const originalOrCopy =
     receipt.invoiceType === 'E' || receipt.originalCopiesPrinted >= partner.invoiceCopies
       ? 'Másolat'
       : `Eredeti: ${receipt.originalCopiesPrinted + 1}./${partner.invoiceCopies} példány`;
 
+  const serialNumberDisplay = `Számlaszám: ${receipt.serialNumber}/${receipt.yearCode}`;
+  const cancelReceiptSerialNumberDisplay =
+    receipt.receiptType === ReceiptTypeEnum.CANCEL
+      ? `${receipt.CISerialNumber}/${receipt.CIYearCode}`
+      : '';
+
   const header = `
     <header>
-      <div class="title">Számla</div>
-      <div class="last-column"></div>
-      <div>Számlaszám: ${receipt.serialNumber}/${receipt.yearCode}</div>
-      <div class="last-column">${receiptTypeDisplay}</div>
+      <div class="title"${receiptType}</div>
+      <div class="last-column">${cancelReceiptSerialNumberDisplay}</div>
+      <div>${serialNumberDisplay}</div>
+      <div class="last-column">${originalOrCopy}</div>
     </header>
   `;
 
@@ -430,11 +438,12 @@ export default function createReceiptHtml({
     </section>
   `;
 
+  const payOrGetBack = receipt.roundedAmount >= 0 ? 'fizetendő' : 'visszajáró';
   const totalAmount = `
     <section class="total-amount">
-      <div class="label">Számla mindösszesen: (fizetendő)</div>
+      <div class="label">Számla mindösszesen: (${payOrGetBack})</div>
       <div class="currency">(HUF)</div>
-      <div class="amount">${receipt.roundedAmount}</div>
+      <div class="amount">${Math.abs(receipt.roundedAmount)}</div>
     </section>
   `;
 

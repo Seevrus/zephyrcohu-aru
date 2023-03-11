@@ -9,10 +9,14 @@ import Button from '../../components/ui/Button';
 import colors from '../../constants/colors';
 import fontSizes from '../../constants/fontSizes';
 import { ReceiptDetailsProps } from '../screen-types';
+import useUpsertReceipts from '../../hooks/useUpsertReceipts';
+import Loading from '../../components/Loading';
 
-export default function ReceiptDetails({ route }: ReceiptDetailsProps) {
+export default function ReceiptDetails({ navigation, route }: ReceiptDetailsProps) {
   const dispatch = useAppDispatch();
   const { serialNumber } = route.params;
+
+  const { loading } = useUpsertReceipts();
 
   const currentReceipt = useAppSelector((state) =>
     state.round.receipts.find((r) => r.serialNumber === serialNumber)
@@ -24,9 +28,14 @@ export default function ReceiptDetails({ route }: ReceiptDetailsProps) {
 
   const canCancelReceipt = !currentReceipt.connectedSerialNumber;
 
-  const cancelReceiptHandler = () => {
-    dispatch(cancelReceipt(serialNumber));
+  const cancelReceiptHandler = async () => {
+    const { cancelSerialNumber } = await dispatch(cancelReceipt(serialNumber)).unwrap();
+    navigation.replace('ReceiptDetails', { serialNumber: cancelSerialNumber });
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <View style={styles.container}>

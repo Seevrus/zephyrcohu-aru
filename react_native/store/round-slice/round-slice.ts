@@ -103,8 +103,8 @@ const roundSlice = createSlice({
       throw new Error('Váratlan hiba lépett fel a számlaadatok háttértárra mentése során.');
     });
 
-    builder.addCase(cancelReceipt.fulfilled, (state, { payload: serialNumber }) => {
-      const receiptToCancel = state.receipts.find((r) => r.serialNumber === serialNumber);
+    builder.addCase(cancelReceipt.fulfilled, (state, { payload }) => {
+      const receiptToCancel = state.receipts.find((r) => r.serialNumber === payload.serialNumber);
       const cancelReceiptItems: any = map(
         (expirations) =>
           map(

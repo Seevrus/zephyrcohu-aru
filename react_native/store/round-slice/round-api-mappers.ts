@@ -36,6 +36,7 @@ import {
   ReceiptPayloadItem,
   ReceiptPlayloadVatAmount,
   ReceiptRequestItem,
+  ReceiptTypeEnum,
 } from './round-slice-types';
 
 const mapReceiptToPayload = (receipt: Receipt, state): ReceiptRequestItem => {
@@ -44,6 +45,11 @@ const mapReceiptToPayload = (receipt: Receipt, state): ReceiptRequestItem => {
   const priceList = partner?.priceList || {};
   const numberOfPartnerLocations = pipe(prop('locations'), keys, length)(partner);
   const { store } = state.stores;
+
+  const connectedReceipt: Receipt | undefined =
+    receipt.type === ReceiptTypeEnum.CANCEL && !!receipt.connectedSerialNumber
+      ? state.round.receipts.find((r) => r.serialNumber === receipt.serialNumber)
+      : undefined;
 
   const invoiceDate = new Date(path(['round', 'date'], state));
   const { invoiceType, paymentDays } = partner;
@@ -139,6 +145,11 @@ const mapReceiptToPayload = (receipt: Receipt, state): ReceiptRequestItem => {
     companyCode: path(['config', 'company', 'code'], state),
     partnerCode: prop('code', partner),
     partnerSiteCode: prop('siteCode', partner),
+    receiptType: prop('receiptType', receipt),
+    ...(!!connectedReceipt && {
+      CISerialNumber: prop('serialNumber', connectedReceipt),
+      CIYearCode: prop('yearCode', store),
+    }),
     serialNumber: prop('serialNumber', receipt),
     yearCode: prop('yearCode', store),
     originalCopiesPrinted: prop('originalCopiesPrinted', receipt),

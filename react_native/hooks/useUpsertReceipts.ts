@@ -11,7 +11,7 @@ export default function useUpsertReceipts() {
   const { isInternetReachable } = useNetInfo();
   const { deviceId, token, credentialsAvailable } = useToken();
 
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(isInternetReachable && credentialsAvailable);
   const [upsertReceiptSuccess, setUpsertReceiptSuccess] = useState<string>('');
   const [upsertReceiptError, setUpsertReceiptError] = useState<string>('');
 

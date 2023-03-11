@@ -7,6 +7,7 @@ import { setLocalStorage } from '../async-storage';
 import { ErrorResponseT } from '../base-types';
 import { getUploadOrdersPayload, getUpsertReceiptsPayload } from './round-api-mappers';
 import {
+  CancelReceiptResponse,
   InitializeRoundRequest,
   InitializeRoundResponse,
   Receipt,
@@ -79,10 +80,12 @@ export const finalizeCurrentReceipt = createAsyncThunk<
 });
 
 export const cancelReceipt = createAsyncThunk<
-  number,
+  CancelReceiptResponse,
   number,
   { getState: () => any; rejectValue: ErrorResponseT }
 >('round/cancelReceipt', async (serialNumber, { getState, rejectWithValue }) => {
+  let cancelSerialNumber: number;
+
   try {
     const state: any = getState();
     const receiptToCancel = state.round.receipts.find((r) => r.serialNumber === serialNumber);
@@ -112,13 +115,13 @@ export const cancelReceipt = createAsyncThunk<
       receiptToCancel.items
     );
 
-    const cancelSN = state.round.nextAvailableSerialNumber;
+    cancelSerialNumber = state.round.nextAvailableSerialNumber;
 
     const canceler: Receipt = {
       type: ReceiptTypeEnum.CANCEL,
       isSent: false,
       partnerId: receiptToCancel.partnerId,
-      serialNumber: cancelSN,
+      serialNumber: cancelSerialNumber,
       connectedSerialNumber: serialNumber,
       originalCopiesPrinted: 0,
       items: cancelReceiptItems,
@@ -130,7 +133,7 @@ export const cancelReceipt = createAsyncThunk<
       map((receipt) => {
         if (receipt.serialNumber !== serialNumber) return receipt;
 
-        return assoc('connectedSerialNumber', cancelSN, receipt);
+        return assoc('connectedSerialNumber', cancelSerialNumber, receipt);
       }),
       concat<Receipt[]>(__, [canceler])
     )(state);
@@ -151,7 +154,7 @@ export const cancelReceipt = createAsyncThunk<
     });
   }
 
-  return serialNumber;
+  return { serialNumber, cancelSerialNumber };
 });
 
 export const upsertReceipts = createAsyncThunk<
