@@ -42,7 +42,8 @@ export default function StartErrand({ navigation }: StartErrandProps) {
   const currentDate = useAppSelector((state) => state.round.date);
   const [date, setDate] = useState<Date>(new Date(currentDate ?? Date.now()));
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [fetching, setFetching] = useState<boolean>(false);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
   const [roundDataError, setRoundDataError] = useState<string>('');
   const [confirmRoundError, setConfirmRoundError] = useState<string>('');
@@ -78,39 +79,36 @@ export default function StartErrand({ navigation }: StartErrandProps) {
   }, [deviceId, dispatch, token]);
 
   const fetchErrandData = async () => {
-    setLoading(true);
+    setFetching(true);
     await fetchAgentsData();
     await fetchStoreData();
     await fetchPartnerListData();
-    setLoading(false);
+    setFetching(false);
   };
 
   useEffect(() => {
     if (credentialsAvailable && !roundDataError && isNil(agents)) {
-      setLoading(true);
-      fetchAgentsData().then(() => {
-        setLoading(false);
-      });
+      fetchAgentsData();
     }
   }, [agents, credentialsAvailable, fetchAgentsData, roundDataError]);
 
   useEffect(() => {
     if (credentialsAvailable && !roundDataError && isNil(storeList)) {
-      setLoading(true);
-      fetchStoreData().then(() => {
-        setLoading(false);
-      });
+      fetchStoreData();
     }
   }, [credentialsAvailable, fetchStoreData, roundDataError, storeList]);
 
   useEffect(() => {
     if (credentialsAvailable && !roundDataError && isNil(partnerLists)) {
-      setLoading(true);
-      fetchPartnerListData().then(() => {
-        setLoading(false);
-      });
+      fetchPartnerListData();
     }
   }, [credentialsAvailable, fetchPartnerListData, partnerLists, roundDataError]);
+
+  useEffect(() => {
+    if (agents && storeList && partnerLists) {
+      setLoading(false);
+    }
+  }, [agents, partnerLists, storeList]);
 
   const confirmRoundHandler = async () => {
     setLoading(true);
@@ -141,7 +139,7 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     }
   };
 
-  if (loading) {
+  if (fetching || loading) {
     return <Loading message={loadingMessage} />;
   }
 
