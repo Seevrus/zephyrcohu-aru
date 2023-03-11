@@ -1,10 +1,8 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { last, prop } from 'ramda';
-import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { upsertReceipts } from '../../../store/round-slice/round-api-actions';
+import { useAppSelector } from '../../../store/hooks';
 import { getLastReceiptPayload } from '../../../store/round-slice/round-api-mappers';
 
 import ErrorCard from '../../../components/info-cards/ErrorCard';
@@ -14,41 +12,18 @@ import PrintSection from '../../../components/print-section/PrintSection';
 import Button from '../../../components/ui/Button';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
-import useToken from '../../../hooks/useToken';
+import useUpsertReceipts from '../../../hooks/useUpsertReceipts';
 import { SummaryProps } from '../../screen-types';
 
 export default function Summary({ navigation }: SummaryProps) {
-  const dispatch = useAppDispatch();
   const { isInternetReachable } = useNetInfo();
-  const { deviceId, token, credentialsAvailable } = useToken();
 
   const currentPartner = useAppSelector((state) =>
     state.partners.partners.find((p) => p.id === prop('partnerId', last(state.round.receipts)))
   );
   const receiptPayload = useAppSelector(getLastReceiptPayload);
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [upsertReceiptSuccess, setUpsertReceiptSuccess] = useState<string>('');
-  const [upsertReceiptError, setUpsertReceiptError] = useState<string>('');
-
-  useEffect(() => {
-    const dispatchReceipts = async () => {
-      setLoading(true);
-      try {
-        await dispatch(upsertReceipts({ deviceId, token }));
-        setUpsertReceiptError('');
-        setUpsertReceiptSuccess('Számla beküldése sikeres.');
-      } catch (err) {
-        setUpsertReceiptSuccess('');
-        setUpsertReceiptError(err.message);
-      }
-      setLoading(false);
-    };
-
-    if (isInternetReachable && credentialsAvailable) {
-      dispatchReceipts();
-    }
-  }, [credentialsAvailable, deviceId, dispatch, isInternetReachable, token]);
+  const { loading, upsertReceiptSuccess, upsertReceiptError } = useUpsertReceipts();
 
   if (loading) {
     return <Loading />;
