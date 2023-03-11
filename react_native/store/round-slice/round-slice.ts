@@ -119,6 +119,7 @@ const roundSlice = createSlice({
         isSent: false,
         partnerId: receiptToCancel.partnerId,
         serialNumber: state.nextAvailableSerialNumber,
+        connectedSerialNumber: receiptToCancel.serialNumber,
         originalCopiesPrinted: 0,
         items: cancelReceiptItems,
         orderItems: {},
