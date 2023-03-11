@@ -2,7 +2,7 @@
   "expo": {
     "name": "Zephyr Boreal",
     "slug": "zephyr-boreal",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "orientation": "portrait",
     "icon": "./react_native/assets/white_purple_zephyr-512.png",
     "userInterfaceStyle": "dark",
@@ -18,7 +18,7 @@
     },
     "android": {
       "package": "com.zephyr.boreal",
-      "versionCode": 5,
+      "versionCode": 6,
       "adaptiveIcon": {
         "foregroundImage": "./react_native/assets/white_purple_zephyr-512.png",
         "backgroundColor": "#ffffff"
