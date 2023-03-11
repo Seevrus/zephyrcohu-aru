@@ -1,10 +1,10 @@
 import { take, takeLast } from 'ramda';
-import { PartnerDetails } from '../../../store/partners-slice/partners-slice-types';
+import { PartnerDetails } from '../../store/partners-slice/partners-slice-types';
 import {
   ReceiptPayloadItem,
   ReceiptPlayloadVatAmount,
   ReceiptRequestItem,
-} from '../../../store/round-slice/round-slice-types';
+} from '../../store/round-slice/round-slice-types';
 
 const docType = '<!DOCTYPE html>';
 const head = `

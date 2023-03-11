@@ -1,25 +1,21 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import * as Print from 'expo-print';
 import { last, prop } from 'ramda';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import {
-  increaseOriginalCopiesPrinted,
-  upsertReceipts,
-} from '../../../store/round-slice/round-api-actions';
+import { upsertReceipts } from '../../../store/round-slice/round-api-actions';
 import { getLastReceiptPayload } from '../../../store/round-slice/round-api-mappers';
 
 import ErrorCard from '../../../components/info-cards/ErrorCard';
 import TextCard from '../../../components/info-cards/TextCard';
 import Loading from '../../../components/Loading';
+import PrintSection from '../../../components/print-section/PrintSection';
 import Button from '../../../components/ui/Button';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
 import useToken from '../../../hooks/useToken';
 import { SummaryProps } from '../../screen-types';
-import createReceiptHtml from './createReceiptHtml';
 
 export default function Summary({ navigation }: SummaryProps) {
   const dispatch = useAppDispatch();
@@ -54,18 +50,6 @@ export default function Summary({ navigation }: SummaryProps) {
     }
   }, [credentialsAvailable, deviceId, dispatch, isInternetReachable, token]);
 
-  const canPrintOriginalCopy = currentPartner.invoiceCopies > receiptPayload.originalCopiesPrinted;
-
-  const printButtonHandler = async () => {
-    await Print.printAsync({
-      html: createReceiptHtml({ receipt: receiptPayload, partner: currentPartner }),
-    });
-
-    if (canPrintOriginalCopy) {
-      dispatch(increaseOriginalCopiesPrinted(receiptPayload.serialNumber));
-    }
-  };
-
   if (loading) {
     return <Loading />;
   }
@@ -88,28 +72,7 @@ export default function Summary({ navigation }: SummaryProps) {
         </View>
       )}
       <Text style={styles.header}>Számla mentése sikeres!</Text>
-      <Text style={styles.text}>
-        Az eredeti számla formátuma:{' '}
-        <Text style={styles.numberOfReceipts}>
-          {currentPartner.invoiceType === 'E' ? 'elektronikus' : 'papír alapú'}
-        </Text>
-        .
-      </Text>
-      {canPrintOriginalCopy ? (
-        <Text style={styles.text}>
-          A számlát <Text style={styles.numberOfReceipts}>{currentPartner.invoiceCopies}</Text>{' '}
-          eredeti példányban van lehetőség kinyomtatni. Ebből eddig{' '}
-          <Text style={styles.numberOfReceipts}>{receiptPayload.originalCopiesPrinted}</Text>{' '}
-          példány került nyomtatásra.
-        </Text>
-      ) : (
-        <Text style={styles.text}>Az alábbi gombra kattintva számlamásolat nyomtatható.</Text>
-      )}
-      <View style={styles.buttonContainer}>
-        <Button variant="ok" onPress={printButtonHandler}>
-          {canPrintOriginalCopy ? 'Eredeti példány nyomtatása' : 'Másolat nyomtatása'}
-        </Button>
-      </View>
+      <PrintSection partner={currentPartner} receipt={receiptPayload} />
       <View style={styles.buttonContainer}>
         <Button
           variant="ok"
@@ -140,15 +103,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Muli',
     fontSize: fontSizes.subtitle,
-  },
-  text: {
-    color: 'white',
-    fontFamily: 'Muli',
-    fontSize: fontSizes.body,
-  },
-  numberOfReceipts: {
-    color: colors.ok,
-    fontWeight: '700',
   },
   buttonContainer: {
     marginTop: 50,
