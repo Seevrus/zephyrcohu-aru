@@ -182,7 +182,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"filters\": [\r\n        {\r\n            \"key\": \"receiptNr\",\r\n            \"operator\": \"gte\",\r\n            \"value\": \"1/23\"\r\n        }\r\n    ],\r\n    \"limit\": 10\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -461,7 +461,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"filters\": [\r\n        {\r\n            \"key\": \"receiptNr\",\r\n            \"operator\": \"gte\",\r\n            \"value\": \"1/23\"\r\n        }\r\n    ],\r\n    \"limit\": 10\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -475,6 +475,13 @@
 							],
 							"path": [
 								"receipts"
+							],
+							"query": [
+								{
+									"key": "downloaded",
+									"value": "0",
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -513,7 +520,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"companyCode\": \"001\",\r\n            \"partnerCode\": \"000001\",\r\n            \"partnerSiteCode\": \"0001\",\r\n            \"serialNumber\": 10001,\r\n            \"yearCode\": 23,\r\n            \"originalCopiesPrinted\": 3,\r\n            \"vendor\": {\r\n                \"name\": \"Szlartibartfaszt és Társa\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"8145\",\r\n                \"city\": \"Nádasladány\",\r\n                \"address\": \"Kastély út 5.\",\r\n                \"felir\": \"XY1234567\",\r\n                \"iban\": \"HU88\",\r\n                \"bankAccount\": \"12345678-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-23\"\r\n            },\r\n            \"buyer\": {\r\n                \"name\": \"Első Partner Szállítási Név\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"1234\",\r\n                \"city\": \"Felsőgöröngyös\",\r\n                \"address\": \"Ady tér 8.\",\r\n                \"iban\": \"HU88\",\r\n                \"bankAccount\": \"12345678-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-23\"\r\n            },\r\n            \"invoiceDate\": \"2023-02-11\",\r\n            \"fulfillmentDate\": \"2023-02-11\",\r\n            \"invoiceType\": \"P\",\r\n            \"paidDate\": \"2023-02-11\",\r\n            \"agent\": {\r\n                \"code\": \"01\",\r\n                \"name\": \"Denki Jusztin\",\r\n                \"phoneNumber\": \"+36301234567\"\r\n            },\r\n            \"items\": [\r\n                {\r\n                    \"code\": \"001\",\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000000000000001\",\r\n                    \"expiresAt\": \"2023-07\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 10,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 9990,\r\n                    \"vatRate\": \"27\",\r\n                    \"vatAmount\": 2697,\r\n                    \"grossAmount\": 12687\r\n                }\r\n            ],\r\n            \"quantity\": 10,\r\n            \"netAmount\": 9990,\r\n            \"vatAmount\": 2697,\r\n            \"grossAmount\": 12687,\r\n            \"vatAmounts\": [\r\n                {\r\n                    \"vatRate\": \"27\",\r\n                    \"netAmount\": 9990,\r\n                    \"vatAmount\": 2697,\r\n                    \"grossAmount\": 12687\r\n                }\r\n            ],\r\n            \"roundAmount\": 2,\r\n            \"roundedAmount\": 12685\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"companyCode\": \"001\",\r\n            \"partnerCode\": \"000006\",\r\n            \"partnerSiteCode\": \"0001\",\r\n            \"serialNumber\": 20001,\r\n            \"yearCode\": 23,\r\n            \"originalCopiesPrinted\": 0,\r\n            \"vendor\": {\r\n                \"name\": \"Szlartibartfaszt és Társa\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"8445\",\r\n                \"city\": \"Városlőd\",\r\n                \"address\": \"Rózsa u. 42.\",\r\n                \"felir\": \"XY1234567\",\r\n                \"iban\": \"HU88\",\r\n                \"bankAccount\": \"12345678-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-23\"\r\n            },\r\n            \"buyer\": {\r\n                \"name\": \"Hatodik Partner Központi Név\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"1234\",\r\n                \"city\": \"Alsógöröngyös\",\r\n                \"address\": \"Kossuth utca 1.\",\r\n                \"deliveryName\": \"Hatodik Partner Szállítási Név\",\r\n                \"deliveryCountry\": \"HU\",\r\n                \"deliveryPostalCode\": \"1234\",\r\n                \"deliveryCity\": \"Felsőgöröngyös\",\r\n                \"deliveryAddress\": \"Ady tér 8.\",\r\n                \"iban\": \"HU12\",\r\n                \"bankAccount\": \"12345678-12345678\",\r\n                \"vatNumber\": \"12345678-1-12\"\r\n            },\r\n            \"invoiceDate\": \"2023-03-07\",\r\n            \"fulfillmentDate\": \"2023-03-10\",\r\n            \"invoiceType\": \"E\",\r\n            \"paidDate\": \"2023-03-10\",\r\n            \"agent\": {\r\n                \"code\": \"01\",\r\n                \"name\": \"Denki Jusztin\",\r\n                \"phoneNumber\": \"+36301234567\"\r\n            },\r\n            \"items\": [\r\n                {\r\n                    \"code\": \"001\",\r\n                    \"CNCode\": \"010205\",\r\n                    \"articleNumber\": \"0000_03\",\r\n                    \"expiresAt\": \"2023-07\",\r\n                    \"name\": \"Harmadik Jégkrém\",\r\n                    \"quantity\": 3,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 2997,\r\n                    \"vatRate\": \"AM\",\r\n                    \"vatAmount\": 0,\r\n                    \"grossAmount\": 2997\r\n                },\r\n                {\r\n                    \"code\": \"002\",\r\n                    \"CNCode\": \"010205\",\r\n                    \"articleNumber\": \"0000_03\",\r\n                    \"expiresAt\": \"2023-08\",\r\n                    \"name\": \"Harmadik Jégkrém\",\r\n                    \"quantity\": 3,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 2997,\r\n                    \"vatRate\": \"AM\",\r\n                    \"vatAmount\": 0,\r\n                    \"grossAmount\": 2997\r\n                },\r\n                {\r\n                    \"code\": \"003\",\r\n                    \"CNCode\": \"010208\",\r\n                    \"articleNumber\": \"0000_06\",\r\n                    \"expiresAt\": \"2023-07\",\r\n                    \"name\": \"Hatodik Jégkrém\",\r\n                    \"quantity\": 2,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 1998,\r\n                    \"vatRate\": \"18\",\r\n                    \"vatAmount\": 360,\r\n                    \"grossAmount\": 2358\r\n                }\r\n            ],\r\n            \"quantity\": 8,\r\n            \"netAmount\": 7992,\r\n            \"vatAmount\": 360,\r\n            \"grossAmount\": 8352,\r\n            \"vatAmounts\": [\r\n                {\r\n                    \"vatRate\": \"18\",\r\n                    \"netAmount\": 1998,\r\n                    \"vatAmount\": 360,\r\n                    \"grossAmount\": 2358\r\n                },\r\n                {\r\n                    \"vatRate\": \"AM\",\r\n                    \"netAmount\": 5994,\r\n                    \"vatAmount\": 0,\r\n                    \"grossAmount\": 5994\r\n                }\r\n            ],\r\n            \"roundAmount\": 0,\r\n            \"roundedAmount\": 8352\r\n        },\r\n        {\r\n            \"companyCode\": \"001\",\r\n            \"partnerCode\": \"000008\",\r\n            \"partnerSiteCode\": \"0001\",\r\n            \"serialNumber\": 20002,\r\n            \"yearCode\": 23,\r\n            \"originalCopiesPrinted\": 0,\r\n            \"vendor\": {\r\n                \"name\": \"Szlartibartfaszt és Társa\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"8445\",\r\n                \"city\": \"Városlőd\",\r\n                \"address\": \"Rózsa u. 42.\",\r\n                \"felir\": \"XY1234567\",\r\n                \"iban\": \"HU88\",\r\n                \"bankAccount\": \"12345678-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-23\"\r\n            },\r\n            \"buyer\": {\r\n                \"name\": \"Nyolcadik Partner Szállítási Név\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"1234\",\r\n                \"city\": \"Felsőgöröngyös\",\r\n                \"address\": \"Ady tér 8.\",\r\n                \"iban\": \"HU12\",\r\n                \"bankAccount\": \"12345678-12345678\",\r\n                \"vatNumber\": \"12345678-1-12\"\r\n            },\r\n            \"invoiceDate\": \"2023-03-07\",\r\n            \"fulfillmentDate\": \"2023-03-10\",\r\n            \"invoiceType\": \"E\",\r\n            \"paidDate\": \"2023-03-10\",\r\n            \"agent\": {\r\n                \"code\": \"01\",\r\n                \"name\": \"Denki Jusztin\",\r\n                \"phoneNumber\": \"+36301234567\"\r\n            },\r\n            \"items\": [\r\n                {\r\n                    \"code\": \"001\",\r\n                    \"CNCode\": \"010210\",\r\n                    \"articleNumber\": \"0000_08\",\r\n                    \"expiresAt\": \"2023-08\",\r\n                    \"name\": \"Nyolcadik Jégkrém\",\r\n                    \"quantity\": 5,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 4995,\r\n                    \"vatRate\": \"05\",\r\n                    \"vatAmount\": 250,\r\n                    \"grossAmount\": 5245\r\n                },\r\n                {\r\n                    \"code\": \"002\",\r\n                    \"CNCode\": \"010207\",\r\n                    \"articleNumber\": \"0000_05\",\r\n                    \"expiresAt\": \"2023-08\",\r\n                    \"name\": \"Ötödik Jégkrém\",\r\n                    \"quantity\": 2,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 1998,\r\n                    \"vatRate\": \"27\",\r\n                    \"vatAmount\": 539,\r\n                    \"grossAmount\": 2537\r\n                }\r\n            ],\r\n            \"quantity\": 7,\r\n            \"netAmount\": 6993,\r\n            \"vatAmount\": 789,\r\n            \"grossAmount\": 7782,\r\n            \"vatAmounts\": [\r\n                {\r\n                    \"vatRate\": \"27\",\r\n                    \"netAmount\": 1998,\r\n                    \"vatAmount\": 539,\r\n                    \"grossAmount\": 2537\r\n                },\r\n                {\r\n                    \"vatRate\": \"05\",\r\n                    \"netAmount\": 4995,\r\n                    \"vatAmount\": 250,\r\n                    \"grossAmount\": 5245\r\n                }\r\n            ],\r\n            \"roundAmount\": 0,\r\n            \"roundedAmount\": 7782\r\n        },\r\n        {\r\n            \"companyCode\": \"001\",\r\n            \"partnerCode\": \"000010\",\r\n            \"partnerSiteCode\": \"0001\",\r\n            \"serialNumber\": 20003,\r\n            \"yearCode\": 23,\r\n            \"originalCopiesPrinted\": 0,\r\n            \"vendor\": {\r\n                \"name\": \"Szlartibartfaszt és Társa\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"8445\",\r\n                \"city\": \"Városlőd\",\r\n                \"address\": \"Rózsa u. 42.\",\r\n                \"felir\": \"XY1234567\",\r\n                \"iban\": \"HU88\",\r\n                \"bankAccount\": \"12345678-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-23\"\r\n            },\r\n            \"buyer\": {\r\n                \"name\": \"Tizedik Partner Szállítási Név\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"1234\",\r\n                \"city\": \"Felsőgöröngyös\",\r\n                \"address\": \"Ady tér 8.\",\r\n                \"iban\": \"HU12\",\r\n                \"bankAccount\": \"12345678-12345678\",\r\n                \"vatNumber\": \"12345678-1-12\"\r\n            },\r\n            \"invoiceDate\": \"2023-03-07\",\r\n            \"fulfillmentDate\": \"2023-03-10\",\r\n            \"invoiceType\": \"E\",\r\n            \"paidDate\": \"2023-03-10\",\r\n            \"agent\": {\r\n                \"code\": \"01\",\r\n                \"name\": \"Denki Jusztin\",\r\n                \"phoneNumber\": \"+36301234567\"\r\n            },\r\n            \"items\": [\r\n                {\r\n                    \"code\": \"001\",\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"expiresAt\": \"2023-08\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 5,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 4995,\r\n                    \"vatRate\": \"27\",\r\n                    \"vatAmount\": 1349,\r\n                    \"grossAmount\": 6344\r\n                },\r\n                {\r\n                    \"code\": \"002\",\r\n                    \"CNCode\": \"010204\",\r\n                    \"articleNumber\": \"0000_02\",\r\n                    \"expiresAt\": \"2023-07\",\r\n                    \"name\": \"Második Jégkrém\",\r\n                    \"quantity\": 2,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 1998,\r\n                    \"vatRate\": \"18\",\r\n                    \"vatAmount\": 360,\r\n                    \"grossAmount\": 2358\r\n                },\r\n                {\r\n                    \"code\": \"003\",\r\n                    \"CNCode\": \"010207\",\r\n                    \"articleNumber\": \"0000_05\",\r\n                    \"expiresAt\": \"2023-08\",\r\n                    \"name\": \"Ötödik Jégkrém\",\r\n                    \"quantity\": 3,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 2997,\r\n                    \"vatRate\": \"27\",\r\n                    \"vatAmount\": 809,\r\n                    \"grossAmount\": 3806\r\n                }\r\n            ],\r\n            \"quantity\": 10,\r\n            \"netAmount\": 9990,\r\n            \"vatAmount\": 2518,\r\n            \"grossAmount\": 12508,\r\n            \"vatAmounts\": [\r\n                {\r\n                    \"vatRate\": \"18\",\r\n                    \"netAmount\": 1998,\r\n                    \"vatAmount\": 360,\r\n                    \"grossAmount\": 2358\r\n                },\r\n                {\r\n                    \"vatRate\": \"27\",\r\n                    \"netAmount\": 7992,\r\n                    \"vatAmount\": 2158,\r\n                    \"grossAmount\": 10150\r\n                }\r\n            ],\r\n            \"roundAmount\": 0,\r\n            \"roundedAmount\": 12508\r\n        },\r\n        {\r\n            \"companyCode\": \"001\",\r\n            \"partnerCode\": \"000009\",\r\n            \"partnerSiteCode\": \"0001\",\r\n            \"serialNumber\": 20004,\r\n            \"yearCode\": 23,\r\n            \"originalCopiesPrinted\": 0,\r\n            \"vendor\": {\r\n                \"name\": \"Szlartibartfaszt és Társa\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"8445\",\r\n                \"city\": \"Városlőd\",\r\n                \"address\": \"Rózsa u. 42.\",\r\n                \"felir\": \"XY1234567\",\r\n                \"iban\": \"HU88\",\r\n                \"bankAccount\": \"12345678-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-23\"\r\n            },\r\n            \"buyer\": {\r\n                \"name\": \"Kilencedik Partner Központi Név\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"1234\",\r\n                \"city\": \"Alsógöröngyös\",\r\n                \"address\": \"Kossuth utca 1.\",\r\n                \"deliveryName\": \"Kilencedik Partner Szállítási Név\",\r\n                \"deliveryCountry\": \"HU\",\r\n                \"deliveryPostalCode\": \"1234\",\r\n                \"deliveryCity\": \"Felsőgöröngyös\",\r\n                \"deliveryAddress\": \"Ady tér 8.\",\r\n                \"iban\": \"HU12\",\r\n                \"bankAccount\": \"12345678-12345678\",\r\n                \"vatNumber\": \"12345678-1-12\"\r\n            },\r\n            \"invoiceDate\": \"2023-03-07\",\r\n            \"fulfillmentDate\": \"2023-03-07\",\r\n            \"invoiceType\": \"P\",\r\n            \"paidDate\": \"2023-03-07\",\r\n            \"agent\": {\r\n                \"code\": \"01\",\r\n                \"name\": \"Denki Jusztin\",\r\n                \"phoneNumber\": \"+36301234567\"\r\n            },\r\n            \"items\": [\r\n                {\r\n                    \"code\": \"001\",\r\n                    \"CNCode\": \"010212\",\r\n                    \"articleNumber\": \"0000_10\",\r\n                    \"expiresAt\": \"2023-08\",\r\n                    \"name\": \"Tizedik Jégkrém\",\r\n                    \"quantity\": 5,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 4995,\r\n                    \"vatRate\": \"27\",\r\n                    \"vatAmount\": 1349,\r\n                    \"grossAmount\": 6344\r\n                }\r\n            ],\r\n            \"quantity\": 5,\r\n            \"netAmount\": 4995,\r\n            \"vatAmount\": 1349,\r\n            \"grossAmount\": 6344,\r\n            \"vatAmounts\": [\r\n                {\r\n                    \"vatRate\": \"27\",\r\n                    \"netAmount\": 4995,\r\n                    \"vatAmount\": 1349,\r\n                    \"grossAmount\": 6344\r\n                }\r\n            ],\r\n            \"roundAmount\": 1,\r\n            \"roundedAmount\": 6345\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -571,6 +578,145 @@
 									"key": "ids",
 									"value": "[1, 2, 3]"
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "rounds",
+			"item": [
+				{
+					"name": "Get Rounds",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{integra_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{integra_device_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{zephyr_aru_url}}/rounds",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"rounds"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Start Round",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{app_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{app_device_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"agentCode\": \"03\",\r\n    \"agentName\": \"Hétpróbás Töhötömné Palákovics Diána Kinga\",\r\n    \"storeCode\": \"0001\",\r\n    \"storeName\": \"ABC-123\",\r\n    \"roundAt\": \"2023-03-22\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{zephyr_aru_url}}/rounds/start",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"rounds",
+								"start"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Finish Round",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{app_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Device-Id",
+								"value": "{{app_device_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"lastSerialNumber\": 10142,\r\n    \"yearCode\": 23\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{zephyr_aru_url}}/rounds/finish",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"rounds",
+								"finish"
 							]
 						}
 					},
@@ -771,7 +917,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"phoneNumber\": \"+36301234567\",\r\n    \"userType\": \"A\"\r\n}",
+							"raw": "{\r\n    \"phoneNumber\": \"+36301234567\",\r\n    \"userType\": \"I\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -799,7 +945,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{integra_token}}",
+									"value": "{{app_token}}",
 									"type": "string"
 								}
 							]
@@ -814,7 +960,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"deviceId\": \"7f524bac-0203-403b-abd0-add0a8748698\"\r\n}",
+							"raw": "{\r\n    \"deviceId\": \"53f94386-cf96-497c-a1fa-284173929fe6\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -829,13 +975,6 @@
 							"path": [
 								"tokens",
 								"register-device"
-							],
-							"query": [
-								{
-									"key": "",
-									"value": null,
-									"disabled": true
-								}
 							]
 						}
 					},
@@ -945,12 +1084,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{zephyr_aru_url}}/tokens/2",
+							"raw": "{{zephyr_aru_url}}/users/2",
 							"host": [
 								"{{zephyr_aru_url}}"
 							],
 							"path": [
-								"tokens",
+								"users",
 								"2"
 							]
 						}
