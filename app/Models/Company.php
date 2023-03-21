@@ -14,6 +14,11 @@ class Company extends Model
         return $this->hasMany(Agent::class);
     }
 
+    public function rounds()
+    {
+        return $this->hasMany(Round::class);
+    }
+
     public function items()
     {
         return $this->hasMany(Item::class);

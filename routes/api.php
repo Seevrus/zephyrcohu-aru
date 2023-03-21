@@ -6,6 +6,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PartnerListController;
 use App\Http\Controllers\PartnersController;
 use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\RoundController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -47,11 +48,21 @@ Route::controller(UserController::class)->prefix('tokens')->group(function () {
 Route::controller(AgentController::class)->prefix('users')->group(function () {
     Route::get('/', 'viewAll')->middleware(['auth:sanctum', 'ability:app,integra']);
     Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
+    Route::put('/{id}', 'delete')->middleware(['auth:sanctum', 'ability:integra']);
 });
 
 Route::controller(ItemsController::class)->prefix('items')->group(function () {
     Route::get('/', 'viewAll')->middleware(['auth:sanctum', 'ability:app,integra']);
     Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
+});
+
+Route::controller(OrderController::class)->prefix('orders')->group(function () {
+    Route::get('/', 'viewAll')
+        ->middleware(['auth:sanctum', 'ability:integra']);
+    Route::post('/', 'store')
+        ->middleware(['auth:sanctum', 'ability:app']);
+    Route::delete('/', 'delete')
+        ->middleware(['auth:sanctum', 'ability:integra']);
 });
 
 Route::controller(PartnersController::class)->prefix('partners')->group(function () {
@@ -79,11 +90,11 @@ Route::controller(ReceiptController::class)->prefix('receipts')->group(function 
         ->middleware(['auth:sanctum', 'ability:integra']);
 });
 
-Route::controller(OrderController::class)->prefix('orders')->group(function () {
+Route::controller(RoundController::class)->prefix('rounds')->group(function () {
     Route::get('/', 'viewAll')
         ->middleware(['auth:sanctum', 'ability:integra']);
-    Route::post('/', 'store')
+    Route::post('/start', 'start')
         ->middleware(['auth:sanctum', 'ability:app']);
-    Route::delete('/', 'delete')
-        ->middleware(['auth:sanctum', 'ability:integra']);
+    Route::post('/finish', 'finish')
+        ->middleware(['auth:sanctum', 'ability:app']);
 });
