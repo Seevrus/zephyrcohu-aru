@@ -65,14 +65,18 @@ class RoundController extends Controller
 
             $company_id = $sender->company_id;
 
-            $round = Round::create([
-                'company_id' => $company_id,
-                'agent_code' => $request->agentCode,
-                'agent_name' => $request->agentName,
-                'store_code' => $request->storeCode,
-                'store_name' => $request->storeName,
-                'round_at' => $request->roundAt,
-            ]);
+            $round = Round::updateOrCreate(
+                [
+                    'company_id' => $company_id,
+                    'agent_code' => $request->agentCode,
+                    'store_code' => $request->storeCode,
+                    'round_at' => $request->roundAt,
+                ],
+                [
+                    'agent_name' => $request->agentName,
+                    'store_name' => $request->storeName,
+                ]
+            );
 
             Log::insert([
                 'company_id' => $sender->company_id,
