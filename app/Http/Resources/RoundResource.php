@@ -15,6 +15,7 @@ class RoundResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'roundId' => $this->id,
             'agentCode' => $this->agent_code,
             'agentName' => $this->agent_name,
             'storeCode' => $this->store_code,

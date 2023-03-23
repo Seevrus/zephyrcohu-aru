@@ -17,6 +17,7 @@ import { Item, OrderItem, Receipt, ReceiptTypeEnum, Round } from './round-slice-
 const initialState: Round = {
   started: undefined,
   agentId: undefined,
+  roundId: undefined,
   storeId: undefined,
   partnerListId: undefined,
   date: undefined,
@@ -77,6 +78,7 @@ const roundSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(initializeRound.fulfilled, (state, { payload }) => {
       state.started = true;
+      state.roundId = payload.roundId;
       state.agentId = payload.agentId;
       state.storeId = payload.storeId;
       state.partnerListId = payload.partnerListId;

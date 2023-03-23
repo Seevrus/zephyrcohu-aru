@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { assoc, concat, map, path, pathOr, pipe, __ } from 'ramda';
 
 import env from '../../env.json';
@@ -8,6 +8,7 @@ import { ErrorResponseT } from '../base-types';
 import { getUploadOrdersPayload, getUpsertReceiptsPayload } from './round-api-mappers';
 import {
   CancelReceiptResponse,
+  InitializeRoundApiResponse,
   InitializeRoundRequest,
   InitializeRoundResponse,
   Receipt,
@@ -21,10 +22,34 @@ export const initializeRound = createAsyncThunk<
   InitializeRoundRequest,
   { rejectValue: ErrorResponseT }
 >('round/initializeRound', async (requestData, { rejectWithValue }) => {
+  let response: AxiosResponse<InitializeRoundApiResponse>;
+  try {
+    response = await axios.post(
+      `${env.api_url}/rounds/start`,
+      {
+        agentCode: requestData.agentCode,
+        agentName: requestData.agentName,
+        storeCode: requestData.storeCode,
+        storeName: requestData.storeName,
+        roundAt: requestData.date,
+      },
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${requestData.token}`,
+          'X-Device-Id': requestData.deviceId,
+        },
+      }
+    );
+  } catch (e) {
+    return rejectWithValue(e.response.data);
+  }
+
   try {
     await setLocalStorage({
       round: {
         started: true,
+        roundId: response.data.data.roundId,
         agentId: requestData.agentId,
         storeId: requestData.storeId,
         partnerListId: requestData.partnerListId,
@@ -42,7 +67,14 @@ export const initializeRound = createAsyncThunk<
     });
   }
 
-  return requestData;
+  return {
+    roundId: response.data.data.roundId,
+    agentId: requestData.agentId,
+    storeId: requestData.storeId,
+    partnerListId: requestData.partnerListId,
+    date: requestData.date,
+    nextAvailableSerialNumber: requestData.nextAvailableSerialNumber,
+  };
 });
 
 export const finalizeCurrentReceipt = createAsyncThunk<

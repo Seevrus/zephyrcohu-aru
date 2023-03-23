@@ -1,4 +1,20 @@
 export type InitializeRoundRequest = {
+  deviceId: string;
+  token: string;
+
+  agentId: number;
+  agentCode: string;
+  agentName: string;
+  storeId: number;
+  storeCode: string;
+  storeName: string;
+  partnerListId: number;
+  date: string; // yyyy-MM-dd
+  nextAvailableSerialNumber: number;
+};
+
+export type InitializeRoundResponse = {
+  roundId: number;
   agentId: number;
   storeId: number;
   partnerListId: number;
@@ -6,12 +22,19 @@ export type InitializeRoundRequest = {
   nextAvailableSerialNumber: number;
 };
 
-export type InitializeRoundResponse = {
-  agentId: number;
-  storeId: number;
-  partnerListId: number;
-  date: string;
-  nextAvailableSerialNumber: number;
+export type InitializeRoundApiResponse = {
+  data: {
+    roundId: number;
+    agentCode: string;
+    agentName: string;
+    storeCode: string;
+    storeName: string;
+    roundAt: string; // yyyy-MM-dd
+    lastSerialNumber: null;
+    yearCode: null;
+    createdAt: string; // yyyy-MM-dd HH-mm-ss
+    updatedAt: string; // yyyy-MM-dd HH-mm-ss
+  };
 };
 
 export type CancelReceiptResponse = {
@@ -161,6 +184,7 @@ export type Receipt = {
 
 export type Round = {
   started: boolean;
+  roundId: number;
   agentId: number;
   storeId: number;
   partnerListId: number;

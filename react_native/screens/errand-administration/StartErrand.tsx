@@ -1,7 +1,7 @@
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { format } from 'date-fns';
-import { find, isNil, pipe, prop, propEq } from 'ramda';
+import { isNil } from 'ramda';
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -114,19 +114,26 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     setLoading(true);
     setLoadingMessage('Körindításhoz szükséges adatok letöltése folyamatban...');
 
-    const selectedStoreCode: string = pipe(find(propEq('id', storeId)), prop('code'))(storeList);
+    const selectedAgent = agents.find((a) => a.id === agentId);
+    const selectedStore = storeList.find((s) => s.id === storeId);
 
     try {
       await dispatch(fetchItems({ deviceId, token }));
       await dispatch(fetchPartners({ deviceId, token }));
       const fetchedStore = await dispatch(
-        fetchStore({ deviceId, token, code: selectedStoreCode })
+        fetchStore({ deviceId, token, code: selectedStore.code })
       ).unwrap();
 
       await dispatch(
         initializeRound({
+          deviceId,
+          token,
           agentId,
-          storeId,
+          agentCode: selectedAgent.code,
+          agentName: selectedAgent.name,
+          storeId: selectedStore.id,
+          storeCode: selectedStore.code,
+          storeName: selectedStore.name,
           partnerListId,
           date: format(date, 'yyyy-MM-dd'),
           nextAvailableSerialNumber: fetchedStore.firstAvailableSerialNumber,
