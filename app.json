@@ -4,10 +4,12 @@
     "slug": "zephyr-boreal",
     "version": "0.3.0",
     "orientation": "portrait",
-    "icon": "./react_native/assets/white_purple_zephyr-512.png",
+    "icon": "./react_native/assets/expo-app-icons/icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "backgroundColor": "#382E6B"
+      "icon": "./react_native/assets/expo-app-icons/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "white"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -20,7 +22,7 @@
       "package": "com.zephyr.boreal",
       "versionCode": 6,
       "adaptiveIcon": {
-        "foregroundImage": "./react_native/assets/white_purple_zephyr-512.png",
+        "foregroundImage": "./react_native/assets/expo-app-icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
     },
