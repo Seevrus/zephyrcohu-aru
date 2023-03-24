@@ -34,6 +34,8 @@ class StartRoundRequest extends FormRequest
             'agentName' => 'required|string|max:50',
             'storeCode' => 'required|string|size:4',
             'storeName' => 'required|string|max:255',
+            'partnerListId' => 'required|integer|min:0',
+            'partnerListName' => 'required|string|max:255',
             'roundAt' => 'required|date_format:Y-m-d',
         ];
     }

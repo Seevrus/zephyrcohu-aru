@@ -31,8 +31,8 @@ class FinishRoundRequest extends FormRequest
     {
         return [
             'id' => 'required|exists:rounds,id',
-            'lastSerialNumber' => 'required|integer|min:1|max:16777215',
-            'yearCode' => 'required|integer|min:1|max:32767',
+            'lastSerialNumber' => 'required|integer|min:0|max:16777215',
+            'yearCode' => 'required|integer|min:0|max:32767',
         ];
     }
 }

@@ -70,11 +70,13 @@ class RoundController extends Controller
                     'company_id' => $company_id,
                     'agent_code' => $request->agentCode,
                     'store_code' => $request->storeCode,
+                    'partner_list_id' => $request->partnerListId,
                     'round_at' => $request->roundAt,
                 ],
                 [
                     'agent_name' => $request->agentName,
                     'store_name' => $request->storeName,
+                    'partner_list_name' => $request->partnerListName,
                 ]
             );
 

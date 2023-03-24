@@ -20,6 +20,8 @@ class RoundResource extends JsonResource
             'agentName' => $this->agent_name,
             'storeCode' => $this->store_code,
             'storeName' => $this->store_name,
+            'partnerListId' => $this->partner_list_id,
+            'partnerListName' => $this->partner_list_name,
             'roundAt' => $this->round_at,
             'lastSerialNumber' => $this->last_serial_number,
             'yearCode' => $this->year_code,

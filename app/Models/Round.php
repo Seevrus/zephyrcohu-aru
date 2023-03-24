@@ -15,6 +15,8 @@ class Round extends Model
         'agent_name',
         'store_code',
         'store_name',
+        'partner_list_id',
+        'partner_list_name',
         'round_at',
         'last_serial_number',
         'year_code',
