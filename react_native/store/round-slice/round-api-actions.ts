@@ -8,6 +8,7 @@ import { ErrorResponseT } from '../base-types';
 import { getUploadOrdersPayload, getUpsertReceiptsPayload } from './round-api-mappers';
 import {
   CancelReceiptResponse,
+  EndRoundApiRequest,
   InitializeRoundApiResponse,
   InitializeRoundRequest,
   InitializeRoundResponse,
@@ -31,6 +32,8 @@ export const initializeRound = createAsyncThunk<
         agentName: requestData.agentName,
         storeCode: requestData.storeCode,
         storeName: requestData.storeName,
+        partnerListId: requestData.partnerListId,
+        partnerListName: requestData.partnerListName,
         roundAt: requestData.date,
       },
       {
@@ -315,8 +318,36 @@ export const uploadOrders = createAsyncThunk<
   return true;
 });
 
-export const endErrand = createAsyncThunk<boolean, never, { rejectValue: ErrorResponseT }>(
-  'round/endErrand',
+export const endRoundApi = createAsyncThunk<
+  boolean,
+  EndRoundApiRequest,
+  { rejectValue: ErrorResponseT }
+>('round/endRoundApi', async (requestData, { rejectWithValue }) => {
+  try {
+    await axios.post(
+      `${env.api_url}/rounds/finish`,
+      {
+        id: requestData.roundId,
+        lastSerialNumber: requestData.lastSerialNumber ?? 0,
+        yearCode: requestData.yearCode ?? 0,
+      },
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${requestData.token}`,
+          'X-Device-Id': requestData.deviceId,
+        },
+      }
+    );
+  } catch (err) {
+    return rejectWithValue(err.response.data);
+  }
+
+  return true;
+});
+
+export const endRoundLocal = createAsyncThunk<boolean, never, { rejectValue: ErrorResponseT }>(
+  'round/endRoundLocal',
   async (_, { rejectWithValue }) => {
     try {
       await setLocalStorage({

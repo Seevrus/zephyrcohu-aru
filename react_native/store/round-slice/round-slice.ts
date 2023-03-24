@@ -5,7 +5,8 @@ import { assoc, concat, dissocPath, map, mergeDeepLeft, pipe, prop, propOr, valu
 import { LocalStorage } from '../async-storage';
 import {
   cancelReceipt,
-  endErrand,
+  endRoundApi,
+  endRoundLocal,
   finalizeCurrentReceipt,
   increaseOriginalCopiesPrinted,
   initializeRound,
@@ -16,8 +17,8 @@ import { Item, OrderItem, Receipt, ReceiptTypeEnum, Round } from './round-slice-
 
 const initialState: Round = {
   started: undefined,
-  agentId: undefined,
   roundId: undefined,
+  agentId: undefined,
   storeId: undefined,
   partnerListId: undefined,
   date: undefined,
@@ -32,6 +33,7 @@ const roundSlice = createSlice({
   reducers: {
     mergeLocalState: (state, { payload }: PayloadAction<LocalStorage['round']>) => {
       state.started = payload?.started;
+      state.roundId = payload?.roundId;
       state.agentId = payload?.agentId;
       state.storeId = payload?.storeId;
       state.partnerListId = payload?.partnerListId;
@@ -185,8 +187,16 @@ const roundSlice = createSlice({
       }
     });
 
-    builder.addCase(endErrand.fulfilled, (state) => {
+    builder.addCase(endRoundApi.fulfilled, (state) => {
+      state.roundId = undefined;
+    });
+    builder.addCase(endRoundApi.rejected, (_, { payload }) => {
+      throw new Error(payload.message);
+    });
+
+    builder.addCase(endRoundLocal.fulfilled, (state) => {
       state.started = false;
+      state.roundId = undefined;
       state.agentId = undefined;
       state.storeId = undefined;
       state.partnerListId = undefined;
@@ -195,7 +205,7 @@ const roundSlice = createSlice({
       state.currentReceipt = undefined;
       state.receipts = [];
     });
-    builder.addCase(endErrand.rejected, (_, { payload }) => {
+    builder.addCase(endRoundLocal.rejected, (_, { payload }) => {
       throw new Error(payload.message);
     });
   },

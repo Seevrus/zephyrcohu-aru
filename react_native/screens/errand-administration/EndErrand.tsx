@@ -5,10 +5,15 @@ import { StyleSheet, Text, View } from 'react-native';
 import useToken from '../../hooks/useToken';
 
 import { agentsActions } from '../../store/agents-slice/agents-slice';
-import { useAppDispatch } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { itemsActions } from '../../store/items-slice/items-slice';
 import { partnersActions } from '../../store/partners-slice/partners-slice';
-import { endErrand, uploadOrders, upsertReceipts } from '../../store/round-slice/round-api-actions';
+import {
+  endRoundApi,
+  endRoundLocal,
+  uploadOrders,
+  upsertReceipts,
+} from '../../store/round-slice/round-api-actions';
 import { storesActions } from '../../store/stores-slice/stores-slice';
 
 import ErrorCard from '../../components/info-cards/ErrorCard';
@@ -22,6 +27,9 @@ export default function EndErrand({ navigation }: EndErrandProps) {
   const dispatch = useAppDispatch();
   const { isInternetReachable } = useNetInfo();
   const { deviceId, token } = useToken();
+  const roundId = useAppSelector((state) => state.round?.roundId);
+  const lastSerialNumber = useAppSelector((state) => state.round?.nextAvailableSerialNumber) - 1;
+  const yearCode = useAppSelector((state) => state.stores?.store?.yearCode);
 
   const [loading, setLoading] = useState<boolean>(false);
   const [endErrandError, setEndErrandError] = useState<string>('');
@@ -39,7 +47,16 @@ export default function EndErrand({ navigation }: EndErrandProps) {
     try {
       await dispatch(upsertReceipts({ deviceId, token }));
       await dispatch(uploadOrders({ deviceId, token }));
-      await dispatch(endErrand());
+      await dispatch(
+        endRoundApi({
+          deviceId,
+          token,
+          roundId,
+          lastSerialNumber,
+          yearCode,
+        })
+      );
+      await dispatch(endRoundLocal());
       dispatch(agentsActions.endErrand());
       dispatch(itemsActions.endErrand());
       dispatch(partnersActions.endErrand());

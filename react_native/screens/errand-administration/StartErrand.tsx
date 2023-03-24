@@ -19,7 +19,7 @@ import Input from '../../components/ui/Input';
 import colors from '../../constants/colors';
 import { fetchAgents } from '../../store/agents-slice/agents-api-actions';
 import { fetchItems } from '../../store/items-slice/items-api-actions';
-import { initializeRound } from '../../store/round-slice/round-api-actions';
+import { endRoundApi, initializeRound } from '../../store/round-slice/round-api-actions';
 import { StartErrandProps } from '../screen-types';
 
 export default function StartErrand({ navigation }: StartErrandProps) {
@@ -41,6 +41,8 @@ export default function StartErrand({ navigation }: StartErrandProps) {
 
   const currentDate = useAppSelector((state) => state.round.date);
   const [date, setDate] = useState<Date>(new Date(currentDate ?? Date.now()));
+
+  const roundId = useAppSelector((state) => state.round.roundId);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [fetching, setFetching] = useState<boolean>(false);
@@ -116,8 +118,13 @@ export default function StartErrand({ navigation }: StartErrandProps) {
 
     const selectedAgent = agents.find((a) => a.id === agentId);
     const selectedStore = storeList.find((s) => s.id === storeId);
+    const selectedPartnerList = partnerLists.find((pl) => pl.id === partnerListId);
 
     try {
+      if (roundId) {
+        await dispatch(endRoundApi({ deviceId, token, roundId }));
+      }
+
       await dispatch(fetchItems({ deviceId, token }));
       await dispatch(fetchPartners({ deviceId, token }));
       const fetchedStore = await dispatch(
@@ -135,6 +142,7 @@ export default function StartErrand({ navigation }: StartErrandProps) {
           storeCode: selectedStore.code,
           storeName: selectedStore.name,
           partnerListId,
+          partnerListName: selectedPartnerList.name,
           date: format(date, 'yyyy-MM-dd'),
           nextAvailableSerialNumber: fetchedStore.firstAvailableSerialNumber,
         })
@@ -142,6 +150,8 @@ export default function StartErrand({ navigation }: StartErrandProps) {
 
       navigation.pop();
     } catch (err) {
+      setLoading(false);
+      setLoadingMessage('');
       setConfirmRoundError(err.message);
     }
   };

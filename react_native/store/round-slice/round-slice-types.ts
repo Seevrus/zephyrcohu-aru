@@ -9,6 +9,7 @@ export type InitializeRoundRequest = {
   storeCode: string;
   storeName: string;
   partnerListId: number;
+  partnerListName: string;
   date: string; // yyyy-MM-dd
   nextAvailableSerialNumber: number;
 };
@@ -29,6 +30,8 @@ export type InitializeRoundApiResponse = {
     agentName: string;
     storeCode: string;
     storeName: string;
+    partnerListId: number;
+    partnerListName: string;
     roundAt: string; // yyyy-MM-dd
     lastSerialNumber: null;
     yearCode: null;
@@ -148,6 +151,30 @@ export type OrderRequestItem = {
 
 export type UpsertReceiptRequest = {
   data: ReceiptRequestItem[];
+};
+
+export type EndRoundApiRequest = {
+  deviceId: string;
+  token: string;
+
+  roundId: number;
+  lastSerialNumber?: number;
+  yearCode?: number;
+};
+
+export type EndRoundApiResponse = {
+  data: {
+    roundId: number;
+    agentCode: string;
+    agentName: string;
+    storeCode: string;
+    storeName: string;
+    roundAt: string; // yyyy-MM-dd
+    lastSerialNumber: number;
+    yearCode: number;
+    createdAt: string; // yyyy-MM-dd HH-mm-ss
+    updatedAt: string; // yyyy-MM-dd HH-mm-ss
+  };
 };
 
 export type ExpirationItem = {
