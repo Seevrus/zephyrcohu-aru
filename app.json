@@ -9,7 +9,7 @@
     "splash": {
       "icon": "./react_native/assets/expo-app-icons/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "white"
+      "backgroundColor": "#ffffff"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
