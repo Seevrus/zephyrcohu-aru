@@ -2,4 +2,4 @@
 
 Ez a Zephyr Áruforgalmi Alkalmazás FE és BE kódja.
 
-Expo build: `eas build --platform android`
+Expo build: `eas build --profile production --platform android --local`
