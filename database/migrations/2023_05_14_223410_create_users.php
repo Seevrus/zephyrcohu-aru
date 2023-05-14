@@ -16,13 +16,15 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Company::class)->references('id')->on('companies')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->string('phone_number', 20);
-            $table->string('type', 1); // M, I, A
-            $table->unique(['company_id', 'phone_number', 'type']);
-            $table->string('device_id')->nullable();
+            $table->foreignIdFor(Company::class);
+            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->string('code')->unique();
+            $table->string('user_name');
+            $table->string('password');
+            $table->string('name');
+            $table->string('phone_number');
             $table->timestamps();
-            $table->dateTime('last_active')->nullable();
+            $table->timestamp('last_active')->nullable();
         });
     }
 
