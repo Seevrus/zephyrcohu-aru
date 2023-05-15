@@ -26,4 +26,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function roles()
+    {
+        return $this->hasMany(UserRole::class);
+    }
+
+    public function passwords()
+    {
+        return $this->hasMany(UserPassword::class);
+    }
 }

@@ -20,9 +20,9 @@ return new class extends Migration
             $table->foreign('company_id')->references('id')->on('companies')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('code')->unique();
             $table->string('user_name');
-            $table->string('password');
             $table->string('name');
             $table->string('phone_number');
+            $table->uuid('device_id')->nullable();
             $table->timestamps();
             $table->timestamp('last_active')->nullable();
         });
