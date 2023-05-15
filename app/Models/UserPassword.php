@@ -17,6 +17,7 @@ class UserPassword extends Model
         'user_id',
         'password',
         'set_time',
+        'is_generated',
     ];
 
     public function user()

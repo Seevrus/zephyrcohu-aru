@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class);
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('password');
+            $table->smallInteger('is_generated')->unsigned();
             $table->timestamp('set_time');
         });
     }
