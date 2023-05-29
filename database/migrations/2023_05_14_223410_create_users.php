@@ -21,8 +21,7 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->string('user_name');
             $table->string('name');
-            $table->string('phone_number');
-            $table->uuid('device_id')->nullable();
+            $table->string('phone_number')->nullable();
             $table->timestamps();
             $table->timestamp('last_active')->nullable();
         });

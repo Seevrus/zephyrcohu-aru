@@ -4,11 +4,11 @@ namespace App\Exceptions;
 
 use App\Http\Traits\ErrorHandling;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
 use Throwable;
 
@@ -56,6 +56,10 @@ class Handler extends ExceptionHandler
             return $this->forbidden();
         });
 
+        $this->renderable(function (BadRequestException $e) {
+            return $this->bad_request();
+        });
+
         $this->renderable(function (MethodNotAllowedHttpException $e) {
             return $this->method_not_allowed();
         });
@@ -66,10 +70,6 @@ class Handler extends ExceptionHandler
 
         $this->renderable(function (UnauthorizedHttpException $e) {
             return $this->unathorized();
-        });
-
-        $this->renderable(function (UnprocessableEntityHttpException $e) {
-            return $this->bad_request();
         });
 
         $this->renderable(function (UnsupportedMediaTypeHttpException $e) {

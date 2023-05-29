@@ -7,6 +7,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class UserResource extends JsonResource
 {
     /**
+     * The "data" wrapper that should be applied.
+     *
+     * @var string|null
+     */
+    public static $wrap = null;
+
+    /**
      * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -14,20 +21,17 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
-        $isAdmin = $request->user()->type === "I";
-
-        return $isAdmin
-            ? [
-                'id' => $this->id,
-                'phoneNumber' => $this->phone_number,
-                'type' => $this->type,
-                'createdAt' => $this->created_at->toDateTimeString(),
-                'updatedAt' => $this->updated_at->toDateTimeString(),
-                'lastActive' => $this->last_active,
-                'company' => new CompanyResource($this->company),
-            ] : [
-                'type' => $this->type,
-                'company' => new CompanyResource($this->company),
-            ];
+        return [
+            'id' => $this->id,
+            'code' => $this->code,
+            'userName' => $this->user_name,
+            'name' => $this->name,
+            'company' => new CompanyResource($this->company),
+            'phoneNumber' => $this->phone_number,
+            'roles' => $this->roles,
+            'createdAt' => $this->created_at->toDateTimeString(),
+            'updatedAt' => $this->updated_at->toDateTimeString(),
+            'lastActive' => $this->last_active,
+        ];
     }
 }

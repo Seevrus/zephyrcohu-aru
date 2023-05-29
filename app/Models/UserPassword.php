@@ -11,7 +11,7 @@ class UserPassword extends Model
     use HasFactory;
 
     protected $dateFormat = DateTime::ATOM;
-    protected $timestamps = false;
+    public $timestamps = false;
 
     protected $fillable = [
         'user_id',

@@ -1,14 +1,7 @@
 <?php
 
-use App\Http\Controllers\AgentController;
-use App\Http\Controllers\ItemsController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\PartnerListController;
-use App\Http\Controllers\PartnersController;
-use App\Http\Controllers\ReceiptController;
-use App\Http\Controllers\RoundController;
-use App\Http\Controllers\StoreController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserRoleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,30 +15,32 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::controller(UserController::class)->prefix('tokens')->group(function () {
-    /**
-     * IMPORTANT!
-     * This endpoint should never be enabled unless it is specifically requested for a specific task. You have been warned.
-     */
-    // Route::post('/master-token', 'generate_master_token');
+Route::controller(UserController::class)->prefix('users')->group(function () {
+    Route::post('/register', 'register')
+        ->middleware(['auth:sanctum', 'ability:M']);
 
-    Route::post('/token', 'generate_token')
-        ->middleware(['auth:sanctum', 'ability:master']);
-
-    Route::post('/register-device', 'register_device')
-        ->middleware(['auth:sanctum', 'ability:app,integra']);
+    Route::post('/login', 'login');
 
     Route::get('/check-token', 'check_token')
-        ->middleware(['auth:sanctum', 'ability:master,app,integra']);
+        ->middleware(['auth:sanctum']);
+
+    Route::post('/password', 'change_password')
+        ->middleware(['auth:sanctum']);
 
     Route::get('/', 'viewAll')
-        ->middleware(['auth:sanctum', 'ability:integra']);
+        ->middleware(['auth:sanctum', 'ability:I']);
 
     Route::delete('/{id}', 'delete')
-        ->middleware(['auth:sanctum', 'ability:integra']);
+        ->middleware(['auth:sanctum', 'ability:I']);
 });
 
-Route::controller(AgentController::class)->prefix('users')->group(function () {
+Route::controller(UserRoleController::class)->prefix('users/roles')->group(function () {
+    Route::post('', 'add')->middleware(['auth:sanctum', 'ability:I']);
+
+    Route::delete('', 'delete')->middleware(['auth:sanctum', 'ability:I']);
+});
+
+/* Route::controller(AgentController::class)->prefix('users')->group(function () {
     Route::get('/', 'viewAll')->middleware(['auth:sanctum', 'ability:app,integra']);
     Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
     Route::put('/{id}', 'delete')->middleware(['auth:sanctum', 'ability:integra']);
@@ -97,4 +92,4 @@ Route::controller(RoundController::class)->prefix('rounds')->group(function () {
         ->middleware(['auth:sanctum', 'ability:app']);
     Route::post('/finish', 'finish')
         ->middleware(['auth:sanctum', 'ability:app']);
-});
+}); */

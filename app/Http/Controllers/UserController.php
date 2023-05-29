@@ -2,213 +2,283 @@
 
 namespace App\Http\Controllers;
 
-use App\Filters\UsersFilter;
-use App\Http\Requests\GenerateMasterTokenRequest;
-use App\Http\Requests\GenerateTokenRequest;
-use App\Http\Requests\RegisterDeviceRequest;
+use App\Http\Requests\ChangePasswordRequest;
+use App\Http\Requests\CreateUserRequest;
+use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
-use App\Mail\MasterKeyUsed;
 use App\Models\Company;
 use App\Models\Log;
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class UserController extends Controller
 {
-    public function generate_master_token(GenerateMasterTokenRequest $request)
+    private $password_min_length = 10;
+    private $password_max_lifetime = 90 * 24 * 60 * 60;
+
+    private function generate_code($length)
     {
-        $company_code = $request->post('companyCode');
-        $phone_number = $request->post('phoneNumber');
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._+#%@-';
+        $code = '';
 
-        $company = Company::firstWhere([
-            'code' => $company_code,
-        ]);
-        $company_id = $company->id;
-
-        $user = User::firstWhere([
-            'phone_number' => $phone_number,
-            'type' => 'M',
-        ]);
-
-        $uuid = Str::uuid();
-
-        if (!$user) {
-            $user_id = User::insertGetId([
-                'company_id' => $company_id,
-                'phone_number' => $phone_number,
-                'type' => 'M',
-                'device_id' => Hash::make($uuid),
-                'created_at' => date('Y-m-d H:i:s'),
-            ]);
-
-            $user = User::find($user_id);
-        } else {
-            $user->device_id = Hash::make($uuid);
-            $user->save();
+        for ($i = 0; $i < $length; $i++) {
+            $index = random_int(0, strlen($characters) - 1);
+            $code .= $characters[$index];
         }
 
-        DB::table('personal_access_tokens')->where([
-            'tokenable_id' => $user->id,
-            'name' => 'master-token',
-        ])->delete();
-
-        $token = $user->createToken('master-token', ['master']);
-
-        return [
-            'companyCode' => $user->company->code,
-            'phoneNumber' => $user->phone_number,
-            'userType' => $user->type,
-            'deviceId' => $uuid,
-            'tokenType' => 'Bearer',
-            'accessToken' => $token->plainTextToken,
-        ];
+        return $code;
     }
 
-    public function generate_token(GenerateTokenRequest $request)
-    {
-        $sender = $request->user();
-        $sender->last_active = date('Y-m-d H:i:s');
-        $sender->save();
-
-        $phone_number = $request->post('phoneNumber');
-        $user_type = $request->post('userType');
-
-        $company_id = $sender->company_id;
-        $master_token_id = $sender->currentAccessToken()->id;
-
-        $user = User::firstWhere([
-            'phone_number' => $phone_number,
-            'type' => $user_type,
-        ]);
-
-        if (!$user) {
-            $user_id = User::insertGetId([
-                'company_id' => $company_id,
-                'phone_number' => $phone_number,
-                'type' => $user_type,
-                'created_at' => date('Y-m-d H:i:s'),
-            ]);
-
-            $user = User::find($user_id);
-        } else {
-            $user->device_id = null;
-            $user->save();
-        }
-
-        DB::table('personal_access_tokens')->where([
-            'tokenable_id' => $user->id,
-            'name' => 'user-token',
-        ])->delete();
-
-        if ($user->type === 'I') {
-            $token = $user->createToken('user-token', ['integra']);
-        } else {
-            $token = $user->createToken('user-token', ['app']);
-        }
-
-        Log::insert([
-            'company_id' => $sender->company_id,
-            'user_id' => $sender->id,
-            'token_id' => $master_token_id,
-            'action' => 'Created New Access Token',
-            'occured_at' => date('Y-m-d H:i:s'),
-        ]);
-
-        // TODO: update email template with APP Styles once they are available
-        Mail::to(env('MAIL_ADMIN_EMAIL'))->send(new MasterKeyUsed(
-            $user->company->code,
-            $master_token_id,
-            $user->id,
-            $user->type,
-            $user->phone_number,
-            $token->accessToken->id,
-        ));
-
-        return [
-            'companyCode' => $user->company->code,
-            'phoneNumber' => $user->phone_number,
-            'userType' => $user->type,
-            'tokenType' => 'Bearer',
-            'accessToken' => $token->plainTextToken,
-        ];
-    }
-
-    public function register_device(RegisterDeviceRequest $request)
-    {
-        $sender = $request->user();
-
-        if (!!$sender->device_id) {
-            throw new UnprocessableEntityHttpException();
-        }
-
-        $sender->device_id = Hash::make($request->deviceId);
-        $sender->last_active = date('Y-m-d H:i:s');
-        $sender->save();
-
-        return new UserResource($sender);
-    }
-
-    public function check_token(Request $request)
-    {
-        $sender = $request->user();
-
-        $this->authorize('checkToken', $sender);
-
-        $sender->last_active = date('Y-m-d H:i:s');
-        $sender->save();
-
-        return new UserResource($sender->load('company'));
-    }
-
-    public function viewAll(Request $request)
+    public function register(CreateUserRequest $request)
     {
         try {
-            $this->authorize('viewAll', User::class);
+            $sender = $request->user();
+            $company_code = $sender->companyCode;
+            $user_name = $request->userName;
+            $password = $this->generate_code($this->password_min_length);
 
-            $user = $request->user();
-            $user->last_active = date('Y-m-d H:i:s');
+            $company = Company::firstWhere([
+                'code' => $company_code,
+            ]);
+            $company_id = $company->id;
+
+            $user = User::firstWhere([
+                'user_name' => $user_name,
+            ]);
+
+            if ($user) {
+                throw new BadRequestException();
+            }
+
+            $new_user = User::create([
+                'company_id' => $company_id,
+                'code' => $request->code,
+                'user_name' => $user_name,
+                'name' => $request->name,
+                'phone_number' => $request->phoneNumber ?? null,
+
+            ]);
+
+            foreach ($request->roles as $role) {
+                $new_user->roles()->create([
+                    'role' => $role,
+                ]);
+            }
+
+            $new_user->passwords()->create([
+                'password' => Hash::make($password),
+                'is_generated' => 1,
+                'set_time' => Carbon::now(),
+            ]);
+
+            $new_user->save();
+
+            Log::insert([
+                'company_id' => $company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Created user ' . $user_name,
+                'occured_at' => Carbon::now(),
+            ]);
+
+            $newUserResource = new UserResource($new_user);
+            $newUserResource->additional([
+                'password' => $password,
+            ]);
+
+            return $newUserResource;
+        } catch (Exception $e) {
+            throw new BadRequestException();
+        }
+    }
+
+    public function login(LoginRequest $request)
+    {
+        try {
+            $user = User::firstWhere([
+                'user_name' => $request->userName,
+            ]);
+
+            $user->last_active = Carbon::now();
             $user->save();
 
-            $companyUsers = $user->company->users()->get();
+            $password = $user->passwords()->orderBy('set_time', 'desc')->first();
+
+            if (!Hash::check($request->password, $password->password)) {
+                Log::insert([
+                    'company_id' => $user->company_id,
+                    'user_id' => $user->id,
+                    'token_id' => 0,
+                    'action' => 'Tried to log in with a wrong password',
+                    'occured_at' => Carbon::now(),
+                ]);
+
+                throw new UnauthorizedHttpException(random_bytes(32));
+            }
+
+            $user()->tokens()->delete();
+            $passwordSetTime = new Carbon($password->set_time);
+            $isPasswordExpired = $passwordSetTime->diffInSeconds(Carbon::now()) > $this->password_max_lifetime;
+
+            if ($password->is_generated === 1 || $isPasswordExpired) {
+                $token = $user->createToken('boreal', ['password']);
+            } else {
+                $roles = array_map(function ($role) {
+                    return $role['role'];
+                }, $user->roles->toArray());
+                $token = $user->createToken('boreal', $roles);
+            }
+            $tokenExpiration = Carbon::now()->addHours(25)->toDateTimeString();
+
+            $userResource = new UserResource($user);
 
             Log::insert([
                 'company_id' => $user->company_id,
                 'user_id' => $user->id,
-                'token_id' => $user->currentAccessToken()->id,
+                'token_id' => 0,
+                'action' => 'Successfully logged in',
+                'occured_at' => Carbon::now(),
+            ]);
+
+            return array_merge(
+                $userResource->toArray(0),
+                [
+                    'token' => [
+                        'tokenType' => 'Bearer',
+                        'accessToken' => $token->plainTextToken,
+                        'abilities' => $token->accessToken->abilities,
+                        'expiresAt' => $tokenExpiration,
+                    ]
+                ]
+            );
+        } catch (Exception $e) {
+            throw new BadRequestException();
+        }
+    }
+
+    public function check_token(Request $request)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $sender->tokens()->delete();
+            $password = $sender->passwords()->orderBy('set_time', 'desc')->first();
+
+            $passwordSetTime = new Carbon($password->set_time);
+            $isPasswordExpired = $passwordSetTime->diffInSeconds(Carbon::now()) > $this->password_max_lifetime;
+
+            if ($password->is_generated === 1 || $isPasswordExpired) {
+                $token = $sender->createToken('boreal', ['password']);
+            } else {
+                $roles = array_map(function ($role) {
+                    return $role['role'];
+                }, $sender->roles->toArray());
+                $token = $sender->createToken('boreal', $roles);
+            }
+            $tokenExpiration = Carbon::now()->addHours(25)->toDateTimeString();
+
+            $userResource = new UserResource($sender);
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => 0,
+                'action' => 'Renewed token',
+                'occured_at' => Carbon::now(),
+            ]);
+
+            return array_merge(
+                $userResource->toArray(0),
+                [
+                    'token' => [
+                        'tokenType' => 'Bearer',
+                        'accessToken' => $token->plainTextToken,
+                        'abilities' => $token->accessToken->abilities,
+                        'expiresAt' => $tokenExpiration,
+                    ]
+                ]
+            );
+        } catch (Exception $e) {
+            throw new BadRequestException();
+        }
+    }
+
+    public function change_password(ChangePasswordRequest $request)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $sender->passwords()->offset(10)->delete();
+            $previousPasswords = $sender->passwords();
+            $newPassword = $request->password;
+
+            foreach ($previousPasswords as $previousPassword) {
+                if (Hash::check($newPassword, $previousPassword)) {
+                    return response([
+                        'status' => 400,
+                        'codeName' => 'Bad Request',
+                        'message' => 'New password cannot be equivalent to the previous 10 passwords',
+                    ], 400);
+                }
+            }
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => 0,
+                'action' => 'Changed password',
+                'occured_at' => Carbon::now(),
+            ]);
+
+            $sender->passwords()->create([
+                'password' => Hash::make($newPassword),
+                'is_generated' => 0,
+                'set_time' => Carbon::now(),
+            ]);
+        } catch (Exception $e) {
+            throw new BadRequestException();
+        }
+    }
+
+    public function view_all(Request $request)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $companyUsers = $sender->company->users()->get();
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
                 'action' => 'Accessed ' . $companyUsers->count() . ' users',
-                'occured_at' => date('Y-m-d H:i:s'),
+                'occured_at' => Carbon::now(),
             ]);
 
             return new UserCollection($companyUsers);
         } catch (Exception $e) {
-            if (
-                $e instanceof UnauthorizedHttpException
-                || $e instanceof AuthorizationException
-            ) throw $e;
-
-            throw new UnprocessableEntityHttpException();
+            throw new BadRequestException();
         }
     }
 
     public function delete(int $id)
     {
         try {
-            if (!Gate::allows('check-device-id')) {
-                throw new UnauthorizedHttpException(random_bytes(32));
-            }
-
             $sender = request()->user();
-            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->last_active = Carbon::now();
             $sender->save();
 
             $user = User::findOrFail($id);
@@ -221,7 +291,7 @@ class UserController extends Controller
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
                 'action' => 'Deleted user ' . $user->id,
-                'occured_at' => date('Y-m-d H:i:s'),
+                'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {
             if (
@@ -229,7 +299,7 @@ class UserController extends Controller
                 || $e instanceof AuthorizationException
             ) throw $e;
 
-            throw new UnprocessableEntityHttpException();
+            throw new BadRequestException();
         }
     }
 }
