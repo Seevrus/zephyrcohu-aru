@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\UserRoles;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -26,12 +25,12 @@ class CreateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required|string|size:2|unique:users.code',
-            'userName' => 'required|string|unique:users.user_name',
+            'code' => 'required|string|size:2|unique:users,code',
+            'userName' => 'required|string|unique:users,user_name',
             'name' => 'required|string',
-            'phoneNumber' => 'regex:`^\+36[237]0\d{7}`',
+            'phoneNumber' => 'regex:/^\+36[237]0\d{7}/',
             'roles' => 'required|array',
-            'roles.*' => 'I',
+            'roles.*' => 'in:AM,I,A',
         ];
     }
 }

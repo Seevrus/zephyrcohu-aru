@@ -10,6 +10,7 @@ use App\Http\Resources\UserResource;
 use App\Models\Company;
 use App\Models\Log;
 use App\Models\User;
+use App\Models\UserPassword;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -36,26 +37,16 @@ class UserController extends Controller
         return $code;
     }
 
-    public function register(CreateUserRequest $request)
+    public function create_user(CreateUserRequest $request)
     {
         try {
             $sender = $request->user();
-            $company_code = $sender->companyCode;
+            $company_id = $sender->company_id;
             $user_name = $request->userName;
             $password = $this->generate_code($this->password_min_length);
 
-            $company = Company::firstWhere([
-                'code' => $company_code,
-            ]);
+            $company = Company::findOrFail($company_id);
             $company_id = $company->id;
-
-            $user = User::firstWhere([
-                'user_name' => $user_name,
-            ]);
-
-            if ($user) {
-                throw new BadRequestException();
-            }
 
             $new_user = User::create([
                 'company_id' => $company_id,
@@ -88,13 +79,20 @@ class UserController extends Controller
                 'occured_at' => Carbon::now(),
             ]);
 
-            $newUserResource = new UserResource($new_user);
-            $newUserResource->additional([
-                'password' => $password,
-            ]);
+            $newUserResource = new UserResource($new_user->load('company'));
 
-            return $newUserResource;
+            return array_merge(
+                $newUserResource->toArray(0),
+                [
+                    'password' => $password,
+                ]
+            );
         } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) throw $e;
+
             throw new BadRequestException();
         }
     }
@@ -123,7 +121,7 @@ class UserController extends Controller
                 throw new UnauthorizedHttpException(random_bytes(32));
             }
 
-            $user()->tokens()->delete();
+            $user->tokens()->delete();
             $passwordSetTime = new Carbon($password->set_time);
             $isPasswordExpired = $passwordSetTime->diffInSeconds(Carbon::now()) > $this->password_max_lifetime;
 
@@ -137,7 +135,7 @@ class UserController extends Controller
             }
             $tokenExpiration = Carbon::now()->addHours(25)->toDateTimeString();
 
-            $userResource = new UserResource($user);
+            $userResource = new UserResource($user->load('company'));
 
             Log::insert([
                 'company_id' => $user->company_id,
@@ -159,11 +157,16 @@ class UserController extends Controller
                 ]
             );
         } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) throw $e;
+
             throw new BadRequestException();
         }
     }
 
-    public function check_token(Request $request)
+    public function refresh_token(Request $request)
     {
         try {
             $sender = $request->user();
@@ -186,7 +189,7 @@ class UserController extends Controller
             }
             $tokenExpiration = Carbon::now()->addHours(25)->toDateTimeString();
 
-            $userResource = new UserResource($sender);
+            $userResource = new UserResource($sender->load('company'));
 
             Log::insert([
                 'company_id' => $sender->company_id,
@@ -219,12 +222,14 @@ class UserController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $sender->passwords()->offset(10)->delete();
-            $previousPasswords = $sender->passwords();
+            $oldPasswordIds = $sender->passwords()->limit(100)->offset(10)->pluck('id');
+            UserPassword::whereIn('id', $oldPasswordIds)->delete();
+
+            $previousPasswords = $sender->passwords;
             $newPassword = $request->password;
 
             foreach ($previousPasswords as $previousPassword) {
-                if (Hash::check($newPassword, $previousPassword)) {
+                if (Hash::check($newPassword, $previousPassword->password)) {
                     return response([
                         'status' => 400,
                         'codeName' => 'Bad Request',
@@ -246,6 +251,7 @@ class UserController extends Controller
                 'is_generated' => 0,
                 'set_time' => Carbon::now(),
             ]);
+            $sender->save();
         } catch (Exception $e) {
             throw new BadRequestException();
         }
@@ -258,7 +264,7 @@ class UserController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $companyUsers = $sender->company->users()->get();
+            $companyUsers = $sender->company->users;
 
             Log::insert([
                 'company_id' => $sender->company_id,

@@ -16,28 +16,27 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::controller(UserController::class)->prefix('users')->group(function () {
-    Route::post('/register', 'register')
-        ->middleware(['auth:sanctum', 'ability:M']);
+    Route::post('/', 'create_user')
+        ->middleware(['auth:sanctum', 'ability:AM']);
 
     Route::post('/login', 'login');
 
-    Route::get('/check-token', 'check_token')
+    Route::get('/refresh-token', 'refresh_token')
         ->middleware(['auth:sanctum']);
 
     Route::post('/password', 'change_password')
         ->middleware(['auth:sanctum']);
 
-    Route::get('/', 'viewAll')
-        ->middleware(['auth:sanctum', 'ability:I']);
+    Route::get('/', 'view_all')
+        ->middleware(['auth:sanctum', 'ability:AM']);
 
     Route::delete('/{id}', 'delete')
-        ->middleware(['auth:sanctum', 'ability:I']);
+        ->middleware(['auth:sanctum', 'ability:AM']);
 });
 
 Route::controller(UserRoleController::class)->prefix('users/roles')->group(function () {
-    Route::post('', 'add')->middleware(['auth:sanctum', 'ability:I']);
-
-    Route::delete('', 'delete')->middleware(['auth:sanctum', 'ability:I']);
+    Route::post('/', 'add_user_role')->middleware(['auth:sanctum', 'ability:I']);
+    Route::delete('/', 'remove_user_role')->middleware(['auth:sanctum', 'ability:I']);
 });
 
 /* Route::controller(AgentController::class)->prefix('users')->group(function () {

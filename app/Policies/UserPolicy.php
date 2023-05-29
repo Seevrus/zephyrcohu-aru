@@ -12,6 +12,7 @@ class UserPolicy
     /**
      * Determines whether the user can delete a user
      * 
+     * @param  \App\Models\User  $sender
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */

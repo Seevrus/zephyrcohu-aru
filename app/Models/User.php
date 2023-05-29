@@ -11,8 +11,6 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory;
 
-    protected $dateFormat = DateTime::ATOM;
-
     protected $fillable = [
         'company_id',
         'code',
