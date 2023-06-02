@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('code', 6);
             $table->string('site_code', 4);
             $table->unique(['code', 'site_code']);
-            $table->string('name', 50);
             $table->string('vat_number', 13);
             $table->string('invoice_type', 1); // E, P
             $table->tinyInteger('invoice_copies')->unsigned();
