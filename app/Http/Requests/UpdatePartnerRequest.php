@@ -31,15 +31,15 @@ class UpdatePartnerRequest extends FormRequest
       'data.paymentDays' => 'integer|min:0|max:255',
       'data.iban' => 'string|size:4',
       'data.bankAccount' => 'string|regex:`^\d{8}-\d{8}(?:(-\d{8}))?$`',
-      'data.phoneNumber' => 'regex:`^\+\d{1,19}$',
-      'data.email' => 'string|max:70|email:rfc,dns',
+      'data.phoneNumber' => 'nullable|regex:`^\+\d{1,19}$`',
+      'data.email' => 'nullable|string|max:70|email:rfc,dns',
       'data.locations' => 'array|min:1|max:2|bail',
       'data.locations.*.name' => 'required|string|max:50',
-      'data.locations.*.locationType' => 'required_with:data.*.locations.*|string|in:C,D',
-      'data.locations.*.country' => 'required_with:data.*.locations.*|string|size:2',
-      'data.locations.*.postalCode' => 'required_with:data.*.locations.*|string|max:10',
-      'data.locations.*.city' => 'required_with:data.*.locations.*|string|max:30',
-      'data.locations.*.address' => 'required_with:data.*.locations.*|string|max:40',
+      'data.locations.*.locationType' => 'required_with:data.locations.*|string|in:C,D',
+      'data.locations.*.country' => 'required_with:data.locations.*|string|size:2',
+      'data.locations.*.postalCode' => 'required_with:data.locations.*|string|max:10',
+      'data.locations.*.city' => 'required_with:data.locations.*|string|max:30',
+      'data.locations.*.address' => 'required_with:data.locations.*|string|max:40',
     ];
   }
 }

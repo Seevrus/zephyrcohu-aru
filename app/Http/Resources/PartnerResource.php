@@ -26,7 +26,7 @@ class PartnerResource extends JsonResource
             'bankAccount' => $this->bank_account,
             'phoneNumber' => $this->phone_number,
             'email' => $this->email,
-            'locations' => new PartnerLocationCollection($this->partner_locations),
+            'locations' => new PartnerLocationCollection($this->locations),
             'createdAt' => $this->created_at->toDateTimeString(),
             'updatedAt' => $this->updated_at->toDateTimeString(),
         ];

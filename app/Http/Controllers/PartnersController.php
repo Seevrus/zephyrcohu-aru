@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreatePartnersRequest;
 use App\Http\Requests\UpdatePartnerRequest;
 use App\Http\Resources\PartnerCollection;
+use App\Http\Resources\PartnerResource;
 use App\Models\Log;
 use App\Models\Partner;
 use Carbon\Carbon;
@@ -25,7 +26,15 @@ class PartnersController extends Controller
 
             $company = $sender->company;
 
+            $newPartners = [];
             foreach ($request->data as $partnerRequest) {
+                $existingPartner = Partner::where([
+                    'code' => $partnerRequest['code'],
+                    'site_code' => $partnerRequest['siteCode'],
+                ])->first();
+
+                if ($existingPartner) continue;
+
                 $partner = Partner::create([
                     'company_id' => $company->id,
                     'code' => $partnerRequest['code'],
@@ -53,6 +62,8 @@ class PartnersController extends Controller
                         $partnerRequest['locations']
                     )
                 );
+
+                array_push($newPartners, $partner);
             }
 
             Log::insert([
@@ -62,6 +73,8 @@ class PartnersController extends Controller
                 'action' => 'Created ' . count($request->data) . ' partners',
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
+
+            return new PartnerCollection($newPartners);
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
@@ -79,7 +92,7 @@ class PartnersController extends Controller
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $partners = $sender->company->partners()->with('partner_locations')->get();
+            $partners = $sender->company->partners()->with('locations')->get();
 
             Log::insert([
                 'company_id' => $sender->company_id,
@@ -107,37 +120,44 @@ class PartnersController extends Controller
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $partner = Partner::findOrFail($id);
+            $partner = Partner::find($id);
+
+            if (!$partner) {
+                return response([
+                    'status' => 404,
+                    'codeName' => 'Not Found',
+                    'message' => 'The server cannot find the requested partner.',
+                ], 404);
+            }
+
             $this->authorize('update', $partner);
 
-            if ($request->data->vatNumber) {
-                $partner->vat_number = $request->data->vatNumber;
+            if ($request->data['vatNumber'] ?? null) {
+                $partner->vat_number = $request->data['vatNumber'];
             }
-            if ($request->data->invoiceType) {
-                $partner->invoice_type = $request->data->invoiceType;
+            if ($request->data['invoiceType'] ?? null) {
+                $partner->invoice_type = $request->data['invoiceType'];
             }
-            if ($request->data->invoiceCopies) {
-                $partner->invoice_copies = $request->data->invoiceCopies;
+            if ($request->data['invoiceCopies'] ?? null) {
+                $partner->invoice_copies = $request->data['invoiceCopies'];
             }
-            if ($request->data->paymentDays) {
-                $partner->payment_days = $request->data->paymentDays;
+            if ($request->data['paymentDays'] ?? null) {
+                $partner->payment_days = $request->data['paymentDays'];
             }
-            if ($request->data->iban) {
-                $partner->iban = $request->data->iban;
+            if ($request->data['iban'] ?? null) {
+                $partner->iban = $request->data['iban'];
             }
-            if ($request->data->bankAccount) {
-                $partner->bank_account = $request->data->bankAccount;
+            if ($request->data['bankAccount'] ?? null) {
+                $partner->bank_account = $request->data['bankAccount'];
             }
-            if (!!$request->data->phoneNumber || $request->data->phoneNumber === null) {
-                $partner->phone_number = $request->data->phoneNumber;
+            if (!!$request->data['phoneNumber'] ?? null || $request->data['phoneNumber'] === null) {
+                $partner->phone_number = $request->data['phoneNumber'];
             }
-            if (!!$request->data->email || $request->data->email === null) {
-                $partner->email = $request->data->email;
+            if (!!$request->data['email'] ?? null || $request->data['email'] === null) {
+                $partner->email = $request->data['email'];
             }
 
-            $partner->save();
-
-            $newLocations = $request->data->locations;
+            $newLocations = $request->data['locations'] ?? null;
             if ($newLocations) {
                 $partner->locations()->delete();
 
@@ -151,10 +171,12 @@ class PartnersController extends Controller
                             'city' => $locationRequest['city'],
                             'address' => $locationRequest['address'],
                         ],
-                        $request->data->locations
+                        $request->data['locations']
                     )
                 );
             }
+
+            $partner->save();
 
             Log::insert([
                 'company_id' => $sender->company_id,
@@ -163,6 +185,8 @@ class PartnersController extends Controller
                 'action' => 'Updated partner ' . $partner->id,
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
+
+            return new PartnerResource($partner);
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException

@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class CreatePartnersRequest extends FormRequest
 {
@@ -24,35 +23,17 @@ class CreatePartnersRequest extends FormRequest
      */
     public function rules()
     {
-        $requestData = $this->validationData();
-
         return [
             'data' => 'required|array|bail',
-            'data.*.code' => [
-                'required',
-                'string',
-                'size:6',
-                Rule::unique('partners')->where(fn ($query) => $query->where([
-                    'code' => $requestData['code'],
-                    'site_code' => $requestData['siteCode'],
-                ])),
-            ],
-            'data.*.siteCode' => [
-                'required',
-                'string',
-                'size:4',
-                Rule::unique('partners')->where(fn ($query) => $query->where([
-                    'code' => $requestData['code'],
-                    'site_code' => $requestData['siteCode'],
-                ])),
-            ],
+            'data.*.code' => 'required|string|size:6',
+            'data.*.siteCode' => 'required|string|size:4',
             'data.*.vatNumber' => 'required|regex:`^\d{8}-\d{1}-\d{2}$`',
             'data.*.invoiceType' => 'required|string|in:E,P',
             'data.*.invoiceCopies' => 'required|integer|min:0|max:255',
             'data.*.paymentDays' => 'required|integer|min:0|max:255',
             'data.*.iban' => 'required|string|size:4',
             'data.*.bankAccount' => 'required|string|regex:`^\d{8}-\d{8}(?:(-\d{8}))?$`',
-            'data.*.phoneNumber' => 'regex:`^\+\d{1,19}$',
+            'data.*.phoneNumber' => 'regex:`^\+\d{1,19}$`',
             'data.*.email' => 'string|max:70|email:rfc,dns',
             'data.*.locations' => 'required|array|min:1|max:2|bail',
             'data.*.locations.*.name' => 'required|string|max:50',
