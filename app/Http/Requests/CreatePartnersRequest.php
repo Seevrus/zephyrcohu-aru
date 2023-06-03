@@ -3,10 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Hash;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Illuminate\Validation\Rule;
 
-class StorePartnerRequest extends FormRequest
+class CreatePartnersRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,10 +14,6 @@ class StorePartnerRequest extends FormRequest
      */
     public function authorize()
     {
-        if (!Hash::check(request()->header('X-Device-Id'), $this->user()->device_id)) {
-            throw new UnauthorizedHttpException(random_bytes(32));
-        }
-
         return true;
     }
 
@@ -29,10 +24,28 @@ class StorePartnerRequest extends FormRequest
      */
     public function rules()
     {
+        $requestData = $this->validationData();
+
         return [
             'data' => 'required|array|bail',
-            'data.*.code' => 'required|string|size:6',
-            'data.*.siteCode' => 'required|string|size:4',
+            'data.*.code' => [
+                'required',
+                'string',
+                'size:6',
+                Rule::unique('partners')->where(fn ($query) => $query->where([
+                    'code' => $requestData['code'],
+                    'site_code' => $requestData['siteCode'],
+                ])),
+            ],
+            'data.*.siteCode' => [
+                'required',
+                'string',
+                'size:4',
+                Rule::unique('partners')->where(fn ($query) => $query->where([
+                    'code' => $requestData['code'],
+                    'site_code' => $requestData['siteCode'],
+                ])),
+            ],
             'data.*.vatNumber' => 'required|regex:`^\d{8}-\d{1}-\d{2}$`',
             'data.*.invoiceType' => 'required|string|in:E,P',
             'data.*.invoiceCopies' => 'required|integer|min:0|max:255',
@@ -48,9 +61,6 @@ class StorePartnerRequest extends FormRequest
             'data.*.locations.*.postalCode' => 'required_with:data.*.locations.*|string|max:10',
             'data.*.locations.*.city' => 'required_with:data.*.locations.*|string|max:30',
             'data.*.locations.*.address' => 'required_with:data.*.locations.*|string|max:40',
-            'data.*.priceList' => 'array',
-            'data.*.priceList.*.articleNumber' => 'required_with:data.*.priceList|string|size:16|exists:items,article_number',
-            'data.*.priceList.*.netPrice' => 'required_with:data.*.priceList|integer|min:0|max:2147483647',
         ];
     }
 }

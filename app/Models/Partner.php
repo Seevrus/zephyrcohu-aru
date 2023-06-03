@@ -28,4 +28,9 @@ class Partner extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function locations()
+    {
+        return $this->hasMany(PartnerLocation::class);
+    }
 }

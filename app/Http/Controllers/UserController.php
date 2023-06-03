@@ -128,9 +128,10 @@ class UserController extends Controller
             if ($password->is_generated === 1 || $isPasswordExpired) {
                 $token = $user->createToken('boreal', ['password']);
             } else {
-                $roles = array_map(function ($role) {
-                    return $role['role'];
-                }, $user->roles->toArray());
+                $roles = array_map(
+                    fn ($role) =>  $role['role'],
+                    $user->roles->toArray()
+                );
                 $token = $user->createToken('boreal', $roles);
             }
             $tokenExpiration = Carbon::now()->addHours(25)->toDateTimeString();
@@ -182,9 +183,10 @@ class UserController extends Controller
             if ($password->is_generated === 1 || $isPasswordExpired) {
                 $token = $sender->createToken('boreal', ['password']);
             } else {
-                $roles = array_map(function ($role) {
-                    return $role['role'];
-                }, $sender->roles->toArray());
+                $roles = array_map(
+                    fn ($role) =>  $role['role'],
+                    $sender->roles->toArray()
+                );
                 $token = $sender->createToken('boreal', $roles);
             }
             $tokenExpiration = Carbon::now()->addHours(25)->toDateTimeString();

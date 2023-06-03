@@ -2,59 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePartnerRequest;
+use App\Http\Requests\CreatePartnersRequest;
+use App\Http\Requests\UpdatePartnerRequest;
 use App\Http\Resources\PartnerCollection;
-use App\Models\Item;
 use App\Models\Log;
 use App\Models\Partner;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class PartnersController extends Controller
 {
-    /**
-     * View the list of partners
-     */
-    public function viewAll(Request $request)
-    {
-        try {
-            $this->authorize('viewAll', Partner::class);
-
-            $sender = $request->user();
-            $sender->last_active = date('Y-m-d H:i:s');
-            $sender->save();
-
-            $partners = $sender->company->partners()->with('partner_locations', 'items')->get();
-
-            Log::insert([
-                'company_id' => $sender->company_id,
-                'user_id' => $sender->id,
-                'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $partners->count() . ' partners',
-                'occured_at' => date('Y-m-d H:i:s'),
-            ]);
-
-            return new PartnerCollection($partners);
-        } catch (Exception $e) {
-            if (
-                $e instanceof UnauthorizedHttpException
-                || $e instanceof AuthorizationException
-            ) throw $e;
-
-            throw new UnprocessableEntityHttpException();
-        }
-    }
-
-    /**
-     * Delete previous partners and store the new array in the database
-     *
-     * @param  \Illuminate\Http\StorePartnerRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StorePartnerRequest $request)
+    public function create_partners(CreatePartnersRequest $request)
     {
         try {
             $sender = $request->user();
@@ -62,7 +24,6 @@ class PartnersController extends Controller
             $sender->save();
 
             $company = $sender->company;
-            $company->partners()->delete();
 
             foreach ($request->data as $partnerRequest) {
                 $partner = Partner::create([
@@ -79,28 +40,26 @@ class PartnersController extends Controller
                     'email' => $partnerRequest['email'] ?? null,
                 ]);
 
-                $partner->partner_locations()->createMany(array_map(function ($locationRequest) {
-                    return [
-                        'name' => $locationRequest['name'],
-                        'location_type' => $locationRequest['locationType'],
-                        'country' => $locationRequest['country'],
-                        'postal_code' => $locationRequest['postalCode'],
-                        'city' => $locationRequest['city'],
-                        'address' => $locationRequest['address'],
-                    ];
-                }, $partnerRequest['locations']));
-
-                foreach ($partnerRequest['priceList'] ?? [] as $priceRequest) {
-                    $item = Item::firstWhere('article_number', $priceRequest['articleNumber']);
-                    $partner->items()->attach($item, ['net_price' => $priceRequest['netPrice']]);
-                }
+                $partner->locations()->createMany(
+                    array_map(
+                        fn ($locationRequest) => [
+                            'name' => $locationRequest['name'],
+                            'location_type' => $locationRequest['locationType'],
+                            'country' => $locationRequest['country'],
+                            'postal_code' => $locationRequest['postalCode'],
+                            'city' => $locationRequest['city'],
+                            'address' => $locationRequest['address'],
+                        ],
+                        $partnerRequest['locations']
+                    )
+                );
             }
 
             Log::insert([
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Stored ' . count($request->data) . ' partners',
+                'action' => 'Created ' . count($request->data) . ' partners',
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
         } catch (Exception $e) {
@@ -109,7 +68,137 @@ class PartnersController extends Controller
                 || $e instanceof AuthorizationException
             ) throw $e;
 
-            throw new UnprocessableEntityHttpException();
+            throw new BadRequestException();
+        }
+    }
+
+    public function view_all(Request $request)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->save();
+
+            $partners = $sender->company->partners()->with('partner_locations')->get();
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Accessed ' . $partners->count() . ' partners',
+                'occured_at' => Carbon::now(),
+            ]);
+
+            return new PartnerCollection($partners);
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) throw $e;
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function update_partner(UpdatePartnerRequest $request, int $id)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->save();
+
+            $partner = Partner::findOrFail($id);
+            $this->authorize('update', $partner);
+
+            if ($request->data->vatNumber) {
+                $partner->vat_number = $request->data->vatNumber;
+            }
+            if ($request->data->invoiceType) {
+                $partner->invoice_type = $request->data->invoiceType;
+            }
+            if ($request->data->invoiceCopies) {
+                $partner->invoice_copies = $request->data->invoiceCopies;
+            }
+            if ($request->data->paymentDays) {
+                $partner->payment_days = $request->data->paymentDays;
+            }
+            if ($request->data->iban) {
+                $partner->iban = $request->data->iban;
+            }
+            if ($request->data->bankAccount) {
+                $partner->bank_account = $request->data->bankAccount;
+            }
+            if (!!$request->data->phoneNumber || $request->data->phoneNumber === null) {
+                $partner->phone_number = $request->data->phoneNumber;
+            }
+            if (!!$request->data->email || $request->data->email === null) {
+                $partner->email = $request->data->email;
+            }
+
+            $partner->save();
+
+            $newLocations = $request->data->locations;
+            if ($newLocations) {
+                $partner->locations()->delete();
+
+                $partner->locations()->createMany(
+                    array_map(
+                        fn ($locationRequest) => [
+                            'name' => $locationRequest['name'],
+                            'location_type' => $locationRequest['locationType'],
+                            'country' => $locationRequest['country'],
+                            'postal_code' => $locationRequest['postalCode'],
+                            'city' => $locationRequest['city'],
+                            'address' => $locationRequest['address'],
+                        ],
+                        $request->data->locations
+                    )
+                );
+            }
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Updated partner ' . $partner->id,
+                'occured_at' => date('Y-m-d H:i:s'),
+            ]);
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) throw $e;
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function delete_partner(int $id)
+    {
+        try {
+            $sender = request()->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $partner = Partner::findOrFail($id);
+            $this->authorize('delete', $partner);
+
+            $partner->delete();
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Deleted partner ' . $partner->id,
+                'occured_at' => Carbon::now(),
+            ]);
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) throw $e;
+
+            throw new BadRequestException();
         }
     }
 }

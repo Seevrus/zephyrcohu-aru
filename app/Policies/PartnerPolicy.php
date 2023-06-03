@@ -2,27 +2,21 @@
 
 namespace App\Policies;
 
+use App\Models\Partner;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Hash;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class PartnerPolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Determine whether the user can view any models.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function viewAll(User $user)
+    public function update(User $user, Partner $partner)
     {
-        if (!Hash::check(request()->header('X-Device-Id'), $user->device_id)) {
-            throw new UnauthorizedHttpException(random_bytes(32));
-        }
+        return $user->company_id === $partner->company->id;
+    }
 
-        return true;
+    public function delete(User $user, Partner $partner)
+    {
+        return $user->company_id === $partner->company->id;
     }
 }
