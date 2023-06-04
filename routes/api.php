@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\PartnersController;
+use App\Http\Controllers\PartnerController;
+use App\Http\Controllers\PartnerListController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRoleController;
 use Illuminate\Support\Facades\Route;
@@ -36,15 +37,33 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
     Route::get('/', 'view_all')
         ->middleware(['auth:sanctum', 'ability:AM']);
 
-    Route::delete('/{id}', 'delete')
+    Route::delete('/{id}', 'remove')
         ->middleware(['auth:sanctum', 'ability:AM']);
 });
 
-Route::controller(PartnersController::class)->prefix('partners')->group(function () {
+Route::controller(PartnerController::class)->prefix('partners')->group(function () {
     Route::post('/', 'create_partners')->middleware(['auth:sanctum', 'ability:I']);
     Route::get('/', 'view_all')->middleware(['auth:sanctum', 'ability:I,A']);
     Route::post('/{id}', 'update_partner')->middleware(['auth:sanctum', 'ability:I']);
-    Route::delete('/{id}', 'delete_partner')->middleware(['auth:sanctum', 'ability:I']);
+    Route::delete('/{id}', 'remove_partner')->middleware(['auth:sanctum', 'ability:I']);
+});
+
+Route::controller(PartnerListController::class)->prefix('partner-lists')->group(function () {
+    Route::post('/', 'create_partner_list')->middleware(['auth:sanctum', 'ability:I']);
+
+    Route::get('/', 'view_all')->middleware(['auth:sanctum', 'ability:I,A']);
+
+    Route::post('/{id}', 'update_partner_list')
+        ->middleware(['auth:sanctum', 'ability:I,A']);
+
+    Route::post('/{id}/{partnerId}', 'add_partner')
+        ->middleware(['auth:sanctum', 'ability:I']);
+
+    Route::delete('/{id}/{partnerId}', 'remove_partner')
+        ->middleware(['auth:sanctum', 'ability:I']);
+
+    Route::delete('/{id}', 'remove_partner_list')
+        ->middleware(['auth:sanctum', 'ability:I,A']);
 });
 
 /* Route::controller(AgentController::class)->prefix('users')->group(function () {
@@ -65,11 +84,6 @@ Route::controller(OrderController::class)->prefix('orders')->group(function () {
         ->middleware(['auth:sanctum', 'ability:app']);
     Route::delete('/', 'delete')
         ->middleware(['auth:sanctum', 'ability:integra']);
-});
-
-Route::controller(PartnerListController::class)->prefix('partner-lists')->group(function () {
-    Route::get('/', 'viewAll')->middleware(['auth:sanctum', 'ability:app,integra']);
-    Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
 });
 
 Route::controller(StoreController::class)->prefix('/stores')->group(function () {

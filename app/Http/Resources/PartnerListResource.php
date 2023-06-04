@@ -17,7 +17,7 @@ class PartnerListResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'partners' => new PartnerListPartnerCollection($this->partners),
+            'partners' => new PartnerCollection($this->whenLoaded('partners')),
             'createdAt' => $this->created_at->toDateTimeString(),
             'updatedAt' => $this->updated_at->toDateTimeString(),
         ];

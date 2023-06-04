@@ -15,7 +15,7 @@ class PartnerPolicy
         return $user->company_id === $partner->company->id;
     }
 
-    public function delete(User $user, Partner $partner)
+    public function remove(User $user, Partner $partner)
     {
         return $user->company_id === $partner->company->id;
     }

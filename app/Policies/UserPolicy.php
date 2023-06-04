@@ -16,7 +16,7 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $sender, User $user)
+    public function remove(User $sender, User $user)
     {
         return $sender->company_id === $user->company_id;
     }

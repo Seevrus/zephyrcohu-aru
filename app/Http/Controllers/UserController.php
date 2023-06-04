@@ -282,7 +282,7 @@ class UserController extends Controller
         }
     }
 
-    public function delete(int $id)
+    public function remove(int $id)
     {
         try {
             $sender = request()->user();
@@ -290,7 +290,7 @@ class UserController extends Controller
             $sender->save();
 
             $user = User::findOrFail($id);
-            $this->authorize('delete', $user);
+            $this->authorize('remove', $user);
 
             $user->delete();
 
@@ -298,7 +298,7 @@ class UserController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Deleted user ' . $user->id,
+                'action' => 'Removed user ' . $user->id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {

@@ -14,6 +14,11 @@ class Company extends Model
         return $this->hasMany(Partner::class);
     }
 
+    public function partnerLists()
+    {
+        return $this->hasMany(PartnerList::class);
+    }
+
     public function users()
     {
         return $this->hasMany(User::class);

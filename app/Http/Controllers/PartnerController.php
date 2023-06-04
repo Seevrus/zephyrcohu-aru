@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class PartnersController extends Controller
+class PartnerController extends Controller
 {
     public function create_partners(CreatePartnersRequest $request)
     {
@@ -197,7 +197,7 @@ class PartnersController extends Controller
         }
     }
 
-    public function delete_partner(int $id)
+    public function remove_partner(int $id)
     {
         try {
             $sender = request()->user();
@@ -205,7 +205,7 @@ class PartnersController extends Controller
             $sender->save();
 
             $partner = Partner::findOrFail($id);
-            $this->authorize('delete', $partner);
+            $this->authorize('remove', $partner);
 
             $partner->delete();
 
@@ -213,7 +213,7 @@ class PartnersController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Deleted partner ' . $partner->id,
+                'action' => 'Removed partner ' . $partner->id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {

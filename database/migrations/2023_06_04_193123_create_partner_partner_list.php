@@ -16,6 +16,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('partner_partner_list', function (Blueprint $table) {
+            $table->id();
             $table->foreignIdFor(Partner::class)->references('id')->on('partners')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignIdFor(PartnerList::class)->references('id')->on('partner_lists')->cascadeOnUpdate()->cascadeOnDelete();
         });
