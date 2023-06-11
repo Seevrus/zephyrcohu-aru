@@ -5,6 +5,7 @@ import fontSizes from '../../constants/fontSizes';
 type InputProps = {
   label: string;
   labelPosition?: 'left' | 'top';
+  value?: string;
   invalid?: boolean;
   textAlign?: 'left' | 'auto' | 'center' | 'right' | 'justify';
   config?: TextInputProps;
@@ -12,12 +13,20 @@ type InputProps = {
 
 const defaultProps = {
   labelPosition: 'top',
+  value: '',
   invalid: false,
   textAlign: 'left',
   config: {},
 };
 
-export default function Input({ label, labelPosition, invalid, textAlign, config }: InputProps) {
+export default function Input({
+  label,
+  labelPosition,
+  value,
+  invalid,
+  textAlign,
+  config,
+}: InputProps) {
   const dynamicStyles = StyleSheet.create({
     container: {
       flexDirection: labelPosition === 'left' ? 'row' : 'column',
@@ -41,6 +50,7 @@ export default function Input({ label, labelPosition, invalid, textAlign, config
       <TextInput
         style={[styles.input, config?.multiline && styles.multiline, dynamicStyles.input]}
         {...config}
+        {...(value && { value })}
       />
     </View>
   );

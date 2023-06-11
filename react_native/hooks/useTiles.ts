@@ -1,20 +1,22 @@
+import { useNetInfo } from '@react-native-community/netinfo';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FC } from 'react';
 import { Alert } from 'react-native';
 import { SvgProps } from 'react-native-svg';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import {
-  EndErrandTile,
-  ReceiptsTile,
-  SelectPartnerTile,
-  StartErrandTile,
-} from '../../hooks/useIndexTile';
+import useTileStates, {
+  EndErrandTileState,
+  ReceiptsTileState,
+  SelectPartnerTileState,
+  StartErrandTileState,
+} from './useTileStates';
 
-import EndErrandLogo from '../../assets/svg/end-errand.svg';
-import PurchaseLogo from '../../assets/svg/purchase.svg';
-import ReceiptsLogo from '../../assets/svg/receipts.svg';
-import StartErrandLogo from '../../assets/svg/start-errand.svg';
-import { StackParams } from '../screen-types';
+import EndErrandLogo from '../assets/svg/end-errand.svg';
+import PurchaseLogo from '../assets/svg/purchase.svg';
+import ReceiptsLogo from '../assets/svg/receipts.svg';
+import StartErrandLogo from '../assets/svg/start-errand.svg';
+import { StackParams } from '../screens/screen-types';
 
 export type TileT = {
   id: string;
@@ -24,31 +26,23 @@ export type TileT = {
   onPress: () => void;
 };
 
-export const getTiles = ({
-  isInternetReachable,
-  selectPartnerTile,
-  receiptsTile,
-  startErrandTile,
-  endErrandTile,
-  numberOfReceipts,
-  navigation,
-}: {
-  isInternetReachable: boolean;
-  selectPartnerTile: SelectPartnerTile;
-  receiptsTile: ReceiptsTile;
-  startErrandTile: StartErrandTile;
-  endErrandTile: EndErrandTile;
-  numberOfReceipts: number;
-  navigation: NativeStackNavigationProp<StackParams, 'Index'>;
-}) => {
-  const TILES: TileT[] = [
+export default function useTiles(): TileT[] {
+  const { isInternetReachable } = useNetInfo();
+  const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
+
+  const { selectPartnerTileState, receiptsTileState, startErrandTileState, endErrandTileState } =
+    useTileStates();
+
+  const numberOfReceipts = 0;
+
+  return [
     {
       id: 't0',
       title: 'Árulevétel',
       icon: PurchaseLogo,
-      variant: selectPartnerTile,
+      variant: selectPartnerTileState,
       onPress: () => {
-        if (selectPartnerTile === SelectPartnerTile.Disabled) {
+        if (selectPartnerTileState === SelectPartnerTileState.Disabled) {
           Alert.alert('Funkció nem elérhető', 'Árulevétel csak a kör indítása után lehetséges.', [
             { text: 'Értem' },
           ]);
@@ -61,9 +55,9 @@ export const getTiles = ({
       id: 't1',
       title: `Bizonylatok (${numberOfReceipts})`,
       icon: ReceiptsLogo,
-      variant: receiptsTile,
+      variant: receiptsTileState,
       onPress: () => {
-        if (receiptsTile === ReceiptsTile.Disabled) {
+        if (receiptsTileState === ReceiptsTileState.Disabled) {
           Alert.alert('Funkció nem elérhető', 'Még nem készült bizonylat.', [{ text: 'Értem' }]);
         } else {
           navigation.navigate('ReceiptList');
@@ -74,14 +68,14 @@ export const getTiles = ({
       id: 't2',
       title: 'Kör indítása',
       icon: StartErrandLogo,
-      variant: startErrandTile,
+      variant: startErrandTileState,
       onPress: () => {
-        if (startErrandTile === StartErrandTile.Disabled) {
+        if (startErrandTileState === StartErrandTileState.Disabled) {
           const alertMessage = isInternetReachable
             ? 'Már van elkészült bizonylat.'
             : 'Az alkalmazás jelenleg internetkapcsolat nélkül működik.';
           Alert.alert('Funkció nem elérhető', alertMessage, [{ text: 'Értem' }]);
-        } else if (startErrandTile === StartErrandTile.Warning) {
+        } else if (startErrandTileState === StartErrandTileState.Warning) {
           Alert.alert('Megerősítés szükséges', 'Biztosan szeretne új kört indítani?', [
             { text: 'Mégsem' },
             {
@@ -100,9 +94,9 @@ export const getTiles = ({
       id: 't3',
       title: 'Kör zárása',
       icon: EndErrandLogo,
-      variant: endErrandTile,
+      variant: endErrandTileState,
       onPress: () => {
-        if (endErrandTile === EndErrandTile.Disabled) {
+        if (endErrandTileState === EndErrandTileState.Disabled) {
           Alert.alert('Funkció nem elérhető', 'Nincs kör indítva.', [{ text: 'Értem' }]);
         } else {
           navigation.navigate('EndErrand');
@@ -110,6 +104,4 @@ export const getTiles = ({
       },
     },
   ];
-
-  return TILES;
-};
+}

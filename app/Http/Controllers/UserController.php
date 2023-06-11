@@ -104,6 +104,10 @@ class UserController extends Controller
                 'user_name' => $request->userName,
             ]);
 
+            if (!$user) {
+                throw new UnauthorizedHttpException(random_bytes(32));
+            }
+
             $user->last_active = Carbon::now();
             $user->save();
 
@@ -141,7 +145,7 @@ class UserController extends Controller
             Log::insert([
                 'company_id' => $user->company_id,
                 'user_id' => $user->id,
-                'token_id' => 0,
+                'token_id' => $token->accessToken->id,
                 'action' => 'Successfully logged in',
                 'occured_at' => Carbon::now(),
             ]);

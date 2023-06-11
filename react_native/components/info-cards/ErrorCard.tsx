@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   icon: {
-    marginTop: 8,
+    marginTop: 4,
     marginRight: 8,
   },
   informationContainer: {

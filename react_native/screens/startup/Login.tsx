@@ -1,67 +1,50 @@
-import 'react-native-get-random-values';
-
-import * as SecureStore from 'expo-secure-store';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
 
-import { registerDevice } from '../../store/config-slice/config-api-actions';
-import { useAppDispatch } from '../../store/hooks';
-
+import useLogin from '../../api/mutations/useLogin';
 import ErrorCard from '../../components/info-cards/ErrorCard';
 import TextCard from '../../components/info-cards/TextCard';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import colors from '../../constants/colors';
-import { RegisterDeviceProps } from '../screen-types';
+import { LoginProps } from '../screen-types';
 
-export default function RegisterDevice({ navigation }: RegisterDeviceProps) {
-  const dispatch = useAppDispatch();
-
-  const [tokenInput, setTokenInput] = useState<string>('');
+export default function Login({ navigation }: LoginProps) {
+  const login = useLogin();
+  const [userName, setUserName] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  useEffect(() => {
-    if (!tokenInput.length) {
-      setErrorMessage('');
-    }
-  }, [tokenInput.length]);
-
-  const inputChangedHandler = (value: string) => {
-    setTokenInput(value);
+  const changeUserNameHandler = (value: string) => {
+    setErrorMessage('');
+    setUserName(value);
   };
 
-  const registerDeviceHandler = async () => {
+  const changePasswordHandler = (value: string) => {
     setErrorMessage('');
-    const deviceId: string = uuidv4();
+    setPassword(value);
+  };
+
+  const loginHandler = async () => {
+    setErrorMessage('');
 
     try {
-      await dispatch(registerDevice({ deviceId, token: tokenInput }));
+      await login.mutateAsync({ userName, password });
+      navigation.replace('StartupCheck');
     } catch (err) {
       setErrorMessage(err.message);
-      return;
+      setPassword('');
     }
-
-    try {
-      await SecureStore.setItemAsync('boreal-token', tokenInput);
-      await SecureStore.setItemAsync('boreal-device-id', deviceId);
-    } catch (_) {
-      setErrorMessage('Váratlan hiba lépett fel az eszközazonosító tárolása során.');
-      return;
-    }
-
-    navigation.replace('StartupCheck');
   };
 
-  const isRegisterButtonDisabled = tokenInput.length === 0 || !!errorMessage;
+  const isLoginButtonDisabled = userName.length === 0 || password.length === 0 || !!errorMessage;
 
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
       <View style={styles.welcome}>
         <TextCard>
           Üdvözöljük a <Text style={styles.cardEmphasized}>Zephyr Boreal</Text> áruforgalmi
-          alkalmazás kezdőoldalán! A kezdéshez adja meg az adminisztrátorától kapott bejelentkezési
-          kódot.
+          alkalmazás kezdőoldalán! Kérem jelentkezzen be.
         </TextCard>
       </View>
       {!!errorMessage && (
@@ -72,22 +55,33 @@ export default function RegisterDevice({ navigation }: RegisterDeviceProps) {
       <View style={styles.form}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
           <Input
-            label="Kód"
+            label="Felhasználónév"
+            value={userName}
+            invalid={!!errorMessage}
             config={{
               autoCapitalize: 'none',
               autoComplete: 'off',
               autoCorrect: false,
               importantForAutofill: 'no',
-              multiline: true,
-              onChangeText: inputChangedHandler,
+              onChangeText: changeUserNameHandler,
+            }}
+          />
+          <Input
+            label="Jelszó"
+            value={password}
+            invalid={!!errorMessage}
+            config={{
+              secureTextEntry: true,
+              autoCapitalize: 'none',
+              autoComplete: 'off',
+              autoCorrect: false,
+              importantForAutofill: 'no',
+              onChangeText: changePasswordHandler,
             }}
           />
           <View style={styles.buttonContainer}>
-            <Button
-              variant={isRegisterButtonDisabled ? 'disabled' : 'ok'}
-              onPress={registerDeviceHandler}
-            >
-              Alkalmazás regisztrációja
+            <Button variant={isLoginButtonDisabled ? 'disabled' : 'ok'} onPress={loginHandler}>
+              Bejelentkezés
             </Button>
           </View>
         </KeyboardAvoidingView>

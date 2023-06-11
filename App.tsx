@@ -1,36 +1,27 @@
-import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import { QueryClient } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
-import { Pressable } from 'react-native';
 
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import Loading from './react_native/components/Loading';
 import colors from './react_native/constants/colors';
 import fontSizes from './react_native/constants/fontSizes';
-import EndErrand from './react_native/screens/errand-administration/EndErrand';
-import StartErrand from './react_native/screens/errand-administration/StartErrand';
 import StartupError from './react_native/screens/errors/StartupError';
-import ReceiptDetails from './react_native/screens/receipts/ReceiptDetails';
-import ReceiptList from './react_native/screens/receipts/ReceiptList';
-import { PartnerList, PartnerTabParams, StackParams } from './react_native/screens/screen-types';
-import Review from './react_native/screens/sell/review/Review';
-import SelectItems from './react_native/screens/sell/select-items/SelectItems';
-import SelectPartner from './react_native/screens/sell/select-partner/SelectPartner';
-import Summary from './react_native/screens/sell/summary/Summary';
+import { StackParams } from './react_native/screens/screen-types';
 import Index from './react_native/screens/start-page/Index';
-import RegisterDevice from './react_native/screens/startup/RegisterDevice';
-import StartupCheck from './react_native/screens/startup/StartupCheck';
+import SettingsButton from './react_native/screens/start-page/SettingsButton';
+import Login from './react_native/screens/startup/Login';
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      cacheTime: 1000 * 60 * 60 * 24,
+      cacheTime: Infinity,
+      staleTime: Infinity,
+      retry: 3,
     },
   },
 });
@@ -40,17 +31,9 @@ const asyncStoragePersister = createAsyncStoragePersister({
 });
 
 const Stack = createNativeStackNavigator<StackParams>();
-const PartnerTab = createBottomTabNavigator<PartnerTabParams>();
+// const PartnerTab = createBottomTabNavigator<PartnerTabParams>();
 
-function Settings() {
-  return (
-    <Pressable style={({ pressed }) => [pressed && { opacity: 0.75 }]}>
-      <MaterialIcons name="settings" size={36} color="white" />
-    </Pressable>
-  );
-}
-
-function Partners() {
+/* function Partners() {
   const storePartnersIcon = ({ color }) => <MaterialIcons name="store" size={30} color={color} />;
 
   const allPartnersIcon = ({ color }) => (
@@ -93,7 +76,7 @@ function Partners() {
       />
     </PartnerTab.Navigator>
   );
-}
+} */
 
 function Main() {
   const [fontsLoaded] = useFonts({
@@ -124,29 +107,20 @@ function Main() {
           }}
         >
           <Stack.Screen
-            name="StartupCheck"
-            component={StartupCheck}
-            options={{ headerShown: false }}
+            name="Index"
+            component={Index}
+            options={{
+              headerTitle: 'Kör képernyő',
+              headerRight: SettingsButton,
+            }}
           />
           <Stack.Screen
             name="StartupError"
             component={StartupError}
             options={{ headerTitle: 'Hiba!' }}
           />
-          <Stack.Screen
-            name="RegisterDevice"
-            component={RegisterDevice}
-            options={{ headerTitle: 'Zephyr Boreal' }}
-          />
-          <Stack.Screen
-            name="Index"
-            component={Index}
-            options={{
-              headerTitle: 'Kör képernyő',
-              headerRight: Settings,
-            }}
-          />
-          <Stack.Screen
+          <Stack.Screen name="Login" component={Login} options={{ headerTitle: 'Bejelentkezés' }} />
+          {/*  <Stack.Screen
             name="SelectPartner"
             component={Partners}
             options={{
@@ -201,7 +175,7 @@ function Main() {
             options={{
               headerTitle: 'Kör zárása',
             }}
-          />
+          /> */}
         </Stack.Navigator>
       </NavigationContainer>
     </>

@@ -1,55 +1,19 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useEffect } from 'react';
 import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
-import useCheckToken from '../../hooks/useCheckToken';
-import useIndexTile from '../../hooks/useIndexTile';
-import useToken from '../../hooks/useToken';
-
-import { useAppSelector } from '../../store/hooks';
-
-import TextCard from '../../components/info-cards/TextCard';
-import Loading from '../../components/Loading';
 import Tile from '../../components/Tile';
+import TextCard from '../../components/info-cards/TextCard';
 import colors from '../../constants/colors';
-import { IndexProps } from '../screen-types';
-import { getTiles, TileT } from './getTiles';
+import useTiles, { TileT } from '../../hooks/useTiles';
+import useToken from '../../api/queries/useToken';
 
-export default function Index({ navigation }: IndexProps) {
+export default function Index() {
   const { isInternetReachable } = useNetInfo();
+  const {
+    data: { isTokenExpired },
+  } = useToken();
 
-  const { deviceId, token, credentialsAvailable } = useToken();
-  const [isTokenValid, tokenValidationError] = useCheckToken(
-    isInternetReachable,
-    credentialsAvailable,
-    deviceId,
-    token
-  );
-  const { selectPartnerTile, receiptsTile, startErrandTile, endErrandTile } = useIndexTile();
-
-  useEffect(() => {
-    if (tokenValidationError) {
-      navigation.replace('StartupError', {
-        message: 'A korábban megadott belépőkód nem érvényes.',
-      });
-    }
-  }, [navigation, tokenValidationError]);
-
-  const numberOfReceipts = useAppSelector((state) => state.round.receipts)?.length ?? 0;
-
-  const tiles = getTiles({
-    isInternetReachable,
-    selectPartnerTile,
-    receiptsTile,
-    startErrandTile,
-    endErrandTile,
-    numberOfReceipts,
-    navigation,
-  });
-
-  if (isInternetReachable && !isTokenValid && !tokenValidationError) {
-    return <Loading />;
-  }
+  const tiles = useTiles();
 
   const renderTile: ListRenderItem<TileT> = (info: ListRenderItemInfo<TileT>) => (
     <Tile
@@ -65,6 +29,11 @@ export default function Index({ navigation }: IndexProps) {
       {!isInternetReachable && (
         <View style={styles.textCardContainer}>
           <TextCard>Az alkalmazás jelenleg internetkapcsolat nélkül működik.</TextCard>
+        </View>
+      )}
+      {isTokenExpired && (
+        <View style={styles.textCardContainer}>
+          <TextCard>Körindításhoz és -záráshoz kérem jelentkezzen be.</TextCard>
         </View>
       )}
       <FlatList

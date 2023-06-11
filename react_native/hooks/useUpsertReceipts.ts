@@ -1,7 +1,7 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useEffect, useState } from 'react';
 
-import useToken from './useToken';
+import useToken from '../api/queries/useToken';
 
 import { useAppDispatch } from '../store/hooks';
 import { upsertReceipts } from '../store/round-slice/round-api-actions';

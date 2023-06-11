@@ -5,7 +5,7 @@ import { isNil } from 'ramda';
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import useToken from '../../hooks/useToken';
+import useToken from '../../api/queries/useToken';
 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchPartnerList, fetchPartners } from '../../store/partners-slice/partners-api-actions';

@@ -2,7 +2,7 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import useToken from '../../hooks/useToken';
+import useToken from '../../api/queries/useToken';
 
 import { agentsActions } from '../../store/agents-slice/agents-slice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
