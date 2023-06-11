@@ -5,6 +5,7 @@
         "react-native/react-native": true
     },
     "extends": [
+        "plugin:@tanstack/eslint-plugin-query/recommended",
         "plugin:react/recommended",
         "airbnb",
         "airbnb-typescript",
@@ -25,6 +26,7 @@
         "sourceType": "module"
     },
     "plugins": [
+        "@tanstack/query",
         "react",
         "react-native"
     ],

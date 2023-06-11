@@ -1,14 +1,15 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
+import { QueryClient } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable } from 'react-native';
-import { Provider } from 'react-redux';
 
-import store from './react_native/store';
-
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import Loading from './react_native/components/Loading';
 import colors from './react_native/constants/colors';
 import fontSizes from './react_native/constants/fontSizes';
@@ -25,6 +26,18 @@ import Summary from './react_native/screens/sell/summary/Summary';
 import Index from './react_native/screens/start-page/Index';
 import RegisterDevice from './react_native/screens/startup/RegisterDevice';
 import StartupCheck from './react_native/screens/startup/StartupCheck';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      cacheTime: 1000 * 60 * 60 * 24,
+    },
+  },
+});
+
+const asyncStoragePersister = createAsyncStoragePersister({
+  storage: AsyncStorage,
+});
 
 const Stack = createNativeStackNavigator<StackParams>();
 const PartnerTab = createBottomTabNavigator<PartnerTabParams>();
@@ -197,8 +210,11 @@ function Main() {
 
 export default function App() {
   return (
-    <Provider store={store}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister: asyncStoragePersister }}
+    >
       <Main />
-    </Provider>
+    </PersistQueryClientProvider>
   );
 }
