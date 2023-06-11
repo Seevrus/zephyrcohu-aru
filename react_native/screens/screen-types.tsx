@@ -3,13 +3,10 @@ import { NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export type StackParams = {
-  StartupCheck: undefined;
-  StartupError: {
-    message: string;
-  };
   Login: undefined;
-
+  ChangePassword: undefined;
   Index: undefined;
+  Settings: undefined;
 
   SelectPartner: undefined;
   SelectItems: undefined;
@@ -25,11 +22,10 @@ export type StackParams = {
   EndErrand: undefined;
 };
 
-export type StartupCheckProps = NativeStackScreenProps<StackParams, 'StartupCheck'>;
-export type StartupErrorProps = NativeStackScreenProps<StackParams, 'StartupError'>;
 export type LoginProps = NativeStackScreenProps<StackParams, 'Login'>;
-
+export type ChangePasswordProps = NativeStackScreenProps<StackParams, 'ChangePassword'>;
 export type IndexProps = NativeStackScreenProps<StackParams, 'Index'>;
+export type SettingsProps = NativeStackScreenProps<StackParams, 'Settings'>;
 
 export type SelectItemsProps = BottomTabScreenProps<StackParams, 'SelectItems'>;
 export type ReviewProps = NativeStackScreenProps<StackParams, 'Review'>;

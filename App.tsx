@@ -10,11 +10,12 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import Loading from './react_native/components/Loading';
 import colors from './react_native/constants/colors';
 import fontSizes from './react_native/constants/fontSizes';
-import StartupError from './react_native/screens/errors/StartupError';
+import Login from './react_native/screens/login/Login';
 import { StackParams } from './react_native/screens/screen-types';
+import ChangePassword from './react_native/screens/start-page/ChangePassword';
 import Index from './react_native/screens/start-page/Index';
+import Settings from './react_native/screens/start-page/Settings';
 import SettingsButton from './react_native/screens/start-page/SettingsButton';
-import Login from './react_native/screens/startup/Login';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -115,11 +116,16 @@ function Main() {
             }}
           />
           <Stack.Screen
-            name="StartupError"
-            component={StartupError}
-            options={{ headerTitle: 'Hiba!' }}
+            name="Settings"
+            component={Settings}
+            options={{ headerTitle: 'Beállítások' }}
           />
           <Stack.Screen name="Login" component={Login} options={{ headerTitle: 'Bejelentkezés' }} />
+          <Stack.Screen
+            name="ChangePassword"
+            component={ChangePassword}
+            options={{ headerTitle: 'Új jelszó' }}
+          />
           {/*  <Stack.Screen
             name="SelectPartner"
             component={Partners}

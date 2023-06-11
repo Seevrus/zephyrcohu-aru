@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
 import { GestureResponderEvent, Pressable, StyleSheet, Text, View } from 'react-native';
+import { PropsWithChildren } from 'react';
 
 import colors from '../../constants/colors';
 import fontSizes from '../../constants/fontSizes';
@@ -7,14 +7,13 @@ import fontSizes from '../../constants/fontSizes';
 type ButtonProps = {
   variant: 'neutral' | 'ok' | 'warning' | 'error' | 'disabled';
   onPress?: (event: GestureResponderEvent) => void;
-  children: ReactNode;
 };
 
 const defaultProps = {
   onPress: () => {},
 };
 
-export default function Button({ variant, onPress, children }: ButtonProps) {
+export default function Button({ variant, onPress, children }: PropsWithChildren<ButtonProps>) {
   const buttonVariants = {
     neutral: colors.neutral,
     ok: colors.ok,

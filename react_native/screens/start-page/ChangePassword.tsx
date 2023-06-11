@@ -1,51 +1,47 @@
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 
-import useLogin from '../../api/mutations/useLogin';
+import Loading from '../../components/Loading';
 import ErrorCard from '../../components/info-cards/ErrorCard';
-import TextCard from '../../components/info-cards/TextCard';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import colors from '../../constants/colors';
-import { LoginProps } from '../screen-types';
 
-export default function Login({ navigation }: LoginProps) {
-  const login = useLogin();
-  const [userName, setUserName] = useState<string>('');
+export default function ChangePassword() {
   const [password, setPassword] = useState<string>('');
+  const [passwordRepeat, setPasswordRepeat] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
-
-  const changeUserNameHandler = (value: string) => {
-    setErrorMessage('');
-    setUserName(value);
-  };
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const changePasswordHandler = (value: string) => {
     setErrorMessage('');
     setPassword(value);
   };
 
-  const loginHandler = async () => {
+  const changePasswordRepeatHandler = (value: string) => {
     setErrorMessage('');
-
-    try {
-      await login.mutateAsync({ userName, password });
-      navigation.replace('StartupCheck');
-    } catch (err) {
-      setErrorMessage(err.message);
-      setPassword('');
-    }
+    setPasswordRepeat(value);
   };
 
-  const isLoginButtonDisabled = userName.length === 0 || password.length === 0 || !!errorMessage;
+  const changePasswordRequestHandler = () => {};
+
+  const isChangePasswordButtonDisabled =
+    password.length === 0 || passwordRepeat.length === 0 || !!errorMessage;
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
-    <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
-      <View style={styles.welcome}>
-        <TextCard>
-          Üdvözöljük a <Text style={styles.cardEmphasized}>Zephyr Boreal</Text> áruforgalmi
-          alkalmazás kezdőoldalán! Kérem jelentkezzen be.
-        </TextCard>
+    <View style={styles.container}>
+      <View>
+        <Text>Az új jelszóra vonatkozó szabályok:</Text>
+        <Text>
+          Megengedett karakterek: angol ábécé kis- és nagybetűi, arab számjegyek, valamit az alábbi
+          speciális karakterek: . _ + # % @ -
+        </Text>
+        <Text>Legalább 10 karakter hosszúságú</Text>
+        <Text>Nem egyezhet meg a korábbi 10 jelszóval</Text>
       </View>
       {!!errorMessage && (
         <View style={styles.error}>
@@ -54,18 +50,6 @@ export default function Login({ navigation }: LoginProps) {
       )}
       <View style={styles.form}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-          <Input
-            label="Felhasználónév"
-            value={userName}
-            invalid={!!errorMessage}
-            config={{
-              autoCapitalize: 'none',
-              autoComplete: 'off',
-              autoCorrect: false,
-              importantForAutofill: 'no',
-              onChangeText: changeUserNameHandler,
-            }}
-          />
           <Input
             label="Jelszó"
             value={password}
@@ -79,14 +63,30 @@ export default function Login({ navigation }: LoginProps) {
               onChangeText: changePasswordHandler,
             }}
           />
+          <Input
+            label="Jelszó újra"
+            value={passwordRepeat}
+            invalid={!!errorMessage}
+            config={{
+              secureTextEntry: true,
+              autoCapitalize: 'none',
+              autoComplete: 'off',
+              autoCorrect: false,
+              importantForAutofill: 'no',
+              onChangeText: changePasswordRepeatHandler,
+            }}
+          />
           <View style={styles.buttonContainer}>
-            <Button variant={isLoginButtonDisabled ? 'disabled' : 'ok'} onPress={loginHandler}>
-              Bejelentkezés
+            <Button
+              variant={isChangePasswordButtonDisabled ? 'disabled' : 'ok'}
+              onPress={changePasswordRequestHandler}
+            >
+              Jelszó megváltoztatása
             </Button>
           </View>
         </KeyboardAvoidingView>
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
@@ -95,14 +95,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  welcome: {
-    marginVertical: 30,
-  },
   error: {
     marginBottom: 30,
-  },
-  cardEmphasized: {
-    fontWeight: 'bold',
   },
   form: {
     marginHorizontal: '5%',

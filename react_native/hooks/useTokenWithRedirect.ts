@@ -10,18 +10,10 @@ export default function useTokenWithRedirect() {
   const tokenResult = useToken();
 
   useEffect(() => {
-    if (tokenResult.isError) {
-      navigation.replace('StartupError', {
-        message: 'Váratlan hiba lépett fel az alkalmazás indítása során.',
-      });
-    }
-  }, [navigation, tokenResult.isError]);
-
-  useEffect(() => {
-    if (!tokenResult.isLoading && tokenResult.data?.isTokenExpired) {
+    if (tokenResult.isError || (!tokenResult.isLoading && tokenResult.data?.isTokenExpired)) {
       navigation.replace('Login');
     }
-  }, [navigation, tokenResult.data.isTokenExpired, tokenResult.isLoading]);
+  }, [navigation, tokenResult.data?.isTokenExpired, tokenResult.isError, tokenResult.isLoading]);
 
   // TODO password expiration
 
