@@ -26,7 +26,7 @@ export enum EndErrandTileState {
 export default function useTileStates() {
   const { isInternetReachable } = useNetInfo();
   const {
-    data: { isTokenExpired },
+    data: { isPasswordExpired, isTokenExpired },
   } = useToken();
 
   const isRoundStarted = false;
@@ -46,14 +46,19 @@ export default function useTileStates() {
   );
 
   useEffect(() => {
-    if (!isTokenExpired && isInternetReachable && !isRoundStarted) {
+    if (!isTokenExpired && !isPasswordExpired && isInternetReachable && !isRoundStarted) {
       setStartErrandTileState(StartErrandTileState.Ok);
-    } else if (!isTokenExpired && isInternetReachable && numberOfReceipts === 0) {
+    } else if (
+      !isTokenExpired &&
+      !isPasswordExpired &&
+      isInternetReachable &&
+      numberOfReceipts === 0
+    ) {
       setStartErrandTileState(StartErrandTileState.Warning);
     } else {
       setStartErrandTileState(StartErrandTileState.Disabled);
     }
-  }, [isInternetReachable, isRoundStarted, isTokenExpired]);
+  }, [isInternetReachable, isPasswordExpired, isRoundStarted, isTokenExpired]);
 
   return {
     selectPartnerTileState,

@@ -1,12 +1,16 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import * as SecureStore from 'expo-secure-store';
 
 import env from '../../env.json';
-import { ChangePasswordRequest } from '../request-types/ChangePasswordRequestType';
 import useToken from '../queries/useToken';
+import { ChangePasswordRequest } from '../request-types/ChangePasswordRequestType';
+import mapLoginResponse from '../response-mappers/mapLoginResponse';
+import { LoginResponse } from '../response-types/LoginResponseType';
 import useLogout from './useLogout';
 
 export default function usePasswordChange() {
+  const queryClient = useQueryClient();
   const logout = useLogout();
 
   const {
@@ -17,10 +21,21 @@ export default function usePasswordChange() {
     mutationKey: ['login'],
     mutationFn: async ({ password }: ChangePasswordRequest) => {
       try {
-        await axios.post<never>(
-          `${env.api_url}/users/password`,
-          { password },
-          { headers: { Accept: 'application/json', Authorization: `Bearer ${token}` } }
+        const response = await axios
+          .post<LoginResponse>(
+            `${env.api_url}/users/password`,
+            { password },
+            { headers: { Accept: 'application/json', Authorization: `Bearer ${token}` } }
+          )
+          .then((r) => mapLoginResponse(r.data));
+
+        await SecureStore.setItemAsync(
+          'boreal-token',
+          JSON.stringify({
+            token: response.token.accessToken,
+            isPasswordExpired: response.token.isPasswordExpired,
+            expiresAt: response.token.expiresAt,
+          })
         );
       } catch (e) {
         if (isAxiosError(e) && e.response.status === 400) {
@@ -34,6 +49,9 @@ export default function usePasswordChange() {
           throw new Error('Váratlan hiba lépett fel a jelszóváltoztatás során.');
         }
       }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['token']);
     },
   });
 }

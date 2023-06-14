@@ -10,7 +10,7 @@ import useToken from '../../api/queries/useToken';
 export default function Index() {
   const { isInternetReachable } = useNetInfo();
   const {
-    data: { isTokenExpired },
+    data: { isPasswordExpired, isTokenExpired },
   } = useToken();
 
   const tiles = useTiles();
@@ -29,6 +29,11 @@ export default function Index() {
       {!isInternetReachable && (
         <View style={styles.textCardContainer}>
           <TextCard>Az alkalmazás jelenleg internetkapcsolat nélkül működik.</TextCard>
+        </View>
+      )}
+      {isPasswordExpired && (
+        <View style={styles.textCardContainer}>
+          <TextCard>Az Ön jelszava lejárt, kérem változtassa meg.</TextCard>
         </View>
       )}
       {isTokenExpired && (

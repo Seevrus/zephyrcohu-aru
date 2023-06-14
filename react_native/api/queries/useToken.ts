@@ -24,7 +24,7 @@ export default function useToken(): UseQueryResult<Token> {
         if (!rawToken) {
           return {
             token: null,
-            isPasswordExpired: true,
+            isPasswordExpired: false,
             isTokenExpired: true,
           };
         }

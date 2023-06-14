@@ -140,8 +140,6 @@ class UserController extends Controller
             }
             $tokenExpiration = Carbon::now()->addHours(25)->toDateTimeString();
 
-            $userResource = new UserResource($user->load('company'));
-
             Log::insert([
                 'company_id' => $user->company_id,
                 'user_id' => $user->id,
@@ -150,6 +148,7 @@ class UserController extends Controller
                 'occured_at' => Carbon::now(),
             ]);
 
+            $userResource = new UserResource($user->load('company'));
             return array_merge(
                 $userResource->toArray(0),
                 [
@@ -244,6 +243,21 @@ class UserController extends Controller
                 }
             }
 
+            $sender->tokens()->delete();
+            $sender->passwords()->create([
+                'password' => Hash::make($newPassword),
+                'is_generated' => 0,
+                'set_time' => Carbon::now(),
+            ]);
+            $sender->save();
+
+            $roles = array_map(
+                fn ($role) =>  $role['role'],
+                $sender->roles->toArray()
+            );
+            $token = $sender->createToken('boreal', $roles);
+            $tokenExpiration = Carbon::now()->addHours(25)->toDateTimeString();
+
             Log::insert([
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
@@ -252,12 +266,18 @@ class UserController extends Controller
                 'occured_at' => Carbon::now(),
             ]);
 
-            $sender->passwords()->create([
-                'password' => Hash::make($newPassword),
-                'is_generated' => 0,
-                'set_time' => Carbon::now(),
-            ]);
-            $sender->save();
+            $userResource = new UserResource($sender->load('company'));
+            return array_merge(
+                $userResource->toArray(0),
+                [
+                    'token' => [
+                        'tokenType' => 'Bearer',
+                        'accessToken' => $token->plainTextToken,
+                        'abilities' => $token->accessToken->abilities,
+                        'expiresAt' => $tokenExpiration,
+                    ]
+                ]
+            );
         } catch (Exception $e) {
             throw new BadRequestException();
         }
