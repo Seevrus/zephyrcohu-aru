@@ -7,6 +7,7 @@ import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import useToken from './react_native/api/queries/useToken';
 import Loading from './react_native/components/Loading';
 import colors from './react_native/constants/colors';
 import fontSizes from './react_native/constants/fontSizes';
@@ -86,7 +87,9 @@ function Main() {
     'Roboto-Bold': require('./react_native/assets/fonts/Roboto-Bold.ttf'),
   });
 
-  if (!fontsLoaded) {
+  const { data: tokenData } = useToken();
+
+  if (!fontsLoaded || !tokenData) {
     return <Loading />;
   }
 

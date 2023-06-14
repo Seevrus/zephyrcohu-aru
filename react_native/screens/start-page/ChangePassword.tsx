@@ -1,13 +1,18 @@
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import usePasswordChange from '../../api/mutations/usePasswordChange';
 import Loading from '../../components/Loading';
 import ErrorCard from '../../components/info-cards/ErrorCard';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import colors from '../../constants/colors';
+import fontSizes from '../../constants/fontSizes';
+import { ChangePasswordProps } from '../screen-types';
 
-export default function ChangePassword() {
+export default function ChangePassword({ navigation }: ChangePasswordProps) {
+  const passwordChange = usePasswordChange();
+
   const [password, setPassword] = useState<string>('');
   const [passwordRepeat, setPasswordRepeat] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -23,7 +28,27 @@ export default function ChangePassword() {
     setPasswordRepeat(value);
   };
 
-  const changePasswordRequestHandler = () => {};
+  const changePasswordRequestHandler = async () => {
+    if (password !== passwordRepeat) {
+      setErrorMessage('A beírt jelszavak nem egyeznek meg egymással.');
+    } else if (!/^([a-zA-Z0-9._+#%@-]){10,}$/.test(password)) {
+      setErrorMessage('A választott jelszó nem felel meg a szabályoknak.');
+    } else {
+      try {
+        setIsLoading(true);
+        await passwordChange.mutateAsync({ password });
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Index' }],
+        });
+      } catch (err) {
+        setIsLoading(false);
+        setErrorMessage(err.message);
+        setPassword('');
+        setPasswordRepeat('');
+      }
+    }
+  };
 
   const isChangePasswordButtonDisabled =
     password.length === 0 || passwordRepeat.length === 0 || !!errorMessage;
@@ -33,15 +58,21 @@ export default function ChangePassword() {
   }
 
   return (
-    <View style={styles.container}>
-      <View>
-        <Text>Az új jelszóra vonatkozó szabályok:</Text>
-        <Text>
+    <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
+      <View style={styles.passwordRules}>
+        <Text style={[styles.passwordRuleCommon, styles.passwordRuleHeader]}>
+          Az új jelszóra vonatkozó szabályok:
+        </Text>
+        <Text style={[styles.passwordRuleCommon, styles.passwordRule]}>
           Megengedett karakterek: angol ábécé kis- és nagybetűi, arab számjegyek, valamit az alábbi
           speciális karakterek: . _ + # % @ -
         </Text>
-        <Text>Legalább 10 karakter hosszúságú</Text>
-        <Text>Nem egyezhet meg a korábbi 10 jelszóval</Text>
+        <Text style={[styles.passwordRuleCommon, styles.passwordRule]}>
+          Legalább 10 karakter hosszúságú
+        </Text>
+        <Text style={[styles.passwordRuleCommon, styles.passwordRule]}>
+          Nem egyezhet meg a korábbi 10 jelszóval
+        </Text>
       </View>
       {!!errorMessage && (
         <View style={styles.error}>
@@ -86,7 +117,7 @@ export default function ChangePassword() {
           </View>
         </KeyboardAvoidingView>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -95,7 +126,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  passwordRules: {
+    marginHorizontal: '5%',
+    marginVertical: 10,
+    padding: 8,
+    backgroundColor: colors.neutral,
+    borderRadius: 10,
+  },
+  passwordRuleCommon: {
+    color: 'white',
+    fontSize: fontSizes.body,
+    marginVertical: 5,
+  },
+  passwordRuleHeader: {
+    fontWeight: '700',
+  },
+  passwordRule: {
+    marginLeft: 20,
+  },
   error: {
+    marginTop: 20,
     marginBottom: 30,
   },
   form: {

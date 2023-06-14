@@ -44,5 +44,7 @@ export default function useToken(): UseQueryResult<Token> {
         throw new Error('Váratlan hiba lépett fel a token olvasása során.');
       }
     },
+    staleTime: 0,
+    cacheTime: 300000,
   });
 }
