@@ -11,6 +11,7 @@ use App\Models\Partner;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -70,7 +71,7 @@ class PartnerController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Created ' . count($request->data) . ' partners',
+                'action' => 'Created ' . count($newPartners) . ' partners',
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 
@@ -120,17 +121,101 @@ class PartnerController extends Controller
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $partner = Partner::find($id);
-
-            if (!$partner) {
-                return response([
-                    'status' => 404,
-                    'codeName' => 'Not Found',
-                    'message' => 'The server cannot find the requested partner.',
-                ], 404);
-            }
+            $partner = Partner::findOrFail($id);
 
             $this->authorize('update', $partner);
+
+            $locationUpdates = $request->data['locations'] ?? null;
+            if ($locationUpdates) {
+                $currentLocations = $partner->locations();
+
+                // Additional validations for location
+                foreach ($locationUpdates as $locationUpdate) {
+                    $locationName = $locationUpdate['name'];
+                    $currentNames = array_map(
+                        fn ($cl) => $cl['name'],
+                        $currentLocations->get()->toArray()
+                    );
+
+                    // For the sake of simplicity, this fails on the first malformed item
+                    $action = $locationUpdate['action'];
+                    switch ($action) {
+                        case 'update':
+                            if (array_search($locationName, $currentNames) === false) {
+                                return response([
+                                    'message' => "Invalid location to update: " . $locationName
+                                ], 422);
+                            }
+                            break;
+                        case 'delete':
+                            if (array_search($locationName, $currentNames) === false) {
+                                return response([
+                                    'message' => "Invalid location to delete: " . $locationName
+                                ], 422);
+                            }
+                            break;
+                        case 'create':
+                        default:
+                            if (
+                                array_search($locationName, $currentNames) !== false
+                                || !($locationUpdate['locationType'] ?? null)
+                                || !($locationUpdate['country'] ?? null)
+                                || !($locationUpdate['postalCode'] ?? null)
+                                || !($locationUpdate['city'] ?? null)
+                                || !($locationUpdate['address'] ?? null)
+                            ) {
+                                return response([
+                                    'message' => "Invalid location to create: " . $locationName
+                                ], 422);
+                            }
+                    }
+                }
+
+                // Actual updates
+                foreach ($locationUpdates as $locationUpdate) {
+                    $locationName = $locationUpdate['name'];
+
+                    $action = $locationUpdate['action'];
+                    switch ($action) {
+                        case 'update':
+                            $currentLocation = $currentLocations->firstWhere(['name' => $locationName]);
+
+                            if ($locationUpdate['locationType'] ?? null) {
+                                $currentLocation->location_type = $locationUpdate['locationType'];
+                            }
+                            if ($locationUpdate['country'] ?? null) {
+                                $currentLocation->country = $locationUpdate['country'];
+                            }
+                            if ($locationUpdate['postalCode'] ?? null) {
+                                $currentLocation->postal_code = $locationUpdate['postalCode'];
+                            }
+                            if ($locationUpdate['city'] ?? null) {
+                                $currentLocation->city = $locationUpdate['city'];
+                            }
+                            if ($locationUpdate['address'] ?? null) {
+                                $currentLocation->address = $locationUpdate['address'];
+                            }
+
+                            $currentLocation->save();
+                            break;
+                        case 'delete':
+                            $currentLocation = $currentLocations->firstWhere(['name' => $locationName]);
+                            $currentLocation->delete();
+                            break;
+                        case 'create':
+                        default:
+                            $partner->locations()->create([
+                                'name' => $locationName,
+                                'location_type' => $locationUpdate['locationType'],
+                                'country' => $locationUpdate['country'],
+                                'postal_code' => $locationUpdate['postalCode'],
+                                'city' => $locationUpdate['city'],
+                                'address' => $locationUpdate['address'],
+                            ]);
+                    }
+                }
+            }
+
 
             if ($request->data['vatNumber'] ?? null) {
                 $partner->vat_number = $request->data['vatNumber'];
@@ -150,30 +235,11 @@ class PartnerController extends Controller
             if ($request->data['bankAccount'] ?? null) {
                 $partner->bank_account = $request->data['bankAccount'];
             }
-            if (!!$request->data['phoneNumber'] ?? null || $request->data['phoneNumber'] === null) {
+            if (($request->data['phoneNumber'] ?? 0) !== 0) {
                 $partner->phone_number = $request->data['phoneNumber'];
             }
-            if (!!$request->data['email'] ?? null || $request->data['email'] === null) {
+            if (($request->data['email'] ?? 0) !== 0) {
                 $partner->email = $request->data['email'];
-            }
-
-            $newLocations = $request->data['locations'] ?? null;
-            if ($newLocations) {
-                $partner->locations()->delete();
-
-                $partner->locations()->createMany(
-                    array_map(
-                        fn ($locationRequest) => [
-                            'name' => $locationRequest['name'],
-                            'location_type' => $locationRequest['locationType'],
-                            'country' => $locationRequest['country'],
-                            'postal_code' => $locationRequest['postalCode'],
-                            'city' => $locationRequest['city'],
-                            'address' => $locationRequest['address'],
-                        ],
-                        $request->data['locations']
-                    )
-                );
             }
 
             $partner->save();
@@ -191,6 +257,7 @@ class PartnerController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
             ) throw $e;
 
             throw new BadRequestException();
@@ -220,6 +287,7 @@ class PartnerController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
             ) throw $e;
 
             throw new BadRequestException();

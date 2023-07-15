@@ -36,7 +36,7 @@ class CreatePartnersRequest extends FormRequest
             'data.*.phoneNumber' => 'regex:`^\+\d{1,19}$`',
             'data.*.email' => 'string|max:70|email:rfc,dns',
             'data.*.locations' => 'required|array|min:1|max:2|bail',
-            'data.*.locations.*.name' => 'required|string|max:50',
+            'data.*.locations.*.name' => 'required|string|max:50|distinct',
             'data.*.locations.*.locationType' => 'required_with:data.*.locations.*|string|in:C,D',
             'data.*.locations.*.country' => 'required_with:data.*.locations.*|string|size:2',
             'data.*.locations.*.postalCode' => 'required_with:data.*.locations.*|string|max:10',
