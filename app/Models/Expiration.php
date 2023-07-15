@@ -18,9 +18,4 @@ class Expiration extends Model
     {
         return $this->belongsTo(Item::class);
     }
-
-    public function stores()
-    {
-        return $this->belongsToMany(Store::class)->withPivot('quantity');
-    }
 }

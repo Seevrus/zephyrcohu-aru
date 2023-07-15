@@ -17,7 +17,7 @@ return new class extends Migration
         Schema::create('expirations', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Item::class)->references('id')->on('items')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->date('expires_at');
+            $table->timestamp('expires_at');
             $table->timestamps();
         });
     }

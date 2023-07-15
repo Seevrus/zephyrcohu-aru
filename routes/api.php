@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ItemsController;
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerListController;
 use App\Http\Controllers\UserController;
@@ -68,7 +68,7 @@ Route::controller(PartnerListController::class)->prefix('partner-lists')->group(
         ->middleware(['auth:sanctum', 'ability:I,A']);
 });
 
-Route::controller(ItemsController::class)->prefix('items')->group(function () {
+Route::controller(ItemController::class)->prefix('items')->group(function () {
     Route::post('/', 'create_items')->middleware(['auth:sanctum', 'ability:I']);
     Route::get('/', 'view_all')->middleware(['auth:sanctum', 'ability:I,A']);
     Route::post('/{id}', 'update_item')->middleware(['auth:sanctum', 'ability:I']);

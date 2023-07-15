@@ -14,7 +14,7 @@ class PartnerResource extends JsonResource
      */
     public function toArray($request)
     {
-        $partner = [
+        return [
             'id' => $this->id,
             'code' => $this->code,
             'siteCode' => $this->site_code,
@@ -30,7 +30,5 @@ class PartnerResource extends JsonResource
             'createdAt' => $this->created_at->toDateTimeString(),
             'updatedAt' => $this->updated_at->toDateTimeString(),
         ];
-
-        return $partner;
     }
 }

@@ -33,6 +33,9 @@ class UpdateItemRequest extends FormRequest
       'data.productCatalogCode' => 'string|size:11|distinct',
       'data.vatRate' => 'string|size:2',
       'data.netPrice' => 'integer|min:0|max:2147483647',
+      'data.expirations' => 'array|min:1|bail',
+      'data.expirations.*.action' => 'required|in:create,delete',
+      'data.expirations.*.expiresAt' => 'required|date_format:Y-m',
     ];
   }
 }

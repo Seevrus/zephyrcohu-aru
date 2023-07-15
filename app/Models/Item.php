@@ -26,4 +26,9 @@ class Item extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function expirations()
+    {
+        return $this->hasMany(Expiration::class);
+    }
 }

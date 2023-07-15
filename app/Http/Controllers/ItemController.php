@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class ItemsController extends Controller
+class ItemController extends Controller
 {
     public function create_items(CreateItemsRequest $request)
     {
@@ -48,6 +48,15 @@ class ItemsController extends Controller
                     'net_price' => $itemRequest['netPrice'],
                 ]);
 
+                $item->expirations()->createMany(
+                    array_map(
+                        fn ($expirationRequest) => [
+                            'expires_at' => Carbon::createFromFormat("Y-m", $expirationRequest['expiresAt'])->endOfMonth()->endOfDay(),
+                        ],
+                        $itemRequest['expirations']
+                    )
+                );
+
                 array_push($newItems, $item);
             }
 
@@ -77,7 +86,6 @@ class ItemsController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            // TODO: add expirations
             $items = $sender->company->items()->get();
 
             Log::insert([
@@ -109,6 +117,58 @@ class ItemsController extends Controller
             $item = Item::findOrFail($id);
 
             $this->authorize('update', $item);
+
+            $expirationUpdates = $request->data['expirations'] ?? null;
+            if ($expirationUpdates) {
+                $currentExpirations = $item->expirations();
+
+                // Additional validations for expiration
+                foreach ($expirationUpdates as $expirationUpdate) {
+                    $expiresAt = $expirationUpdate['expiresAt'];
+                    $expiresAtFull = Carbon::createFromFormat("Y-m", $expiresAt)->endOfMonth()->endOfDay();
+                    $currentExpiresAts = array_map(
+                        fn ($ce) => $ce['expires_at'],
+                        $currentExpirations->get()->toArray()
+                    );
+
+                    // For the sake of simplicity, this fails on the first malformed item
+                    $action = $expirationUpdate['action'];
+                    switch ($action) {
+                        case 'delete':
+                            if (array_search($expiresAtFull, $currentExpiresAts) === false) {
+                                return response([
+                                    'message' => "Invalid expiration to delete: " . $expiresAt
+                                ], 422);
+                            }
+                            break;
+                        case 'create':
+                        default:
+                            if (array_search($expiresAtFull, $currentExpiresAts) !== false) {
+                                return response([
+                                    'message' => "Invalid expiration to create: " . $expiresAt
+                                ], 422);
+                            }
+                    }
+                }
+
+                // Actual updates
+                foreach ($expirationUpdates as $expirationUpdate) {
+                    $expiresAt = $expirationUpdate['expiresAt'];
+
+                    $action = $expirationUpdate['action'];
+                    switch ($action) {
+                        case 'delete':
+                            $currentExpiration = $currentExpirations->firstWhere(['expires_at' => $expiresAtFull]);
+                            $currentExpiration->delete();
+                            break;
+                        case 'create':
+                        default:
+                            $item->expirations()->create([
+                                'expires_at' => $expiresAtFull,
+                            ]);
+                    }
+                }
+            }
 
             if ($request->data['CNCode'] ?? null) {
                 $item->cn_code = $request->data['CNCode'];

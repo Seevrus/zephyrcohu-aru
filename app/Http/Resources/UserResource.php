@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
@@ -29,9 +30,9 @@ class UserResource extends JsonResource
             'company' => new CompanyResource($this->whenLoaded('company')),
             'phoneNumber' => $this->phone_number,
             'roles' => new UserRoleCollection($this->roles),
-            'createdAt' => $this->created_at->toDateTimeString(),
-            'updatedAt' => $this->updated_at->toDateTimeString(),
-            'lastActive' => $this->last_active,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
+            'lastActive' => Carbon::createFromFormat("Y-m-d H:i:s", $this->last_active),
         ];
     }
 }

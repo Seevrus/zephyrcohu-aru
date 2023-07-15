@@ -34,6 +34,8 @@ class CreateItemsRequest extends FormRequest
             'data.*.productCatalogCode' => 'required|string|size:11|distinct',
             'data.*.vatRate' => 'required|string|size:2',
             'data.*.netPrice' => 'required|integer|min:0|max:2147483647',
+            'data.*.expirations' => 'required|array|min:1|bail',
+            'data.*.expirations.*.expiresAt' => 'required|date_format:Y-m|distinct',
         ];
     }
 }
