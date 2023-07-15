@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('unit_name', 6);
             $table->string('product_catalog_code', 11);
             $table->string('vat_rate', 2);
-            $table->float('net_price', 18, 5)->unsigned();
+            $table->integer('net_price')->unsigned();
             $table->timestamps();
         });
     }

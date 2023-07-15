@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerListController;
 use App\Http\Controllers\UserController;
@@ -28,6 +29,7 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
 
     Route::post('/login', 'login');
 
+    // This seems a bad idea
     Route::get('/refresh-token', 'refresh_token')
         ->middleware(['auth:sanctum']);
 
@@ -66,18 +68,14 @@ Route::controller(PartnerListController::class)->prefix('partner-lists')->group(
         ->middleware(['auth:sanctum', 'ability:I,A']);
 });
 
-/* Route::controller(AgentController::class)->prefix('users')->group(function () {
-    Route::get('/', 'viewAll')->middleware(['auth:sanctum', 'ability:app,integra']);
-    Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
-    Route::put('/{id}', 'delete')->middleware(['auth:sanctum', 'ability:integra']);
-});
-
 Route::controller(ItemsController::class)->prefix('items')->group(function () {
-    Route::get('/', 'viewAll')->middleware(['auth:sanctum', 'ability:app,integra']);
-    Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
+    Route::post('/', 'create_items')->middleware(['auth:sanctum', 'ability:I']);
+    Route::get('/', 'view_all')->middleware(['auth:sanctum', 'ability:I,A']);
+    Route::post('/{id}', 'update_item')->middleware(['auth:sanctum', 'ability:I']);
+    Route::delete('/{id}', 'remove_item')->middleware(['auth:sanctum', 'ability:I']);
 });
 
-Route::controller(OrderController::class)->prefix('orders')->group(function () {
+/* Route::controller(OrderController::class)->prefix('orders')->group(function () {
     Route::get('/', 'viewAll')
         ->middleware(['auth:sanctum', 'ability:integra']);
     Route::post('/', 'store')

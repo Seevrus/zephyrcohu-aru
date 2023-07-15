@@ -2,27 +2,21 @@
 
 namespace App\Policies;
 
+use App\Models\Item;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Hash;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class ItemPolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Determine whether the user can view any models.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function viewAll(User $user)
+    public function update(User $user, Item $item)
     {
-        if (!Hash::check(request()->header('X-Device-Id'), $user->device_id)) {
-            throw new UnauthorizedHttpException(random_bytes(32));
-        }
+        return $user->company_id === $item->company->id;
+    }
 
-        return true;
+    public function remove(User $user, Item $item)
+    {
+        return $user->company_id === $item->company->id;
     }
 }
