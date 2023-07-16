@@ -16,8 +16,9 @@ class ExpirationResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
             'expiresAt' => Carbon::createFromFormat("Y-m-d H:i:s", $this->expires_at),
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
         ];
     }
 }

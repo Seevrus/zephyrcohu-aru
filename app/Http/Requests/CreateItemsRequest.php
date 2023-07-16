@@ -36,6 +36,10 @@ class CreateItemsRequest extends FormRequest
             'data.*.netPrice' => 'required|integer|min:0|max:2147483647',
             'data.*.expirations' => 'required|array|min:1|bail',
             'data.*.expirations.*.expiresAt' => 'required|date_format:Y-m|distinct',
+            'data.*.discounts' => 'array|min:1|bail',
+            'data.*.discounts.*.name' => 'required|string|min:1|distinct',
+            'data.*.discounts.*.type' => 'required|in:absolute,percentage,freeForm',
+            'data.*.discounts.*.amount' => 'integer|min:0|max:2147483647',
         ];
     }
 }

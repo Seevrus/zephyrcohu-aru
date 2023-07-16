@@ -57,6 +57,17 @@ class ItemController extends Controller
                     )
                 );
 
+                if ($itemRequest['discounts'] ?? null) {
+                    $item->discounts()->createMany(array_map(
+                        fn ($discountRequest) => [
+                            'name' => $discountRequest['name'],
+                            'type' => $discountRequest['type'],
+                            'amount' => $discountRequest['amount'] ?? null,
+                        ],
+                        $itemRequest['discounts']
+                    ));
+                }
+
                 array_push($newItems, $item);
             }
 
@@ -165,6 +176,82 @@ class ItemController extends Controller
                         default:
                             $item->expirations()->create([
                                 'expires_at' => $expiresAtFull,
+                            ]);
+                    }
+                }
+            }
+
+            $discountUpdates = $request->data['discounts'] ?? null;
+            if ($discountUpdates) {
+                $currentDiscounts = $item->discounts();
+
+                // Additional validations for discount
+                foreach ($discountUpdates as $discountUpdate) {
+                    $discountName = $discountUpdate['name'];
+                    $currentNames = array_map(
+                        fn ($cd) => $cd['name'],
+                        $currentDiscounts->get()->toArray()
+                    );
+
+                    // For the sake of simplicity, this fails on the first malformed item
+                    $action = $discountUpdate['action'];
+                    switch ($action) {
+                        case 'update':
+                            if (array_search($discountName, $currentNames) === false) {
+                                return response([
+                                    'message' => "Invalid discount to update: " . $discountName
+                                ], 422);
+                            }
+                            break;
+                        case 'delete':
+                            if (array_search($discountName, $currentNames) === false) {
+                                return response([
+                                    'message' => "Invalid discount to delete: " . $discountName
+                                ], 422);
+                            }
+                            break;
+                        case 'create':
+                        default:
+                            if (
+                                array_search($discountName, $currentNames) !== false
+                                || !($discountUpdate['name'] ?? null)
+                                || !($discountUpdate['type'] ?? null)
+                            ) {
+                                return response([
+                                    'message' => "Invalid discount to create: " . $discountName
+                                ], 422);
+                            }
+                    }
+                }
+
+                // Actual updates
+                foreach ($discountUpdates as $discountUpdate) {
+                    $discountName = $discountUpdate['name'];
+
+                    $action = $discountUpdate['action'];
+                    switch ($action) {
+                        case 'update':
+                            $currentDiscount = $currentDiscounts->firstWhere(['name' => $discountName]);
+
+                            if ($discountUpdate['type'] ?? null) {
+                                $currentDiscount->type = $discountUpdate['type'];
+                            }
+                            if (($discountUpdate['amount'] ?? -3914) !== -3914) {
+                                $currentDiscount->amount = $discountUpdate['amount'];
+                            }
+
+                            $currentDiscount->save();
+                            break;
+                        case 'delete':
+                            $currentDiscount = $currentDiscounts->firstWhere(['name' => $discountName]);
+                            $currentDiscount->delete();
+                            break;
+                        case 'create':
+                        default:
+                            $item->discounts()->create([
+                                'name' => $discountName,
+                                'type' => $discountUpdate['type'],
+                                'amount' => $discountUpdate['amount'] ?? null,
                             ]);
                     }
                 }

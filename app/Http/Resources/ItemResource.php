@@ -26,6 +26,7 @@ class ItemResource extends JsonResource
             'vatRate' => $this->vat_rate,
             'netPrice' => $this->net_price,
             'expirations' => new ExpirationCollection($this->expirations),
+            'discounts' => new DiscountCollection($this->discounts),
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
         ];

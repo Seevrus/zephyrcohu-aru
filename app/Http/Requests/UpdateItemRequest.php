@@ -36,6 +36,11 @@ class UpdateItemRequest extends FormRequest
       'data.expirations' => 'array|min:1|bail',
       'data.expirations.*.action' => 'required|in:create,delete',
       'data.expirations.*.expiresAt' => 'required|date_format:Y-m',
+      'data.discouns' => 'array|min:1|bail',
+      'data.discounts.*.action' => 'required|in:create,update,delete',
+      'data.discounts.*.name' => 'string|min:1',
+      'data.discounts.*.type' => 'in:absolute,percentage,freeForm',
+      'data.discounts.*.amount' => 'min:0|max:2147483647',
     ];
   }
 }

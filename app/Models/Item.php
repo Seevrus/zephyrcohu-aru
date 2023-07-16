@@ -27,6 +27,11 @@ class Item extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function discounts()
+    {
+        return $this->hasMany(Discount::class);
+    }
+
     public function expirations()
     {
         return $this->hasMany(Expiration::class);
