@@ -16,9 +16,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('price_lists', function (Blueprint $table) {
+            $table->id();
             $table->foreignIdFor(Item::class)->references('id')->on('items')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignIdFor(Partner::class)->references('id')->on('partners')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->float('net_price', 18, 5)->unsigned();
+            $table->integer('net_price')->unsigned();
         });
     }
 

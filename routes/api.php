@@ -3,6 +3,7 @@
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerListController;
+use App\Http\Controllers\PriceListController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRoleController;
 use Illuminate\Support\Facades\Route;
@@ -73,6 +74,12 @@ Route::controller(ItemController::class)->prefix('items')->group(function () {
     Route::get('/', 'view_all')->middleware(['auth:sanctum', 'ability:I,A']);
     Route::post('/{id}', 'update_item')->middleware(['auth:sanctum', 'ability:I']);
     Route::delete('/{id}', 'remove_item')->middleware(['auth:sanctum', 'ability:I']);
+});
+
+Route::controller(PriceListController::class)->prefix('price-lists')->group(function () {
+    Route::post('/create', 'create_price_list')->middleware(['auth:sanctum', 'ability:I']);
+    Route::post('/update', 'update_price_list')->middleware(['auth:sanctum', 'ability:I']);
+    Route::post('/remove', 'delete_price_list')->middleware(['auth:sanctum', 'ability:I']);
 });
 
 /* Route::controller(OrderController::class)->prefix('orders')->group(function () {
