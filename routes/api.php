@@ -4,6 +4,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerListController;
 use App\Http\Controllers\PriceListController;
+use App\Http\Controllers\StoreController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRoleController;
 use Illuminate\Support\Facades\Route;
@@ -82,6 +83,17 @@ Route::controller(PriceListController::class)->prefix('price-lists')->group(func
     Route::post('/remove', 'delete_price_list')->middleware(['auth:sanctum', 'ability:I']);
 });
 
+Route::controller(StoreController::class)->prefix('/stores')->group(function () {
+    Route::post('/', 'create_stores')->middleware(['auth:sanctum', 'ability:I']);
+    Route::get('/', 'view_all')->middleware(['auth:sanctum', 'ability:I,A']);
+    Route::post('/{id}', 'update_store')->middleware(['auth:sanctum', 'ability:I']);
+    Route::delete('/{id}', 'remove_store')->middleware(['auth:sanctum', 'ability:I']);
+
+    Route::post('/{id}/state', 'update_store_state')->middleware(['auth:sanctum', 'ability:I,A']);
+
+    // item associations will have their own controller, like for pricelists
+});
+
 /* Route::controller(OrderController::class)->prefix('orders')->group(function () {
     Route::get('/', 'viewAll')
         ->middleware(['auth:sanctum', 'ability:integra']);
@@ -89,12 +101,6 @@ Route::controller(PriceListController::class)->prefix('price-lists')->group(func
         ->middleware(['auth:sanctum', 'ability:app']);
     Route::delete('/', 'delete')
         ->middleware(['auth:sanctum', 'ability:integra']);
-});
-
-Route::controller(StoreController::class)->prefix('/stores')->group(function () {
-    Route::get('/', 'viewAll')->middleware(['auth:sanctum', 'ability:app,integra']);
-    Route::get('/{code}', 'view')->middleware(['auth:sanctum', 'ability:app,integra']);
-    Route::put('/', 'store')->middleware(['auth:sanctum', 'ability:integra']);
 });
 
 Route::controller(ReceiptController::class)->prefix('receipts')->group(function () {

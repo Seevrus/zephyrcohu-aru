@@ -26,7 +26,7 @@ class CreateItemsRequest extends FormRequest
         return [
             'data' => 'required|array|bail',
             'data.*.CNCode' => 'required|string|size:6',
-            'data.*.articleNumber' => 'required|string|min:1|max:16|distinct',
+            'data.*.articleNumber' => 'required|string|min:1|max:16|distinct|unique:items,article_number',
             'data.*.name' => 'required|string|max:60|distinct',
             'data.*.shortName' => 'required|string|max:10|distinct',
             'data.*.category' => 'required|string|max:20',

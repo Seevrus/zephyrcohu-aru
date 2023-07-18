@@ -13,6 +13,8 @@ class Store extends Model
         'company_id',
         'code',
         'name',
+        'type',
+        'state',
         'first_available_serial_number',
         'last_available_serial_number',
         'year_code',
@@ -23,8 +25,8 @@ class Store extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function expirations()
+    public function user()
     {
-        return $this->belongsToMany(Expiration::class)->withPivot('quantity');
+        return $this->belongsTo(User::class);
     }
 }
