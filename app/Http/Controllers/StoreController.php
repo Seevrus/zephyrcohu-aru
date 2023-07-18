@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateStoresRequest;
+use App\Http\Requests\UpdateStoreRequest;
 use App\Http\Resources\StoreCollection;
+use App\Http\Resources\StoreResource;
 use App\Models\Log;
 use App\Models\Store;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -81,7 +84,7 @@ class StoreController extends Controller
                 || $e instanceof AuthorizationException
             ) throw $e;
 
-            throw $e; // new BadRequestException();
+            throw new BadRequestException();
         }
     }
 
@@ -107,6 +110,96 @@ class StoreController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+            ) throw $e;
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function update_store(UpdateStoreRequest $request, int $id)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $store = Store::findOrFail($id);
+
+            $this->authorize('update', $store);
+
+            // additional validations
+            $existingMainStore = Store::firstWhere(['type' => 'P']);
+            if (($request->data['type'] ?? null) === 'P' && $existingMainStore) {
+                return response([
+                    'message' => "Primary Store already exists (" . $existingMainStore->id . ").",
+                ], 422);
+            }
+
+            if ($request->data['code'] ?? null) {
+                $store->code = $request->data['code'];
+            }
+            if ($request->data['name'] ?? null) {
+                $store->name = $request->data['name'];
+            }
+            if ($request->data['type'] ?? null) {
+                $store->type = $request->data['type'];
+            }
+            if ($request->data['firstAvailableSerialNumber'] ?? null) {
+                $store->first_available_serial_number = $request->data['firstAvailableSerialNumber'];
+            }
+            if ($request->data['lastAvailableSerialNumber'] ?? null) {
+                $store->last_available_serial_number = $request->data['lastAvailableSerialNumber'];
+            }
+            if ($request->data['yearCode'] ?? null) {
+                $store->year_code = $request->data['yearCode'];
+            }
+
+            $store->save();
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Updated store ' . $store->id,
+                'occured_at' => Carbon::now(),
+            ]);
+
+            return new StoreResource($store);
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
+            ) throw $e;
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function remove_store(int $id)
+    {
+        try {
+            $sender = request()->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $store = Store::findOrFail($id);
+            $this->authorize('remove', $store);
+
+            $store->delete();
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Removed store ' . $store->id,
+                'occured_at' => Carbon::now(),
+            ]);
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
             ) throw $e;
 
             throw new BadRequestException();

@@ -320,7 +320,7 @@ class ItemController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed tem ' . $item->id,
+                'action' => 'Removed item ' . $item->id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {

@@ -86,7 +86,7 @@ Route::controller(PriceListController::class)->prefix('price-lists')->group(func
 Route::controller(StoreController::class)->prefix('/stores')->group(function () {
     Route::post('/', 'create_stores')->middleware(['auth:sanctum', 'ability:I']);
     Route::get('/', 'view_all')->middleware(['auth:sanctum', 'ability:I,A']);
-    Route::post('/{id}', 'update_store')->middleware(['auth:sanctum', 'ability:I']);
+    Route::post('/{id}', 'update_store')->middleware(['auth:sanctum', 'ability:I,A']);
     Route::delete('/{id}', 'remove_store')->middleware(['auth:sanctum', 'ability:I']);
 
     Route::post('/{id}/state', 'update_store_state')->middleware(['auth:sanctum', 'ability:I,A']);
