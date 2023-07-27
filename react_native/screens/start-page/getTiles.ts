@@ -4,6 +4,7 @@ import { SvgProps } from 'react-native-svg';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
+  BarCodeTile,
   EndErrandTile,
   ReceiptsTile,
   SelectPartnerTile,
@@ -14,6 +15,7 @@ import EndErrandLogo from '../../assets/svg/end-errand.svg';
 import PurchaseLogo from '../../assets/svg/purchase.svg';
 import ReceiptsLogo from '../../assets/svg/receipts.svg';
 import StartErrandLogo from '../../assets/svg/start-errand.svg';
+import BarCodeLogo from '../../assets/svg/bar_code.svg';
 import { StackParams } from '../screen-types';
 
 export type TileT = {
@@ -29,6 +31,7 @@ export const getTiles = ({
   selectPartnerTile,
   receiptsTile,
   startErrandTile,
+  barCodeTile,
   endErrandTile,
   numberOfReceipts,
   navigation,
@@ -38,6 +41,7 @@ export const getTiles = ({
   receiptsTile: ReceiptsTile;
   startErrandTile: StartErrandTile;
   endErrandTile: EndErrandTile;
+  barCodeTile: BarCodeTile;
   numberOfReceipts: number;
   navigation: NativeStackNavigationProp<StackParams, 'Index'>;
 }) => {
@@ -107,6 +111,15 @@ export const getTiles = ({
         } else {
           navigation.navigate('EndErrand');
         }
+      },
+    },
+    {
+      id: 't4',
+      title: 'Vonalkód teszt',
+      icon: BarCodeLogo,
+      variant: barCodeTile,
+      onPress: () => {
+        navigation.navigate('BarCodeTest');
       },
     },
   ];

@@ -23,6 +23,7 @@ export type StackParams = {
 
   StartErrand: undefined;
   EndErrand: undefined;
+  BarCodeTest: undefined;
 };
 
 export type StartupCheckProps = NativeStackScreenProps<StackParams, 'StartupCheck'>;

@@ -25,6 +25,10 @@ export enum EndErrandTile {
   Disabled = 'disabled',
 }
 
+export enum BarCodeTile {
+  Ok = 'ok',
+}
+
 const useIndexTile = () => {
   const { isInternetReachable } = useNetInfo();
 
@@ -37,6 +41,7 @@ const useIndexTile = () => {
   const [receiptsTile, setReceiptsTile] = useState<ReceiptsTile>(ReceiptsTile.Disabled);
   const [startErrandTile, setStartErrandTile] = useState<StartErrandTile>(StartErrandTile.Disabled);
   const [endErrandTile, setEndErrandTile] = useState<EndErrandTile>(EndErrandTile.Disabled);
+  const barCodeTile = BarCodeTile.Ok;
 
   useEffect(() => {
     if (isRoundStarted) {
@@ -77,6 +82,7 @@ const useIndexTile = () => {
     receiptsTile,
     startErrandTile,
     endErrandTile,
+    barCodeTile,
   };
 };
 

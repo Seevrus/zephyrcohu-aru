@@ -25,7 +25,8 @@ export default function Index({ navigation }: IndexProps) {
     deviceId,
     token
   );
-  const { selectPartnerTile, receiptsTile, startErrandTile, endErrandTile } = useIndexTile();
+  const { selectPartnerTile, receiptsTile, startErrandTile, endErrandTile, barCodeTile } =
+    useIndexTile();
 
   useEffect(() => {
     if (tokenValidationError) {
@@ -43,6 +44,7 @@ export default function Index({ navigation }: IndexProps) {
     receiptsTile,
     startErrandTile,
     endErrandTile,
+    barCodeTile,
     numberOfReceipts,
     navigation,
   });
@@ -81,6 +83,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+    paddingBottom: 30,
   },
   textCardContainer: {
     marginTop: 30,

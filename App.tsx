@@ -25,6 +25,7 @@ import Summary from './react_native/screens/sell/summary/Summary';
 import Index from './react_native/screens/start-page/Index';
 import RegisterDevice from './react_native/screens/startup/RegisterDevice';
 import StartupCheck from './react_native/screens/startup/StartupCheck';
+import BarCodeTest from './react_native/screens/barcode-test/BarCodeTest';
 
 const Stack = createNativeStackNavigator<StackParams>();
 const PartnerTab = createBottomTabNavigator<PartnerTabParams>();
@@ -187,6 +188,13 @@ function Main() {
             component={EndErrand}
             options={{
               headerTitle: 'Kör zárása',
+            }}
+          />
+          <Stack.Screen
+            name="BarCodeTest"
+            component={BarCodeTest}
+            options={{
+              headerTitle: 'Vonalkód teszt',
             }}
           />
         </Stack.Navigator>
