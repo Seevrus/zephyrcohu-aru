@@ -28,9 +28,9 @@ class CreateStoresRequest extends FormRequest
             'data.*.code' => 'required|string|size:4|distinct|unique:stores,code',
             'data.*.name' => 'required|string|max:255|distinct',
             'data.*.type' => 'required|string|in:P,S',
-            'data.*.firstAvailableSerialNumber' => 'required|integer|min:1|max:16777215',
-            'data.*.lastAvailableSerialNumber' => 'required|integer|min:1|max:16777215|gt:data.*.firstAvailableSerialNumber',
-            'data.*.yearCode' => 'required|integer|min:1|max:32767',
+            'data.*.firstAvailableSerialNumber' => 'required_if:data.*.type,S|integer|min:1|max:16777215',
+            'data.*.lastAvailableSerialNumber' => 'required_if:data.*.type,S|integer|min:1|max:16777215|gt:data.*.firstAvailableSerialNumber',
+            'data.*.yearCode' => 'required_if:data.*.type,S|integer|min:1|max:32767',
         ];
     }
 }

@@ -23,9 +23,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('type', 1); // P(rimary), S(econdary)
             $table->string('state', 1); // I(dle), L(oading), R(ound)
-            $table->mediumInteger('first_available_serial_number', false, true);
-            $table->mediumInteger('last_available_serial_number', false, true);
-            $table->smallInteger('year_code', false, true);
+            $table->mediumInteger('first_available_serial_number', false, true)->nullable();
+            $table->mediumInteger('last_available_serial_number', false, true)->nullable();
+            $table->smallInteger('year_code', false, true)->nullable();
             $table->timestamps();
         });
     }

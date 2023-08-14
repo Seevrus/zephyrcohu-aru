@@ -27,7 +27,6 @@ class UpdateStoreRequest extends FormRequest
             'data' => 'required|array|bail',
             'data.*.code' => 'string|size:4|unique:stores,code',
             'data.*.name' => 'string|max:255',
-            'data.*.type' => 'string|in:P,S',
             'data.*.firstAvailableSerialNumber' => 'integer|min:1|max:16777215',
             'data.*.lastAvailableSerialNumber' => 'integer|min:1|max:16777215|gt:data.*.firstAvailableSerialNumber',
             'data.*.yearCode' => 'integer|min:1|max:32767',

@@ -61,9 +61,9 @@ class StoreController extends Controller
                     'name' => $storeRequest['name'],
                     'type' => $storeRequest['type'],
                     'state' => 'I',
-                    'first_available_serial_number' => $storeRequest['firstAvailableSerialNumber'],
-                    'last_available_serial_number' => $storeRequest['lastAvailableSerialNumber'],
-                    'year_code' => $storeRequest['yearCode'],
+                    'first_available_serial_number' => $storeRequest['firstAvailableSerialNumber'] ?? null,
+                    'last_available_serial_number' => $storeRequest['lastAvailableSerialNumber'] ?? null,
+                    'year_code' => $storeRequest['yearCode'] ?? null,
                 ]);
 
                 array_push($newStores, $store);
@@ -127,22 +127,11 @@ class StoreController extends Controller
 
             $this->authorize('update', $store);
 
-            // additional validations
-            $existingMainStore = Store::firstWhere(['type' => 'P']);
-            if (($request->data['type'] ?? null) === 'P' && $existingMainStore) {
-                return response([
-                    'message' => "Primary Store already exists (" . $existingMainStore->id . ").",
-                ], 422);
-            }
-
             if ($request->data['code'] ?? null) {
                 $store->code = $request->data['code'];
             }
             if ($request->data['name'] ?? null) {
                 $store->name = $request->data['name'];
-            }
-            if ($request->data['type'] ?? null) {
-                $store->type = $request->data['type'];
             }
             if ($request->data['firstAvailableSerialNumber'] ?? null) {
                 $store->first_available_serial_number = $request->data['firstAvailableSerialNumber'];
