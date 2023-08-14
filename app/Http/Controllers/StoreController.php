@@ -127,6 +127,12 @@ class StoreController extends Controller
 
             $this->authorize('update', $store);
 
+            if ($store->state !== "I") {
+                return response([
+                    'message' => "Store is currently not idle."
+                ], 422);
+            }
+
             if ($request->data['code'] ?? null) {
                 $store->code = $request->data['code'];
             }
@@ -174,6 +180,12 @@ class StoreController extends Controller
 
             $store = Store::findOrFail($id);
             $this->authorize('remove', $store);
+
+            if ($store->state !== "I") {
+                return response([
+                    'message' => "Store is currently not idle."
+                ], 422);
+            }
 
             $store->delete();
 
