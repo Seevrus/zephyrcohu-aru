@@ -13,6 +13,7 @@ class Item extends Model
         'company_id',
         'cn_code',
         'article_number',
+        'barcode',
         'name',
         'short_name',
         'category',

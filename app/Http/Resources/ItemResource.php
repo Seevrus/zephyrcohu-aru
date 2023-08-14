@@ -18,6 +18,7 @@ class ItemResource extends JsonResource
             'id' => $this->id,
             'CNCode' => $this->cn_code,
             'articleNumber' => $this->article_number,
+            'barcode' => $this->barcode,
             'name' => $this->name,
             'shortName' => $this->short_name,
             'category' => $this->category,

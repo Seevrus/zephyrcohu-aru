@@ -26,6 +26,7 @@ class UpdateItemRequest extends FormRequest
     return [
       'data' => 'required',
       'data.CNCode' => 'string|size:6',
+      'data.barcode' => 'nullable|string|min:1|max:255',
       'data.name' => 'string|max:60',
       'data.shortName' => 'string|max:10',
       'data.category' => 'string|max:20',
@@ -35,6 +36,7 @@ class UpdateItemRequest extends FormRequest
       'data.netPrice' => 'integer|min:0|max:2147483647',
       'data.expirations' => 'array|min:1|bail',
       'data.expirations.*.action' => 'required|in:create,delete',
+      'data.expirations.*.barcode' => 'nullable|string|min:1|max:255',
       'data.expirations.*.expiresAt' => 'required|date_format:Y-m',
       'data.discouns' => 'array|min:1|bail',
       'data.discounts.*.action' => 'required|in:create,update,delete',

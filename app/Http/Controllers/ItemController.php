@@ -38,6 +38,7 @@ class ItemController extends Controller
                 $item = Item::create([
                     'company_id' => $company->id,
                     'cn_code' => $itemRequest['CNCode'],
+                    'barcode' => $itemRequest['barcode'] ?? null,
                     'article_number' => $itemRequest['articleNumber'],
                     'name' => $itemRequest['name'],
                     'short_name' => $itemRequest['shortName'],
@@ -51,6 +52,7 @@ class ItemController extends Controller
                 $item->expirations()->createMany(
                     array_map(
                         fn ($expirationRequest) => [
+                            'barcode' => $expirationRequest['barcode'] ?? null,
                             'expires_at' => Carbon::createFromFormat("Y-m", $expirationRequest['expiresAt'])->endOfMonth()->endOfDay(),
                         ],
                         $itemRequest['expirations']
@@ -165,6 +167,7 @@ class ItemController extends Controller
                 // Actual updates
                 foreach ($expirationUpdates as $expirationUpdate) {
                     $expiresAt = $expirationUpdate['expiresAt'];
+                    $expiresAtFull = Carbon::createFromFormat("Y-m", $expiresAt)->endOfMonth()->endOfDay();
 
                     $action = $expirationUpdate['action'];
                     switch ($action) {
@@ -175,6 +178,7 @@ class ItemController extends Controller
                         case 'create':
                         default:
                             $item->expirations()->create([
+                                'barcode' => $expirationUpdate['barcode'] ?? null,
                                 'expires_at' => $expiresAtFull,
                             ]);
                     }
@@ -259,6 +263,9 @@ class ItemController extends Controller
 
             if ($request->data['CNCode'] ?? null) {
                 $item->cn_code = $request->data['CNCode'];
+            }
+            if (!!$request->data['barcode'] || $request->data['barcode'] === null) {
+                $item->barcode = $request->data['barcode'];
             }
             if ($request->data['name'] ?? null) {
                 $item->name = $request->data['name'];

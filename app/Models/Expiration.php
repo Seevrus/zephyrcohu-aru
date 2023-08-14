@@ -11,6 +11,7 @@ class Expiration extends Model
 
     protected $fillable = [
         'item_id',
+        'barcode',
         'expires_at',
     ];
 
