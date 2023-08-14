@@ -20,6 +20,7 @@ export type StackParams = {
 
   StartErrand: undefined;
   EndErrand: undefined;
+  BarCodeTest: undefined;
 };
 
 export type LoginProps = NativeStackScreenProps<StackParams, 'Login'>;

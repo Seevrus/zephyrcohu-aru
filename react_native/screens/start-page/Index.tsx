@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+    paddingBottom: 30,
   },
   textCardContainer: {
     marginTop: 30,
