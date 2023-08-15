@@ -134,23 +134,35 @@ class ItemController extends Controller
             $expirationUpdates = $request->data['expirations'] ?? null;
             if ($expirationUpdates) {
                 $currentExpirations = $item->expirations();
+                $currentExpirationIds = array_map(
+                    fn ($ce) => $ce['id'],
+                    $currentExpirations->get()->toArray()
+                );
+                $currentExpiresAts = array_map(
+                    fn ($ce) => $ce['expires_at'],
+                    $currentExpirations->get()->toArray()
+                );
 
                 // Additional validations for expiration
                 foreach ($expirationUpdates as $expirationUpdate) {
-                    $expiresAt = $expirationUpdate['expiresAt'];
-                    $expiresAtFull = Carbon::createFromFormat("Y-m", $expiresAt)->endOfMonth()->endOfDay();
-                    $currentExpiresAts = array_map(
-                        fn ($ce) => $ce['expires_at'],
-                        $currentExpirations->get()->toArray()
-                    );
+                    $expirationId = $expirationUpdate['id'];
+                    $expiresAt = $expirationUpdate['expiresAt'] ?? null;
+                    $expiresAtFull = $expiresAt ? Carbon::createFromFormat("Y-m", $expiresAt)->endOfMonth()->endOfDay() : null;
 
                     // For the sake of simplicity, this fails on the first malformed item
                     $action = $expirationUpdate['action'];
                     switch ($action) {
-                        case 'delete':
-                            if (array_search($expiresAtFull, $currentExpiresAts) === false) {
+                        case 'update':
+                            if (array_search($expirationUpdate['id'], $currentExpirationIds)) {
                                 return response([
-                                    'message' => "Invalid expiration to delete: " . $expiresAt
+                                    'message' => "Invalid expiration to update: " . $expirationId
+                                ], 422);
+                            }
+                            break;
+                        case 'delete':
+                            if (array_search($expirationUpdate['id'], $currentExpirationIds)) {
+                                return response([
+                                    'message' => "Invalid expiration to delete: " . $expirationId
                                 ], 422);
                             }
                             break;
@@ -166,14 +178,24 @@ class ItemController extends Controller
 
                 // Actual updates
                 foreach ($expirationUpdates as $expirationUpdate) {
-                    $expiresAt = $expirationUpdate['expiresAt'];
-                    $expiresAtFull = Carbon::createFromFormat("Y-m", $expiresAt)->endOfMonth()->endOfDay();
+                    $expirationId = $expirationUpdate['id'];
+                    $expiresAt = $expirationUpdate['expiresAt'] ?? null;
+                    $expiresAtFull = $expiresAt ? Carbon::createFromFormat("Y-m", $expiresAt)->endOfMonth()->endOfDay() : null;
 
                     $action = $expirationUpdate['action'];
                     switch ($action) {
+                        case 'update':
+                            $currentExiration = $currentExpirations->find($expirationId);
+                            if (!!$expirationUpdate['barcode'] || $expirationUpdate['barcode'] === null) {
+                                $currentExiration->barcode = $expirationUpdate['barcode'];
+                            }
+                            if ($expirationUpdate['expiresAt'] ?? null) {
+                                $currentExiration->expires_at = $expiresAtFull;
+                            }
+                            $currentExiration->save();
+                            break;
                         case 'delete':
-                            $currentExpiration = $currentExpirations->firstWhere(['expires_at' => $expiresAtFull]);
-                            $currentExpiration->delete();
+                            $currentExpirations->find($expirationId)->delete();
                             break;
                         case 'create':
                         default:
@@ -307,7 +329,7 @@ class ItemController extends Controller
                 || $e instanceof ModelNotFoundException
             ) throw $e;
 
-            throw new BadRequestException();
+            throw $e; // new BadRequestException();
         }
     }
 
