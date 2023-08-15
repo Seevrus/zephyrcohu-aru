@@ -29,4 +29,13 @@ class Store extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function expirations()
+    {
+        return $this
+            ->belongsToMany(Expiration::class)
+            ->using(ExpirationStore::class)
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
 }

@@ -23,6 +23,7 @@ class StoreResource extends JsonResource
             'firstAvailableSerialNumber' => $this->first_available_serial_number,
             'lastAvailableSerialNumber' => $this->last_available_serial_number,
             'yearCode' => $this->year_code,
+            'expirations' => new ExpirationPivotCollection($this->whenLoaded('expirations')),
             'user' => new UserResource($this->user),
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,

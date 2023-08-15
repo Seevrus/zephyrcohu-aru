@@ -16,9 +16,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('expiration_store', function (Blueprint $table) {
+            $table->id();
             $table->foreignIdFor(Expiration::class)->references('id')->on('expirations')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignIdFor(Store::class)->references('id')->on('stores')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->smallInteger('quantity')->unsigned();
+            $table->integer('quantity');
+            $table->timestamps();
         });
     }
 

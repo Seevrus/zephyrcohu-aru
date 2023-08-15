@@ -101,7 +101,7 @@ class StoreController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $stores->count() . ' items',
+                'action' => 'Accessed ' . $stores->count() . ' stores',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -110,6 +110,35 @@ class StoreController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+            ) throw $e;
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function view(Request $request, int $id)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $store = $sender->company->stores()->with('expirations')->findOrFail($id);
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Accessed store id ' . $id,
+                'occured_at' => Carbon::now(),
+            ]);
+
+            return new StoreResource($store);
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
             ) throw $e;
 
             throw new BadRequestException();

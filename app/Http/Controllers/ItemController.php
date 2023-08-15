@@ -329,7 +329,7 @@ class ItemController extends Controller
                 || $e instanceof ModelNotFoundException
             ) throw $e;
 
-            throw $e; // new BadRequestException();
+            throw new BadRequestException();
         }
     }
 

@@ -4,6 +4,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerListController;
 use App\Http\Controllers\PriceListController;
+use App\Http\Controllers\StorageController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRoleController;
@@ -86,12 +87,15 @@ Route::controller(PriceListController::class)->prefix('price-lists')->group(func
 Route::controller(StoreController::class)->prefix('/stores')->group(function () {
     Route::post('/', 'create_stores')->middleware(['auth:sanctum', 'ability:I']);
     Route::get('/', 'view_all')->middleware(['auth:sanctum', 'ability:I,A']);
+    Route::get('/{id}', 'view')->middleware(['auth:sanctum', 'ability:I,A']);
     Route::post('/{id}', 'update_store')->middleware(['auth:sanctum', 'ability:I,A']);
     Route::delete('/{id}', 'remove_store')->middleware(['auth:sanctum', 'ability:I']);
 
     Route::post('/{id}/state', 'update_store_state')->middleware(['auth:sanctum', 'ability:I,A']);
+});
 
-    // item associations will have their own controller, like for pricelists
+Route::controller(StorageController::class)->prefix('/storage')->group(function () {
+    Route::post('/', 'update_storage')->middleware(['auth:sanctum', 'ability:I,A']);
 });
 
 /* Route::controller(OrderController::class)->prefix('orders')->group(function () {

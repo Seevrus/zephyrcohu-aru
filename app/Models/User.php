@@ -29,6 +29,11 @@ class User extends Authenticatable
         return $this->hasMany(UserRole::class);
     }
 
+    public function roleList()
+    {
+        return array_map(fn ($role) => $role['role'], $this->roles->toArray());
+    }
+
     public function passwords()
     {
         return $this->hasMany(UserPassword::class);
