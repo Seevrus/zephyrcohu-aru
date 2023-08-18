@@ -132,6 +132,9 @@ class ItemController extends Controller
             $this->authorize('update', $item);
 
             $expirationUpdates = $request->data['expirations'] ?? null;
+            $discountUpdates = $request->data['discounts'] ?? null;
+
+            // Additional validations for expirations
             if ($expirationUpdates) {
                 $currentExpirations = $item->expirations();
                 $currentExpirationIds = array_map(
@@ -143,7 +146,6 @@ class ItemController extends Controller
                     $currentExpirations->get()->toArray()
                 );
 
-                // Additional validations for expiration
                 foreach ($expirationUpdates as $expirationUpdate) {
                     $expirationId = $expirationUpdate['id'];
                     $expiresAt = $expirationUpdate['expiresAt'] ?? null;
@@ -175,43 +177,12 @@ class ItemController extends Controller
                             }
                     }
                 }
-
-                // Actual updates
-                foreach ($expirationUpdates as $expirationUpdate) {
-                    $expirationId = $expirationUpdate['id'];
-                    $expiresAt = $expirationUpdate['expiresAt'] ?? null;
-                    $expiresAtFull = $expiresAt ? Carbon::createFromFormat("Y-m", $expiresAt)->endOfMonth()->endOfDay() : null;
-
-                    $action = $expirationUpdate['action'];
-                    switch ($action) {
-                        case 'update':
-                            $currentExiration = $currentExpirations->find($expirationId);
-                            if (!!$expirationUpdate['barcode'] || $expirationUpdate['barcode'] === null) {
-                                $currentExiration->barcode = $expirationUpdate['barcode'];
-                            }
-                            if ($expirationUpdate['expiresAt'] ?? null) {
-                                $currentExiration->expires_at = $expiresAtFull;
-                            }
-                            $currentExiration->save();
-                            break;
-                        case 'delete':
-                            $currentExpirations->find($expirationId)->delete();
-                            break;
-                        case 'create':
-                        default:
-                            $item->expirations()->create([
-                                'barcode' => $expirationUpdate['barcode'] ?? null,
-                                'expires_at' => $expiresAtFull,
-                            ]);
-                    }
-                }
             }
 
-            $discountUpdates = $request->data['discounts'] ?? null;
+            // Additional validation for discounts
             if ($discountUpdates) {
                 $currentDiscounts = $item->discounts();
 
-                // Additional validations for discount
                 foreach ($discountUpdates as $discountUpdate) {
                     $discountName = $discountUpdate['name'];
                     $currentNames = array_map(
@@ -249,8 +220,54 @@ class ItemController extends Controller
                             }
                     }
                 }
+            }
 
-                // Actual updates
+            // Expiration updates
+            if ($expirationUpdates) {
+                $currentExpirations = $item->expirations();
+                $currentExpirationIds = array_map(
+                    fn ($ce) => $ce['id'],
+                    $currentExpirations->get()->toArray()
+                );
+                $currentExpiresAts = array_map(
+                    fn ($ce) => $ce['expires_at'],
+                    $currentExpirations->get()->toArray()
+                );
+
+                foreach ($expirationUpdates as $expirationUpdate) {
+                    $expirationId = $expirationUpdate['id'];
+                    $expiresAt = $expirationUpdate['expiresAt'] ?? null;
+                    $expiresAtFull = $expiresAt ? Carbon::createFromFormat("Y-m", $expiresAt)->endOfMonth()->endOfDay() : null;
+
+                    $action = $expirationUpdate['action'];
+                    switch ($action) {
+                        case 'update':
+                            $currentExiration = $currentExpirations->find($expirationId);
+                            if (!!$expirationUpdate['barcode'] || $expirationUpdate['barcode'] === null) {
+                                $currentExiration->barcode = $expirationUpdate['barcode'];
+                            }
+                            if ($expirationUpdate['expiresAt'] ?? null) {
+                                $currentExiration->expires_at = $expiresAtFull;
+                            }
+                            $currentExiration->save();
+                            break;
+                        case 'delete':
+                            $currentExpirations->find($expirationId)->delete();
+                            break;
+                        case 'create':
+                        default:
+                            $item->expirations()->create([
+                                'barcode' => $expirationUpdate['barcode'] ?? null,
+                                'expires_at' => $expiresAtFull,
+                            ]);
+                    }
+                }
+            }
+
+            // Discount updates
+            if ($discountUpdates) {
+                $currentDiscounts = $item->discounts();
+
                 foreach ($discountUpdates as $discountUpdate) {
                     $discountName = $discountUpdate['name'];
 
