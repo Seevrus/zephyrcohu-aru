@@ -25,7 +25,8 @@ class UpdateStorageRequest extends FormRequest
     {
         return [
             'data' => 'required',
-            'data.storeId' => 'required|integer|min:1|exists:stores,id',
+            'data.primaryStoreId' => 'required|integer|min:1|exists:stores,id',
+            'data.storeId' => 'integer|min:1|exists:stores,id',
             'data.changes' => 'required|array|bail',
             'data.changes.*.expirationId' => 'required|integer|min:1|exists:expirations,id',
             'data.changes.*.quantityChange' => 'required|integer|min:-2147483648|max:2147483647',

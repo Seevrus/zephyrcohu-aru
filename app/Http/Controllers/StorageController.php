@@ -20,40 +20,140 @@ class StorageController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $storeId = $request['data']['storeId'];
-            $store = Store::with('expirations')->find($storeId);
+            $primaryStoreId = $request['data']['primaryStoreId'];
+            $storeId = $request['data']['storeId'] ?? null;
 
-            if ($store->type === "P" && !in_array("I", $sender->roleList())) {
-                throw new AuthorizationException();
-            }
+            $primaryStore = Store::find($primaryStoreId);
 
-            if ($store->state !== "I") {
+            if ($primaryStore->type !== "P") {
                 return response([
-                    'message' => "Store is currently not idle."
+                    'message' => "Primary store ID is invalid."
                 ], 422);
             }
 
+            // updating primary store -validation
+            if (!$storeId) {
+                if (!in_array("I", $sender->roleList())) {
+                    throw new AuthorizationException();
+                }
+
+                for ($i = 0; $i < 5; $i++) {
+                    $primaryStore = Store::find($primaryStoreId);
+
+                    if ($primaryStore->state === "I") break;
+
+                    if ($i < 4) sleep(1);
+
+                    return response([
+                        'message' => "Primary Store is currently not idle."
+                    ], 507);
+                }
+            } else { // updating normal store - validation
+                $store = Store::find($storeId);
+
+                if ($store->type !== "S") {
+                    return response([
+                        'message' => "Store ID is invalid."
+                    ], 422);
+                }
+
+                for ($i = 0; $i < 5; $i++) {
+                    $primaryStore = Store::find($primaryStoreId);
+                    $store = Store::find($storeId);
+
+                    if ($primaryStore->state === "I" && $store->state === "I") break;
+
+                    if ($i < 4) sleep(1);
+
+                    return response([
+                        'message' => "Store is currently not idle."
+                    ], 507);
+                }
+            }
+
+            $primaryStore = Store::with('expirations')->find($primaryStoreId);
+            $primaryStore->state = "L";
+            $primaryStore->save();
+
+            // updating primary store
+            if (!$storeId) {
+                foreach ($request['data']['changes'] as $storageUpdate) {
+                    $expirationId = $storageUpdate['expirationId'];
+                    $existingExpiration = $primaryStore->expirations->find($expirationId);
+
+                    if ($existingExpiration) {
+                        $currentQuantity = $existingExpiration->pivot->quantity;
+                        $newQuantity = $currentQuantity + $storageUpdate['quantityChange'];
+                        $primaryStore->expirations()->updateExistingPivot($existingExpiration->id, [
+                            'quantity' => $newQuantity,
+                        ]);
+                    } else {
+                        $primaryStore->expirations()->attach($expirationId, ['quantity' => $storageUpdate['quantityChange']]);
+                    }
+                }
+
+                $primaryStore->state = "I";
+                $primaryStore->save();
+
+                return new StoreResource($primaryStore->refresh());
+            }
+
+            // updating normal store
+            $store = Store::with('expirations')->find($storeId);
             $store->state = "L";
             $store->save();
 
             foreach ($request['data']['changes'] as $storageUpdate) {
                 $expirationId = $storageUpdate['expirationId'];
-                $existingExpiration = $store->expirations->find($expirationId)->pivot;
 
-                if ($existingExpiration) {
-                    $currentQuantity = $existingExpiration->quantity;
+                $primaryExistingExpiration = $primaryStore->expirations->find($expirationId);
+                $existingExpiration = $store->expirations->find($expirationId);
+
+                if ($primaryExistingExpiration && $existingExpiration) {
+                    $primaryCurrentQuantity = $primaryExistingExpiration->pivot->quantity;
+                    $currentQuantity = $existingExpiration->pivot->quantity;
+
+                    $primaryNewQuantity = $primaryCurrentQuantity - $storageUpdate['quantityChange'];
                     $newQuantity = $currentQuantity + $storageUpdate['quantityChange'];
-                    $existingExpiration->quantity = $newQuantity;
-                    $existingExpiration->save();
+
+                    $primaryStore->expirations()->updateExistingPivot($primaryExistingExpiration->id, [
+                        'quantity' => $primaryNewQuantity,
+                    ]);
+
+                    $store->expirations()->updateExistingPivot($existingExpiration->id, [
+                        'quantity' => $newQuantity,
+                    ]);
+                } else if ($primaryExistingExpiration && !$existingExpiration) {
+                    $primaryCurrentQuantity = $primaryExistingExpiration->pivot->quantity;
+                    $primaryNewQuantity = $primaryCurrentQuantity - $storageUpdate['quantityChange'];
+
+                    $primaryStore->expirations()->updateExistingPivot($primaryExistingExpiration->id, [
+                        'quantity' => $primaryNewQuantity,
+                    ]);
+
+                    $store->expirations()->attach($expirationId, ['quantity' => $storageUpdate['quantityChange']]);
+                } else if (!$primaryExistingExpiration && $existingExpiration) {
+                    $currentQuantity = $existingExpiration->pivot->quantity;
+                    $newQuantity = $currentQuantity + $storageUpdate['quantityChange'];
+
+                    $primaryStore->expirations()->attach($expirationId, ['quantity' => -$storageUpdate['quantityChange']]);
+
+                    $store->expirations()->updateExistingPivot($existingExpiration->id, [
+                        'quantity' => $newQuantity,
+                    ]);
                 } else {
+                    $primaryStore->expirations()->attach($expirationId, ['quantity' => -$storageUpdate['quantityChange']]);
+
                     $store->expirations()->attach($expirationId, ['quantity' => $storageUpdate['quantityChange']]);
                 }
             }
 
+            $primaryStore->state = "I";
+            $primaryStore->save();
             $store->state = "I";
             $store->save();
 
-            return new StoreResource($store);
+            return new StoreResource($store->refresh());
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
