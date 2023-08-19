@@ -95,7 +95,17 @@ Route::controller(StoreController::class)->prefix('/stores')->group(function () 
 });
 
 Route::controller(StorageController::class)->prefix('/storage')->group(function () {
-    Route::post('/', 'update_storage')->middleware(['auth:sanctum', 'ability:I,A']);
+    Route::post('/load_primary', 'load_primary')
+        ->middleware(['auth:sanctum', 'ability:I']);
+
+    Route::post('/lock_to_user', 'lock_to_user')
+        ->middleware(['auth:sanctum', 'ability:I,A']);
+
+    Route::post('/load', 'load')
+        ->middleware(['auth:sanctum', 'ability:I']);
+
+    Route::post('/unlock_from_user', 'unlock_from_user')
+        ->middleware(['auth:sanctum', 'ability:I,A']);
 });
 
 /* Route::controller(OrderController::class)->prefix('orders')->group(function () {

@@ -2,18 +2,132 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateStorageRequest;
+use App\Http\Requests\LoadPrimaryStoreRequest;
+use App\Http\Requests\LoadStoreRequest;
+use App\Http\Requests\LockStoreToUserRequest;
 use App\Http\Resources\StoreResource;
+use App\Http\Resources\UserResource;
 use App\Models\Store;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class StorageController extends Controller
 {
-    public function update_storage(UpdateStorageRequest $request)
+    public function load_primary(LoadPrimaryStoreRequest $request)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $storeId = $request['data']['storeId'];
+            $store = Store::findOrFail($storeId);
+
+            if ($store->type !== "P") {
+                return response([
+                    'message' => "Store ID is invalid."
+                ], 422);
+            }
+
+            // load store - validation
+            if (!in_array("I", $sender->roleList())) {
+                throw new AuthorizationException();
+            }
+
+            for ($i = 0; $i < 5; $i++) {
+                $store->refresh();
+
+                if ($store->state === "I") break;
+
+                if ($i < 4) sleep(1);
+
+                return response([
+                    'message' => "Store is currently not idle."
+                ], 507);
+            }
+
+            $store = Store::with('expirations')->find($storeId);
+            $store->state = "L";
+            $store->save();
+
+            // load store
+            foreach ($request['data']['changes'] as $storageUpdate) {
+                $expirationId = $storageUpdate['expirationId'];
+                $existingExpiration = $store->expirations->find($expirationId);
+
+                if ($existingExpiration) {
+                    $currentQuantity = $existingExpiration->pivot->quantity;
+                    $newQuantity = $currentQuantity + $storageUpdate['quantityChange'];
+                    $store->expirations()->updateExistingPivot($existingExpiration->id, [
+                        'quantity' => $newQuantity,
+                    ]);
+                } else {
+                    $store->expirations()->attach($expirationId, ['quantity' => $storageUpdate['quantityChange']]);
+                }
+            }
+
+            $store->state = "I";
+            $store->save();
+
+            return new StoreResource($store->refresh());
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) throw $e;
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function lock_to_user(LockStoreToUserRequest $request)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $storeId = $request['data']['storeId'];
+            $store = Store::findOrFail($storeId);
+
+            if ($sender->store) {
+                return response([
+                    'message' => "User already has a store locked.",
+                    'storeId' => $sender->store->id,
+                ], 507);
+            }
+
+            if ($store->type === "P" && !in_array("I", $sender->roleList())) {
+                return response([
+                    'message' => "Cannot lock primary store."
+                ], 422);
+            }
+
+            if ($store->user) {
+                return response([
+                    'message' => "Store is already locked.",
+                    'userId' => $store->user->id,
+                ], 507);
+            }
+
+            $sender->store()->save($store);
+
+            return new UserResource($sender->refresh());
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) throw $e;
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function load(LoadStoreRequest $request)
     {
         try {
             $sender = $request->user();
@@ -21,85 +135,44 @@ class StorageController extends Controller
             $sender->save();
 
             $primaryStoreId = $request['data']['primaryStoreId'];
-            $storeId = $request['data']['storeId'] ?? null;
-
             $primaryStore = Store::find($primaryStoreId);
 
             if ($primaryStore->type !== "P") {
                 return response([
-                    'message' => "Primary store ID is invalid."
+                    'message' => "Primary store ID does not belong to a primary store."
                 ], 422);
             }
 
-            // updating primary store -validation
-            if (!$storeId) {
-                if (!in_array("I", $sender->roleList())) {
-                    throw new AuthorizationException();
-                }
+            // loading store - validation
+            $store = $sender->store;
 
-                for ($i = 0; $i < 5; $i++) {
-                    $primaryStore = Store::find($primaryStoreId);
-
-                    if ($primaryStore->state === "I") break;
-
-                    if ($i < 4) sleep(1);
-
-                    return response([
-                        'message' => "Primary Store is currently not idle."
-                    ], 507);
-                }
-            } else { // updating normal store - validation
-                $store = Store::find($storeId);
-
-                if ($store->type !== "S") {
-                    return response([
-                        'message' => "Store ID is invalid."
-                    ], 422);
-                }
-
-                for ($i = 0; $i < 5; $i++) {
-                    $primaryStore = Store::find($primaryStoreId);
-                    $store = Store::find($storeId);
-
-                    if ($primaryStore->state === "I" && $store->state === "I") break;
-
-                    if ($i < 4) sleep(1);
-
-                    return response([
-                        'message' => "Store is currently not idle."
-                    ], 507);
-                }
+            if (!$store) {
+                return response([
+                    'message' => "User has no store associated."
+                ], 404);
             }
 
-            $primaryStore = Store::with('expirations')->find($primaryStoreId);
+            if ($store->type !== "S") {
+                return response([
+                    'message' => "Store ID is invalid."
+                ], 422);
+            }
+
+            for ($i = 0; $i < 5; $i++) {
+                $primaryStore = $primaryStore->refresh();
+
+                if ($primaryStore->state === "I") break;
+
+                if ($i < 4) sleep(1);
+
+                return response([
+                    'message' => "Primary store is currently not idle."
+                ], 507);
+            }
+
+            // loading store
             $primaryStore->state = "L";
             $primaryStore->save();
-
-            // updating primary store
-            if (!$storeId) {
-                foreach ($request['data']['changes'] as $storageUpdate) {
-                    $expirationId = $storageUpdate['expirationId'];
-                    $existingExpiration = $primaryStore->expirations->find($expirationId);
-
-                    if ($existingExpiration) {
-                        $currentQuantity = $existingExpiration->pivot->quantity;
-                        $newQuantity = $currentQuantity + $storageUpdate['quantityChange'];
-                        $primaryStore->expirations()->updateExistingPivot($existingExpiration->id, [
-                            'quantity' => $newQuantity,
-                        ]);
-                    } else {
-                        $primaryStore->expirations()->attach($expirationId, ['quantity' => $storageUpdate['quantityChange']]);
-                    }
-                }
-
-                $primaryStore->state = "I";
-                $primaryStore->save();
-
-                return new StoreResource($primaryStore->refresh());
-            }
-
-            // updating normal store
-            $store = Store::with('expirations')->find($storeId);
             $store->state = "L";
             $store->save();
 
@@ -161,6 +234,28 @@ class StorageController extends Controller
             ) throw $e;
 
             throw new BadRequestException();
+        }
+    }
+
+    public function unlock_from_user(Request $request)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $store = $sender->store;
+            $store->user_id = null;
+            $store->save();
+
+            return new UserResource($sender->refresh());
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) throw $e;
+
+            throw $e; // new BadRequestException();
         }
     }
 }

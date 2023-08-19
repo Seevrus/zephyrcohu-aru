@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateStorageRequest extends FormRequest
+class LoadPrimaryStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,8 +25,7 @@ class UpdateStorageRequest extends FormRequest
     {
         return [
             'data' => 'required',
-            'data.primaryStoreId' => 'required|integer|min:1|exists:stores,id',
-            'data.storeId' => 'integer|min:1|exists:stores,id',
+            'data.storeId' => 'required|integer|min:1|exists:stores,id',
             'data.changes' => 'required|array|bail',
             'data.changes.*.expirationId' => 'required|integer|min:1|exists:expirations,id',
             'data.changes.*.quantityChange' => 'required|integer|min:-2147483648|max:2147483647',
