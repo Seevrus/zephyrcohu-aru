@@ -33,7 +33,7 @@ class UpdateItemRequest extends FormRequest
       'data.unitName' => 'string|max:6',
       'data.productCatalogCode' => 'string|size:11',
       'data.vatRate' => 'string|size:2',
-      'data.netPrice' => 'integer|min:0|max:2147483647',
+      'data.netPrice' => 'integer|min:0|max:4294967295',
       'data.expirations' => 'array|min:1|bail',
       'data.expirations.*.action' => 'required|in:create,update,delete',
       'data.expirations.*.id' => 'required_if:data.expirations.*.action,update|required_if:data.expirations.*.action,delete|exists:expirations,id',
@@ -44,7 +44,7 @@ class UpdateItemRequest extends FormRequest
       'data.discounts.*.id' => 'required_if:data.discounts.*.action,update|required_if:data.discounts.*.action,delete|exists:discounts,id',
       'data.discounts.*.name' => 'string|min:1',
       'data.discounts.*.type' => 'in:absolute,percentage,freeForm',
-      'data.discounts.*.amount' => 'min:0|max:2147483647',
+      'data.discounts.*.amount' => 'min:0|max:4294967295',
     ];
   }
 }

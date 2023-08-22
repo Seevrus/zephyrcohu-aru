@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\OtherItemController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerListController;
 use App\Http\Controllers\PriceListController;
@@ -53,7 +54,7 @@ Route::controller(PartnerController::class)->prefix('partners')->group(function 
     Route::delete('/{id}', 'remove_partner')->middleware(['auth:sanctum', 'ability:I']);
 });
 
-Route::controller(PartnerListController::class)->prefix('partner-lists')->group(function () {
+Route::controller(PartnerListController::class)->prefix('partner_lists')->group(function () {
     Route::post('/', 'create_partner_list')->middleware(['auth:sanctum', 'ability:I']);
 
     Route::get('/', 'view_all')->middleware(['auth:sanctum', 'ability:I,A']);
@@ -78,10 +79,17 @@ Route::controller(ItemController::class)->prefix('items')->group(function () {
     Route::delete('/{id}', 'remove_item')->middleware(['auth:sanctum', 'ability:I']);
 });
 
-Route::controller(PriceListController::class)->prefix('price-lists')->group(function () {
+Route::controller(PriceListController::class)->prefix('price_lists')->group(function () {
     Route::post('/create', 'create_price_list')->middleware(['auth:sanctum', 'ability:I']);
     Route::post('/update', 'update_price_list')->middleware(['auth:sanctum', 'ability:I']);
     Route::post('/remove', 'delete_price_list')->middleware(['auth:sanctum', 'ability:I']);
+});
+
+Route::controller(OtherItemController::class)->prefix('other_items')->group(function () {
+    Route::post('/', 'create_other_items')->middleware(['auth:sanctum', 'ability:I']);
+    Route::get('/', 'view_all')->middleware(['auth:sanctum', 'ability:I,A']);
+    Route::post('/{id}', 'update_other_item')->middleware(['auth:sanctum', 'ability:I']);
+    Route::delete('/{id}', 'remove_other_item')->middleware(['auth:sanctum', 'ability:I']);
 });
 
 Route::controller(StoreController::class)->prefix('/stores')->group(function () {

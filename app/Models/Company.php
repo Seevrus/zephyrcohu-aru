@@ -29,6 +29,11 @@ class Company extends Model
         return $this->hasMany(Item::class);
     }
 
+    public function otherItems()
+    {
+        return $this->hasMany(OtherItem::class);
+    }
+
     public function stores()
     {
         return $this->hasMany(Store::class);

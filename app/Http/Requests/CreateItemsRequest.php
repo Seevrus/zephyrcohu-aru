@@ -34,14 +34,14 @@ class CreateItemsRequest extends FormRequest
             'data.*.unitName' => 'required|string|max:6',
             'data.*.productCatalogCode' => 'required|string|size:11|distinct',
             'data.*.vatRate' => 'required|string|size:2',
-            'data.*.netPrice' => 'required|integer|min:0|max:2147483647',
+            'data.*.netPrice' => 'required|integer|min:0|max:4294967295',
             'data.*.expirations' => 'required|array|min:1|bail',
             'data.*.expirations.barcode' => 'string|min:1|max:255',
             'data.*.expirations.*.expiresAt' => 'required|date_format:Y-m|distinct',
             'data.*.discounts' => 'array|min:1|bail',
             'data.*.discounts.*.name' => 'required|string|min:1|distinct',
             'data.*.discounts.*.type' => 'required|in:absolute,percentage,freeForm',
-            'data.*.discounts.*.amount' => 'integer|min:0|max:2147483647',
+            'data.*.discounts.*.amount' => 'integer|min:0|max:4294967295',
         ];
     }
 }

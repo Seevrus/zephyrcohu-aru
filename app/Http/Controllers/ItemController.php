@@ -127,8 +127,7 @@ class ItemController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $item = Item::findOrFail($id);
-
+            $item = $sender->company->items()->findOrFail($id);
             $this->authorize('update', $item);
 
             $expirationUpdates = $request->data['expirations'] ?? null;
@@ -357,7 +356,7 @@ class ItemController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $item = Item::findOrFail($id);
+            $item = $sender->company->items()->findOrFail($id);
             $this->authorize('remove', $item);
 
             $item->delete();
