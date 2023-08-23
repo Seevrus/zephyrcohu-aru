@@ -50,6 +50,9 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
 Route::controller(PartnerController::class)->prefix('partners')->group(function () {
     Route::post('/', 'create_partners')->middleware(['auth:sanctum', 'ability:I']);
     Route::get('/', 'view_all')->middleware(['auth:sanctum', 'ability:I,A']);
+
+    Route::post('/search', 'search')->middleware(['auth:sanctum', 'ability:I,A']);
+
     Route::post('/{id}', 'update_partner')->middleware(['auth:sanctum', 'ability:I']);
     Route::delete('/{id}', 'remove_partner')->middleware(['auth:sanctum', 'ability:I']);
 });

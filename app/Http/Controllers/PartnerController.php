@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreatePartnersRequest;
+use App\Http\Requests\SearchTaxNumberRequest;
 use App\Http\Requests\UpdatePartnerRequest;
 use App\Http\Resources\PartnerCollection;
 use App\Http\Resources\PartnerResource;
+use App\Http\Resources\TaxPayerResource;
 use App\Models\Log;
 use App\Models\Partner;
 use Carbon\Carbon;
@@ -13,6 +15,7 @@ use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use SimpleXMLElement;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -292,5 +295,96 @@ class PartnerController extends Controller
 
             throw new BadRequestException();
         }
+    }
+
+    public function search(SearchTaxNumberRequest $request)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->save();
+
+            $taxNumber = $request->data['taxNumber'];
+            $utcTimeStamp = Carbon::now('UTC')->toIso8601ZuluString();
+            $requestId = $this->generateRequestId($sender->id, $taxNumber, $utcTimeStamp);
+
+            $taxPayerRequest = new SimpleXMLElement(
+                '<?xml version="1.0" encoding="UTF-8"?><QueryTaxpayerRequest xmlns="http://schemas.nav.gov.hu/OSA/3.0/api" xmlns:common="http://schemas.nav.gov.hu/NTCA/1.0/common"></QueryTaxpayerRequest>'
+            );
+
+            $header = $taxPayerRequest->addChild('common:common:header');
+            $header->addChild('common:common:requestId', $requestId);
+            $header->addChild('common:common:timestamp', $utcTimeStamp);
+            $header->addChild('common:common:requestVersion', '3.0');
+            $header->addChild('common:common:headerVersion', '1.0');
+
+            $user = $taxPayerRequest->addChild('common:common:user');
+            $user->addChild('common:common:login', env('NAV_USER'));
+            $passwordHash = $user->addChild('common:common:passwordHash', env('NAV_PASSWORD'));
+            $passwordHash->addAttribute('cryptoType', 'SHA-512');
+            $user->addChild('common:common:taxNumber', env('NAV_TAXNUMBER'));
+            $requestSignature = $user->addChild('common:common:requestSignature', $this->generateRequestSignature($requestId));
+            $requestSignature->addAttribute('cryptoType', 'SHA3-512');
+
+            $software = $taxPayerRequest->addChild('software');
+            $software->addChild('softwareId', env('NAV_SOFTWAREID'));
+            $software->addChild('softwareName', env('NAV_SOFTWARENAME'));
+            $software->addChild('softwareOperation', env('NAV_SOFTWAREOPERATION'));
+            $software->addChild('softwareMainVersion', env('NAV_SOFTWAREVERSION'));
+            $software->addChild('softwareDevName', env('NAV_SOFTWAREDEVNAME'));
+            $software->addChild('softwareDevContact', env('NAV_SOFTWAREDEVCONTACT'));
+            $software->addChild('softwareDevCountryCode', env('NAV_SOFTWAREDEVCOUNTRY'));
+            $software->addChild('softwareDevTaxNumber', env('NAV_TAXNUMBER'));
+
+            $taxPayerRequest->addChild('taxNumber', $taxNumber);
+
+            $chSession = curl_init();
+            curl_setopt($chSession, CURLOPT_URL, env('NAV_TAXNUMBERAPI'));
+            curl_setopt($chSession, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($chSession, CURLOPT_POST, true);
+            curl_setopt($chSession, CURLOPT_HTTPHEADER, [
+                'Content-Type:application/xml'
+            ]);
+            curl_setopt($chSession, CURLOPT_POSTFIELDS, $taxPayerRequest->asXML());
+
+            $taxPayerResponse = curl_exec($chSession);
+
+            curl_close($chSession);
+
+            if (!$taxPayerResponse) {
+                throw new BadRequestException();
+            }
+
+            $taxPayerResponse = preg_replace('/xmlns[^=]*="[^"]*"/i', '', $taxPayerResponse);
+            $taxPayerResponse = preg_replace('/(<\/?)([a-zA-Z\d]+:)([a-zA-Z0-9\d]+)(\s{0,}\/?>)/', '$1$3$4', $taxPayerResponse);
+
+            $responseXml = new SimpleXMLElement($taxPayerResponse);
+
+            return new TaxPayerResource(json_decode(json_encode($responseXml)));
+            return response($responseXml->asXML())->header('Content-Type', 'application/xml; charset=utf-8');
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) throw $e;
+
+            throw new BadRequestException();
+        }
+    }
+
+    private function generateRequestId(int $userId, int $taxNumber, $timeStamp)
+    {
+        $fingerPrint = $userId . $taxNumber . $timeStamp;
+        $hash = md5($fingerPrint);
+        return substr($hash, 0, 19);
+    }
+
+    private function generateRequestSignature(string $requestId)
+    {
+        $timeStamp = Carbon::now('UTC');
+        $fingerPrint = $requestId . $timeStamp->format('Ymd') . $timeStamp->format('His') . env('NAV_SIGNKEY');
+        $hash = hash('sha3-512', $fingerPrint);
+
+        return $hash;
     }
 }
