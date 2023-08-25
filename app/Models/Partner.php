@@ -36,6 +36,6 @@ class Partner extends Model
 
     public function priceList()
     {
-        return $this->belongsToMany(Item::class, 'price_lists')->withPivot('net_price');
+        return $this->belongsTo(PriceList::class);
     }
 }

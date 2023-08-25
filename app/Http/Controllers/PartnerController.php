@@ -305,7 +305,7 @@ class PartnerController extends Controller
             $sender->save();
 
             $taxNumber = $request->data['taxNumber'];
-            $utcTimeStamp = Carbon::now('UTC')->toIso8601ZuluString();
+            $utcTimeStamp = Carbon::now()->toIso8601ZuluString();
             $requestId = $this->generateRequestId($sender->id, $taxNumber, $utcTimeStamp);
 
             $taxPayerRequest = new SimpleXMLElement(
@@ -361,7 +361,6 @@ class PartnerController extends Controller
             $responseXml = new SimpleXMLElement($taxPayerResponse);
 
             return new TaxPayerResource(json_decode(json_encode($responseXml)));
-            return response($responseXml->asXML())->header('Content-Type', 'application/xml; charset=utf-8');
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
@@ -381,7 +380,7 @@ class PartnerController extends Controller
 
     private function generateRequestSignature(string $requestId)
     {
-        $timeStamp = Carbon::now('UTC');
+        $timeStamp = Carbon::now();
         $fingerPrint = $requestId . $timeStamp->format('Ymd') . $timeStamp->format('His') . env('NAV_SIGNKEY');
         $hash = hash('sha3-512', $fingerPrint);
 
