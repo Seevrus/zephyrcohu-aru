@@ -11,6 +11,7 @@ class UserRole extends Model
     use HasFactory;
 
     protected $dateFormat = DateTime::ATOM;
+
     public $timestamps = false;
 
     protected $fillable = [

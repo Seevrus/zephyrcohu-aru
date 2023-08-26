@@ -33,7 +33,9 @@ class OtherItemController extends Controller
                     'article_number' => $itemRequest['articleNumber'],
                 ])->first();
 
-                if ($existingItem) continue;
+                if ($existingItem) {
+                    continue;
+                }
 
                 $item = OtherItem::create([
                     'company_id' => $company->id,
@@ -52,7 +54,7 @@ class OtherItemController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Created ' . count($newItems) . ' other items',
+                'action' => 'Created '.count($newItems).' other items',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -61,7 +63,9 @@ class OtherItemController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -80,7 +84,7 @@ class OtherItemController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $items->count() . ' other items',
+                'action' => 'Accessed '.$items->count().' other items',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -89,7 +93,9 @@ class OtherItemController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -127,7 +133,7 @@ class OtherItemController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Updated other item ' . $item->id,
+                'action' => 'Updated other item '.$item->id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -137,7 +143,9 @@ class OtherItemController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -159,7 +167,7 @@ class OtherItemController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed item ' . $item->id,
+                'action' => 'Removed item '.$item->id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {
@@ -167,7 +175,9 @@ class OtherItemController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }

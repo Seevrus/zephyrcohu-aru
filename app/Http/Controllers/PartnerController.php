@@ -37,7 +37,9 @@ class PartnerController extends Controller
                     'site_code' => $partnerRequest['siteCode'],
                 ])->first();
 
-                if ($existingPartner) continue;
+                if ($existingPartner) {
+                    continue;
+                }
 
                 $partner = Partner::create([
                     'company_id' => $company->id,
@@ -74,7 +76,7 @@ class PartnerController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Created ' . count($newPartners) . ' partners',
+                'action' => 'Created '.count($newPartners).' partners',
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 
@@ -83,7 +85,9 @@ class PartnerController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -102,7 +106,7 @@ class PartnerController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $partners->count() . ' partners',
+                'action' => 'Accessed '.$partners->count().' partners',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -111,7 +115,9 @@ class PartnerController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -130,7 +136,7 @@ class PartnerController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed partner ' . $id,
+                'action' => 'Accessed partner '.$id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -140,7 +146,9 @@ class PartnerController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -173,14 +181,14 @@ class PartnerController extends Controller
                         case 'update':
                             if (array_search($locationName, $currentNames) === false) {
                                 return response([
-                                    'message' => "Invalid location to update: " . $locationName
+                                    'message' => 'Invalid location to update: '.$locationName,
                                 ], 422);
                             }
                             break;
                         case 'delete':
                             if (array_search($locationName, $currentNames) === false) {
                                 return response([
-                                    'message' => "Invalid location to delete: " . $locationName
+                                    'message' => 'Invalid location to delete: '.$locationName,
                                 ], 422);
                             }
                             break;
@@ -188,14 +196,14 @@ class PartnerController extends Controller
                         default:
                             if (
                                 array_search($locationName, $currentNames) !== false
-                                || !($locationUpdate['locationType'] ?? null)
-                                || !($locationUpdate['country'] ?? null)
-                                || !($locationUpdate['postalCode'] ?? null)
-                                || !($locationUpdate['city'] ?? null)
-                                || !($locationUpdate['address'] ?? null)
+                                || ! ($locationUpdate['locationType'] ?? null)
+                                || ! ($locationUpdate['country'] ?? null)
+                                || ! ($locationUpdate['postalCode'] ?? null)
+                                || ! ($locationUpdate['city'] ?? null)
+                                || ! ($locationUpdate['address'] ?? null)
                             ) {
                                 return response([
-                                    'message' => "Invalid location to create: " . $locationName
+                                    'message' => 'Invalid location to create: '.$locationName,
                                 ], 422);
                             }
                     }
@@ -246,7 +254,6 @@ class PartnerController extends Controller
                 }
             }
 
-
             if ($request->data['vatNumber'] ?? null) {
                 $partner->vat_number = $request->data['vatNumber'];
             }
@@ -271,7 +278,7 @@ class PartnerController extends Controller
             if (($request->data['email'] ?? 0) !== 0) {
                 $partner->email = $request->data['email'];
             }
-            if (!!@$request->data['priceListId'] || @$request->data['priceListId'] === null) {
+            if ((bool) @$request->data['priceListId'] || @$request->data['priceListId'] === null) {
                 $partner->price_list_id = $request->data['priceListId'];
             }
 
@@ -281,7 +288,7 @@ class PartnerController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Updated partner ' . $partner->id,
+                'action' => 'Updated partner '.$partner->id,
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 
@@ -291,7 +298,9 @@ class PartnerController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -312,7 +321,7 @@ class PartnerController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed partner ' . $partner->id,
+                'action' => 'Removed partner '.$partner->id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {
@@ -320,7 +329,9 @@ class PartnerController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -372,7 +383,7 @@ class PartnerController extends Controller
             curl_setopt($chSession, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($chSession, CURLOPT_POST, true);
             curl_setopt($chSession, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/xml'
+                'Content-Type:application/xml',
             ]);
             curl_setopt($chSession, CURLOPT_POSTFIELDS, $taxPayerRequest->asXML());
 
@@ -380,7 +391,7 @@ class PartnerController extends Controller
 
             curl_close($chSession);
 
-            if (!$taxPayerResponse) {
+            if (! $taxPayerResponse) {
                 throw new BadRequestException();
             }
 
@@ -394,7 +405,9 @@ class PartnerController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -402,15 +415,16 @@ class PartnerController extends Controller
 
     private function generateRequestId(int $userId, int $taxNumber, $timeStamp)
     {
-        $fingerPrint = $userId . $taxNumber . $timeStamp;
+        $fingerPrint = $userId.$taxNumber.$timeStamp;
         $hash = md5($fingerPrint);
+
         return substr($hash, 0, 19);
     }
 
     private function generateRequestSignature(string $requestId)
     {
         $timeStamp = Carbon::now();
-        $fingerPrint = $requestId . $timeStamp->format('Ymd') . $timeStamp->format('His') . env('NAV_SIGNKEY');
+        $fingerPrint = $requestId.$timeStamp->format('Ymd').$timeStamp->format('His').env('NAV_SIGNKEY');
         $hash = hash('sha3-512', $fingerPrint);
 
         return $hash;

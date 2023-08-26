@@ -33,7 +33,7 @@ class UserResource extends JsonResource
             'storeId' => $this->store?->id,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
-            'lastActive' => Carbon::createFromFormat("Y-m-d H:i:s", $this->last_active),
+            'lastActive' => Carbon::createFromFormat('Y-m-d H:i:s', $this->last_active),
         ];
     }
 }

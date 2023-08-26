@@ -48,7 +48,7 @@ class PriceListController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Created price list ' . $priceListName,
+                'action' => 'Created price list '.$priceListName,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -57,7 +57,9 @@ class PriceListController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -76,7 +78,7 @@ class PriceListController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $priceLists->count() . ' price lists',
+                'action' => 'Accessed '.$priceLists->count().' price lists',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -85,7 +87,9 @@ class PriceListController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -104,7 +108,7 @@ class PriceListController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed price list ' . $id,
+                'action' => 'Accessed price list '.$id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -114,7 +118,9 @@ class PriceListController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -140,7 +146,7 @@ class PriceListController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Updated price list ' . $priceList->id,
+                'action' => 'Updated price list '.$priceList->id,
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 
@@ -150,7 +156,9 @@ class PriceListController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -172,7 +180,7 @@ class PriceListController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed price list ' . $id,
+                'action' => 'Removed price list '.$id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {
@@ -180,7 +188,9 @@ class PriceListController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -217,7 +227,7 @@ class PriceListController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Added ' . $newItemsCount . ' items to pricelist ' . $priceList->id,
+                'action' => 'Added '.$newItemsCount.' items to pricelist '.$priceList->id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -227,7 +237,9 @@ class PriceListController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -254,7 +266,7 @@ class PriceListController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed ' . $removedItemsCount . ' items from pricelist ' . $priceList->id,
+                'action' => 'Removed '.$removedItemsCount.' items from pricelist '.$priceList->id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -264,7 +276,9 @@ class PriceListController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }

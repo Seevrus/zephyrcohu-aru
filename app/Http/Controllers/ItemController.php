@@ -33,7 +33,9 @@ class ItemController extends Controller
                     'article_number' => $itemRequest['articleNumber'],
                 ])->first();
 
-                if ($existingItem) continue;
+                if ($existingItem) {
+                    continue;
+                }
 
                 $item = Item::create([
                     'company_id' => $company->id,
@@ -53,7 +55,7 @@ class ItemController extends Controller
                     array_map(
                         fn ($expirationRequest) => [
                             'barcode' => $expirationRequest['barcode'] ?? null,
-                            'expires_at' => Carbon::createFromFormat("Y-m", $expirationRequest['expiresAt'])->endOfMonth()->endOfDay(),
+                            'expires_at' => Carbon::createFromFormat('Y-m', $expirationRequest['expiresAt'])->endOfMonth()->endOfDay(),
                         ],
                         $itemRequest['expirations']
                     )
@@ -77,7 +79,7 @@ class ItemController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Created ' . count($newItems) . ' items',
+                'action' => 'Created '.count($newItems).' items',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -86,7 +88,9 @@ class ItemController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -105,7 +109,7 @@ class ItemController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $items->count() . ' items',
+                'action' => 'Accessed '.$items->count().' items',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -114,7 +118,9 @@ class ItemController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -148,7 +154,7 @@ class ItemController extends Controller
                 foreach ($expirationUpdates as $expirationUpdate) {
                     $expirationId = $expirationUpdate['id'];
                     $expiresAt = $expirationUpdate['expiresAt'] ?? null;
-                    $expiresAtFull = $expiresAt ? Carbon::createFromFormat("Y-m", $expiresAt)->endOfMonth()->endOfDay() : null;
+                    $expiresAtFull = $expiresAt ? Carbon::createFromFormat('Y-m', $expiresAt)->endOfMonth()->endOfDay() : null;
 
                     // For the sake of simplicity, this fails on the first malformed item
                     $action = $expirationUpdate['action'];
@@ -156,14 +162,14 @@ class ItemController extends Controller
                         case 'update':
                             if (array_search($expirationUpdate['id'], $currentExpirationIds)) {
                                 return response([
-                                    'message' => "Invalid expiration to update: " . $expirationId
+                                    'message' => 'Invalid expiration to update: '.$expirationId,
                                 ], 422);
                             }
                             break;
                         case 'delete':
                             if (array_search($expirationUpdate['id'], $currentExpirationIds)) {
                                 return response([
-                                    'message' => "Invalid expiration to delete: " . $expirationId
+                                    'message' => 'Invalid expiration to delete: '.$expirationId,
                                 ], 422);
                             }
                             break;
@@ -171,7 +177,7 @@ class ItemController extends Controller
                         default:
                             if (array_search($expiresAtFull, $currentExpiresAts) !== false) {
                                 return response([
-                                    'message' => "Invalid expiration to create: " . $expiresAt
+                                    'message' => 'Invalid expiration to create: '.$expiresAt,
                                 ], 422);
                             }
                     }
@@ -195,14 +201,14 @@ class ItemController extends Controller
                         case 'update':
                             if (array_search($discountName, $currentNames) === false) {
                                 return response([
-                                    'message' => "Invalid discount to update: " . $discountName
+                                    'message' => 'Invalid discount to update: '.$discountName,
                                 ], 422);
                             }
                             break;
                         case 'delete':
                             if (array_search($discountName, $currentNames) === false) {
                                 return response([
-                                    'message' => "Invalid discount to delete: " . $discountName
+                                    'message' => 'Invalid discount to delete: '.$discountName,
                                 ], 422);
                             }
                             break;
@@ -210,11 +216,11 @@ class ItemController extends Controller
                         default:
                             if (
                                 array_search($discountName, $currentNames) !== false
-                                || !($discountUpdate['name'] ?? null)
-                                || !($discountUpdate['type'] ?? null)
+                                || ! ($discountUpdate['name'] ?? null)
+                                || ! ($discountUpdate['type'] ?? null)
                             ) {
                                 return response([
-                                    'message' => "Invalid discount to create: " . $discountName
+                                    'message' => 'Invalid discount to create: '.$discountName,
                                 ], 422);
                             }
                     }
@@ -236,13 +242,13 @@ class ItemController extends Controller
                 foreach ($expirationUpdates as $expirationUpdate) {
                     $expirationId = $expirationUpdate['id'];
                     $expiresAt = $expirationUpdate['expiresAt'] ?? null;
-                    $expiresAtFull = $expiresAt ? Carbon::createFromFormat("Y-m", $expiresAt)->endOfMonth()->endOfDay() : null;
+                    $expiresAtFull = $expiresAt ? Carbon::createFromFormat('Y-m', $expiresAt)->endOfMonth()->endOfDay() : null;
 
                     $action = $expirationUpdate['action'];
                     switch ($action) {
                         case 'update':
                             $currentExiration = $currentExpirations->find($expirationId);
-                            if (!!$expirationUpdate['barcode'] || $expirationUpdate['barcode'] === null) {
+                            if ((bool) $expirationUpdate['barcode'] || $expirationUpdate['barcode'] === null) {
                                 $currentExiration->barcode = $expirationUpdate['barcode'];
                             }
                             if ($expirationUpdate['expiresAt'] ?? null) {
@@ -302,7 +308,7 @@ class ItemController extends Controller
             if ($request->data['CNCode'] ?? null) {
                 $item->cn_code = $request->data['CNCode'];
             }
-            if (!!$request->data['barcode'] || $request->data['barcode'] === null) {
+            if ((bool) $request->data['barcode'] || $request->data['barcode'] === null) {
                 $item->barcode = $request->data['barcode'];
             }
             if ($request->data['name'] ?? null) {
@@ -333,7 +339,7 @@ class ItemController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Updated item ' . $item->id,
+                'action' => 'Updated item '.$item->id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -343,7 +349,9 @@ class ItemController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -365,7 +373,7 @@ class ItemController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed item ' . $item->id,
+                'action' => 'Removed item '.$item->id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {
@@ -373,7 +381,9 @@ class ItemController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }

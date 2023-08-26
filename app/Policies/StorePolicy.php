@@ -12,7 +12,7 @@ class StorePolicy
 
     public function update(User $user, Store $store)
     {
-        if (!in_array("I", $user->roleList()) && $store->type === "P") {
+        if (! in_array('I', $user->roleList()) && $store->type === 'P') {
             return false;
         }
 

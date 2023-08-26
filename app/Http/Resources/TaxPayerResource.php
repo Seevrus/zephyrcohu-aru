@@ -16,12 +16,12 @@ class TaxPayerResource extends JsonResource
     {
         return [
             'infoDate' => @$this->infoDate,
-            'validity' => @$this->taxpayerValidity === "true",
+            'validity' => @$this->taxpayerValidity === 'true',
             'name' => @$this->taxpayerData?->taxpayerName,
             'shortName' => @$this->taxpayerData?->taxpayerShortName,
             'taxNumber' => @$this->taxpayerData?->vatGroupMembership
-                ? @$this->taxpayerData?->vatGroupMembership . '-' . 5 . '-' . @$this->taxpayerData?->taxNumberDetail->countyCode
-                : implode('-', array_values((array)@$this->taxpayerData?->taxNumberDetail)),
+                ? @$this->taxpayerData?->vatGroupMembership.'-'. 5 .'-'.@$this->taxpayerData?->taxNumberDetail->countyCode
+                : implode('-', array_values((array) @$this->taxpayerData?->taxNumberDetail)),
             'addressList' => @$this->taxpayerData?->taxpayerAddressList?->taxpayerAddressItem,
         ];
     }

@@ -25,7 +25,7 @@ class RemoveItemsFromPriceListRequest extends FormRequest
     {
         return [
             'data' => 'required|array|bail',
-            'data.*' => 'distinct|exists:items,id'
+            'data.*' => 'distinct|exists:items,id',
         ];
     }
 }

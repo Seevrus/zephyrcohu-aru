@@ -37,7 +37,7 @@ class PartnerListController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Created partner list ' . $partnerList->id,
+                'action' => 'Created partner list '.$partnerList->id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -46,7 +46,9 @@ class PartnerListController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -65,7 +67,7 @@ class PartnerListController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $partnerLists->count() . ' partners',
+                'action' => 'Accessed '.$partnerLists->count().' partners',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -74,7 +76,9 @@ class PartnerListController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -89,7 +93,7 @@ class PartnerListController extends Controller
 
             $partnerList = $sender->company->partnerLists()->findOrFail($id);
 
-            if (!$partnerList) {
+            if (! $partnerList) {
                 return response([
                     'status' => 404,
                     'codeName' => 'Not Found',
@@ -106,7 +110,7 @@ class PartnerListController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Updated partner list ' . $partnerList->id,
+                'action' => 'Updated partner list '.$partnerList->id,
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 
@@ -116,7 +120,9 @@ class PartnerListController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -140,7 +146,7 @@ class PartnerListController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Added partner ' . $partner->id . ' to partner list ' . $partnerList->id,
+                'action' => 'Added partner '.$partner->id.' to partner list '.$partnerList->id,
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 
@@ -150,7 +156,9 @@ class PartnerListController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -167,7 +175,7 @@ class PartnerListController extends Controller
             $this->authorize('remove_partner', $partnerList);
 
             $partner = Partner::find($partnerId);
-            if (!$partner) {
+            if (! $partner) {
                 return response([
                     'status' => 404,
                     'codeName' => 'Not Found',
@@ -181,7 +189,7 @@ class PartnerListController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed partner ' . $partner->id . ' from partner list ' . $partnerList->id,
+                'action' => 'Removed partner '.$partner->id.' from partner list '.$partnerList->id,
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 
@@ -191,7 +199,9 @@ class PartnerListController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -213,7 +223,7 @@ class PartnerListController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed partner list ' . $partnerList->id,
+                'action' => 'Removed partner list '.$partnerList->id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {
@@ -221,7 +231,9 @@ class PartnerListController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }

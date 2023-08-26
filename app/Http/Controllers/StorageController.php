@@ -28,31 +28,35 @@ class StorageController extends Controller
             $storeId = $request['data']['storeId'];
             $store = $sender->company->stores()->findOrFail($storeId);
 
-            if ($store->type !== "P") {
+            if ($store->type !== 'P') {
                 return response([
-                    'message' => "Store ID is invalid."
+                    'message' => 'Store ID is invalid.',
                 ], 422);
             }
 
             // load store - validation
-            if (!in_array("I", $sender->roleList())) {
+            if (! in_array('I', $sender->roleList())) {
                 throw new AuthorizationException();
             }
 
             for ($i = 0; $i < 5; $i++) {
                 $store->refresh();
 
-                if ($store->state === "I") break;
+                if ($store->state === 'I') {
+                    break;
+                }
 
-                if ($i < 4) sleep(1);
+                if ($i < 4) {
+                    sleep(1);
+                }
 
                 return response([
-                    'message' => "Store is currently not idle."
+                    'message' => 'Store is currently not idle.',
                 ], 507);
             }
 
             $store = Store::with('expirations')->find($storeId);
-            $store->state = "L";
+            $store->state = 'L';
             $store->save();
 
             // load store
@@ -71,7 +75,7 @@ class StorageController extends Controller
                 }
             }
 
-            $store->state = "I";
+            $store->state = 'I';
             $store->save();
 
             return new StoreResource($store->refresh());
@@ -80,7 +84,9 @@ class StorageController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -98,20 +104,20 @@ class StorageController extends Controller
 
             if ($sender->store) {
                 return response([
-                    'message' => "User already has a store locked.",
+                    'message' => 'User already has a store locked.',
                     'storeId' => $sender->store->id,
                 ], 507);
             }
 
-            if ($store->type === "P" && !in_array("I", $sender->roleList())) {
+            if ($store->type === 'P' && ! in_array('I', $sender->roleList())) {
                 return response([
-                    'message' => "Cannot lock primary store."
+                    'message' => 'Cannot lock primary store.',
                 ], 422);
             }
 
             if ($store->user) {
                 return response([
-                    'message' => "Store is already locked.",
+                    'message' => 'Store is already locked.',
                     'userId' => $store->user->id,
                 ], 507);
             }
@@ -124,7 +130,9 @@ class StorageController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -140,43 +148,47 @@ class StorageController extends Controller
             $primaryStoreId = $request['data']['primaryStoreId'];
             $primaryStore = $sender->company->stores()->findOrFail($primaryStoreId);
 
-            if ($primaryStore->type !== "P") {
+            if ($primaryStore->type !== 'P') {
                 return response([
-                    'message' => "Primary store ID does not belong to a primary store."
+                    'message' => 'Primary store ID does not belong to a primary store.',
                 ], 422);
             }
 
             // loading store - validation
             $store = $sender->store;
 
-            if (!$store) {
+            if (! $store) {
                 return response([
-                    'message' => "User has no store associated."
+                    'message' => 'User has no store associated.',
                 ], 404);
             }
 
-            if ($store->type !== "S") {
+            if ($store->type !== 'S') {
                 return response([
-                    'message' => "Store ID is invalid."
+                    'message' => 'Store ID is invalid.',
                 ], 422);
             }
 
             for ($i = 0; $i < 5; $i++) {
                 $primaryStore = $primaryStore->refresh();
 
-                if ($primaryStore->state === "I") break;
+                if ($primaryStore->state === 'I') {
+                    break;
+                }
 
-                if ($i < 4) sleep(1);
+                if ($i < 4) {
+                    sleep(1);
+                }
 
                 return response([
-                    'message' => "Primary store is currently not idle."
+                    'message' => 'Primary store is currently not idle.',
                 ], 507);
             }
 
             // loading store
-            $primaryStore->state = "L";
+            $primaryStore->state = 'L';
             $primaryStore->save();
-            $store->state = "L";
+            $store->state = 'L';
             $store->save();
 
             foreach ($request['data']['changes'] as $storageUpdate) {
@@ -199,7 +211,7 @@ class StorageController extends Controller
                     $store->expirations()->updateExistingPivot($existingExpiration->id, [
                         'quantity' => $newQuantity,
                     ]);
-                } else if ($primaryExistingExpiration && !$existingExpiration) {
+                } elseif ($primaryExistingExpiration && ! $existingExpiration) {
                     $primaryCurrentQuantity = $primaryExistingExpiration->pivot->quantity;
                     $primaryNewQuantity = $primaryCurrentQuantity - $storageUpdate['quantityChange'];
 
@@ -208,7 +220,7 @@ class StorageController extends Controller
                     ]);
 
                     $store->expirations()->attach($expirationId, ['quantity' => $storageUpdate['quantityChange']]);
-                } else if (!$primaryExistingExpiration && $existingExpiration) {
+                } elseif (! $primaryExistingExpiration && $existingExpiration) {
                     $currentQuantity = $existingExpiration->pivot->quantity;
                     $newQuantity = $currentQuantity + $storageUpdate['quantityChange'];
 
@@ -224,9 +236,9 @@ class StorageController extends Controller
                 }
             }
 
-            $primaryStore->state = "I";
+            $primaryStore->state = 'I';
             $primaryStore->save();
-            $store->state = "I";
+            $store->state = 'I';
             $store->save();
 
             return new StoreResource($store->refresh());
@@ -235,7 +247,9 @@ class StorageController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -257,7 +271,9 @@ class StorageController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw $e; // new BadRequestException();
         }

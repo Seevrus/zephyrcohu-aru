@@ -8,15 +8,15 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class OtherItemPolicy
 {
-  use HandlesAuthorization;
+    use HandlesAuthorization;
 
-  public function update(User $user, OtherItem $otherItem)
-  {
-    return $user->company_id === $otherItem->company->id;
-  }
+    public function update(User $user, OtherItem $otherItem)
+    {
+        return $user->company_id === $otherItem->company->id;
+    }
 
-  public function remove(User $user, OtherItem $otherItem)
-  {
-    return $user->company_id === $otherItem->company->id;
-  }
+    public function remove(User $user, OtherItem $otherItem)
+    {
+        return $user->company_id === $otherItem->company->id;
+    }
 }

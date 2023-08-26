@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class ExpirationStore extends Pivot
 {
-  public $incrementing = true;
+    public $incrementing = true;
 }

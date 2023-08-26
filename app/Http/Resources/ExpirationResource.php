@@ -18,7 +18,7 @@ class ExpirationResource extends JsonResource
         return [
             'id' => $this->id,
             'barcode' => $this->barcode,
-            'expiresAt' => Carbon::createFromFormat("Y-m-d H:i:s", $this->expires_at),
+            'expiresAt' => Carbon::createFromFormat('Y-m-d H:i:s', $this->expires_at),
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
         ];

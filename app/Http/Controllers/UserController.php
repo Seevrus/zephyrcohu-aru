@@ -23,6 +23,7 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 class UserController extends Controller
 {
     private $password_min_length = 10;
+
     private $password_max_lifetime = 90 * 24 * 60 * 60;
 
     private function generate_code($length)
@@ -76,7 +77,7 @@ class UserController extends Controller
                 'company_id' => $company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Created user ' . $user_name,
+                'action' => 'Created user '.$user_name,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -92,7 +93,9 @@ class UserController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -105,7 +108,7 @@ class UserController extends Controller
                 'user_name' => $request->userName,
             ]);
 
-            if (!$user) {
+            if (! $user) {
                 throw new UnauthorizedHttpException(random_bytes(32));
             }
 
@@ -114,7 +117,7 @@ class UserController extends Controller
 
             $password = $user->passwords()->orderBy('set_time', 'desc')->first();
 
-            if (!Hash::check($request->password, $password->password)) {
+            if (! Hash::check($request->password, $password->password)) {
                 Log::insert([
                     'company_id' => $user->company_id,
                     'user_id' => $user->id,
@@ -134,7 +137,7 @@ class UserController extends Controller
                 $token = $user->createToken('boreal', ['password']);
             } else {
                 $roles = array_map(
-                    fn ($role) =>  $role['role'],
+                    fn ($role) => $role['role'],
                     $user->roles->toArray()
                 );
                 $token = $user->createToken('boreal', $roles);
@@ -150,6 +153,7 @@ class UserController extends Controller
             ]);
 
             $userResource = new UserResource($user->load('company'));
+
             return array_merge(
                 $userResource->toArray(0),
                 [
@@ -158,14 +162,16 @@ class UserController extends Controller
                         'accessToken' => $token->plainTextToken,
                         'abilities' => $token->accessToken->abilities,
                         'expiresAt' => $tokenExpiration,
-                    ]
+                    ],
                 ]
             );
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -188,7 +194,7 @@ class UserController extends Controller
                 $token = $sender->createToken('boreal', ['password']);
             } else {
                 $roles = array_map(
-                    fn ($role) =>  $role['role'],
+                    fn ($role) => $role['role'],
                     $sender->roles->toArray()
                 );
                 $token = $sender->createToken('boreal', $roles);
@@ -213,7 +219,7 @@ class UserController extends Controller
                         'accessToken' => $token->plainTextToken,
                         'abilities' => $token->accessToken->abilities,
                         'expiresAt' => $tokenExpiration,
-                    ]
+                    ],
                 ]
             );
         } catch (Exception $e) {
@@ -253,7 +259,7 @@ class UserController extends Controller
             $sender->save();
 
             $roles = array_map(
-                fn ($role) =>  $role['role'],
+                fn ($role) => $role['role'],
                 $sender->roles->toArray()
             );
             $token = $sender->createToken('boreal', $roles);
@@ -268,6 +274,7 @@ class UserController extends Controller
             ]);
 
             $userResource = new UserResource($sender->load('company'));
+
             return array_merge(
                 $userResource->toArray(0),
                 [
@@ -276,7 +283,7 @@ class UserController extends Controller
                         'accessToken' => $token->plainTextToken,
                         'abilities' => $token->accessToken->abilities,
                         'expiresAt' => $tokenExpiration,
-                    ]
+                    ],
                 ]
             );
         } catch (Exception $e) {
@@ -297,7 +304,7 @@ class UserController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $companyUsers->count() . ' users',
+                'action' => 'Accessed '.$companyUsers->count().' users',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -323,7 +330,7 @@ class UserController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed user ' . $user->id,
+                'action' => 'Removed user '.$user->id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {
@@ -331,7 +338,9 @@ class UserController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }

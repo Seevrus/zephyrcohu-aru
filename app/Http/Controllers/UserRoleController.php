@@ -22,10 +22,10 @@ class UserRoleController extends Controller
             $sender->save();
 
             $user = $sender->company->users()->firstWhere([
-                'user_name' => $request->userName
+                'user_name' => $request->userName,
             ]);
 
-            if (!$user) {
+            if (! $user) {
                 throw new ModelNotFoundException();
             }
 
@@ -36,7 +36,7 @@ class UserRoleController extends Controller
             $existingRoles = $user->roles->pluck('role')->toArray();
 
             foreach ($request->roles as $role) {
-                if (!array_search($role, $existingRoles)) {
+                if (! array_search($role, $existingRoles)) {
                     $user->roles()->save(
                         new UserRole(['role' => $role])
                     );
@@ -47,7 +47,9 @@ class UserRoleController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -61,10 +63,10 @@ class UserRoleController extends Controller
             $sender->save();
 
             $user = $sender->company->users()->firstWhere([
-                'user_name' => $request->userName
+                'user_name' => $request->userName,
             ]);
 
-            if (!$user) {
+            if (! $user) {
                 throw new ModelNotFoundException();
             }
 
@@ -78,7 +80,9 @@ class UserRoleController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }

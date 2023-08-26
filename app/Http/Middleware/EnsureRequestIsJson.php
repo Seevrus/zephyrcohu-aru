@@ -15,17 +15,15 @@ class EnsureRequestIsJson
     /**
      * Enforces a valid JSON body for all requests.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function handle(Request $request, Closure $next)
     {
         try {
-            if (!$request->getContent()) {
+            if (! $request->getContent()) {
                 return $next($request);
             }
-
 
             if ($request->header('Content-Type') == 'application/json') {
                 $body = json_encode($request->getContent());

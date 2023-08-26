@@ -34,14 +34,14 @@ class StoreController extends Controller
                 if ($storeRequest['type'] === 'P') {
                     if ($existingMainStore) {
                         return response([
-                            'message' => "Primary Store already exists (" . $existingMainStore->id . ").",
+                            'message' => 'Primary Store already exists ('.$existingMainStore->id.').',
                         ], 422);
                     }
 
                     $numberOfPrimaryStoresInRequest += 1;
                     if ($numberOfPrimaryStoresInRequest > 1) {
                         return response([
-                            'message' => "Request can contain only one primary store.",
+                            'message' => 'Request can contain only one primary store.',
                         ], 422);
                     }
                 }
@@ -53,7 +53,9 @@ class StoreController extends Controller
                     'code' => $storeRequest['code'],
                 ])->first();
 
-                if ($existingStore) continue;
+                if ($existingStore) {
+                    continue;
+                }
 
                 $store = Store::create([
                     'company_id' => $company->id,
@@ -73,7 +75,7 @@ class StoreController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Created ' . count($newStores) . ' stores',
+                'action' => 'Created '.count($newStores).' stores',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -82,7 +84,9 @@ class StoreController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -101,7 +105,7 @@ class StoreController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $stores->count() . ' stores',
+                'action' => 'Accessed '.$stores->count().' stores',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -110,7 +114,9 @@ class StoreController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -129,7 +135,7 @@ class StoreController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed store id ' . $id,
+                'action' => 'Accessed store id '.$id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -139,7 +145,9 @@ class StoreController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -156,9 +164,9 @@ class StoreController extends Controller
 
             $this->authorize('update', $store);
 
-            if ($store->state !== "I") {
+            if ($store->state !== 'I') {
                 return response([
-                    'message' => "Store is currently not idle."
+                    'message' => 'Store is currently not idle.',
                 ], 422);
             }
 
@@ -184,7 +192,7 @@ class StoreController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Updated store ' . $store->id,
+                'action' => 'Updated store '.$store->id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -194,7 +202,9 @@ class StoreController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -210,9 +220,9 @@ class StoreController extends Controller
             $store = $sender->company->stores()->findOrFail($id);
             $this->authorize('remove', $store);
 
-            if ($store->state !== "I") {
+            if ($store->state !== 'I') {
                 return response([
-                    'message' => "Store is currently not idle."
+                    'message' => 'Store is currently not idle.',
                 ], 422);
             }
 
@@ -222,7 +232,7 @@ class StoreController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed store ' . $store->id,
+                'action' => 'Removed store '.$store->id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {
@@ -230,7 +240,9 @@ class StoreController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }

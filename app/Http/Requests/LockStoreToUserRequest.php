@@ -25,7 +25,7 @@ class LockStoreToUserRequest extends FormRequest
     {
         return [
             'data' => 'required',
-            'data.storeId' => 'required|integer|min:1|exists:stores,id'
+            'data.storeId' => 'required|integer|min:1|exists:stores,id',
         ];
     }
 }
