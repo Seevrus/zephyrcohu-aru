@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddItemsToPriceListRequest;
 use App\Http\Requests\CreatePriceListRequest;
+use App\Http\Requests\RemoveItemsFromPriceListRequest;
 use App\Http\Requests\UpdatePriceListRequest;
 use App\Http\Resources\PriceListCollection;
 use App\Http\Resources\PriceListResource;
@@ -173,6 +175,90 @@ class PriceListController extends Controller
                 'action' => 'Removed price list ' . $id,
                 'occured_at' => Carbon::now(),
             ]);
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
+            ) throw $e;
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function upsert_items(AddItemsToPriceListRequest $request, int $id)
+    {
+        try {
+            $sender = request()->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $priceList = $sender->company->priceLists()->findOrFail($id);
+            $this->authorize('upsert_items', $priceList);
+
+            $requestItems = $request->data;
+
+            $newItemsCount = 0;
+            foreach ($requestItems as $requestItem) {
+                $existingItem = $priceList->items()->find($requestItem['itemId']);
+                if ($existingItem) {
+                    $priceList->items()->syncWithoutDetaching([
+                        $requestItem['itemId'] => ['net_price' => $requestItem['netPrice']],
+                    ]);
+                } else {
+                    $newItemsCount += 1;
+                    $priceList->items()->attach($requestItem['itemId'], [
+                        'net_price' => $requestItem['netPrice'],
+                    ]);
+                }
+            }
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Added ' . $newItemsCount . ' items to pricelist ' . $priceList->id,
+                'occured_at' => Carbon::now(),
+            ]);
+
+            return new PriceListResource($priceList->with('items')->first());
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
+            ) throw $e;
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function remove_items(RemoveItemsFromPriceListRequest $request, int $id)
+    {
+        try {
+            $sender = request()->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $priceList = $sender->company->priceLists()->findOrFail($id);
+            $this->authorize('remove_items', $priceList);
+
+            $requestItemIds = $request->data;
+
+            $removedItemsCount = count($requestItemIds);
+            foreach ($requestItemIds as $requestItemId) {
+                $priceList->items()->detach($requestItemId);
+            }
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Removed ' . $removedItemsCount . ' items from pricelist ' . $priceList->id,
+                'occured_at' => Carbon::now(),
+            ]);
+
+            return new PriceListResource($priceList->with('items')->first());
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException

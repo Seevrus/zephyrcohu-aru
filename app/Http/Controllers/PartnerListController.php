@@ -132,14 +132,7 @@ class PartnerListController extends Controller
             $partnerList = $sender->company->partnerLists()->findOrFail($id);
             $this->authorize('add_partner', $partnerList);
 
-            $partner = Partner::find($partnerId);
-            if (!$partner) {
-                return response([
-                    'status' => 404,
-                    'codeName' => 'Not Found',
-                    'message' => 'The server cannot find the requested partner.',
-                ], 404);
-            }
+            $partner = $sender->company->partners()->findOrFail($partnerId);
 
             $partnerList->partners()->syncWithoutDetaching($partnerId);
 

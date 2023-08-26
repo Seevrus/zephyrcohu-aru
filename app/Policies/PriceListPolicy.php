@@ -19,4 +19,14 @@ class PriceListPolicy
     {
         return $user->company_id === $priceList->company->id;
     }
+
+    public function upsert_items(User $user, PriceList $priceList)
+    {
+        return $user->company_id === $priceList->company->id;
+    }
+
+    public function remove_items(User $user, PriceList $priceList)
+    {
+        return $user->company_id === $priceList->company->id;
+    }
 }

@@ -86,13 +86,12 @@ Route::controller(ItemController::class)->prefix('items')->group(function () {
 Route::controller(PriceListController::class)->prefix('price_lists')->group(function () {
     Route::post('/', 'create_price_list')->middleware(['auth:sanctum', 'ability:I']);
     Route::get('/', 'view_all')->middleware(['auth:sanctum', 'ability:I,A']);
-
-    Route::post('/add_items', 'add_items')->middleware(['auth:sanctum', 'ability:I']);
-    Route::post('/remove_items', 'remove_items')->middleware(['auth:sanctum', 'ability:I']);
-
     Route::get('/{id}', 'view')->middleware(['auth:sanctum', 'ability:I,A']);
     Route::post('/{id}', 'update_price_list')->middleware(['auth:sanctum', 'ability:I']);
     Route::delete('/{id}', 'remove_price_list')->middleware(['auth:sanctum', 'ability:I']);
+
+    Route::post('/{id}/upsert_items', 'upsert_items')->middleware(['auth:sanctum', 'ability:I']);
+    Route::post('/{id}/remove_items', 'remove_items')->middleware(['auth:sanctum', 'ability:I']);
 });
 
 Route::controller(OtherItemController::class)->prefix('other_items')->group(function () {
