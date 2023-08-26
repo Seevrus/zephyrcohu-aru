@@ -4,13 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AddUserRoleRequest;
 use App\Http\Requests\RemoveUserRoleRequest;
-use App\Models\User;
 use App\Models\UserRole;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -23,9 +21,13 @@ class UserRoleController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $user = User::firstWhere([
+            $user = $sender->company->users()->firstWhere([
                 'user_name' => $request->userName
             ]);
+
+            if (!$user) {
+                throw new ModelNotFoundException();
+            }
 
             if ($sender->company_id !== $user->company_id) {
                 throw new AuthorizationException();
@@ -44,6 +46,7 @@ class UserRoleController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
             ) throw $e;
 
             throw new BadRequestException();
@@ -57,9 +60,13 @@ class UserRoleController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $user = User::firstWhere([
+            $user = $sender->company->users()->firstWhere([
                 'user_name' => $request->userName
             ]);
+
+            if (!$user) {
+                throw new ModelNotFoundException();
+            }
 
             if ($sender->company_id !== $user->company_id) {
                 throw new AuthorizationException();
@@ -70,6 +77,7 @@ class UserRoleController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
             ) throw $e;
 
             throw new BadRequestException();

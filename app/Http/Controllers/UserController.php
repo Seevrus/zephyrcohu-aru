@@ -14,6 +14,7 @@ use App\Models\UserPassword;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -313,7 +314,7 @@ class UserController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $user = User::findOrFail($id);
+            $user = $sender->company->users()->findOrFail($id);
             $this->authorize('remove', $user);
 
             $user->delete();
@@ -329,6 +330,7 @@ class UserController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
             ) throw $e;
 
             throw new BadRequestException();

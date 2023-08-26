@@ -152,7 +152,7 @@ class StoreController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $store = Store::findOrFail($id);
+            $store = $sender->company->stores()->findOrFail($id);
 
             $this->authorize('update', $store);
 
@@ -207,7 +207,7 @@ class StoreController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $store = Store::findOrFail($id);
+            $store = $sender->company->stores()->findOrFail($id);
             $this->authorize('remove', $store);
 
             if ($store->state !== "I") {

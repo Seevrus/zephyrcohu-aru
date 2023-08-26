@@ -12,6 +12,7 @@ use App\Models\PartnerList;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -86,7 +87,7 @@ class PartnerListController extends Controller
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $partnerList = PartnerList::find($id);
+            $partnerList = $sender->company->partnerLists()->findOrFail($id);
 
             if (!$partnerList) {
                 return response([
@@ -114,6 +115,7 @@ class PartnerListController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
             ) throw $e;
 
             throw new BadRequestException();
@@ -127,15 +129,7 @@ class PartnerListController extends Controller
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $partnerList = PartnerList::find($id);
-            if (!$partnerList) {
-                return response([
-                    'status' => 404,
-                    'codeName' => 'Not Found',
-                    'message' => 'The server cannot find the requested partner list.',
-                ], 404);
-            }
-
+            $partnerList = $sender->company->partnerLists()->findOrFail($id);
             $this->authorize('add_partner', $partnerList);
 
             $partner = Partner::find($partnerId);
@@ -162,6 +156,7 @@ class PartnerListController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
             ) throw $e;
 
             throw new BadRequestException();
@@ -175,15 +170,7 @@ class PartnerListController extends Controller
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $partnerList = PartnerList::find($id);
-            if (!$partnerList) {
-                return response([
-                    'status' => 404,
-                    'codeName' => 'Not Found',
-                    'message' => 'The server cannot find the requested partner list.',
-                ], 404);
-            }
-
+            $partnerList = $sender->company->partnerLists()->findOrFail($id);
             $this->authorize('remove_partner', $partnerList);
 
             $partner = Partner::find($partnerId);
@@ -210,6 +197,7 @@ class PartnerListController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
             ) throw $e;
 
             throw new BadRequestException();
@@ -223,7 +211,7 @@ class PartnerListController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $partnerList = PartnerList::findOrFail($id);
+            $partnerList = $sender->company->partnerLists()->findOrFail($id);
             $this->authorize('remove', $partnerList);
 
             $partnerList->delete();
@@ -239,6 +227,7 @@ class PartnerListController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
             ) throw $e;
 
             throw new BadRequestException();

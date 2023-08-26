@@ -11,6 +11,7 @@ use App\Models\Store;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -25,7 +26,7 @@ class StorageController extends Controller
             $sender->save();
 
             $storeId = $request['data']['storeId'];
-            $store = Store::findOrFail($storeId);
+            $store = $sender->company->stores()->findOrFail($storeId);
 
             if ($store->type !== "P") {
                 return response([
@@ -78,6 +79,7 @@ class StorageController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
             ) throw $e;
 
             throw new BadRequestException();
@@ -92,7 +94,7 @@ class StorageController extends Controller
             $sender->save();
 
             $storeId = $request['data']['storeId'];
-            $store = Store::findOrFail($storeId);
+            $store = $sender->company->stores()->findOrFail($storeId);
 
             if ($sender->store) {
                 return response([
@@ -121,6 +123,7 @@ class StorageController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
             ) throw $e;
 
             throw new BadRequestException();
@@ -135,7 +138,7 @@ class StorageController extends Controller
             $sender->save();
 
             $primaryStoreId = $request['data']['primaryStoreId'];
-            $primaryStore = Store::find($primaryStoreId);
+            $primaryStore = $sender->company->stores()->findOrFail($primaryStoreId);
 
             if ($primaryStore->type !== "P") {
                 return response([
@@ -231,6 +234,7 @@ class StorageController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
             ) throw $e;
 
             throw new BadRequestException();

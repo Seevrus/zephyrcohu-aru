@@ -139,6 +139,7 @@ class PartnerController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
             ) throw $e;
 
             throw new BadRequestException();
@@ -152,9 +153,7 @@ class PartnerController extends Controller
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $partner = Partner::findOrFail($id);
-
-            $this->authorize('update', $partner);
+            $partner = $sender->company->partners()->findOrFail($id);
 
             $locationUpdates = $request->data['locations'] ?? null;
             if ($locationUpdates) {
@@ -305,8 +304,7 @@ class PartnerController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $partner = Partner::findOrFail($id);
-            $this->authorize('remove', $partner);
+            $partner = $sender->company->partners()->findOrFail($id);
 
             $partner->delete();
 
