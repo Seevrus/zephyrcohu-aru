@@ -41,6 +41,7 @@ class UpdatePartnerRequest extends FormRequest
       'data.locations.*.postalCode' => 'string|max:10',
       'data.locations.*.city' => 'string|max:30',
       'data.locations.*.address' => 'string|max:40',
+      'data.priceListId' => 'nullable|exists:price_lists,id',
     ];
   }
 }

@@ -42,6 +42,7 @@ class CreatePartnersRequest extends FormRequest
             'data.*.locations.*.postalCode' => 'required_with:data.*.locations.*|string|max:10',
             'data.*.locations.*.city' => 'required_with:data.*.locations.*|string|max:30',
             'data.*.locations.*.address' => 'required_with:data.*.locations.*|string|max:40',
+            'data.*.priceListId' => 'nullable|exists:price_lists,id',
         ];
     }
 }

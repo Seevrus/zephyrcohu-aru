@@ -3,51 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreatePriceListRequest;
-use App\Http\Requests\DeletePriceListRequest;
-use App\Http\Requests\UpdatePriceListRequest;
 use App\Http\Resources\PriceListCollection;
+use App\Http\Resources\PriceListResource;
+use App\Models\Log;
+use App\Models\PriceList;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class PriceListController extends Controller
 {
-    private function validateIds(Request $request)
-    {
-        $sender = $request->user();
-        $company = $sender->company;
-
-        // additional validation
-        $uniquePartnerIds = array_unique(array_map(
-            fn ($req) => $req['partnerId'],
-            $request->data,
-        ));
-        foreach ($uniquePartnerIds as $partnerId) {
-            $partner = $company->partners()->find($partnerId);
-            if (!$partner) {
-                return response([
-                    'message' => "Invalid partner id: " . $partnerId
-                ], 422);
-            }
-        }
-
-        $uniqueItemIds = array_unique(array_map(
-            fn ($req) => $req['itemId'],
-            $request->data,
-        ));
-        foreach ($uniqueItemIds as $itemId) {
-            $item = $company->items()->find($itemId);
-            if (!$item) {
-                return response([
-                    'message' => "Invalid item id: " . $itemId
-                ], 422);
-            }
-        }
-    }
-
     public function create_price_list(CreatePriceListRequest $request)
     {
         try {
@@ -56,28 +25,31 @@ class PriceListController extends Controller
             $sender->save();
 
             $company = $sender->company;
-            $this->validateIds($request);
 
-            $newItems = [];
-            foreach ($request->data as $priceListRequest) {
-                $partner = $company->partners()->find($priceListRequest['partnerId']);
-                $existingItem = $partner->priceList()->find($priceListRequest['itemId']);
+            $priceListName = $request->data['name'];
+            $priceList = PriceList::create([
+                'company_id' => $company->id,
+                'name' => $priceListName,
+            ]);
 
-
-                if (!$existingItem) {
-                    $partner->priceList()->attach(
-                        $priceListRequest['itemId'],
-                        ['net_price' => $priceListRequest['netPrice']],
-                    );
-
-                    array_push(
-                        $newItems,
-                        $partner->priceList()->find($priceListRequest['itemId'])
+            if (@$request->data['items']) {
+                foreach ($request->data['items'] as $priceListItem) {
+                    $priceList->items()->attach(
+                        $priceListItem['itemId'],
+                        ['net_price' => $priceListItem['netPrice']]
                     );
                 }
             }
 
-            return new PriceListCollection($newItems);
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Created price list ' . $priceListName,
+                'occured_at' => Carbon::now(),
+            ]);
+
+            return new PriceListResource($priceList->with('items')->first());
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
@@ -88,35 +60,24 @@ class PriceListController extends Controller
         }
     }
 
-    public function update_price_list(UpdatePriceListRequest $request)
+    public function view_all(Request $request)
     {
         try {
             $sender = $request->user();
-            $sender->last_active = Carbon::now();
+            $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $company = $sender->company;
-            $this->validateIds($request);
+            $priceLists = $sender->company->priceLists()->get();
 
-            $newItems = [];
-            foreach ($request->data as $priceListRequest) {
-                $partner = $company->partners()->find($priceListRequest['partnerId']);
-                $existingItem = $partner->priceList()->find($priceListRequest['itemId']);
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Accessed ' . $priceLists->count() . ' price lists',
+                'occured_at' => Carbon::now(),
+            ]);
 
-                if ($existingItem) {
-                    $partner->priceList()->updateExistingPivot(
-                        $priceListRequest['itemId'],
-                        ['net_price' => $priceListRequest['netPrice']],
-                    );
-
-                    array_push(
-                        $newItems,
-                        $partner->priceList()->find($priceListRequest['itemId'])
-                    );
-                }
-            }
-
-            return new PriceListCollection($newItems);
+            return new PriceListCollection($priceLists);
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
@@ -127,30 +88,29 @@ class PriceListController extends Controller
         }
     }
 
-    public function delete_price_list(DeletePriceListRequest $request)
+    public function view(Request $request, int $id)
     {
         try {
             $sender = $request->user();
-            $sender->last_active = Carbon::now();
+            $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $company = $sender->company;
-            $this->validateIds($request);
+            $priceList = $sender->company->priceLists()->with('items')->findOrFail($id);
 
-            foreach ($request->data as $priceListRequest) {
-                $partner = $company->partners()->find($priceListRequest['partnerId']);
-                $existingItem = $partner->priceList()->find($priceListRequest['itemId']);
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Accessed price list ' . $id,
+                'occured_at' => Carbon::now(),
+            ]);
 
-                if ($existingItem) {
-                    $partner->priceList()->detach(
-                        $priceListRequest['itemId'],
-                    );
-                }
-            }
+            return new PriceListResource($priceList);
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
             ) throw $e;
 
             throw new BadRequestException();

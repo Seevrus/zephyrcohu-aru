@@ -117,6 +117,34 @@ class PartnerController extends Controller
         }
     }
 
+    public function view(Request $request, int $id)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->save();
+
+            $partner = $sender->company->partners()->with('locations')->with('priceList')->findOrFail($id);
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Accessed partner ' . $id,
+                'occured_at' => Carbon::now(),
+            ]);
+
+            return new PartnerResource($partner);
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) throw $e;
+
+            throw new BadRequestException();
+        }
+    }
+
     public function update_partner(UpdatePartnerRequest $request, int $id)
     {
         try {
@@ -243,6 +271,9 @@ class PartnerController extends Controller
             }
             if (($request->data['email'] ?? 0) !== 0) {
                 $partner->email = $request->data['email'];
+            }
+            if (!!@$request->data['priceListId'] || @$request->data['priceListId'] === null) {
+                $partner->price_list_id = $request->data['priceListId'];
             }
 
             $partner->save();

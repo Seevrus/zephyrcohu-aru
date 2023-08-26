@@ -25,9 +25,10 @@ class CreatePriceListRequest extends FormRequest
   {
     return [
       'data' => 'required',
-      'data.*.partnerId' => 'required|exists:partners,id',
-      'data.*.itemId' => 'required|exists:items,id',
-      'data.*.netPrice' => 'required|integer|min:0|max:2147483647',
+      'data.name' => 'required|string|max:255|unique:price_lists,name',
+      'data.items' => 'array|bail',
+      'data.items.*.itemId' => 'required|distinct|exists:items,id',
+      'data.items.*.netPrice' => 'required|integer|min:0|max:4294967295',
     ];
   }
 }

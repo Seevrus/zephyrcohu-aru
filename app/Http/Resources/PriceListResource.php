@@ -15,9 +15,9 @@ class PriceListResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'partnerId' => $this->pivot->partner_id,
-            'itemId' => $this->pivot->item_id,
-            'netPrice' => $this->pivot->net_price,
+            'id' => $this->id,
+            'name' => $this->name,
+            'items' => new PriceListItemCollection($this->whenLoaded('items')),
         ];
     }
 }

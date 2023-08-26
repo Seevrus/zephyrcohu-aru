@@ -27,7 +27,7 @@ class PartnerResource extends JsonResource
             'phoneNumber' => $this->phone_number,
             'email' => $this->email,
             'locations' => new PartnerLocationCollection($this->locations),
-            'priceList' => new PriceListCollection($this->priceList),
+            'priceList' => new PriceListResource($this->whenLoaded('priceList')),
             'createdAt' => $this->created_at->toDateTimeString(),
             'updatedAt' => $this->updated_at->toDateTimeString(),
         ];

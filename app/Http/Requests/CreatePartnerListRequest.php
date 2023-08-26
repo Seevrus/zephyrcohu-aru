@@ -27,7 +27,7 @@ class CreatePartnerListRequest extends FormRequest
             'data' => 'required|bail',
             'data.name' => 'required|string|max:255|unique:partner_lists,name',
             'data.partners' => 'nullable|array|bail',
-            'data.partners.*' => 'exists:partners,id',
+            'data.partners.*' => 'distinct|exists:partners,id',
         ];
     }
 }
