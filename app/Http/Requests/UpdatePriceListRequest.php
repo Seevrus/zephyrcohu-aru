@@ -25,9 +25,7 @@ class UpdatePriceListRequest extends FormRequest
     {
         return [
             'data' => 'required',
-            'data.*.partnerId' => 'required|exists:partners,id',
-            'data.*.itemId' => 'required|exists:items,id',
-            'data.*.netPrice' => 'required|integer|min:0|max:2147483647',
+            'data.name' => 'string|max:255|unique:price_lists,name',
         ];
     }
 }
