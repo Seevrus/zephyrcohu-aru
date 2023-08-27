@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class OrderResource extends JsonResource
@@ -16,10 +17,9 @@ class OrderResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'partnerCode' => $this->partner->code,
-            'partnerSiteCode' => $this->partner->site_code,
-            'orderDate' => $this->order_date,
-            'items' => new OrderItemCollection($this->order_items),
+            'partnerId' => $this->partner->id,
+            'orderedAt' => Carbon::createFromFormat('Y-m-d H:i:s', $this->ordered_at),
+            'items' => new OrderItemCollection($this->orderItems),
         ];
     }
 }

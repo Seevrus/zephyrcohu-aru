@@ -18,6 +18,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Order::class)->references('id')->on('orders')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('article_number', 16);
+            $table->string('name', 60);
             $table->smallInteger('quantity')->unsigned();
             $table->timestamps();
         });

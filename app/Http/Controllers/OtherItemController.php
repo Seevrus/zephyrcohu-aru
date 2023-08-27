@@ -137,7 +137,7 @@ class OtherItemController extends Controller
                 'occured_at' => Carbon::now(),
             ]);
 
-            return new OtherItemResource($item);
+            return new OtherItemResource($item->refresh());
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException

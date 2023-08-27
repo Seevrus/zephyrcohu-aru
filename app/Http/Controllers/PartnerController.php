@@ -161,7 +161,7 @@ class PartnerController extends Controller
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $partner = $sender->company->partners()->findOrFail($id);
+            $partner = $sender->company->partners()->with('priceList')->findOrFail($id);
 
             $locationUpdates = $request->data['locations'] ?? null;
             if ($locationUpdates) {
@@ -292,7 +292,7 @@ class PartnerController extends Controller
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 
-            return new PartnerResource($partner);
+            return new PartnerResource($partner->refresh());
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException

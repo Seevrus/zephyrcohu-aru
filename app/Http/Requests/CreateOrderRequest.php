@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class StoreOrderRequest extends FormRequest
+class CreateOrderRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,10 +15,6 @@ class StoreOrderRequest extends FormRequest
      */
     public function authorize()
     {
-        if (!Hash::check(request()->header('X-Device-Id'), $this->user()->device_id)) {
-            throw new UnauthorizedHttpException(random_bytes(32));
-        }
-
         return true;
     }
 
@@ -31,11 +27,11 @@ class StoreOrderRequest extends FormRequest
     {
         return [
             'data' => 'required|array|bail',
-            'data.*.partnerCode' => 'required|string|size:6|exists:partners,code',
-            'data.*.partnerSiteCode' => 'required|string|size:4|exists:partners,site_code',
-            'data.*.orderDate' => 'required|date_format:Y-m-d',
+            'data.*.partnerId' => 'required|exists:partners,id',
+            'data.*.orderedAt' => 'required|date_format:Y-m-d H:i:s',
             'data.*.items' => 'required|array|bail',
             'data.*.items.*.articleNumber' => 'required|string|min:1|max:16',
+            'data.*.items.*.name' => 'required|string|max:60',
             'data.*.items.*.quantity' => 'required|integer|min:0|max:32767',
         ];
     }

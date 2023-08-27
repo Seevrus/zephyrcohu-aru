@@ -114,7 +114,7 @@ class PartnerListController extends Controller
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 
-            return new PartnerListResource($partnerList);
+            return new PartnerListResource($partnerList->refresh());
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException

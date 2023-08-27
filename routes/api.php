@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OtherItemController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerListController;
@@ -125,16 +126,16 @@ Route::controller(StorageController::class)->prefix('/storage')->group(function 
         ->middleware(['auth:sanctum', 'ability:I,A']);
 });
 
-/* Route::controller(OrderController::class)->prefix('orders')->group(function () {
-    Route::get('/', 'viewAll')
-        ->middleware(['auth:sanctum', 'ability:integra']);
-    Route::post('/', 'store')
-        ->middleware(['auth:sanctum', 'ability:app']);
-    Route::delete('/', 'delete')
-        ->middleware(['auth:sanctum', 'ability:integra']);
+Route::controller(OrderController::class)->prefix('orders')->group(function () {
+    Route::post('/', 'create_orders')
+        ->middleware(['auth:sanctum', 'ability:I,A']);
+    Route::get('/', 'view_all')
+        ->middleware(['auth:sanctum', 'ability:I']);
+    Route::delete('/{id}', 'remove_order')
+        ->middleware(['auth:sanctum', 'ability:I']);
 });
 
-Route::controller(ReceiptController::class)->prefix('receipts')->group(function () {
+/* Route::controller(ReceiptController::class)->prefix('receipts')->group(function () {
     Route::get('/', 'viewAll')
         ->middleware(['auth:sanctum', 'ability:integra']);
     Route::post('/', 'store')

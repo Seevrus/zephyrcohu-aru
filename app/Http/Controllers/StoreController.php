@@ -196,7 +196,7 @@ class StoreController extends Controller
                 'occured_at' => Carbon::now(),
             ]);
 
-            return new StoreResource($store);
+            return new StoreResource($store->refresh());
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
