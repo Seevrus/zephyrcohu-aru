@@ -14,20 +14,19 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('receipt_items', function (Blueprint $table) {
+        Schema::create('receipt_other_items', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Receipt::class)->references('id')->on('receipts')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->bigInteger('item_id')->unsigned();
             $table->string('code', 3);
-            $table->string('cn_code', 6);
             $table->string('article_number', 16);
-            $table->date('expires_at');
             $table->string('name', 60);
             $table->integer('quantity');
             $table->string('unit_name', 6);
             $table->integer('net_price');
             $table->integer('net_amount');
             $table->string('vat_rate', 2);
-            $table->integer('vat_amount');
+            $table->integer('vat_amount')->nullable();
             $table->integer('gross_amount');
             $table->timestamps();
         });

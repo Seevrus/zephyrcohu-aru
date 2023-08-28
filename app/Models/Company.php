@@ -48,4 +48,9 @@ class Company extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    public function receipts()
+    {
+        return $this->hasMany(Receipt::class);
+    }
 }

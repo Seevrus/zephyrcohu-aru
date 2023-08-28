@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class OrderController extends Controller
 {
@@ -30,7 +29,7 @@ class OrderController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $orders->count() . ' orders',
+                'action' => 'Accessed '.$orders->count().' orders',
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 
@@ -79,7 +78,7 @@ class OrderController extends Controller
                 'company_id' => $company->id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Uploaded ' . count($request->data) . ' new orders',
+                'action' => 'Uploaded '.count($request->data).' new orders',
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 
@@ -88,7 +87,9 @@ class OrderController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }
@@ -110,7 +111,7 @@ class OrderController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed item ' . $order->id,
+                'action' => 'Removed item '.$order->id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {
@@ -118,7 +119,9 @@ class OrderController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof ModelNotFoundException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
             throw new BadRequestException();
         }

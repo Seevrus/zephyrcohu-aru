@@ -142,7 +142,7 @@ class UserController extends Controller
                 );
                 $token = $user->createToken('boreal', $roles);
             }
-            $tokenExpiration = Carbon::now()->addHours(25)->toDateTimeString();
+            $tokenExpiration = Carbon::now()->addHours(25);
 
             Log::insert([
                 'company_id' => $user->company_id,
@@ -199,7 +199,7 @@ class UserController extends Controller
                 );
                 $token = $sender->createToken('boreal', $roles);
             }
-            $tokenExpiration = Carbon::now()->addHours(25)->toDateTimeString();
+            $tokenExpiration = Carbon::now()->addHours(25);
 
             $userResource = new UserResource($sender->load('company'));
 

@@ -3,8 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Hash;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class CreateOrderRequest extends FormRequest
 {

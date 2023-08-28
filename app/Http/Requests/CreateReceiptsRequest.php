@@ -3,10 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Hash;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class StoreReceiptRequest extends FormRequest
+class CreateReceiptsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,10 +13,6 @@ class StoreReceiptRequest extends FormRequest
      */
     public function authorize()
     {
-        if (!Hash::check(request()->header('X-Device-Id'), $this->user()->device_id)) {
-            throw new UnauthorizedHttpException(random_bytes(32));
-        }
-
         return true;
     }
 
@@ -31,11 +25,8 @@ class StoreReceiptRequest extends FormRequest
     {
         return [
             'data' => 'required|array|bail',
-            'data.*.companyCode' => 'required|string|size:3',
             'data.*.partnerCode' => 'required|string|size:6',
             'data.*.partnerSiteCode' => 'required|string|size:4',
-            'data.*.CISerialNumber' => 'integer|min:0|max:16777215|distinct',
-            'data.*.CIYearCode' => 'integer|min:0|max:99',
             'data.*.serialNumber' => 'required|integer|min:0|max:16777215|distinct',
             'data.*.yearCode' => 'required|integer|min:0|max:99',
             'data.*.originalCopiesPrinted' => 'required|integer|min:0|max:999',
@@ -66,10 +57,8 @@ class StoreReceiptRequest extends FormRequest
             'data.*.fulfillmentDate' => 'required|date_format:Y-m-d',
             'data.*.invoiceType' => 'required|string|in:E,P',
             'data.*.paidDate' => 'required|date_format:Y-m-d',
-            'data.*.agent.code' => 'required|string|size:2',
-            'data.*.agent.name' => 'required|string|max:50',
-            'data.*.agent.phoneNumber' => 'required|regex:`^\+\d{1,19}$`',
             'data.*.items' => 'required|array|bail',
+            'data.*.items.*.id' => 'required|integer|min:0',
             'data.*.items.*.code' => 'required|string|size:3',
             'data.*.items.*.CNCode' => 'required|string|size:6',
             'data.*.items.*.articleNumber' => 'required|string|min:1|max:16',
@@ -82,6 +71,18 @@ class StoreReceiptRequest extends FormRequest
             'data.*.items.*.vatRate' => 'required|string|size:2',
             'data.*.items.*.vatAmount' => 'integer|min:-2147483648|max:2147483647',
             'data.*.items.*.grossAmount' => 'required|integer|min:-2147483648|max:2147483647',
+            'data.*.otherItems' => 'array|bail',
+            'data.*.otherItems.*.id' => 'required|integer|min:0',
+            'data.*.otherItems.*.code' => 'required|string|size:3',
+            'data.*.otherItems.*.articleNumber' => 'required|string|min:1|max:16',
+            'data.*.otherItems.*.name' => 'required|string|max:60',
+            'data.*.otherItems.*.quantity' => 'required|integer|min:-2147483648|max:2147483647',
+            'data.*.otherItems.*.unitName' => 'required|string|max:6',
+            'data.*.otherItems.*.netPrice' => 'required|integer|min:-2147483648|max:2147483647',
+            'data.*.otherItems.*.netAmount' => 'required|integer|min:-2147483648|max:2147483647',
+            'data.*.otherItems.*.vatRate' => 'required|string|size:2',
+            'data.*.otherItems.*.vatAmount' => 'integer|min:-2147483648|max:2147483647',
+            'data.*.otherItems.*.grossAmount' => 'required|integer|min:-2147483648|max:2147483647',
             'data.*.quantity' => 'required|integer|min:-2147483648|max:2147483647',
             'data.*.netAmount' => 'required|integer|min:-2147483648|max:2147483647',
             'data.*.vatAmount' => 'integer|min:-2147483648|max:2147483647',

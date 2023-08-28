@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('receipts', function (Blueprint $table) {
-            $table->string('agent_code', 2)->after('paid_date');
+            $table->string('user_phone_number', 20)->nullable()->change();
         });
     }
 
@@ -26,7 +26,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('receipts', function (Blueprint $table) {
-            $table->dropColumn('agent_code');
+            $table->string('user_phone_number', 20)->change();
         });
     }
 };
