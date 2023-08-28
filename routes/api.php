@@ -6,6 +6,7 @@ use App\Http\Controllers\OtherItemController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerListController;
 use App\Http\Controllers\PriceListController;
+use App\Http\Controllers\RoundController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\UserController;
@@ -137,20 +138,20 @@ Route::controller(OrderController::class)->prefix('orders')->group(function () {
 
 Route::controller(ReceiptController::class)->prefix('receipts')->group(function () {
     Route::post('/', 'create_receipts')
-        ->middleware(['auth:sanctum', 'ability:app']);
+        ->middleware(['auth:sanctum', 'ability:A']);
     Route::get('/', 'view_all')
-        ->middleware(['auth:sanctum', 'ability:integra']);
+        ->middleware(['auth:sanctum', 'ability:I']);
     Route::post('/', 'update_receipt_partial')
-        ->middleware(['auth:sanctum', 'ability:app']);
+        ->middleware(['auth:sanctum', 'ability:A']);
     Route::delete('/{id}', 'remove_receipt')
-        ->middleware(['auth:sanctum', 'ability:integra']);
+        ->middleware(['auth:sanctum', 'ability:I']);
 });
 
-/* Route::controller(RoundController::class)->prefix('rounds')->group(function () {
-    Route::get('/', 'viewAll')
-        ->middleware(['auth:sanctum', 'ability:integra']);
-    Route::post('/start', 'start')
-        ->middleware(['auth:sanctum', 'ability:app']);
-    Route::post('/finish', 'finish')
-        ->middleware(['auth:sanctum', 'ability:app']);
-}); */
+Route::controller(RoundController::class)->prefix('rounds')->group(function () {
+    Route::get('/', 'view_all')
+        ->middleware(['auth:sanctum', 'ability:I']);
+    Route::post('/start', 'start_round')
+        ->middleware(['auth:sanctum', 'ability:A']);
+    Route::post('/finish', 'finish_round')
+        ->middleware(['auth:sanctum', 'ability:A']);
+});

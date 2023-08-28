@@ -43,4 +43,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Store::class);
     }
+
+    public function rounds()
+    {
+        return $this->hasMany(Round::class);
+    }
 }

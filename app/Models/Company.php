@@ -44,6 +44,11 @@ class Company extends Model
         return $this->hasMany(Store::class);
     }
 
+    public function rounds()
+    {
+        return $this->hasMany(Round::class);
+    }
+
     public function orders()
     {
         return $this->hasMany(Order::class);

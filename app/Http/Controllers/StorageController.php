@@ -275,7 +275,7 @@ class StorageController extends Controller
                 throw $e;
             }
 
-            throw $e; // new BadRequestException();
+            throw new BadRequestException();
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class RoundResource extends JsonResource
@@ -15,18 +16,16 @@ class RoundResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'roundId' => $this->id,
-            'agentCode' => $this->agent_code,
-            'agentName' => $this->agent_name,
-            'storeCode' => $this->store_code,
-            'storeName' => $this->store_name,
+            'id' => $this->id,
+            'userId' => $this->user_id,
+            'storeId' => $this->store_id,
             'partnerListId' => $this->partner_list_id,
-            'partnerListName' => $this->partner_list_name,
-            'roundAt' => $this->round_at,
             'lastSerialNumber' => $this->last_serial_number,
             'yearCode' => $this->year_code,
-            'createdAt' => $this->created_at->toDateTimeString(),
-            'updatedAt' => $this->updated_at->toDateTimeString(),
+            'roundStarted' => Carbon::createFromFormat('Y-m-d H:i:s', $this->round_started),
+            'roundFinished' => $this->round_finished ? Carbon::createFromFormat('Y-m-d H:i:s', $this->round_finished) : null,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
         ];
     }
 }
