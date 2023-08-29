@@ -29,7 +29,7 @@ class ReceiptController extends Controller
 
             $newReceipts = [];
             foreach ($request->data as $receiptRequest) {
-                $existingReceipt = Receipt::where([
+                $existingReceipt = Receipt::firstWhere([
                     'serial_number' => $receiptRequest['serialNumber'],
                     'year_code' => $receiptRequest['yearCode'],
                 ]);
@@ -88,7 +88,6 @@ class ReceiptController extends Controller
                 foreach ($receiptRequest['items'] as $receiptItem) {
                     $receipt->items()->create([
                         'item_id' => $receiptItem['id'],
-                        'code' => $receiptItem['code'],
                         'cn_code' => $receiptItem['CNCode'],
                         'article_number' => $receiptItem['articleNumber'],
                         'expires_at' => Carbon::createFromFormat('Y-m', $receiptItem['expiresAt'])->endOfMonth()->endOfDay(),
@@ -103,20 +102,21 @@ class ReceiptController extends Controller
                     ]);
                 }
 
-                foreach ($receiptRequest['otherItems'] as $receiptOtherItem) {
-                    $receipt->otherItems()->create([
-                        'item_id' => $receiptOtherItem['id'],
-                        'code' => $receiptOtherItem['code'],
-                        'article_number' => $receiptOtherItem['articleNumber'],
-                        'name' => $receiptOtherItem['name'],
-                        'quantity' => $receiptOtherItem['quantity'],
-                        'unit_name' => $receiptOtherItem['unitName'],
-                        'net_price' => $receiptOtherItem['netPrice'],
-                        'net_amount' => $receiptOtherItem['netAmount'],
-                        'vat_rate' => $receiptOtherItem['vatRate'],
-                        'vat_amount' => $receiptOtherItem['vatAmount'] ?? null,
-                        'gross_amount' => $receiptOtherItem['grossAmount'],
-                    ]);
+                if (@$receiptRequest['otherItems']) {
+                    foreach ($receiptRequest['otherItems'] as $receiptOtherItem) {
+                        $receipt->otherItems()->create([
+                            'item_id' => $receiptOtherItem['id'],
+                            'article_number' => $receiptOtherItem['articleNumber'],
+                            'name' => $receiptOtherItem['name'],
+                            'quantity' => $receiptOtherItem['quantity'],
+                            'unit_name' => $receiptOtherItem['unitName'],
+                            'net_price' => $receiptOtherItem['netPrice'],
+                            'net_amount' => $receiptOtherItem['netAmount'],
+                            'vat_rate' => $receiptOtherItem['vatRate'],
+                            'vat_amount' => $receiptOtherItem['vatAmount'] ?? null,
+                            'gross_amount' => $receiptOtherItem['grossAmount'],
+                        ]);
+                    }
                 }
 
                 foreach ($receiptRequest['vatAmounts'] as $vatAmount) {
@@ -161,7 +161,7 @@ class ReceiptController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            if ($request->downloaded === '0') {
+            if ($request->downloaded === '1') {
                 $receipts = $sender->company->receipts()->whereNull('last_downloaded_at')->with('items', 'otherItems', 'vatAmounts')->get();
             } else {
                 $receipts = $sender->company->receipts()->with('items', 'otherItems', 'vatAmounts')->get();
@@ -203,6 +203,12 @@ class ReceiptController extends Controller
 
             $receipt = $sender->company->receipts()->findOrFail($id);
             $this->authorize('update', $receipt);
+
+            if ($receipt->invoice_type === 'E') {
+                return response([
+                    'message' => 'Receipt is Invoice Type E',
+                ], 422);
+            }
 
             if (@$request->data['originalCopiesPrinted']) {
                 $receipt->original_copies_printed = $request->data['originalCopiesPrinted'];

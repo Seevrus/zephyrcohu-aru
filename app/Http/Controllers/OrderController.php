@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateOrderRequest;
+use App\Http\Requests\CreateOrdersRequest;
 use App\Http\Resources\OrderCollection;
 use App\Models\Log;
 use App\Models\Order;
@@ -46,7 +46,7 @@ class OrderController extends Controller
         }
     }
 
-    public function create_orders(CreateOrderRequest $request)
+    public function create_orders(CreateOrdersRequest $request)
     {
         try {
             $sender = $request->user();

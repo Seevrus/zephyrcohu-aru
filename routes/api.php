@@ -6,6 +6,7 @@ use App\Http\Controllers\OtherItemController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerListController;
 use App\Http\Controllers\PriceListController;
+use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\RoundController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\StoreController;
@@ -36,8 +37,8 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
     Route::post('/login', 'login');
 
     // This seems a bad idea
-    Route::get('/refresh-token', 'refresh_token')
-        ->middleware(['auth:sanctum']);
+    /* Route::get('/refresh-token', 'refresh_token')
+        ->middleware(['auth:sanctum']); */
 
     Route::post('/password', 'change_password')
         ->middleware(['auth:sanctum']);
@@ -141,7 +142,7 @@ Route::controller(ReceiptController::class)->prefix('receipts')->group(function 
         ->middleware(['auth:sanctum', 'ability:A']);
     Route::get('/', 'view_all')
         ->middleware(['auth:sanctum', 'ability:I']);
-    Route::post('/', 'update_receipt_partial')
+    Route::post('/{id}', 'update_receipt_partial')
         ->middleware(['auth:sanctum', 'ability:A']);
     Route::delete('/{id}', 'remove_receipt')
         ->middleware(['auth:sanctum', 'ability:I']);

@@ -42,7 +42,7 @@ return new class extends Migration
             $table->string('buyer_bank_account', 26)->nullable();
             $table->string('buyer_vat_number', 13);
             $table->string('buyer_delivery_name', 50)->nullable();
-            $table->string('buyer_delvery_country', 2)->nullable();
+            $table->string('buyer_delivery_country', 2)->nullable();
             $table->string('buyer_delivery_postal_code', 10)->nullable();
             $table->string('buyer_delivery_city', 30)->nullable();
             $table->string('buyer_delivery_address', 40)->nullable();

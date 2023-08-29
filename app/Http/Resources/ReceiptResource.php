@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ReceiptResource extends JsonResource
@@ -69,6 +70,9 @@ class ReceiptResource extends JsonResource
             'vatAmounts' => new VatAmountCollection($this->vatAmounts),
             'roundAmount' => $this->round_amount,
             'roundedAmount' => $this->rounded_amount,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
+            'lastDownloadedAt' => $this->last_downloaded_at ? Carbon::createFromFormat('Y-m-d H:i:s', $this->last_downloaded_at) : null,
         ];
     }
 }
