@@ -1,7 +1,7 @@
 import { assocPath } from 'ramda';
 import { LoginResponse, Token } from '../response-types/LoginResponseType';
 
-type Login = LoginResponse & {
+export type Login = LoginResponse & {
   token: Token & {
     isPasswordExpired: boolean;
   };

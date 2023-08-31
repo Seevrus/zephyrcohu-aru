@@ -1,38 +1,15 @@
-export type LoginResponse = {
-  id: number;
-  code: string;
-  userName: string;
-  name: string;
-  company: Company;
-  phoneNumber: string;
-  roles: UserRole[];
-  createdAt: string;
-  updatedAt: string;
-  lastActive: string;
-  token: Token;
-};
+import { CompanyType } from './common/CompanyType';
+import { UserRoleType } from './common/UserRoleType';
+import { UserType } from './common/UserType';
 
-type Company = {
-  id: number;
-  code: string;
-  name: string;
-  country: string;
-  postalCode: string;
-  city: string;
-  address: string;
-  felir: string;
-  vatNumber: string;
-  iban: string;
-  bankAccount: string;
-  phoneNumber?: string;
-  email?: string;
+export type LoginResponse = UserType & {
+  company: CompanyType;
+  token: Token;
 };
 
 export type Token = {
   tokenType: string;
   accessToken: string;
-  abilities: UserRole[] | ['password'];
+  abilities: UserRoleType[] | ['password'];
   expiresAt: string;
 };
-
-type UserRole = 'AM' | 'I';

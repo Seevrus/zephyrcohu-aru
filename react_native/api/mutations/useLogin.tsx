@@ -3,12 +3,14 @@ import axios, { isAxiosError } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
 import env from '../../env.json';
+import { useUserContext } from '../../providers/UserProvider';
 import { LoginRequest } from '../request-types/LoginRequestType';
-import { LoginResponse } from '../response-types/LoginResponseType';
 import mapLoginResponse from '../response-mappers/mapLoginResponse';
+import { LoginResponse } from '../response-types/LoginResponseType';
 
 export default function useLogin() {
   const queryClient = useQueryClient();
+  const { saveLoginResponse } = useUserContext();
 
   return useMutation({
     mutationKey: ['login'],
@@ -30,6 +32,8 @@ export default function useLogin() {
             expiresAt: response.token.expiresAt,
           })
         );
+
+        return response;
       } catch (e) {
         if (isAxiosError(e) && e.response.status === 401) {
           throw new Error('Hibás felhasználónév / jelszó!');
@@ -38,8 +42,9 @@ export default function useLogin() {
         }
       }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['token'] });
+      saveLoginResponse(data);
     },
   });
 }

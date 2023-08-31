@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
-import { QueryClient } from '@tanstack/react-query';
+import { onlineManager, QueryClient } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 
@@ -11,6 +12,8 @@ import useToken from './react_native/api/queries/useToken';
 import Loading from './react_native/components/Loading';
 import colors from './react_native/constants/colors';
 import fontSizes from './react_native/constants/fontSizes';
+import StorageProvider from './react_native/providers/StorageProvider';
+import UserProvider from './react_native/providers/UserProvider';
 import Login from './react_native/screens/login/Login';
 import { StackParams } from './react_native/screens/screen-types';
 import ChangePassword from './react_native/screens/start-page/ChangePassword';
@@ -22,6 +25,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       cacheTime: Infinity,
+      keepPreviousData: false,
       staleTime: Infinity,
       retry: 3,
     },
@@ -31,6 +35,12 @@ const queryClient = new QueryClient({
 const asyncStoragePersister = createAsyncStoragePersister({
   storage: AsyncStorage,
 });
+
+onlineManager.setEventListener((setOnline) =>
+  NetInfo.addEventListener((state) => {
+    setOnline(!!state.isConnected);
+  })
+);
 
 const Stack = createNativeStackNavigator<StackParams>();
 // const PartnerTab = createBottomTabNavigator<PartnerTabParams>();
@@ -114,7 +124,7 @@ function Main() {
             name="Index"
             component={Index}
             options={{
-              headerTitle: 'Kör képernyő',
+              headerTitle: 'Zephyr Boreal',
               headerRight: SettingsButton,
             }}
           />
@@ -197,7 +207,11 @@ export default function App() {
       client={queryClient}
       persistOptions={{ persister: asyncStoragePersister }}
     >
-      <Main />
+      <UserProvider>
+        <StorageProvider>
+          <Main />
+        </StorageProvider>
+      </UserProvider>
     </PersistQueryClientProvider>
   );
 }
