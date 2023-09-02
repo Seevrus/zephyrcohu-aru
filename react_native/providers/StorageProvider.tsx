@@ -20,6 +20,17 @@ export default function StorageProvider({ children }: PropsWithChildren) {
 
   const { data: storeDetails } = useStoreDetails({ storeId: user?.storeId });
 
+  console.log('Current storage state', storage?.state);
+
+  /**
+   * Clear storage when storaging or round is finished - TODO
+   */
+  function clearStorageFromContext() {
+    AsyncStorage.removeItem(storageContextKey).then(() => {
+      setStorage(null);
+    });
+  }
+
   /**
    * Initialize from local storage
    */
@@ -55,13 +66,13 @@ export default function StorageProvider({ children }: PropsWithChildren) {
   }, [storage]);
 
   /**
-   * Clear storage when round is finished - TODO
+   * Clear context if the user's store id does not match with the store's id
    */
-  function clearStorageFromContext() {
-    AsyncStorage.removeItem(storageContextKey).then(() => {
-      setStorage(null);
-    });
-  }
+  useEffect(() => {
+    if (user && storage && user.storeId !== storage.id) {
+      clearStorageFromContext();
+    }
+  }, [storage, user]);
 
   const storageContextValue = useMemo(() => ({ storage, clearStorageFromContext }), [storage]);
 

@@ -1,13 +1,12 @@
-import { FC } from 'react';
+import { FunctionComponent } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { SvgProps } from 'react-native-svg';
 
 import colors from '../constants/colors';
 import fontSizes from '../constants/fontSizes';
 
 type TileProps = {
   title: string;
-  Icon: FC<SvgProps>;
+  Icon: FunctionComponent;
   variant: 'ok' | 'warning' | 'disabled' | 'neutral';
   onPress: () => void;
 };
@@ -40,11 +39,11 @@ export default function Tile({ title, Icon, variant, onPress }: TileProps) {
         }}
         onPress={onPress}
       >
+        <View style={styles.iconContainer}>
+          <Icon />
+        </View>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>{title}</Text>
-        </View>
-        <View style={styles.iconContainer}>
-          <Icon width={80} height={80} color="white" />
         </View>
       </Pressable>
     </View>
@@ -54,31 +53,31 @@ export default function Tile({ title, Icon, variant, onPress }: TileProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: 180,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: 20,
     borderRadius: 10,
   },
   tile: {
     flex: 1,
-    width: '80%',
-    paddingTop: 20,
+    flexDirection: 'row',
+    width: '90%',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     borderRadius: 10,
+  },
+  iconContainer: {
+    width: '20%',
   },
   titleContainer: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   title: {
     color: 'white',
     fontFamily: 'Muli',
     fontSize: fontSizes.body,
     fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  iconContainer: {
-    flex: 1.5,
-    alignItems: 'center',
   },
 });

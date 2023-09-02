@@ -18,7 +18,7 @@ export default function Index() {
   const renderTile: ListRenderItem<TileT> = (info: ListRenderItemInfo<TileT>) => (
     <Tile
       title={info.item.title}
-      Icon={info.item.icon}
+      Icon={info.item.Icon}
       variant={info.item.variant}
       onPress={info.item.onPress}
     />
@@ -41,12 +41,7 @@ export default function Index() {
           <TextCard>Körindításhoz és -záráshoz kérem jelentkezzen be.</TextCard>
         </View>
       )}
-      <FlatList
-        data={tiles}
-        keyExtractor={(tile) => tile.id}
-        numColumns={2}
-        renderItem={renderTile}
-      />
+      <FlatList data={tiles} keyExtractor={(tile) => tile.id} renderItem={renderTile} />
     </View>
   );
 }
