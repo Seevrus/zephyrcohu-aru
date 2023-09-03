@@ -1,0 +1,42 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+
+import env from '../../env.json';
+import useToken from '../queries/useToken';
+import { SelectStoreRequestType } from '../request-types/SelectStoreRequestType';
+import { SelectStoreResponseType } from '../response-types/SelectStoreResponseType';
+import { useUserContext } from '../../providers/UserProvider';
+
+export default function useSelectStore() {
+  const queryClient = useQueryClient();
+  const {
+    data: { token },
+  } = useToken();
+  const { updateStoreId } = useUserContext();
+
+  return useMutation({
+    mutationKey: ['login'],
+    mutationFn: async ({ storeId }: SelectStoreRequestType) => {
+      try {
+        const response = await axios.post<SelectStoreResponseType>(
+          `${env.api_url}/storage/lock_to_user`,
+          { data: { storeId } },
+          { headers: { Accept: 'application/json', Authorization: `Bearer ${token}` } }
+        );
+
+        if (response.data.storeId !== storeId) {
+          throw new Error();
+        }
+
+        return response.data;
+      } catch (e) {
+        throw new Error('Váratlan hiba lépett fel a raktár kiválasztása során.');
+      }
+    },
+    onSuccess: (response) => {
+      queryClient.invalidateQueries(['stores']);
+      queryClient.invalidateQueries(['store-details', response.storeId]);
+      updateStoreId(response.storeId);
+    },
+  });
+}

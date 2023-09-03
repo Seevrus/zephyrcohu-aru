@@ -70,6 +70,7 @@ export default function StorageProvider({ children }: PropsWithChildren) {
    */
   useEffect(() => {
     if (user && storage && user.storeId !== storage.id) {
+      setStorage(null);
       clearStorageFromContext();
     }
   }, [storage, user]);

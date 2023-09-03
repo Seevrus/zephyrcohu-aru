@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { omit } from 'ramda';
+import { assoc, omit } from 'ramda';
 import { PropsWithChildren, createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { Login } from '../api/response-mappers/mapLoginResponse';
@@ -13,8 +13,9 @@ type User = UserType & {
 type UserContextType = {
   isUserLoading: boolean;
   user: User | null;
-  saveLoginResponse(response: Login): void;
   clearUserFromContext(): void;
+  saveLoginResponse(response: Login): void;
+  updateStoreId(storeId: number): void;
 };
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
@@ -57,8 +58,12 @@ export default function UserProvider({ children }: PropsWithChildren) {
     });
   }
 
+  function updateStoreId(storeId: number) {
+    setUser(assoc('storeId', storeId));
+  }
+
   const userContextValue = useMemo(
-    () => ({ isUserLoading, user, saveLoginResponse, clearUserFromContext }),
+    () => ({ isUserLoading, user, clearUserFromContext, saveLoginResponse, updateStoreId }),
     [isUserLoading, user]
   );
 
