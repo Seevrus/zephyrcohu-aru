@@ -20,8 +20,6 @@ export default function StorageProvider({ children }: PropsWithChildren) {
 
   const { data: storeDetails } = useStoreDetails({ storeId: user?.storeId });
 
-  console.log('Current storage state', storage?.state);
-
   /**
    * Clear storage when storaging or round is finished - TODO
    */
@@ -62,7 +60,9 @@ export default function StorageProvider({ children }: PropsWithChildren) {
       await AsyncStorage.setItem(storageContextKey, JSON.stringify(storage));
     }
 
-    saveAndSetStorage();
+    if (storage) {
+      saveAndSetStorage();
+    }
   }, [storage]);
 
   /**

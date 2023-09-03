@@ -1,19 +1,18 @@
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useNetInfo } from '@react-native-community/netinfo';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FunctionComponent } from 'react';
 import { Alert } from 'react-native';
 
+import { useReceiptsContext } from '../providers/ReceiptsProvider';
+import { StackParams } from '../screens/screen-types';
 import useTileStates, {
   EndErrandTileState,
   ReceiptsTileState,
   SelectPartnerTileState,
   StartErrandTileState,
+  StorageTileState,
 } from './useTileStates';
-import useToken from '../api/queries/useToken';
-
-import { StackParams } from '../screens/screen-types';
 
 export type TileT = {
   id: string;
@@ -24,30 +23,21 @@ export type TileT = {
 };
 
 export default function useTiles(): TileT[] {
-  const { isInternetReachable } = useNetInfo();
-  const {
-    data: { isPasswordExpired, isTokenExpired },
-  } = useToken();
+  const { numberOfReceipts } = useReceiptsContext();
   const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
 
   const {
     storageTileState,
+    storageTileMessage,
     selectPartnerTileState,
+    selectPartnerTileMessage,
     receiptsTileState,
+    receiptsTileMessage,
     startErrandTileState,
+    startErrandTileMessage,
     endErrandTileState,
+    endErrandTileMessage,
   } = useTileStates();
-
-  const numberOfReceipts = 0;
-
-  let alertMessage: string;
-  if (isTokenExpired) {
-    alertMessage = 'A funkció csak bejelentkezés után elérhető.';
-  } else if (isPasswordExpired) {
-    alertMessage = 'Az Ön jelszava lejárt, kérem változtassa meg.';
-  } else if (!isInternetReachable) {
-    alertMessage = 'Az alkalmazás jelenleg internetkapcsolat nélkül működik.';
-  }
 
   return [
     {
@@ -56,12 +46,8 @@ export default function useTiles(): TileT[] {
       Icon: () => <FontAwesome5 name="truck" size={40} color="white" />,
       variant: storageTileState,
       onPress: () => {
-        if (selectPartnerTileState === SelectPartnerTileState.Disabled) {
-          Alert.alert(
-            'Funkció nem elérhető',
-            alertMessage ?? 'Rakodás csak két kör között lehetséges.',
-            [{ text: 'Értem' }]
-          );
+        if (storageTileState === StorageTileState.Disabled) {
+          Alert.alert('Funkció nem elérhető', storageTileMessage, [{ text: 'Értem' }]);
         } else {
           navigation.navigate('SelectPartner');
         }
@@ -74,9 +60,9 @@ export default function useTiles(): TileT[] {
       variant: startErrandTileState,
       onPress: () => {
         if (startErrandTileState === StartErrandTileState.Disabled) {
-          Alert.alert('Funkció nem elérhető', alertMessage, [{ text: 'Értem' }]);
+          Alert.alert('Funkció nem elérhető', startErrandTileMessage, [{ text: 'Értem' }]);
         } else if (startErrandTileState === StartErrandTileState.Warning) {
-          Alert.alert('Megerősítés szükséges', 'Biztosan szeretne új kört indítani?', [
+          Alert.alert('Megerősítés szükséges', selectPartnerTileMessage, [
             { text: 'Mégsem' },
             {
               text: 'Igen',
@@ -97,9 +83,7 @@ export default function useTiles(): TileT[] {
       variant: selectPartnerTileState,
       onPress: () => {
         if (selectPartnerTileState === SelectPartnerTileState.Disabled) {
-          Alert.alert('Funkció nem elérhető', 'Árulevétel csak a kör indítása után lehetséges.', [
-            { text: 'Értem' },
-          ]);
+          Alert.alert('Funkció nem elérhető', selectPartnerTileMessage, [{ text: 'Értem' }]);
         } else {
           navigation.navigate('SelectPartner');
         }
@@ -112,7 +96,7 @@ export default function useTiles(): TileT[] {
       variant: receiptsTileState,
       onPress: () => {
         if (receiptsTileState === ReceiptsTileState.Disabled) {
-          Alert.alert('Funkció nem elérhető', 'Még nem készült bizonylat.', [{ text: 'Értem' }]);
+          Alert.alert('Funkció nem elérhető', receiptsTileMessage, [{ text: 'Értem' }]);
         } else {
           navigation.navigate('ReceiptList');
         }
@@ -125,7 +109,7 @@ export default function useTiles(): TileT[] {
       variant: endErrandTileState,
       onPress: () => {
         if (endErrandTileState === EndErrandTileState.Disabled) {
-          Alert.alert('Funkció nem elérhető', 'Nincs kör indítva.', [{ text: 'Értem' }]);
+          Alert.alert('Funkció nem elérhető', endErrandTileMessage, [{ text: 'Értem' }]);
         } else {
           navigation.navigate('EndErrand');
         }

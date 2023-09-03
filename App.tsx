@@ -12,6 +12,8 @@ import useToken from './react_native/api/queries/useToken';
 import Loading from './react_native/components/Loading';
 import colors from './react_native/constants/colors';
 import fontSizes from './react_native/constants/fontSizes';
+import OrdersProvider from './react_native/providers/OrdersProvider';
+import ReceiptsProvider from './react_native/providers/ReceiptsProvider';
 import StorageProvider from './react_native/providers/StorageProvider';
 import UserProvider from './react_native/providers/UserProvider';
 import Login from './react_native/screens/login/Login';
@@ -209,7 +211,11 @@ export default function App() {
     >
       <UserProvider>
         <StorageProvider>
-          <Main />
+          <OrdersProvider>
+            <ReceiptsProvider>
+              <Main />
+            </ReceiptsProvider>
+          </OrdersProvider>
         </StorageProvider>
       </UserProvider>
     </PersistQueryClientProvider>
