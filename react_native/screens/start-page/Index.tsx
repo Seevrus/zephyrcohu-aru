@@ -1,28 +1,37 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
-import Tile from '../../components/Tile';
+import useToken from '../../api/queries/useToken';
+import Loading from '../../components/Loading';
+import Tile, { TileT } from '../../components/Tile';
 import TextCard from '../../components/info-cards/TextCard';
 import colors from '../../constants/colors';
-import useTiles, { TileT } from '../../hooks/useTiles';
-import useToken from '../../api/queries/useToken';
+import useTiles from '../../hooks/useTiles';
+import { useUserContext } from '../../providers/UserProvider';
 
 export default function Index() {
   const { isInternetReachable } = useNetInfo();
   const {
+    isLoading: isTokenLoading,
     data: { isPasswordExpired, isTokenExpired },
   } = useToken();
+  const { isUserLoading } = useUserContext();
 
   const tiles = useTiles();
 
   const renderTile: ListRenderItem<TileT> = (info: ListRenderItemInfo<TileT>) => (
     <Tile
+      id={info.item.id}
       title={info.item.title}
       Icon={info.item.Icon}
       variant={info.item.variant}
       onPress={info.item.onPress}
     />
   );
+
+  if (isTokenLoading || isUserLoading) {
+    return <Loading />;
+  }
 
   return (
     <View style={styles.container}>

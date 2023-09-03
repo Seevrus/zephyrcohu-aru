@@ -1,6 +1,6 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { isNil } from 'ramda';
-import { useEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 
 import useToken from '../api/queries/useToken';
 import { useOrdersContext } from '../providers/OrdersProvider';
@@ -41,6 +41,7 @@ export default function useTileStates() {
   const { numberOfReceipts } = useReceiptsContext();
   const { storage } = useStorageContext();
   const {
+    isLoading: isTokenLoading,
     data: { isPasswordExpired, isTokenExpired },
   } = useToken();
   const { user } = useUserContext();
@@ -72,110 +73,130 @@ export default function useTileStates() {
   );
   const [endErrandTileMessage, setEndErrandTileMessage] = useState<string>('');
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     enum DisabledTileMessage {
       LoggedOut = 'A funkció csak bejelentkezés után elérhető.',
       PasswordExpired = 'Az Ön jelszava lejárt, kérem változtassa meg.',
       Offline = 'A funkció csak online érhető el.',
     }
 
-    if (isTokenExpired) {
-      setStorageTileMessage(DisabledTileMessage.LoggedOut);
-      setStartErrandTileMessage(DisabledTileMessage.LoggedOut);
-    } else if (isPasswordExpired) {
-      setStorageTileMessage(DisabledTileMessage.PasswordExpired);
-      setStartErrandTileMessage(DisabledTileMessage.PasswordExpired);
-    } else if (!isInternetReachable) {
-      setStorageTileMessage(DisabledTileMessage.Offline);
-      setStartErrandTileMessage(DisabledTileMessage.Offline);
-    }
-  }, [isInternetReachable, isPasswordExpired, isTokenExpired]);
-
-  useEffect(() => {
-    if (
-      !isTokenExpired &&
-      !isPasswordExpired &&
-      isInternetReachable &&
-      (isNil(user?.storeId) || storage?.state === 'I')
-    ) {
-      setStorageTileState(StorageTileState.Ok);
-      setStorageTileMessage('');
-    } else if (
-      !isTokenExpired &&
-      !isPasswordExpired &&
-      isInternetReachable &&
-      storage?.state === 'L'
-    ) {
-      setStorageTileState(StorageTileState.Neutral);
-      setStorageTileMessage('');
-    } else {
-      setStorageTileState(StorageTileState.Disabled);
-      if (!isTokenExpired && !isPasswordExpired && isInternetReachable) {
-        setStorageTileMessage('Rakodás csak a kör zárása után kezdhető meg.');
+    if (!isTokenLoading) {
+      if (isTokenExpired) {
+        setStorageTileMessage(DisabledTileMessage.LoggedOut);
+        setStartErrandTileMessage(DisabledTileMessage.LoggedOut);
+      } else if (isPasswordExpired) {
+        setStorageTileMessage(DisabledTileMessage.PasswordExpired);
+        setStartErrandTileMessage(DisabledTileMessage.PasswordExpired);
+      } else if (!isInternetReachable) {
+        setStorageTileMessage(DisabledTileMessage.Offline);
+        setStartErrandTileMessage(DisabledTileMessage.Offline);
       }
     }
-  }, [isInternetReachable, isPasswordExpired, isTokenExpired, storage?.state, user?.storeId]);
+  }, [isInternetReachable, isPasswordExpired, isTokenExpired, isTokenLoading]);
 
-  useEffect(() => {
-    if (!isTokenExpired && !isPasswordExpired && isInternetReachable && !isRoundStarted) {
-      setStartErrandTileState(StartErrandTileState.Neutral);
-      setEndErrandTileMessage('');
-    } else if (
-      !isTokenExpired &&
-      !isPasswordExpired &&
-      isInternetReachable &&
-      numberOfOrders === 0 &&
-      numberOfReceipts === 0
-    ) {
-      setStartErrandTileState(StartErrandTileState.Warning);
-      setStartErrandTileMessage('Biztosan szeretne új kört indítani?');
-    } else {
-      setStartErrandTileState(StartErrandTileState.Disabled);
+  useLayoutEffect(() => {
+    if (!isTokenLoading) {
+      if (
+        !isTokenExpired &&
+        !isPasswordExpired &&
+        isInternetReachable &&
+        (isNil(user?.storeId) || storage?.state === 'I')
+      ) {
+        setStorageTileState(StorageTileState.Ok);
+        setStorageTileMessage('');
+      } else if (
+        !isTokenExpired &&
+        !isPasswordExpired &&
+        isInternetReachable &&
+        storage?.state === 'L'
+      ) {
+        setStorageTileState(StorageTileState.Neutral);
+        setStorageTileMessage('');
+      } else {
+        setStorageTileState(StorageTileState.Disabled);
+        if (!isTokenExpired && !isPasswordExpired && isInternetReachable) {
+          setStorageTileMessage('Rakodás csak a kör zárása után kezdhető meg.');
+        }
+      }
+    }
+  }, [
+    isInternetReachable,
+    isPasswordExpired,
+    isTokenExpired,
+    isTokenLoading,
+    storage?.state,
+    user?.storeId,
+  ]);
+
+  useLayoutEffect(() => {
+    if (!isTokenLoading) {
+      if (!isTokenExpired && !isPasswordExpired && isInternetReachable && !isRoundStarted) {
+        setStartErrandTileState(StartErrandTileState.Neutral);
+        setEndErrandTileMessage('');
+      } else if (
+        !isTokenExpired &&
+        !isPasswordExpired &&
+        isInternetReachable &&
+        numberOfOrders === 0 &&
+        numberOfReceipts === 0
+      ) {
+        setStartErrandTileState(StartErrandTileState.Warning);
+        setStartErrandTileMessage('Biztosan szeretne új kört indítani?');
+      } else {
+        setStartErrandTileState(StartErrandTileState.Disabled);
+      }
     }
   }, [
     isInternetReachable,
     isPasswordExpired,
     isRoundStarted,
     isTokenExpired,
+    isTokenLoading,
     numberOfOrders,
     numberOfReceipts,
   ]);
 
-  useEffect(() => {
-    if (isRoundStarted) {
-      setSelectPartnerTileState(SelectPartnerTileState.Neutral);
-      setSelectPartnerTileMessage('');
-    } else {
-      setSelectPartnerTileState(SelectPartnerTileState.Disabled);
-      if (!isTokenExpired && !isPasswordExpired && isInternetReachable) {
-        setSelectPartnerTileMessage('A funkció csak körindítás után elérhető.');
+  useLayoutEffect(() => {
+    if (!isTokenLoading) {
+      if (isRoundStarted) {
+        setSelectPartnerTileState(SelectPartnerTileState.Neutral);
+        setSelectPartnerTileMessage('');
+      } else {
+        setSelectPartnerTileState(SelectPartnerTileState.Disabled);
+        if (!isTokenExpired && !isPasswordExpired && isInternetReachable) {
+          setSelectPartnerTileMessage('A funkció csak körindítás után elérhető.');
+        }
       }
     }
-  }, [isInternetReachable, isPasswordExpired, isRoundStarted, isTokenExpired]);
+  }, [isInternetReachable, isPasswordExpired, isRoundStarted, isTokenExpired, isTokenLoading]);
 
-  useEffect(() => {
-    if (numberOfReceipts > 0) {
-      setReceiptsTileState(ReceiptsTileState.Neutral);
-      setReceiptsTileMessage('');
-    } else {
-      setReceiptsTileState(ReceiptsTileState.Disabled);
-      if (!isTokenExpired && !isPasswordExpired && isInternetReachable) {
-        setReceiptsTileMessage('Nincs elérhető bizonylat.');
+  useLayoutEffect(() => {
+    if (!isTokenLoading) {
+      if (numberOfReceipts > 0) {
+        setReceiptsTileState(ReceiptsTileState.Neutral);
+        setReceiptsTileMessage('');
+      } else {
+        setReceiptsTileState(ReceiptsTileState.Disabled);
+        if (!isTokenExpired && !isPasswordExpired && isInternetReachable) {
+          setReceiptsTileMessage('Nincs elérhető bizonylat.');
+        }
       }
     }
-  }, [isInternetReachable, isPasswordExpired, isTokenExpired, numberOfReceipts]);
+  }, [isInternetReachable, isPasswordExpired, isTokenExpired, isTokenLoading, numberOfReceipts]);
 
-  useEffect(() => {
-    if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isRoundStarted) {
-      setEndErrandTileState(EndErrandTileState.Warning);
-      setEndErrandTileMessage('Biztosan szeretné zárni a kört?');
-    } else {
-      setEndErrandTileState(EndErrandTileState.Disabled);
-      if (!isTokenExpired && !isPasswordExpired && isInternetReachable) {
-        setEndErrandTileMessage('A funkció csak körindítás után elérhető.');
+  useLayoutEffect(() => {
+    if (!isTokenLoading) {
+      if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isRoundStarted) {
+        setEndErrandTileState(EndErrandTileState.Warning);
+        setEndErrandTileMessage('Biztosan szeretné zárni a kört?');
+      } else {
+        setEndErrandTileState(EndErrandTileState.Disabled);
+        if (!isTokenExpired && !isPasswordExpired && isInternetReachable) {
+          setEndErrandTileMessage('A funkció csak körindítás után elérhető.');
+        }
       }
     }
-  }, [isInternetReachable, isPasswordExpired, isRoundStarted, isTokenExpired]);
+  }, [isInternetReachable, isPasswordExpired, isRoundStarted, isTokenExpired, isTokenLoading]);
 
   return {
     storageTileState,

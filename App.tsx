@@ -22,6 +22,8 @@ import ChangePassword from './react_native/screens/start-page/ChangePassword';
 import Index from './react_native/screens/start-page/Index';
 import Settings from './react_native/screens/start-page/Settings';
 import SettingsButton from './react_native/screens/start-page/SettingsButton';
+import SelectStore from './react_native/screens/storage/SelectStore';
+import SelectItemsFromStore from './react_native/screens/storage/SelectItemsFromStore';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -140,6 +142,16 @@ function Main() {
             name="ChangePassword"
             component={ChangePassword}
             options={{ headerTitle: 'Új jelszó' }}
+          />
+          <Stack.Screen
+            name="SelectStore"
+            component={SelectStore}
+            options={{ headerTitle: 'Raktár választása' }}
+          />
+          <Stack.Screen
+            name="SelectItemsFromStore"
+            component={SelectItemsFromStore}
+            options={{ headerTitle: 'Tételek' }}
           />
           {/*  <Stack.Screen
             name="SelectPartner"

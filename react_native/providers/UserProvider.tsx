@@ -11,6 +11,7 @@ type User = UserType & {
 };
 
 type UserContextType = {
+  isUserLoading: boolean;
   user: User | null;
   saveLoginResponse(response: Login): void;
   clearUserFromContext(): void;
@@ -20,6 +21,7 @@ const UserContext = createContext<UserContextType>({} as UserContextType);
 const userContextStorageKey = 'boreal-user-context';
 
 export default function UserProvider({ children }: PropsWithChildren) {
+  const [isUserLoading, setIsUserLoading] = useState<boolean>(true);
   const [user, setUser] = useState<User | null>(null);
 
   /**
@@ -30,6 +32,7 @@ export default function UserProvider({ children }: PropsWithChildren) {
       const jsonData = await AsyncStorage.getItem(userContextStorageKey);
       const localStorageUser = jsonData ? JSON.parse(jsonData) : null;
       setUser(localStorageUser);
+      setIsUserLoading(false);
     }
 
     setUserFromLocalStorage();
@@ -55,8 +58,8 @@ export default function UserProvider({ children }: PropsWithChildren) {
   }
 
   const userContextValue = useMemo(
-    () => ({ user, saveLoginResponse, clearUserFromContext }),
-    [user]
+    () => ({ isUserLoading, user, saveLoginResponse, clearUserFromContext }),
+    [isUserLoading, user]
   );
 
   return <UserContext.Provider value={userContextValue}>{children}</UserContext.Provider>;

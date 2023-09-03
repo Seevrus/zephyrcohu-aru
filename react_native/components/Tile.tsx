@@ -4,14 +4,15 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import colors from '../constants/colors';
 import fontSizes from '../constants/fontSizes';
 
-type TileProps = {
+export type TileT = {
+  id: string;
   title: string;
   Icon: FunctionComponent;
   variant: 'ok' | 'warning' | 'disabled' | 'neutral';
   onPress: () => void;
 };
 
-export default function Tile({ title, Icon, variant, onPress }: TileProps) {
+export default function Tile({ id, title, Icon, variant, onPress }: TileT) {
   const tileColors = {
     ok: colors.ok,
     warning: colors.warning,
@@ -31,7 +32,7 @@ export default function Tile({ title, Icon, variant, onPress }: TileProps) {
   };
 
   return (
-    <View style={styles.container}>
+    <View key={id} style={styles.container}>
       <Pressable
         style={[styles.tile, tileStyle]}
         android_ripple={{
@@ -68,6 +69,8 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     width: '20%',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   titleContainer: {
     flex: 1,

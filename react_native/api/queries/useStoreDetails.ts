@@ -1,7 +1,7 @@
 import { UseQueryResult, useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-
 import { isNil } from 'ramda';
+
 import env from '../../env.json';
 import {
   StoreDetailsResponseData,

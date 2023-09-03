@@ -8,8 +8,11 @@ export type StackParams = {
   Index: undefined;
   Settings: undefined;
 
+  SelectStore: undefined;
+  SelectItemsFromStore: undefined;
+
   SelectPartner: undefined;
-  SelectItems: undefined;
+  SelectItemsToSell: undefined;
   Review: undefined;
   Summary: undefined;
 
@@ -28,7 +31,10 @@ export type ChangePasswordProps = NativeStackScreenProps<StackParams, 'ChangePas
 export type IndexProps = NativeStackScreenProps<StackParams, 'Index'>;
 export type SettingsProps = NativeStackScreenProps<StackParams, 'Settings'>;
 
-export type SelectItemsProps = BottomTabScreenProps<StackParams, 'SelectItems'>;
+export type SelectStoreProps = NativeStackScreenProps<StackParams, 'SelectStore'>;
+export type SelectItemsFromStoreProps = NativeStackScreenProps<StackParams, 'SelectItemsFromStore'>;
+
+export type SelectItemsToSellProps = BottomTabScreenProps<StackParams, 'SelectItemsToSell'>;
 export type ReviewProps = NativeStackScreenProps<StackParams, 'Review'>;
 export type SummaryProps = NativeStackScreenProps<StackParams, 'Summary'>;
 

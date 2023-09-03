@@ -1,10 +1,12 @@
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { FunctionComponent } from 'react';
+import { isNil } from 'ramda';
 import { Alert } from 'react-native';
 
+import { TileT } from '../components/Tile';
 import { useReceiptsContext } from '../providers/ReceiptsProvider';
+import { useUserContext } from '../providers/UserProvider';
 import { StackParams } from '../screens/screen-types';
 import useTileStates, {
   EndErrandTileState,
@@ -14,17 +16,10 @@ import useTileStates, {
   StorageTileState,
 } from './useTileStates';
 
-export type TileT = {
-  id: string;
-  title: string;
-  Icon: FunctionComponent;
-  variant: 'ok' | 'warning' | 'disabled' | 'neutral';
-  onPress: () => void;
-};
-
 export default function useTiles(): TileT[] {
   const { numberOfReceipts } = useReceiptsContext();
   const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
+  const { user } = useUserContext();
 
   const {
     storageTileState,
@@ -48,8 +43,10 @@ export default function useTiles(): TileT[] {
       onPress: () => {
         if (storageTileState === StorageTileState.Disabled) {
           Alert.alert('Funkció nem elérhető', storageTileMessage, [{ text: 'Értem' }]);
+        } else if (isNil(user?.storeId)) {
+          navigation.navigate('SelectStore');
         } else {
-          navigation.navigate('SelectPartner');
+          navigation.navigate('SelectItemsFromStore');
         }
       },
     },

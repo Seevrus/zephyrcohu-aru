@@ -1,18 +1,7 @@
-import { UserType } from './common/UserType';
+import { StoreType } from './common/StoreType';
 
-export type StoreDetailsResponseData = {
-  id: number;
-  code: string;
-  name: string;
-  type: 'P' | 'S';
-  state: 'I' | 'L' | 'R';
-  firstAvailableSerialNumber: number;
-  lastAvailableSerialNumber: number;
-  yearCode: number;
+export type StoreDetailsResponseData = StoreType & {
   expirations: StoreDetailsResponseExpiration[];
-  user: UserType;
-  createdAt: string; // UTC
-  updatedAt: string; // UTC
 };
 
 type StoreDetailsResponseExpiration = {

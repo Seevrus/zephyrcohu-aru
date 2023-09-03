@@ -35,13 +35,13 @@ import { Expiration } from '../../../store/stores-slice/stores-slice-types';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
-import { SelectItemsProps } from '../../screen-types';
+import { SelectItemsToSellProps } from '../../screen-types';
 import SelectItem, { ItemAvailability } from './SelectItem';
 
 const keyExtractor = (item: Item) => String(item.id);
 const NUM_ITEMS_SHOWN = 10;
 
-export default function SelectItems({ navigation }: SelectItemsProps) {
+export default function SelectItemsToSell({ navigation }: SelectItemsToSellProps) {
   const dispatch = useAppDispatch();
 
   const storeItems = useStoreItems();
