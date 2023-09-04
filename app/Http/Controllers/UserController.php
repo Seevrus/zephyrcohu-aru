@@ -177,47 +177,25 @@ class UserController extends Controller
         }
     }
 
-    public function refresh_token(Request $request)
+    public function check_token(Request $request)
     {
         try {
             $sender = $request->user();
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $sender->tokens()->delete();
-            $password = $sender->passwords()->orderBy('set_time', 'desc')->first();
-
-            $passwordSetTime = new Carbon($password->set_time);
-            $isPasswordExpired = $passwordSetTime->diffInSeconds(Carbon::now()) > $this->password_max_lifetime;
-
-            if ($password->is_generated === 1 || $isPasswordExpired) {
-                $token = $sender->createToken('boreal', ['password']);
-            } else {
-                $roles = array_map(
-                    fn ($role) => $role['role'],
-                    $sender->roles->toArray()
-                );
-                $token = $sender->createToken('boreal', $roles);
-            }
-            $tokenExpiration = Carbon::now()->addHours(25);
+            $token = $request->user()->currentAccessToken();
+            $tokenExpiration = Carbon::parse($token->created_at)->addHours(25);
 
             $userResource = new UserResource($sender->load('company'));
-
-            Log::insert([
-                'company_id' => $sender->company_id,
-                'user_id' => $sender->id,
-                'token_id' => 0,
-                'action' => 'Renewed token',
-                'occured_at' => Carbon::now(),
-            ]);
 
             return array_merge(
                 $userResource->toArray(0),
                 [
                     'token' => [
                         'tokenType' => 'Bearer',
-                        'accessToken' => $token->plainTextToken,
-                        'abilities' => $token->accessToken->abilities,
+                        'accessToken' => $request->bearerToken(),
+                        'abilities' => $token->abilities,
                         'expiresAt' => $tokenExpiration,
                     ],
                 ]

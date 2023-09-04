@@ -36,9 +36,8 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
 
     Route::post('/login', 'login');
 
-    // This seems a bad idea
-    /* Route::get('/refresh-token', 'refresh_token')
-        ->middleware(['auth:sanctum']); */
+    Route::get('/check-token', 'check_token')
+        ->middleware(['auth:sanctum']);
 
     Route::post('/password', 'change_password')
         ->middleware(['auth:sanctum']);
