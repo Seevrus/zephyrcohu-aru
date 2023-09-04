@@ -5,10 +5,11 @@ import { useEffect } from 'react';
 
 import env from '../../env.json';
 import useLogout from '../mutations/useLogout';
+import mapCheckTokenResponse, { CheckToken } from '../response-mappers/mapCheckTokenResponse';
 import { LoginResponse } from '../response-types/LoginResponseType';
 import useToken from './useToken';
 
-function useCheckTokenQuery({ enabled = true } = {}): UseQueryResult<LoginResponse> {
+function useCheckTokenQuery({ enabled = true } = {}): UseQueryResult<CheckToken> {
   const { isInternetReachable } = useNetInfo();
   const { isSuccess: isTokenSuccess, data: { token } = {} } = useToken();
 
@@ -20,16 +21,17 @@ function useCheckTokenQuery({ enabled = true } = {}): UseQueryResult<LoginRespon
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
         });
 
-        return response.data;
+        return mapCheckTokenResponse(response.data);
       } catch (err) {
         throw new Error('A megadott token nem érvényes.');
       }
     },
-    enabled: !!isInternetReachable && enabled && isTokenSuccess && !!token,
+    enabled: isInternetReachable === true && enabled && isTokenSuccess && !!token,
+    staleTime: 0,
   });
 }
 
-export default function useCheckToken({ enabled = true } = {}): UseQueryResult<LoginResponse> {
+export default function useCheckToken({ enabled = true } = {}): UseQueryResult<CheckToken> {
   const checkTokenResult = useCheckTokenQuery({ enabled });
   const { mutateAsync: logout } = useLogout();
 

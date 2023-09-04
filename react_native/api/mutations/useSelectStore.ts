@@ -5,14 +5,12 @@ import env from '../../env.json';
 import useToken from '../queries/useToken';
 import { SelectStoreRequestType } from '../request-types/SelectStoreRequestType';
 import { SelectStoreResponseType } from '../response-types/SelectStoreResponseType';
-import { useUserContext } from '../../providers/UserProvider';
 
 export default function useSelectStore() {
   const queryClient = useQueryClient();
   const {
     data: { token },
   } = useToken();
-  const { updateStoreId } = useUserContext();
 
   return useMutation({
     mutationKey: ['login'],
@@ -34,9 +32,9 @@ export default function useSelectStore() {
       }
     },
     onSuccess: (response) => {
+      queryClient.invalidateQueries(['check-token']);
       queryClient.invalidateQueries(['stores']);
       queryClient.invalidateQueries(['store-details', response.storeId]);
-      updateStoreId(response.storeId);
     },
   });
 }
