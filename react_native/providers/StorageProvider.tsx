@@ -2,9 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isNil } from 'ramda';
 import { PropsWithChildren, createContext, useContext, useEffect, useMemo, useState } from 'react';
 
+import useCheckToken from '../api/queries/useCheckToken';
 import useStoreDetails from '../api/queries/useStoreDetails';
 import { StoreDetailsResponseData } from '../api/response-types/StoreDetailsResponseType';
-import { useUserContext } from './UserProvider';
 
 type StorageContextType = {
   storage: StoreDetailsResponseData | null;
@@ -15,7 +15,7 @@ const StorageContext = createContext<StorageContextType>({} as StorageContextTyp
 const storageContextKey = 'boreal-storage-context';
 
 export default function StorageProvider({ children }: PropsWithChildren) {
-  const { user } = useUserContext();
+  const { data: user } = useCheckToken();
   const [storage, setStorage] = useState<StoreDetailsResponseData | null>(null);
 
   const { data: storeDetails } = useStoreDetails({ storeId: user?.storeId });

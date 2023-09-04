@@ -15,15 +15,14 @@ import fontSizes from './react_native/constants/fontSizes';
 import OrdersProvider from './react_native/providers/OrdersProvider';
 import ReceiptsProvider from './react_native/providers/ReceiptsProvider';
 import StorageProvider from './react_native/providers/StorageProvider';
-import UserProvider from './react_native/providers/UserProvider';
 import Login from './react_native/screens/login/Login';
 import { StackParams } from './react_native/screens/screen-types';
 import ChangePassword from './react_native/screens/start-page/ChangePassword';
 import Index from './react_native/screens/start-page/Index';
 import Settings from './react_native/screens/start-page/Settings';
 import SettingsButton from './react_native/screens/start-page/SettingsButton';
-import SelectStore from './react_native/screens/storage/SelectStore';
 import SelectItemsFromStore from './react_native/screens/storage/SelectItemsFromStore';
+import SelectStore from './react_native/screens/storage/SelectStore';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -221,15 +220,13 @@ export default function App() {
       client={queryClient}
       persistOptions={{ persister: asyncStoragePersister }}
     >
-      <UserProvider>
-        <StorageProvider>
-          <OrdersProvider>
-            <ReceiptsProvider>
-              <Main />
-            </ReceiptsProvider>
-          </OrdersProvider>
-        </StorageProvider>
-      </UserProvider>
+      <StorageProvider>
+        <OrdersProvider>
+          <ReceiptsProvider>
+            <Main />
+          </ReceiptsProvider>
+        </OrdersProvider>
+      </StorageProvider>
     </PersistQueryClientProvider>
   );
 }

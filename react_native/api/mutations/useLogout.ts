@@ -1,11 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as SecureStore from 'expo-secure-store';
 
-import { useUserContext } from '../../providers/UserProvider';
-
 export default function useLogout() {
   const queryClient = useQueryClient();
-  const { clearUserFromContext } = useUserContext();
 
   return useMutation({
     mutationKey: ['login'],
@@ -17,9 +14,9 @@ export default function useLogout() {
       }
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['check-token'] });
       queryClient.invalidateQueries({ queryKey: ['token'] });
       queryClient.invalidateQueries({ queryKey: ['store-details'] });
-      clearUserFromContext();
     },
   });
 }

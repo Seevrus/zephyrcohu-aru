@@ -1,21 +1,21 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
+import useCheckToken from '../../api/queries/useCheckToken';
 import useToken from '../../api/queries/useToken';
 import Loading from '../../components/Loading';
 import Tile, { TileT } from '../../components/Tile';
 import TextCard from '../../components/info-cards/TextCard';
 import colors from '../../constants/colors';
 import useTiles from '../../hooks/useTiles';
-import { useUserContext } from '../../providers/UserProvider';
 
 export default function Index() {
+  const { isFetching: isUserLoading } = useCheckToken();
   const { isInternetReachable } = useNetInfo();
   const {
     isLoading: isTokenLoading,
     data: { isPasswordExpired, isTokenExpired },
   } = useToken();
-  const { isUserLoading } = useUserContext();
 
   const tiles = useTiles();
 

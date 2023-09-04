@@ -3,14 +3,12 @@ import axios, { isAxiosError } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
 import env from '../../env.json';
-import { useUserContext } from '../../providers/UserProvider';
 import { LoginRequest } from '../request-types/LoginRequestType';
 import mapLoginResponse from '../response-mappers/mapLoginResponse';
 import { LoginResponse } from '../response-types/LoginResponseType';
 
 export default function useLogin() {
   const queryClient = useQueryClient();
-  const { saveLoginResponse } = useUserContext();
 
   return useMutation({
     mutationKey: ['login'],
@@ -42,9 +40,9 @@ export default function useLogin() {
         }
       }
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['check-token'] });
       queryClient.invalidateQueries({ queryKey: ['token'] });
-      saveLoginResponse(data);
     },
   });
 }

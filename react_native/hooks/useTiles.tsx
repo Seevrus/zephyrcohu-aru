@@ -4,9 +4,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { isNil } from 'ramda';
 import { Alert } from 'react-native';
 
+import useCheckToken from '../api/queries/useCheckToken';
 import { TileT } from '../components/Tile';
 import { useReceiptsContext } from '../providers/ReceiptsProvider';
-import { useUserContext } from '../providers/UserProvider';
 import { StackParams } from '../screens/screen-types';
 import useTileStates, {
   EndErrandTileState,
@@ -17,9 +17,9 @@ import useTileStates, {
 } from './useTileStates';
 
 export default function useTiles(): TileT[] {
-  const { numberOfReceipts } = useReceiptsContext();
+  const { data: user } = useCheckToken();
   const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
-  const { user } = useUserContext();
+  const { numberOfReceipts } = useReceiptsContext();
 
   const {
     storageTileState,

@@ -2,11 +2,11 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { isNil } from 'ramda';
 import { useLayoutEffect, useState } from 'react';
 
+import useCheckToken from '../api/queries/useCheckToken';
 import useToken from '../api/queries/useToken';
 import { useOrdersContext } from '../providers/OrdersProvider';
 import { useReceiptsContext } from '../providers/ReceiptsProvider';
 import { useStorageContext } from '../providers/StorageProvider';
-import { useUserContext } from '../providers/UserProvider';
 
 export enum StorageTileState {
   Ok = 'ok',
@@ -36,6 +36,7 @@ export enum EndErrandTileState {
 }
 
 export default function useTileStates() {
+  const { data: user } = useCheckToken();
   const { isInternetReachable } = useNetInfo();
   const { numberOfOrders } = useOrdersContext();
   const { numberOfReceipts } = useReceiptsContext();
@@ -44,7 +45,6 @@ export default function useTileStates() {
     isLoading: isTokenLoading,
     data: { isPasswordExpired, isTokenExpired },
   } = useToken();
-  const { user } = useUserContext();
 
   const isRoundStarted = storage?.state === 'R';
 
