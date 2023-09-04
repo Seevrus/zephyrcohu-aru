@@ -1,5 +1,5 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { UseQueryResult, useQuery } from '@tanstack/react-query';
+import { UseQueryResult, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useEffect } from 'react';
 
@@ -34,6 +34,8 @@ function useCheckTokenQuery({ enabled = true } = {}): UseQueryResult<CheckToken>
 export default function useCheckToken({ enabled = true } = {}): UseQueryResult<CheckToken> {
   const checkTokenResult = useCheckTokenQuery({ enabled });
   const { mutateAsync: logout } = useLogout();
+  const { isInternetReachable } = useNetInfo();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     async function logoutOnError() {
@@ -44,6 +46,12 @@ export default function useCheckToken({ enabled = true } = {}): UseQueryResult<C
 
     logoutOnError();
   }, [checkTokenResult.isError, logout]);
+
+  useEffect(() => {
+    if (isInternetReachable === true && checkTokenResult.isSuccess) {
+      queryClient.invalidateQueries(['stores']);
+    }
+  }, [checkTokenResult.isSuccess, isInternetReachable, queryClient]);
 
   return checkTokenResult;
 }
