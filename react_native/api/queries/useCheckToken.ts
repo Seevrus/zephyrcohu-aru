@@ -27,7 +27,7 @@ function useCheckTokenQuery({ enabled = true } = {}): UseQueryResult<CheckToken>
       }
     },
     enabled: isInternetReachable === true && enabled && isTokenSuccess && !!token,
-    staleTime: 0,
+    staleTime: 300_000,
   });
 }
 

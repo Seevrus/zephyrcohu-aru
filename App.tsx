@@ -21,8 +21,8 @@ import ChangePassword from './react_native/screens/start-page/ChangePassword';
 import Index from './react_native/screens/start-page/Index';
 import Settings from './react_native/screens/start-page/Settings';
 import SettingsButton from './react_native/screens/start-page/SettingsButton';
-import SelectItemsFromStore from './react_native/screens/storage/SelectItemsFromStore';
-import SelectStore from './react_native/screens/storage/SelectStore';
+import SelectItemsFromStore from './react_native/screens/storage/select-items/SelectItemsFromStore';
+import SelectStore from './react_native/screens/storage/select-store/SelectStore';
 
 const queryClient = new QueryClient({
   defaultOptions: {

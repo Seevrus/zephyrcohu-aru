@@ -1,5 +1,5 @@
 import { not } from 'ramda';
-import { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import { PropsWithChildren, ReactNode, useEffect, useMemo, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import colors from '../../constants/colors';
@@ -8,7 +8,7 @@ import fontSizes from '../../constants/fontSizes';
 type AnimatedListItemProps = {
   id: number;
   expandedInitially: boolean;
-  title: string;
+  title: string | ReactNode;
   height: number;
   backgroundColor: string;
   onSelect?: (id: number) => void;
@@ -54,7 +54,8 @@ export default function AnimatedListItem({
         style={({ pressed }) => [styles.item, backgroundStyle, pressed && { opacity: 0.75 }]}
       >
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>{title}</Text>
+          {typeof title === 'string' && <Text style={styles.title}>{title}</Text>}
+          {typeof title !== 'string' && title}
         </View>
       </Pressable>
       <Animated.View style={[styles.childContainer, { height: heightValue }]}>

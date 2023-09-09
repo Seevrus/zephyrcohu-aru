@@ -15,16 +15,16 @@ import {
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
-import useSelectStore from '../../api/mutations/useSelectStore';
-import useStores from '../../api/queries/useStores';
-import { StoresResponseData } from '../../api/response-types/StoresResponseType';
-import { StoreType } from '../../api/response-types/common/StoreType';
-import Loading from '../../components/Loading';
-import Tile, { TileT } from '../../components/Tile';
-import Button from '../../components/ui/Button';
-import Input from '../../components/ui/Input';
-import colors from '../../constants/colors';
-import { SelectStoreProps } from '../screen-types';
+import useSelectStore from '../../../api/mutations/useSelectStore';
+import useStores from '../../../api/queries/useStores';
+import { StoresResponseData } from '../../../api/response-types/StoresResponseType';
+import { StoreType } from '../../../api/response-types/common/StoreType';
+import Loading from '../../../components/Loading';
+import Tile, { TileT } from '../../../components/Tile';
+import Button from '../../../components/ui/Button';
+import Input from '../../../components/ui/Input';
+import colors from '../../../constants/colors';
+import { SelectStoreProps } from '../../screen-types';
 
 export default function SelectStore({ navigation }: SelectStoreProps) {
   const { isInternetReachable } = useNetInfo();
@@ -43,7 +43,7 @@ export default function SelectStore({ navigation }: SelectStoreProps) {
   }, [isInternetReachable, navigation]);
 
   useEffect(() => {
-    setStoresShown(stores.filter((store) => store.name.includes(storeSearchValue)));
+    setStoresShown((stores ?? []).filter((store) => store.name.includes(storeSearchValue)));
   }, [storeSearchValue, stores]);
 
   const searchInputHandler = useCallback((inputValue: string) => {

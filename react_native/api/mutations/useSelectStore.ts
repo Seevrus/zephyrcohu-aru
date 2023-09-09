@@ -8,9 +8,7 @@ import { SelectStoreResponseType } from '../response-types/SelectStoreResponseTy
 
 export default function useSelectStore() {
   const queryClient = useQueryClient();
-  const {
-    data: { token },
-  } = useToken();
+  const { data: { token } = {} } = useToken();
 
   return useMutation({
     mutationKey: ['login'],
