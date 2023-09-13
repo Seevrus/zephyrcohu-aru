@@ -11,7 +11,7 @@ import Loading from '../../../components/Loading';
 const keyExtractor = (item: ListItem) => String(item.expirationId);
 
 export default function SelectItemsFromStore({ navigation }: SelectItemsFromStoreProps) {
-  const { isLoading, items = [], setCurrentQuantity } = useSelectItemsFromStore();
+  const { isLoading, items = [], setCurrentQuantity, setSearchTerm } = useSelectItemsFromStore();
 
   const renderItem = (info: ListRenderItemInfo<ListItem>) => (
     <ExpirationAccordionDetails item={info.item} setCurrentQuantity={setCurrentQuantity} />
@@ -25,7 +25,7 @@ export default function SelectItemsFromStore({ navigation }: SelectItemsFromStor
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <View style={styles.searchInputContainer}>
-          <Input label="Keresés" labelPosition="left" config={{ onChangeText: () => undefined }} />
+          <Input label="Keresés" labelPosition="left" config={{ onChangeText: setSearchTerm }} />
         </View>
       </View>
       <View style={styles.listContainer}>

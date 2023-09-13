@@ -38,6 +38,8 @@ export default function useSelectItemsFromStore() {
     Record<number, Record<number, number>>
   >({});
 
+  const [searchTerm, setSearchTerm] = useState<string>('');
+
   useEffect(() => {
     setStorageExpirations((prevExpirations) => {
       if (!isEmpty(prevExpirations) || isNil(storage)) return prevExpirations;
@@ -108,14 +110,18 @@ export default function useSelectItemsFromStore() {
             currentQuantity: storageExpirations[item.id]?.[expiration.id],
           }))
         )
+        .filter((item) =>
+          `${item.name.toLowerCase()}${item.expiresAt}`.includes(searchTerm.toLowerCase())
+        )
         .sort((itemA, itemB) => itemA.name.localeCompare(itemB.name))
         .slice(0, 10),
-    [itemsResponse, primaryStoreExpirations, storageExpirations]
+    [itemsResponse, primaryStoreExpirations, searchTerm, storageExpirations]
   );
 
   return {
     isLoading: isStorageLoading || isPrimaryStoreLoading || isStoresLoading,
     items,
     setCurrentQuantity,
+    setSearchTerm,
   };
 }
