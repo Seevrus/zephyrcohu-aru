@@ -1,6 +1,6 @@
 import { format, parseISO } from 'date-fns';
-import { isEmpty, isNil } from 'ramda';
-import { useEffect, useMemo, useState } from 'react';
+import { assocPath, isEmpty, isNil } from 'ramda';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import useItems from '../../../api/queries/useItems';
 import useStoreDetails from '../../../api/queries/useStoreDetails';
@@ -8,27 +8,32 @@ import useStores from '../../../api/queries/useStores';
 import { useStorageContext } from '../../../providers/StorageProvider';
 
 export type ListItem = {
-  id: number;
+  itemId: number;
+  expirationId: number;
   name: string;
   expiresAt: string;
   itemBarcode: string;
   expirationBarcode: string;
-  primaryStoreQuantity: number;
-  currentQuantity: number;
+  primaryStoreQuantity: number | undefined;
+  originalQuantity: number | undefined;
+  currentQuantity: number | undefined;
 };
 
 export default function useSelectItemsFromStore() {
   const { data: itemsResponse } = useItems();
-  const { storage } = useStorageContext();
-  const { data: stores } = useStores();
+  const { storage, isLoading: isStorageLoading } = useStorageContext();
+  const { data: stores, isLoading: isStoresLoading } = useStores();
 
   const primaryStoreId = stores?.find((store) => store.type === 'P')?.id;
 
-  const { data: primaryStore } = useStoreDetails({ storeId: primaryStoreId });
+  const { data: primaryStore, isLoading: isPrimaryStoreLoading } = useStoreDetails({
+    storeId: primaryStoreId,
+  });
 
   const [primaryStoreExpirations, setPrimaryStoreExpirations] = useState<
     Record<number, Record<number, number>>
   >({});
+  const originalStorageExpirations = useRef<Record<number, Record<number, number>>>({});
   const [storageExpirations, setStorageExpirations] = useState<
     Record<number, Record<number, number>>
   >({});
@@ -46,6 +51,7 @@ export default function useSelectItemsFromStore() {
         expirations[expiration.itemId][expiration.expirationId] = expiration.quantity;
       });
 
+      originalStorageExpirations.current = expirations;
       return expirations;
     });
   }, [storage]);
@@ -67,23 +73,49 @@ export default function useSelectItemsFromStore() {
     });
   }, [primaryStore]);
 
+  const setCurrentQuantity = useCallback(
+    (item: ListItem, newCurrentQuantity: number | null) => {
+      const currentPrimaryStoreQuantity =
+        primaryStoreExpirations[item.itemId]?.[item.expirationId] ?? 0;
+      const currentQuantity = storageExpirations[item.itemId]?.[item.expirationId] ?? 0;
+
+      const difference = (newCurrentQuantity || 0) - currentQuantity;
+
+      setPrimaryStoreExpirations(
+        assocPath([item.itemId, item.expirationId], currentPrimaryStoreQuantity - difference)
+      );
+
+      setStorageExpirations(
+        assocPath([item.itemId, item.expirationId], currentQuantity + difference)
+      );
+    },
+    [primaryStoreExpirations, storageExpirations]
+  );
+
   const items: ListItem[] = useMemo(
     () =>
       itemsResponse
         ?.flatMap((item) =>
           item.expirations.map((expiration) => ({
-            id: expiration.id,
+            itemId: item.id,
+            expirationId: expiration.id,
             name: item.name,
             expiresAt: format(parseISO(expiration.expiresAt), 'yyyy-MM'),
             itemBarcode: item.barcode ?? '',
             expirationBarcode: expiration.barcode ?? '',
-            primaryStoreQuantity: primaryStoreExpirations[item.id]?.[expiration.id] ?? 0,
-            currentQuantity: storageExpirations[item.id]?.[expiration.id] ?? 0,
+            primaryStoreQuantity: primaryStoreExpirations[item.id]?.[expiration.id],
+            originalQuantity: originalStorageExpirations.current[item.id]?.[expiration.id],
+            currentQuantity: storageExpirations[item.id]?.[expiration.id],
           }))
         )
-        .sort((itemA, itemB) => itemA.name.localeCompare(itemB.name)),
+        .sort((itemA, itemB) => itemA.name.localeCompare(itemB.name))
+        .slice(0, 10),
     [itemsResponse, primaryStoreExpirations, storageExpirations]
   );
 
-  return { items };
+  return {
+    isLoading: isStorageLoading || isPrimaryStoreLoading || isStoresLoading,
+    items,
+    setCurrentQuantity,
+  };
 }

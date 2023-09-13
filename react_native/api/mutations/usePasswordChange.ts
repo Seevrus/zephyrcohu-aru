@@ -51,6 +51,7 @@ export default function usePasswordChange() {
       }
     },
     onSuccess: () => {
+      queryClient.invalidateQueries(['check-token']);
       queryClient.invalidateQueries(['token']);
     },
   });

@@ -1,5 +1,3 @@
-import { slice } from 'ramda';
-import { useState } from 'react';
 import { Animated, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
 import Button from '../../../components/ui/Button';
@@ -8,17 +6,20 @@ import colors from '../../../constants/colors';
 import { SelectItemsFromStoreProps } from '../../screen-types';
 import ExpirationAccordionDetails from './ExpirationAccordionDetails';
 import useSelectItemsFromStore, { ListItem } from './useSelectItemsFromStore';
+import Loading from '../../../components/Loading';
 
-const keyExtractor = (item: ListItem) => String(item.id);
+const keyExtractor = (item: ListItem) => String(item.expirationId);
 
 export default function SelectItemsFromStore({ navigation }: SelectItemsFromStoreProps) {
-  const { items = [] } = useSelectItemsFromStore();
-
-  const [itemsToShow, setItemsToShow] = useState<ListItem[]>(slice(0, 10, items));
+  const { isLoading, items = [], setCurrentQuantity } = useSelectItemsFromStore();
 
   const renderItem = (info: ListRenderItemInfo<ListItem>) => (
-    <ExpirationAccordionDetails item={info.item} />
+    <ExpirationAccordionDetails item={info.item} setCurrentQuantity={setCurrentQuantity} />
   );
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <View style={styles.container}>
@@ -28,7 +29,7 @@ export default function SelectItemsFromStore({ navigation }: SelectItemsFromStor
         </View>
       </View>
       <View style={styles.listContainer}>
-        <Animated.FlatList data={itemsToShow} keyExtractor={keyExtractor} renderItem={renderItem} />
+        <Animated.FlatList data={items} keyExtractor={keyExtractor} renderItem={renderItem} />
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.buttonContainer}>

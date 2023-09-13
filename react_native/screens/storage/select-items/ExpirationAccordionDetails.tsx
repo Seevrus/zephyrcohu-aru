@@ -1,21 +1,54 @@
-import { trim } from 'ramda';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { isNil, pipe, replace, trim } from 'ramda';
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import AnimatedListItem from '../../../components/ui/AnimatedListItem';
+import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
 import { ListItem } from './useSelectItemsFromStore';
-import Input from '../../../components/ui/Input';
 
 type ExpirationAccordionDetailsProps = {
   item: ListItem;
+  setCurrentQuantity: (item: ListItem, newCurrentQuantity: number | null) => void;
 };
 
-export default function ExpirationAccordionDetails({ item }: ExpirationAccordionDetailsProps) {
+export default function ExpirationAccordionDetails({
+  item,
+  setCurrentQuantity,
+}: ExpirationAccordionDetailsProps) {
+  const [selectedQuantity, setSelectedQuantity] = useState<number | null>(
+    item.currentQuantity ?? 0
+  );
+
+  const quantityHandler = (newQuantity: string) => {
+    const formattedQuantity = pipe(trim, replace(',', '.'), Number, Math.floor)(newQuantity);
+    const nullIshFormattedQuantity = Number.isNaN(formattedQuantity) ? null : formattedQuantity;
+
+    if (newQuantity === '' || formattedQuantity < 0 || isNil(nullIshFormattedQuantity)) {
+      setSelectedQuantity(null);
+      setCurrentQuantity(item, null);
+    } else {
+      setSelectedQuantity(nullIshFormattedQuantity);
+      setCurrentQuantity(item, nullIshFormattedQuantity);
+    }
+  };
+
+  const listItemColor = (() => {
+    if (item.primaryStoreQuantity < 0) {
+      return colors.error;
+    }
+    if ((item.currentQuantity || 0) !== (item.originalQuantity || 0)) {
+      return colors.warning;
+    }
+
+    return colors.neutral;
+  })();
+
   return (
     <AnimatedListItem
-      id={item.id}
+      id={item.expirationId}
       expandedInitially={false}
       title={
         <View style={styles.selectItemTitle}>
@@ -26,7 +59,7 @@ export default function ExpirationAccordionDetails({ item }: ExpirationAccordion
         </View>
       }
       height={170}
-      backgroundColor={colors.neutral}
+      backgroundColor={listItemColor}
     >
       <View style={styles.selectItemContainer}>
         <View style={styles.detailsRow}>
@@ -40,7 +73,10 @@ export default function ExpirationAccordionDetails({ item }: ExpirationAccordion
           <Text style={styles.detailsRowText}>{item.primaryStoreQuantity}</Text>
         </View>
         <View style={styles.selectionContainer}>
-          <Pressable style={styles.selectIconContainer}>
+          <Pressable
+            style={styles.selectIconContainer}
+            onPress={() => quantityHandler(String((selectedQuantity ?? 0) - 1))}
+          >
             <MaterialIcons
               name="remove-circle-outline"
               size={40}
@@ -50,7 +86,7 @@ export default function ExpirationAccordionDetails({ item }: ExpirationAccordion
           </Pressable>
           <View style={styles.quantityContainer}>
             <Input
-              label="Változás"
+              label="Raktárkészlet:"
               textAlign="center"
               config={{
                 autoCapitalize: 'none',
@@ -59,12 +95,15 @@ export default function ExpirationAccordionDetails({ item }: ExpirationAccordion
                 contextMenuHidden: true,
                 keyboardType: 'numeric',
                 maxLength: 4,
-                value: '',
-                onChangeText: () => undefined,
+                value: String(selectedQuantity ?? ''),
+                onChangeText: quantityHandler,
               }}
             />
           </View>
-          <Pressable style={styles.selectIconContainer}>
+          <Pressable
+            style={styles.selectIconContainer}
+            onPress={() => quantityHandler(String((selectedQuantity ?? 0) + 1))}
+          >
             <MaterialIcons
               name="add-circle-outline"
               size={40}

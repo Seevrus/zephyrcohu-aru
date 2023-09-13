@@ -7,6 +7,7 @@ import useStoreDetails from '../api/queries/useStoreDetails';
 import { StoreDetailsResponseData } from '../api/response-types/StoreDetailsResponseType';
 
 type StorageContextType = {
+  isLoading: boolean;
   storage: StoreDetailsResponseData | null;
   clearStorageFromContext(): void;
 };
@@ -18,7 +19,9 @@ export default function StorageProvider({ children }: PropsWithChildren) {
   const { data: user } = useCheckToken();
   const [storage, setStorage] = useState<StoreDetailsResponseData | null>(null);
 
-  const { data: storeDetails } = useStoreDetails({ storeId: user?.storeId });
+  const { data: storeDetails, isLoading: isStoreDetailsLoading } = useStoreDetails({
+    storeId: user?.storeId,
+  });
 
   /**
    * Clear storage when storaging or round is finished - TODO
@@ -75,7 +78,10 @@ export default function StorageProvider({ children }: PropsWithChildren) {
     }
   }, [storage, user]);
 
-  const storageContextValue = useMemo(() => ({ storage, clearStorageFromContext }), [storage]);
+  const storageContextValue = useMemo(
+    () => ({ isLoading: isStoreDetailsLoading, storage, clearStorageFromContext }),
+    [isStoreDetailsLoading, storage]
+  );
 
   return <StorageContext.Provider value={storageContextValue}>{children}</StorageContext.Provider>;
 }
