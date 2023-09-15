@@ -1,6 +1,6 @@
 import { format, parseISO } from 'date-fns';
 import { assocPath, isEmpty, isNil } from 'ramda';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 import useItems from '../../../api/queries/useItems';
 import useStoreDetails from '../../../api/queries/useStoreDetails';
@@ -18,6 +18,41 @@ export type ListItem = {
   originalQuantity: number | undefined;
   currentQuantity: number | undefined;
 };
+
+type SearchState = {
+  searchTerm: string;
+  barCode: string;
+};
+
+enum SearchStateActionKind {
+  SetSearchTerm = 'SetSearchTerm',
+  SetBarCode = 'SetBarCode',
+}
+
+type SearchStateAction = {
+  type: SearchStateActionKind;
+  payload: string;
+};
+
+function searchStateReducer(_: SearchState, action: SearchStateAction): SearchState {
+  switch (action.type) {
+    case SearchStateActionKind.SetSearchTerm:
+      return {
+        searchTerm: action.payload,
+        barCode: '',
+      };
+    case SearchStateActionKind.SetBarCode:
+      return {
+        searchTerm: '',
+        barCode: action.payload,
+      };
+    default:
+      return {
+        searchTerm: '',
+        barCode: '',
+      };
+  }
+}
 
 export default function useSelectItemsFromStore() {
   const { data: itemsResponse } = useItems();
@@ -38,7 +73,17 @@ export default function useSelectItemsFromStore() {
     Record<number, Record<number, number>>
   >({});
 
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchState, dispatchSearchState] = useReducer(searchStateReducer, {
+    searchTerm: '',
+    barCode: '',
+  });
+
+  const { searchTerm, barCode } = searchState;
+
+  const setSearchTerm = (payload: string) =>
+    dispatchSearchState({ type: SearchStateActionKind.SetSearchTerm, payload });
+  const setBarCode = (payload: string) =>
+    dispatchSearchState({ type: SearchStateActionKind.SetBarCode, payload });
 
   useEffect(() => {
     setStorageExpirations((prevExpirations) => {
@@ -110,18 +155,22 @@ export default function useSelectItemsFromStore() {
             currentQuantity: storageExpirations[item.id]?.[expiration.id],
           }))
         )
-        .filter((item) =>
-          `${item.name.toLowerCase()}${item.expiresAt}`.includes(searchTerm.toLowerCase())
+        .filter(
+          (item) =>
+            `${item.name.toLowerCase()}${item.expiresAt}`.includes(searchTerm.toLowerCase()) &&
+            `${item.itemBarcode}${item.expirationBarcode}`.includes(barCode)
         )
         .sort((itemA, itemB) => itemA.name.localeCompare(itemB.name))
         .slice(0, 10),
-    [itemsResponse, primaryStoreExpirations, searchTerm, storageExpirations]
+    [barCode, itemsResponse, primaryStoreExpirations, searchTerm, storageExpirations]
   );
 
   return {
     isLoading: isStorageLoading || isPrimaryStoreLoading || isStoresLoading,
     items,
     setCurrentQuantity,
+    searchTerm,
     setSearchTerm,
+    setBarCode,
   };
 }
