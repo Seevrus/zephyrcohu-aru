@@ -11,7 +11,7 @@ export default function useSelectStore() {
   const { data: { token } = {} } = useToken();
 
   return useMutation({
-    mutationKey: ['login'],
+    mutationKey: ['select-store'],
     mutationFn: async ({ storeId }: SelectStoreRequestType) => {
       try {
         const response = await axios.post<SelectStoreResponseType>(
@@ -26,6 +26,7 @@ export default function useSelectStore() {
 
         return response.data;
       } catch (e) {
+        console.log(e.message);
         throw new Error('Váratlan hiba lépett fel a raktár kiválasztása során.');
       }
     },

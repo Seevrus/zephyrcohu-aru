@@ -14,7 +14,7 @@ function useCheckTokenQuery({ enabled = true } = {}): UseQueryResult<CheckToken>
   const { isSuccess: isTokenSuccess, data: { token } = {} } = useToken();
 
   return useQuery({
-    queryKey: ['check-token', token],
+    queryKey: ['check-token'],
     queryFn: async () => {
       try {
         const response = await axios.get<LoginResponse>(`${env.api_url}/users/check-token`, {
