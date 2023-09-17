@@ -1,9 +1,9 @@
-import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Animated, ListRenderItemInfo, Pressable, StyleSheet, View } from 'react-native';
+import { useEffect } from 'react';
+import { isNil } from 'ramda';
 
 import Loading from '../../../components/Loading';
-import BorealBarCodeScanner from '../../../components/bar-code-scanner/BorealBarCodeScanner';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
@@ -13,29 +13,28 @@ import useSelectItemsFromStore, { ListItem } from './useSelectItemsFromStore';
 
 const keyExtractor = (item: ListItem) => String(item.expirationId);
 
-export default function SelectItemsFromStore({ navigation }: SelectItemsFromStoreProps) {
+export default function SelectItemsFromStore({ navigation, route }: SelectItemsFromStoreProps) {
+  const scannedBarCode = route.params?.scannedBarCode;
+
   const {
     isLoading,
     items = [],
     setCurrentQuantity,
     searchTerm,
     setSearchTerm,
+    barCode,
     setBarCode,
   } = useSelectItemsFromStore();
 
-  const [showScanner, setShowScanner] = useState<boolean>(false);
+  useEffect(() => {
+    if (!isNil(scannedBarCode) && barCode !== scannedBarCode) {
+      setBarCode(scannedBarCode);
+      navigation.setParams({ scannedBarCode: undefined });
+    }
+  }, [barCode, navigation, scannedBarCode, setBarCode]);
 
   if (isLoading) {
     return <Loading />;
-  }
-
-  const handleScannedBarCode = (barCode: string) => {
-    setBarCode(barCode);
-    setShowScanner(false);
-  };
-
-  if (showScanner) {
-    return <BorealBarCodeScanner onCodeScanned={handleScannedBarCode} />;
   }
 
   const renderItem = (info: ListRenderItemInfo<ListItem>) => (
@@ -53,14 +52,23 @@ export default function SelectItemsFromStore({ navigation }: SelectItemsFromStor
             value={searchTerm}
             config={{ onChangeText: setSearchTerm }}
           />
-          <Pressable
-            style={styles.barCodeContainer}
-            onPress={() => {
-              setShowScanner(true);
-            }}
-          >
-            <FontAwesome5 name="barcode" size={40} color="white" />
-          </Pressable>
+          {barCode ? (
+            <Pressable
+              onPress={() => {
+                setBarCode('');
+              }}
+            >
+              <MaterialCommunityIcons name="barcode-off" size={40} color="white" />
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => {
+                navigation.navigate('ScanBarCode');
+              }}
+            >
+              <MaterialCommunityIcons name="barcode" size={40} color="white" />
+            </Pressable>
+          )}
         </View>
       </View>
       <View style={styles.listContainer}>
@@ -91,9 +99,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: '7%',
-  },
-  barCodeContainer: {
-    marginLeft: 20,
   },
   listContainer: {
     flex: 1,

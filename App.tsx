@@ -21,6 +21,7 @@ import ChangePassword from './react_native/screens/start-page/ChangePassword';
 import Index from './react_native/screens/start-page/Index';
 import Settings from './react_native/screens/start-page/Settings';
 import SettingsButton from './react_native/screens/start-page/SettingsButton';
+import ScanBarCode from './react_native/screens/storage/select-items/ScanBarCode';
 import SelectItemsFromStore from './react_native/screens/storage/select-items/SelectItemsFromStore';
 import SelectStore from './react_native/screens/storage/select-store/SelectStore';
 
@@ -151,6 +152,11 @@ function Main() {
             name="SelectItemsFromStore"
             component={SelectItemsFromStore}
             options={{ headerTitle: 'Tételek' }}
+          />
+          <Stack.Screen
+            name="ScanBarCode"
+            component={ScanBarCode}
+            options={{ headerTitle: 'Vonalkód olvasása' }}
           />
           {/*  <Stack.Screen
             name="SelectPartner"

@@ -9,7 +9,10 @@ export type StackParams = {
   Settings: undefined;
 
   SelectStore: undefined;
-  SelectItemsFromStore: undefined;
+  SelectItemsFromStore: {
+    scannedBarCode?: string;
+  };
+  ScanBarCode: undefined;
 
   SelectPartner: undefined;
   SelectItemsToSell: undefined;
@@ -33,6 +36,7 @@ export type SettingsProps = NativeStackScreenProps<StackParams, 'Settings'>;
 
 export type SelectStoreProps = NativeStackScreenProps<StackParams, 'SelectStore'>;
 export type SelectItemsFromStoreProps = NativeStackScreenProps<StackParams, 'SelectItemsFromStore'>;
+export type ScanBarCodeProps = NativeStackScreenProps<StackParams, 'ScanBarCode'>;
 
 export type SelectItemsToSellProps = BottomTabScreenProps<StackParams, 'SelectItemsToSell'>;
 export type ReviewProps = NativeStackScreenProps<StackParams, 'Review'>;

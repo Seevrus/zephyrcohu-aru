@@ -2,6 +2,11 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import colors from '../../constants/colors';
+import fontSizes from '../../constants/fontSizes';
+import Loading from '../Loading';
+import Button from '../ui/Button';
+
 type BorealBarCodeScannerProps = {
   onCodeScanned: (code: string) => void;
 };
@@ -23,18 +28,29 @@ export default function BorealBarCodeScanner({ onCodeScanned }: BorealBarCodeSca
   };
 
   if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>;
+    return <Loading />;
   }
+
   if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+    return (
+      <View style={styles.container}>
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>
+            Az alkalmazás nem rendelkezik a kamera használatához szükséges engedélyekkel.
+          </Text>
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button variant="neutral" onPress={() => onCodeScanned('')}>
+            Vissza
+          </Button>
+        </View>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
-      <BarCodeScanner
-        onBarCodeScanned={handleBarCodeScanned}
-        style={StyleSheet.absoluteFillObject}
-      />
+      <BarCodeScanner onBarCodeScanned={handleBarCodeScanned} style={styles.scanner} />
     </View>
   );
 }
@@ -44,5 +60,22 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
+    backgroundColor: colors.background,
+  },
+  textContainer: {
+    marginHorizontal: '7%',
+  },
+  text: {
+    color: 'white',
+    fontFamily: 'Muli',
+    fontSize: fontSizes.body,
+    fontWeight: 'bold',
+  },
+  buttonContainer: {
+    marginVertical: 10,
+  },
+  scanner: {
+    ...StyleSheet.absoluteFillObject,
+    marginHorizontal: '7%',
   },
 });

@@ -40,7 +40,9 @@ export default function useToken(): UseQueryResult<Token> {
           isPasswordExpired: !token || isPasswordExpired,
           isTokenExpired: isPast(new Date(expiresAt)),
         };
-      } catch (_) {
+      } catch (error) {
+        console.log(error.message);
+        await SecureStore.deleteItemAsync('boreal-token');
         throw new Error('Váratlan hiba lépett fel a token olvasása során.');
       }
     },

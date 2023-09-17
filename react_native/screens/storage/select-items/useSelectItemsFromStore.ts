@@ -80,10 +80,15 @@ export default function useSelectItemsFromStore() {
 
   const { searchTerm, barCode } = searchState;
 
-  const setSearchTerm = (payload: string) =>
-    dispatchSearchState({ type: SearchStateActionKind.SetSearchTerm, payload });
-  const setBarCode = (payload: string) =>
-    dispatchSearchState({ type: SearchStateActionKind.SetBarCode, payload });
+  const setSearchTerm = useCallback(
+    (payload: string) =>
+      dispatchSearchState({ type: SearchStateActionKind.SetSearchTerm, payload }),
+    []
+  );
+  const setBarCode = useCallback(
+    (payload: string) => dispatchSearchState({ type: SearchStateActionKind.SetBarCode, payload }),
+    []
+  );
 
   useEffect(() => {
     setStorageExpirations((prevExpirations) => {
@@ -171,6 +176,7 @@ export default function useSelectItemsFromStore() {
     setCurrentQuantity,
     searchTerm,
     setSearchTerm,
+    barCode,
     setBarCode,
   };
 }
