@@ -13,6 +13,7 @@ export type StackParams = {
     scannedBarCode?: string;
   };
   ScanBarCode: undefined;
+  ReviewStorageChanges: undefined;
 
   SelectPartner: undefined;
   SelectItemsToSell: undefined;
@@ -37,6 +38,7 @@ export type SettingsProps = NativeStackScreenProps<StackParams, 'Settings'>;
 export type SelectStoreProps = NativeStackScreenProps<StackParams, 'SelectStore'>;
 export type SelectItemsFromStoreProps = NativeStackScreenProps<StackParams, 'SelectItemsFromStore'>;
 export type ScanBarCodeProps = NativeStackScreenProps<StackParams, 'ScanBarCode'>;
+export type ReviewStorageChagesProps = NativeStackScreenProps<StackParams, 'ReviewStorageChanges'>;
 
 export type SelectItemsToSellProps = BottomTabScreenProps<StackParams, 'SelectItemsToSell'>;
 export type ReviewProps = NativeStackScreenProps<StackParams, 'Review'>;

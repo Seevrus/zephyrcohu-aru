@@ -13,9 +13,7 @@ export default function useSaveSelectedItems() {
 
   const primaryStoreId = stores?.find((store) => store.type === 'P')?.id;
 
-  const {
-    data: { token },
-  } = useToken();
+  const { data: { token } = {} } = useToken();
 
   return useMutation({
     mutationKey: ['save-selected-items'],

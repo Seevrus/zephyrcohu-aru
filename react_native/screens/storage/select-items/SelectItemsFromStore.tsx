@@ -1,15 +1,15 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Animated, ListRenderItemInfo, Pressable, StyleSheet, View } from 'react-native';
-import { useEffect } from 'react';
 import { isNil } from 'ramda';
+import { useEffect } from 'react';
+import { Animated, ListRenderItemInfo, Pressable, StyleSheet, View } from 'react-native';
 
 import Loading from '../../../components/Loading';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
+import { ListItem, useStorageFlowContext } from '../../../providers/StorageFlowProvider';
 import { SelectItemsFromStoreProps } from '../../screen-types';
 import ExpirationAccordionDetails from './ExpirationAccordionDetails';
-import useSelectItemsFromStore, { ListItem } from './useSelectItemsFromStore';
 
 const keyExtractor = (item: ListItem) => String(item.expirationId);
 
@@ -19,12 +19,13 @@ export default function SelectItemsFromStore({ navigation, route }: SelectItemsF
   const {
     isLoading,
     items = [],
+    isAnyItemChanged,
     setCurrentQuantity,
     searchTerm,
     setSearchTerm,
     barCode,
     setBarCode,
-  } = useSelectItemsFromStore();
+  } = useStorageFlowContext();
 
   useEffect(() => {
     if (!isNil(scannedBarCode) && barCode !== scannedBarCode) {
@@ -40,6 +41,12 @@ export default function SelectItemsFromStore({ navigation, route }: SelectItemsF
   const renderItem = (info: ListRenderItemInfo<ListItem>) => (
     <ExpirationAccordionDetails item={info.item} setCurrentQuantity={setCurrentQuantity} />
   );
+
+  const sendButtonVariant = isAnyItemChanged ? 'ok' : 'disabled';
+
+  const handleReviewChanges = () => {
+    navigation.navigate('ReviewStorageChanges');
+  };
 
   return (
     <View style={styles.container}>
@@ -76,7 +83,7 @@ export default function SelectItemsFromStore({ navigation, route }: SelectItemsF
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.buttonContainer}>
-          <Button variant="disabled" onPress={() => undefined}>
+          <Button variant={sendButtonVariant} onPress={handleReviewChanges}>
             Tétellista véglegesítése
           </Button>
         </View>

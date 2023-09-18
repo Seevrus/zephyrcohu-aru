@@ -1,11 +1,23 @@
 import { format, parseISO } from 'date-fns';
 import { assocPath, isEmpty, isNil } from 'ramda';
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import {
+  PropsWithChildren,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react';
 
-import useItems from '../../../api/queries/useItems';
-import useStoreDetails from '../../../api/queries/useStoreDetails';
-import useStores from '../../../api/queries/useStores';
-import { useStorageContext } from '../../../providers/StorageProvider';
+import useDeselectStore from '../api/mutations/useDeselectStore';
+import useSaveSelectedItems from '../api/mutations/useSaveSelectedItems';
+import useItems from '../api/queries/useItems';
+import useStoreDetails from '../api/queries/useStoreDetails';
+import useStores from '../api/queries/useStores';
+import { useStorageContext } from './StorageProvider';
 
 export type ListItem = {
   itemId: number;
@@ -18,6 +30,19 @@ export type ListItem = {
   originalQuantity: number | undefined;
   currentQuantity: number | undefined;
 };
+
+type StorageFlowContextType = {
+  isLoading: boolean;
+  items: ListItem[];
+  isAnyItemChanged: boolean;
+  setCurrentQuantity: (item: ListItem, newCurrentQuantity: number | null) => void;
+  searchTerm: string;
+  setSearchTerm: (payload: string) => void;
+  barCode: string;
+  setBarCode: (payload: string) => void;
+};
+
+const StorageFlowContext = createContext<StorageFlowContextType>({} as StorageFlowContextType);
 
 type SearchState = {
   searchTerm: string;
@@ -54,7 +79,7 @@ function searchStateReducer(_: SearchState, action: SearchStateAction): SearchSt
   }
 }
 
-export default function useSelectItemsFromStore() {
+export default function StorageFlowProvider({ children }: PropsWithChildren) {
   const { data: itemsResponse } = useItems();
   const { storage, isLoading: isStorageLoading } = useStorageContext();
   const { data: stores, isLoading: isStoresLoading } = useStores();
@@ -73,6 +98,11 @@ export default function useSelectItemsFromStore() {
     Record<number, Record<number, number>>
   >({});
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const { mutateAsync: deselectStore } = useDeselectStore();
+  const { mutateAsync: saveSelectedItems } = useSaveSelectedItems();
+
   const [searchState, dispatchSearchState] = useReducer(searchStateReducer, {
     searchTerm: '',
     barCode: '',
@@ -89,6 +119,10 @@ export default function useSelectItemsFromStore() {
     (payload: string) => dispatchSearchState({ type: SearchStateActionKind.SetBarCode, payload }),
     []
   );
+
+  useEffect(() => {
+    setIsLoading(isStorageLoading || isPrimaryStoreLoading || isStoresLoading);
+  }, [isPrimaryStoreLoading, isStorageLoading, isStoresLoading]);
 
   useEffect(() => {
     setStorageExpirations((prevExpirations) => {
@@ -170,13 +204,54 @@ export default function useSelectItemsFromStore() {
     [barCode, itemsResponse, primaryStoreExpirations, searchTerm, storageExpirations]
   );
 
-  return {
-    isLoading: isStorageLoading || isPrimaryStoreLoading || isStoresLoading,
-    items,
-    setCurrentQuantity,
-    searchTerm,
-    setSearchTerm,
-    barCode,
-    setBarCode,
+  const isAnyItemChanged = useMemo(
+    () => items?.some((item) => item.currentQuantity !== item.originalQuantity),
+    [items]
+  );
+
+  const handleSendChanges = async () => {
+    setIsLoading(true);
+    await saveSelectedItems(storageExpirations);
+    await deselectStore(); // nu of later?
+    // TODO navigate
   };
+
+  const selectItemsContextValue = useMemo(
+    () => ({
+      isLoading,
+      items,
+      isAnyItemChanged,
+      setCurrentQuantity,
+      searchTerm,
+      setSearchTerm,
+      barCode,
+      setBarCode,
+    }),
+    [
+      barCode,
+      isAnyItemChanged,
+      isLoading,
+      items,
+      searchTerm,
+      setBarCode,
+      setCurrentQuantity,
+      setSearchTerm,
+    ]
+  );
+
+  return (
+    <StorageFlowContext.Provider value={selectItemsContextValue}>
+      {children}
+    </StorageFlowContext.Provider>
+  );
+}
+
+export function useStorageFlowContext() {
+  const selectItemsContext = useContext(StorageFlowContext);
+
+  if (selectItemsContext === undefined) {
+    throw new Error('useSelectItemsContext must be used within SelectItemsProvider.');
+  }
+
+  return selectItemsContext;
 }

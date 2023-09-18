@@ -7,7 +7,7 @@ import AnimatedListItem from '../../../components/ui/AnimatedListItem';
 import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
-import { ListItem } from './useSelectItemsFromStore';
+import { ListItem } from '../../../providers/StorageFlowProvider';
 
 type ExpirationAccordionDetailsProps = {
   item: ListItem;

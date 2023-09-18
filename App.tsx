@@ -4,16 +4,17 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import { onlineManager, QueryClient } from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 
-import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import useToken from './react_native/api/queries/useToken';
 import Loading from './react_native/components/Loading';
 import colors from './react_native/constants/colors';
 import fontSizes from './react_native/constants/fontSizes';
 import OrdersProvider from './react_native/providers/OrdersProvider';
 import ReceiptsProvider from './react_native/providers/ReceiptsProvider';
+import StorageFlowProvider from './react_native/providers/StorageFlowProvider';
 import StorageProvider from './react_native/providers/StorageProvider';
 import Login from './react_native/screens/login/Login';
 import { StackParams } from './react_native/screens/screen-types';
@@ -21,6 +22,7 @@ import ChangePassword from './react_native/screens/start-page/ChangePassword';
 import Index from './react_native/screens/start-page/Index';
 import Settings from './react_native/screens/start-page/Settings';
 import SettingsButton from './react_native/screens/start-page/SettingsButton';
+import ReviewStorageChanges from './react_native/screens/storage/review/ReviewStorageChanges';
 import ScanBarCode from './react_native/screens/storage/select-items/ScanBarCode';
 import SelectItemsFromStore from './react_native/screens/storage/select-items/SelectItemsFromStore';
 import SelectStore from './react_native/screens/storage/select-store/SelectStore';
@@ -158,6 +160,11 @@ function Main() {
             component={ScanBarCode}
             options={{ headerTitle: 'Vonalkód olvasása' }}
           />
+          <Stack.Screen
+            name="ReviewStorageChanges"
+            component={ReviewStorageChanges}
+            options={{ headerTitle: 'Áttekintés' }}
+          />
           {/*  <Stack.Screen
             name="SelectPartner"
             component={Partners}
@@ -227,11 +234,13 @@ export default function App() {
       persistOptions={{ persister: asyncStoragePersister }}
     >
       <StorageProvider>
-        <OrdersProvider>
-          <ReceiptsProvider>
-            <Main />
-          </ReceiptsProvider>
-        </OrdersProvider>
+        <StorageFlowProvider>
+          <OrdersProvider>
+            <ReceiptsProvider>
+              <Main />
+            </ReceiptsProvider>
+          </OrdersProvider>
+        </StorageFlowProvider>
       </StorageProvider>
     </PersistQueryClientProvider>
   );

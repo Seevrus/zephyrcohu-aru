@@ -40,7 +40,7 @@ export function useReceiptsContext() {
   const receiptsContext = useContext(ReceiptsContext);
 
   if (receiptsContext === undefined) {
-    throw new Error('useUserContext must be used within UserProvider.');
+    throw new Error('useUserContext must be used within ReceiptsProvider.');
   }
 
   return receiptsContext;

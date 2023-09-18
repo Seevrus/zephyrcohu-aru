@@ -23,11 +23,13 @@ function useCheckTokenQuery({ enabled = true } = {}): UseQueryResult<CheckToken>
 
         return mapCheckTokenResponse(response.data);
       } catch (err) {
+        console.log(err.message);
         throw new Error('A megadott token nem érvényes.');
       }
     },
     enabled: isInternetReachable === true && enabled && isTokenSuccess && !!token,
     staleTime: 300_000,
+    retry: false,
   });
 }
 
