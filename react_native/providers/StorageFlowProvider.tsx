@@ -12,7 +12,6 @@ import {
   useState,
 } from 'react';
 
-import useDeselectStore from '../api/mutations/useDeselectStore';
 import useSaveSelectedItems from '../api/mutations/useSaveSelectedItems';
 import useItems from '../api/queries/useItems';
 import useStoreDetails from '../api/queries/useStoreDetails';
@@ -40,6 +39,7 @@ type StorageFlowContextType = {
   setSearchTerm: (payload: string) => void;
   barCode: string;
   setBarCode: (payload: string) => void;
+  handleSendChanges: () => Promise<void>;
 };
 
 const StorageFlowContext = createContext<StorageFlowContextType>({} as StorageFlowContextType);
@@ -97,10 +97,8 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
   const [storageExpirations, setStorageExpirations] = useState<
     Record<number, Record<number, number>>
   >({});
+  const finalStorageExpirations = useRef<Record<number, Record<number, number>>>({});
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const { mutateAsync: deselectStore } = useDeselectStore();
   const { mutateAsync: saveSelectedItems } = useSaveSelectedItems();
 
   const [searchState, dispatchSearchState] = useReducer(searchStateReducer, {
@@ -119,10 +117,6 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
     (payload: string) => dispatchSearchState({ type: SearchStateActionKind.SetBarCode, payload }),
     []
   );
-
-  useEffect(() => {
-    setIsLoading(isStorageLoading || isPrimaryStoreLoading || isStoresLoading);
-  }, [isPrimaryStoreLoading, isStorageLoading, isStoresLoading]);
 
   useEffect(() => {
     setStorageExpirations((prevExpirations) => {
@@ -209,16 +203,14 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
     [items]
   );
 
-  const handleSendChanges = async () => {
-    setIsLoading(true);
+  const handleSendChanges = useCallback(async () => {
+    finalStorageExpirations.current = storageExpirations;
     await saveSelectedItems(storageExpirations);
-    await deselectStore(); // nu of later?
-    // TODO navigate
-  };
+  }, [saveSelectedItems, storageExpirations]);
 
   const selectItemsContextValue = useMemo(
     () => ({
-      isLoading,
+      isLoading: isStorageLoading || isPrimaryStoreLoading || isStoresLoading,
       items,
       isAnyItemChanged,
       setCurrentQuantity,
@@ -226,11 +218,15 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
       setSearchTerm,
       barCode,
       setBarCode,
+      handleSendChanges,
     }),
     [
       barCode,
+      handleSendChanges,
       isAnyItemChanged,
-      isLoading,
+      isPrimaryStoreLoading,
+      isStorageLoading,
+      isStoresLoading,
       items,
       searchTerm,
       setBarCode,

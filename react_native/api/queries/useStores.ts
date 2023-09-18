@@ -18,7 +18,8 @@ export default function useStores({ enabled = true } = {}): UseQueryResult<Store
         });
 
         return response.data.data;
-      } catch (_) {
+      } catch (err) {
+        console.log(err.message);
         throw new Error('Váratlan hiba lépett fel a raktárak adatainak lekérése során.');
       }
     },

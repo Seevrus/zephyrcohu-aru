@@ -1,6 +1,8 @@
-import { useMemo } from 'react';
-import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { Alert, FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
+import Loading from '../../../components/Loading';
+import ErrorCard from '../../../components/info-cards/ErrorCard';
 import Button from '../../../components/ui/Button';
 import colors from '../../../constants/colors';
 import { ListItem, useStorageFlowContext } from '../../../providers/StorageFlowProvider';
@@ -10,24 +12,63 @@ import ReviewExpirationItem from './ReviewExpirationItem';
 const keyExtractor = (item: ListItem) => String(item.expirationId);
 
 export default function ReviewStorageChanges({ navigation }: ReviewStorageChagesProps) {
-  const { items } = useStorageFlowContext();
+  const { items, handleSendChanges } = useStorageFlowContext();
   const changedItems = useMemo(
     () => (items ?? []).filter((item) => item.currentQuantity !== item.originalQuantity),
     [items]
   );
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   const renderItem = (info: ListRenderItemInfo<ListItem>) => (
     <ReviewExpirationItem item={info.item} />
   );
 
+  const confirmStorageChanges = () => {
+    Alert.alert(
+      'Rakodás véglegesítése',
+      'A készülék szinkronizálja az adatokat a szerverrel és zárja a rakodási folyamatot.',
+      [
+        { text: 'Mégse' },
+        {
+          text: 'Folytatás',
+          onPress: async () => {
+            try {
+              setIsLoading(true);
+              setIsError(false);
+              // await handleSendChanges();
+              navigation.reset({
+                index: 1,
+                routes: [{ name: 'Index' }, { name: 'StorageChangesSummary' }],
+              });
+            } catch (err) {
+              setIsError(true);
+              setIsLoading(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
+      {!!isError && (
+        <View style={styles.error}>
+          <ErrorCard>A rakodás mentése sikertelen.</ErrorCard>
+        </View>
+      )}
       <View style={styles.listContainer}>
         <FlatList data={changedItems} keyExtractor={keyExtractor} renderItem={renderItem} />
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.buttonContainer}>
-          <Button variant="ok" onPress={() => undefined}>
+          <Button variant="ok" onPress={confirmStorageChanges}>
             Véglegesítés
           </Button>
         </View>
@@ -40,6 +81,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  error: {
+    marginTop: 30,
   },
   listContainer: {
     flex: 1,
