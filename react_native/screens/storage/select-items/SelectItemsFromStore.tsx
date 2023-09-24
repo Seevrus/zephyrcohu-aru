@@ -79,7 +79,11 @@ export default function SelectItemsFromStore({ navigation, route }: SelectItemsF
         </View>
       </View>
       <View style={styles.listContainer}>
-        <Animated.FlatList data={items} keyExtractor={keyExtractor} renderItem={renderItem} />
+        <Animated.FlatList
+          data={items.slice(0, 10)}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+        />
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.buttonContainer}>

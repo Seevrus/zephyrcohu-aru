@@ -1,18 +1,22 @@
+import { useNetInfo } from '@react-native-community/netinfo';
 import { useMemo, useState } from 'react';
 import { Alert, FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
 import Loading from '../../../components/Loading';
 import ErrorCard from '../../../components/info-cards/ErrorCard';
+import TextCard from '../../../components/info-cards/TextCard';
 import Button from '../../../components/ui/Button';
 import colors from '../../../constants/colors';
 import { ListItem, useStorageFlowContext } from '../../../providers/StorageFlowProvider';
-import { ReviewStorageChagesProps } from '../../screen-types';
+import { ReviewStorageChangesProps } from '../../screen-types';
 import ReviewExpirationItem from './ReviewExpirationItem';
 
 const keyExtractor = (item: ListItem) => String(item.expirationId);
 
-export default function ReviewStorageChanges({ navigation }: ReviewStorageChagesProps) {
+export default function ReviewStorageChanges({ navigation }: ReviewStorageChangesProps) {
+  const { isInternetReachable } = useNetInfo();
   const { items, handleSendChanges } = useStorageFlowContext();
+
   const changedItems = useMemo(
     () => (items ?? []).filter((item) => item.currentQuantity !== item.originalQuantity),
     [items]
@@ -41,12 +45,14 @@ export default function ReviewStorageChanges({ navigation }: ReviewStorageChages
             try {
               setIsLoading(true);
               setIsError(false);
-              // await handleSendChanges();
+
+              await handleSendChanges();
+
               navigation.reset({
                 index: 1,
-                routes: [{ name: 'Index' }, { name: 'StorageChangesSummary' }],
+                routes: [{ name: 'StorageChangesSummary' }],
               });
-            } catch (err) {
+            } catch {
               setIsError(true);
               setIsLoading(false);
             }
@@ -56,10 +62,17 @@ export default function ReviewStorageChanges({ navigation }: ReviewStorageChages
     );
   };
 
+  const confirmButtonVariant = isInternetReachable ? 'ok' : 'disabled';
+
   return (
     <View style={styles.container}>
+      {!isInternetReachable && (
+        <View style={styles.cardContainer}>
+          <TextCard>Az alkalmazás jelenleg internetkapcsolat nélkül működik.</TextCard>
+        </View>
+      )}
       {!!isError && (
-        <View style={styles.error}>
+        <View style={styles.cardContainer}>
           <ErrorCard>A rakodás mentése sikertelen.</ErrorCard>
         </View>
       )}
@@ -68,7 +81,7 @@ export default function ReviewStorageChanges({ navigation }: ReviewStorageChages
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.buttonContainer}>
-          <Button variant="ok" onPress={confirmStorageChanges}>
+          <Button variant={confirmButtonVariant} onPress={confirmStorageChanges}>
             Véglegesítés
           </Button>
         </View>
@@ -82,7 +95,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  error: {
+  cardContainer: {
     marginTop: 30,
   },
   listContainer: {

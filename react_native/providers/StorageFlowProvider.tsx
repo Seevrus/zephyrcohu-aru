@@ -8,7 +8,6 @@ import {
   useEffect,
   useMemo,
   useReducer,
-  useRef,
   useState,
 } from 'react';
 
@@ -21,10 +20,12 @@ import { useStorageContext } from './StorageProvider';
 export type ListItem = {
   itemId: number;
   expirationId: number;
+  articleNumber: string;
   name: string;
   expiresAt: string;
   itemBarcode: string;
   expirationBarcode: string;
+  unitName: string;
   primaryStoreQuantity: number | undefined;
   originalQuantity: number | undefined;
   currentQuantity: number | undefined;
@@ -34,12 +35,14 @@ type StorageFlowContextType = {
   isLoading: boolean;
   items: ListItem[];
   isAnyItemChanged: boolean;
+  areModificationsSaved: boolean;
   setCurrentQuantity: (item: ListItem, newCurrentQuantity: number | null) => void;
   searchTerm: string;
   setSearchTerm: (payload: string) => void;
   barCode: string;
   setBarCode: (payload: string) => void;
   handleSendChanges: () => Promise<void>;
+  resetStorageFlowContext: () => void;
 };
 
 const StorageFlowContext = createContext<StorageFlowContextType>({} as StorageFlowContextType);
@@ -52,6 +55,7 @@ type SearchState = {
 enum SearchStateActionKind {
   SetSearchTerm = 'SetSearchTerm',
   SetBarCode = 'SetBarCode',
+  ClearSearch = 'ClearSearch',
 }
 
 type SearchStateAction = {
@@ -71,6 +75,7 @@ function searchStateReducer(_: SearchState, action: SearchStateAction): SearchSt
         searchTerm: '',
         barCode: action.payload,
       };
+    case SearchStateActionKind.ClearSearch:
     default:
       return {
         searchTerm: '',
@@ -81,7 +86,12 @@ function searchStateReducer(_: SearchState, action: SearchStateAction): SearchSt
 
 export default function StorageFlowProvider({ children }: PropsWithChildren) {
   const { data: itemsResponse } = useItems();
-  const { storage, isLoading: isStorageLoading } = useStorageContext();
+  const {
+    storage,
+    originalStorage,
+    isLoading: isStorageLoading,
+    saveStorageExpirations,
+  } = useStorageContext();
   const { data: stores, isLoading: isStoresLoading } = useStores();
 
   const primaryStoreId = stores?.find((store) => store.type === 'P')?.id;
@@ -93,11 +103,14 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
   const [primaryStoreExpirations, setPrimaryStoreExpirations] = useState<
     Record<number, Record<number, number>>
   >({});
-  const originalStorageExpirations = useRef<Record<number, Record<number, number>>>({});
+  const [originalStorageExpirations, setOriginalStorageExpirations] = useState<
+    Record<number, Record<number, number>>
+  >({});
   const [storageExpirations, setStorageExpirations] = useState<
     Record<number, Record<number, number>>
   >({});
-  const finalStorageExpirations = useRef<Record<number, Record<number, number>>>({});
+
+  const [areModificationsSaved, setAreModificationsSaved] = useState<boolean>(false);
 
   const { mutateAsync: saveSelectedItems } = useSaveSelectedItems();
 
@@ -119,6 +132,23 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
   );
 
   useEffect(() => {
+    setOriginalStorageExpirations((prevExpirations) => {
+      if (!isEmpty(prevExpirations) || isNil(originalStorage)) return prevExpirations;
+
+      const originalExpirations: Record<number, Record<number, number>> = {};
+
+      originalStorage.expirations.forEach((expiration) => {
+        if (!originalExpirations[expiration.itemId]) {
+          originalExpirations[expiration.itemId] = {};
+        }
+        originalExpirations[expiration.itemId][expiration.expirationId] = expiration.quantity;
+      });
+
+      return originalExpirations;
+    });
+  }, [originalStorage]);
+
+  useEffect(() => {
     setStorageExpirations((prevExpirations) => {
       if (!isEmpty(prevExpirations) || isNil(storage)) return prevExpirations;
 
@@ -131,7 +161,6 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
         expirations[expiration.itemId][expiration.expirationId] = expiration.quantity;
       });
 
-      originalStorageExpirations.current = expirations;
       return expirations;
     });
   }, [storage]);
@@ -179,12 +208,14 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
           item.expirations.map((expiration) => ({
             itemId: item.id,
             expirationId: expiration.id,
+            articleNumber: item.articleNumber,
             name: item.name,
             expiresAt: format(parseISO(expiration.expiresAt), 'yyyy-MM'),
             itemBarcode: item.barcode ?? '',
             expirationBarcode: expiration.barcode ?? '',
+            unitName: item.unitName,
             primaryStoreQuantity: primaryStoreExpirations[item.id]?.[expiration.id],
-            originalQuantity: originalStorageExpirations.current[item.id]?.[expiration.id],
+            originalQuantity: originalStorageExpirations[item.id]?.[expiration.id],
             currentQuantity: storageExpirations[item.id]?.[expiration.id],
           }))
         )
@@ -193,9 +224,15 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
             `${item.name.toLowerCase()}${item.expiresAt}`.includes(searchTerm.toLowerCase()) &&
             `${item.itemBarcode}${item.expirationBarcode}`.includes(barCode)
         )
-        .sort((itemA, itemB) => itemA.name.localeCompare(itemB.name))
-        .slice(0, 10),
-    [barCode, itemsResponse, primaryStoreExpirations, searchTerm, storageExpirations]
+        .sort((itemA, itemB) => itemA.name.localeCompare(itemB.name)),
+    [
+      barCode,
+      itemsResponse,
+      originalStorageExpirations,
+      primaryStoreExpirations,
+      searchTerm,
+      storageExpirations,
+    ]
   );
 
   const isAnyItemChanged = useMemo(
@@ -204,23 +241,36 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
   );
 
   const handleSendChanges = useCallback(async () => {
-    finalStorageExpirations.current = storageExpirations;
+    saveStorageExpirations(storageExpirations);
+    dispatchSearchState({ type: SearchStateActionKind.ClearSearch, payload: '' });
     await saveSelectedItems(storageExpirations);
-  }, [saveSelectedItems, storageExpirations]);
+    setAreModificationsSaved(true);
+  }, [saveSelectedItems, saveStorageExpirations, storageExpirations]);
+
+  const resetStorageFlowContext = useCallback(() => {
+    setPrimaryStoreExpirations({});
+    setOriginalStorageExpirations({});
+    setStorageExpirations({});
+    dispatchSearchState({ type: SearchStateActionKind.ClearSearch, payload: '' });
+    setAreModificationsSaved(false);
+  }, []);
 
   const selectItemsContextValue = useMemo(
     () => ({
       isLoading: isStorageLoading || isPrimaryStoreLoading || isStoresLoading,
       items,
       isAnyItemChanged,
+      areModificationsSaved,
       setCurrentQuantity,
       searchTerm,
       setSearchTerm,
       barCode,
       setBarCode,
       handleSendChanges,
+      resetStorageFlowContext,
     }),
     [
+      areModificationsSaved,
       barCode,
       handleSendChanges,
       isAnyItemChanged,
@@ -228,6 +278,7 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
       isStorageLoading,
       isStoresLoading,
       items,
+      resetStorageFlowContext,
       searchTerm,
       setBarCode,
       setCurrentQuantity,

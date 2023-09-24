@@ -7,6 +7,7 @@ import { Alert } from 'react-native';
 import useCheckToken from '../api/queries/useCheckToken';
 import { TileT } from '../components/Tile';
 import { useReceiptsContext } from '../providers/ReceiptsProvider';
+import { useStorageFlowContext } from '../providers/StorageFlowProvider';
 import { StackParams } from '../screens/screen-types';
 import useTileStates, {
   EndErrandTileState,
@@ -20,6 +21,7 @@ export default function useTiles(): TileT[] {
   const { data: user } = useCheckToken();
   const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
   const { numberOfReceipts } = useReceiptsContext();
+  const { areModificationsSaved } = useStorageFlowContext();
 
   const {
     storageTileState,
@@ -45,8 +47,10 @@ export default function useTiles(): TileT[] {
           Alert.alert('Funkció nem elérhető', storageTileMessage, [{ text: 'Értem' }]);
         } else if (isNil(user?.storeId)) {
           navigation.navigate('SelectStore');
-        } else {
+        } else if (!areModificationsSaved) {
           navigation.navigate('SelectItemsFromStore');
+        } else {
+          navigation.navigate('StorageChangesSummary');
         }
       },
     },

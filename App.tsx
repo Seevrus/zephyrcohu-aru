@@ -26,6 +26,7 @@ import ReviewStorageChanges from './react_native/screens/storage/review/ReviewSt
 import ScanBarCode from './react_native/screens/storage/select-items/ScanBarCode';
 import SelectItemsFromStore from './react_native/screens/storage/select-items/SelectItemsFromStore';
 import SelectStore from './react_native/screens/storage/select-store/SelectStore';
+import StorageChangesSummary from './react_native/screens/storage/summary/StorageChangesSummary';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -164,6 +165,11 @@ function Main() {
             name="ReviewStorageChanges"
             component={ReviewStorageChanges}
             options={{ headerTitle: 'Áttekintés' }}
+          />
+          <Stack.Screen
+            name="StorageChangesSummary"
+            component={StorageChangesSummary}
+            options={{ headerLeft: null, headerTitle: 'Összegzés' }}
           />
           {/*  <Stack.Screen
             name="SelectPartner"

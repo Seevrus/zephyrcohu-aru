@@ -39,7 +39,7 @@ export type SettingsProps = NativeStackScreenProps<StackParams, 'Settings'>;
 export type SelectStoreProps = NativeStackScreenProps<StackParams, 'SelectStore'>;
 export type SelectItemsFromStoreProps = NativeStackScreenProps<StackParams, 'SelectItemsFromStore'>;
 export type ScanBarCodeProps = NativeStackScreenProps<StackParams, 'ScanBarCode'>;
-export type ReviewStorageChagesProps = NativeStackScreenProps<StackParams, 'ReviewStorageChanges'>;
+export type ReviewStorageChangesProps = NativeStackScreenProps<StackParams, 'ReviewStorageChanges'>;
 export type StorageChangesSummaryProps = NativeStackScreenProps<
   StackParams,
   'StorageChangesSummary'

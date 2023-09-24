@@ -26,6 +26,7 @@ export default function useDeselectStore() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['check-token']);
+      queryClient.invalidateQueries(['items']);
       queryClient.invalidateQueries(['stores']);
       queryClient.invalidateQueries(['store-details']);
     },
