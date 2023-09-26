@@ -75,6 +75,9 @@ class RoundController extends Controller
             $store->user_id = $sender->id;
             $store->save();
 
+            $sender->state = "R";
+            $sender->save();
+
             $round = Round::create([
                 'company_id' => $company->id,
                 'user_id' => $sender->id,
@@ -87,7 +90,7 @@ class RoundController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Started round '.$round->id,
+                'action' => 'Started round ' . $round->id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -124,6 +127,9 @@ class RoundController extends Controller
             $store->user_id = null;
             $store->save();
 
+            $sender->state = "I";
+            $sender->save();
+
             $round->update([
                 'last_serial_number' => $request->data['lastSerialNumber'],
                 'year_code' => $request->data['yearCode'],
@@ -134,7 +140,7 @@ class RoundController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Finished round '.$round->id,
+                'action' => 'Finished round ' . $round->id,
                 'occured_at' => Carbon::now(),
             ]);
 

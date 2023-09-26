@@ -121,7 +121,7 @@ Route::controller(StorageController::class)->prefix('/storage')->group(function 
         ->middleware(['auth:sanctum', 'ability:I,A']);
 
     Route::post('/load', 'load')
-        ->middleware(['auth:sanctum', 'ability:I']);
+        ->middleware(['auth:sanctum', 'ability:I,A']);
 
     Route::post('/unlock_from_user', 'unlock_from_user')
         ->middleware(['auth:sanctum', 'ability:I,A']);

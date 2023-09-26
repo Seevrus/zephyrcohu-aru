@@ -26,7 +26,7 @@ export default function useSaveSelectedItems() {
         const request = mapSaveSelectedItemsRequest(primaryStoreId, storageExpirations);
 
         const response = await axios.post<StoreDetailsResponseType>(
-          `${env.api_url}/users/password`,
+          `${env.api_url}/storage/load`,
           request,
           {
             headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },

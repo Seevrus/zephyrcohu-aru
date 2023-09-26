@@ -1,12 +1,10 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { isNil } from 'ramda';
 import { useLayoutEffect, useState } from 'react';
 
 import useCheckToken from '../api/queries/useCheckToken';
 import useToken from '../api/queries/useToken';
 import { useOrdersContext } from '../providers/OrdersProvider';
 import { useReceiptsContext } from '../providers/ReceiptsProvider';
-import { useStorageContext } from '../providers/StorageProvider';
 
 export enum StorageTileState {
   Ok = 'ok',
@@ -40,13 +38,14 @@ export default function useTileStates() {
   const { isInternetReachable } = useNetInfo();
   const { numberOfOrders } = useOrdersContext();
   const { numberOfReceipts } = useReceiptsContext();
-  const { storage } = useStorageContext();
   const {
     isLoading: isTokenLoading,
     data: { isPasswordExpired, isTokenExpired },
   } = useToken();
 
-  const isRoundStarted = storage?.state === 'R';
+  const isUserIdle = user?.state === 'I';
+  const isStorageStarted = user?.state === 'L';
+  const isRoundStarted = user?.state === 'R';
 
   const [storageTileState, setStorageTileState] = useState<StorageTileState>(
     StorageTileState.Disabled
@@ -96,48 +95,42 @@ export default function useTileStates() {
 
   useLayoutEffect(() => {
     if (!isTokenLoading && !isUserLoading) {
-      if (
-        !isTokenExpired &&
-        !isPasswordExpired &&
-        isInternetReachable &&
-        (isNil(user?.storeId) || storage?.state === 'I')
-      ) {
+      if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isUserIdle) {
         setStorageTileState(StorageTileState.Ok);
         setStorageTileMessage('');
-      } else if (
-        !isTokenExpired &&
-        !isPasswordExpired &&
-        isInternetReachable &&
-        storage?.state === 'L'
-      ) {
+      } else if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isStorageStarted) {
         setStorageTileState(StorageTileState.Neutral);
         setStorageTileMessage('');
       } else {
         setStorageTileState(StorageTileState.Disabled);
         if (!isTokenExpired && !isPasswordExpired && isInternetReachable) {
           setStorageTileMessage('Rakodás csak a kör zárása után kezdhető meg.');
+        } else if (isRoundStarted) {
+          setStorageTileMessage('Folyamatban lévő kör közben a rakodás nem elérhető.');
         }
       }
     }
   }, [
     isInternetReachable,
     isPasswordExpired,
+    isRoundStarted,
+    isStorageStarted,
     isTokenExpired,
     isTokenLoading,
+    isUserIdle,
     isUserLoading,
-    storage?.state,
-    user?.storeId,
   ]);
 
   useLayoutEffect(() => {
     if (!isTokenLoading && !isUserLoading) {
-      if (!isTokenExpired && !isPasswordExpired && isInternetReachable && !isRoundStarted) {
+      if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isUserIdle) {
         setStartErrandTileState(StartErrandTileState.Neutral);
         setEndErrandTileMessage('');
       } else if (
         !isTokenExpired &&
         !isPasswordExpired &&
         isInternetReachable &&
+        isRoundStarted &&
         numberOfOrders === 0 &&
         numberOfReceipts === 0
       ) {
@@ -145,14 +138,19 @@ export default function useTileStates() {
         setStartErrandTileMessage('Biztosan szeretne új kört indítani?');
       } else {
         setStartErrandTileState(StartErrandTileState.Disabled);
+        if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isStorageStarted) {
+          setStartErrandTileMessage('Rakodás közben kör nem indítható.');
+        }
       }
     }
   }, [
     isInternetReachable,
     isPasswordExpired,
     isRoundStarted,
+    isStorageStarted,
     isTokenExpired,
     isTokenLoading,
+    isUserIdle,
     isUserLoading,
     numberOfOrders,
     numberOfReceipts,
