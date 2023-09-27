@@ -36,20 +36,22 @@ export default function StorageChangesSummary({ navigation }: StorageChangesSumm
     navigation.replace('Index');
   };
 
-  const isPrintEnabled = !!user && !!originalStorage && !items;
+  const isPrintEnabled = !!user && !!originalStorage && !!items;
   const printButtonVariant = isPrintEnabled ? 'ok' : 'disabled';
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Rakodás mentése sikeres!</Text>
-      <Text>Az alábbi gombra kattintva jegyzék nyomtatható a rakodás adatairól.</Text>
+      <Text style={styles.text}>
+        Az alábbi gombra kattintva jegyzék nyomtatható a rakodás adatairól.
+      </Text>
       <View style={styles.buttonContainer}>
         <Button variant={printButtonVariant} onPress={printButtonHandler}>
           Rakjegyzék nyomtatása
         </Button>
       </View>
 
-      <Text>
+      <Text style={styles.text}>
         Az alábbi gombra kattintva befejeződik a rakodási folyamat. A későbbiekben nyomtatásra már
         nem lesz lehetőség!
       </Text>
@@ -79,8 +81,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Muli',
     fontSize: fontSizes.subtitle,
   },
+  text: {
+    color: 'white',
+    fontFamily: 'Muli',
+    fontSize: fontSizes.body,
+  },
   buttonContainer: {
-    marginTop: 50,
+    marginTop: 20,
+    marginBottom: 40,
     justifyContent: 'space-between',
     alignItems: 'center',
   },

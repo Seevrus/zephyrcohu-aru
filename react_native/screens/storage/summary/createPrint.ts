@@ -17,197 +17,193 @@ function mapToNr(index: number) {
 
 const docType = '<!DOCTYPE html>';
 const head = `
-<head>
-<meta charset="UTF-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Rakjegyzék</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rakjegyzék</title>
 
-<style>
-  @page {
-    margin: 10px;
-  }
+    <style>
+      @page {
+        margin: 10px;
+      }
 
-  * {
-    box-sizing: border-box;
-  }
+      * {
+        box-sizing: border-box;
+      }
 
-  html,
-  body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100vh;
-  }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100vh;
+      }
 
-  body {
-    font-family: 'Lucida Console';
-    font-size: 7pt;
+      body {
+        font-family: 'Lucida Console';
+        font-size: 7pt;
+      }
 
-    header {
-      margin-bottom: 10px;
+      body header {
+        margin-bottom: 10px;
+      }
 
-      .title-row {
+      body header .title-row {
         display: flex;
         width: fit-content;
         border-bottom: 1px dashed black;
         padding-bottom: 5px;
         margin-bottom: 5px;
-
-        .title {
-          text-transform: uppercase;
-          padding-right: 5px;
-          border-right: 1px solid black;
-        }
-
-        .date {
-          padding-left: 5px;
-        }
       }
 
-      .contestants {
+      body header .title-row .title {
+        text-transform: uppercase;
+        padding-right: 5px;
+        border-right: 1px solid black;
+      }
+
+      body header .title-row .date {
+        padding-left: 5px;
+      }
+
+      body header .contestants {
         display: grid;
         width: fit-content;
         grid-template-columns: repeat(3, auto);
-
-        div {
-          padding-right: 10px;
-        }
       }
 
-      .date-column {
+      body header .contestants div {
+        padding-right: 10px;
+      }
+
+      body header .date-column {
         justify-self: end;
       }
 
-      .first-row {
+      body header .first-row {
         margin-bottom: 5px;
       }
 
-      .label {
+      body header .label {
         text-decoration: underline;
       }
-    }
 
-    main {
-      section.items {
-        .item {
-          display: grid;
-          grid-template-columns: repeat(70, minmax(0, 1fr));
-          border-bottom: 1px dashed black;
-          padding-bottom: 5px;
-          margin-bottom: 5px;
-
-          .nr {
-            grid-column: 1 / span 4;
-          }
-
-          .article-number {
-            grid-column: 6 / span 8;
-          }
-
-          .expires-at {
-            grid-column: 15 / span 27;
-          }
-
-          .quantities {
-            grid-column: 42 / span 29;
-          }
-
-          .item-name {
-            grid-column: 1 / span 40;
-            word-break: break-all;
-          }
-
-          .unit {
-            grid-column: 42 / span 6;
-          }
-
-          .starting-quantity {
-            grid-column: 49 / span 5;
-            justify-self: flex-end;
-          }
-
-          .quantity-change {
-            grid-column: 55 / span 6;
-            justify-self: flex-end;
-          }
-
-          .final-quantity {
-            grid-column: 62 / span 5;
-            justify-self: flex-end;
-          }
-
-          .ok {
-            grid-column: 68 / span 3;
-            justify-self: flex-end;
-          }
-        }
-      }
-
-      section.items-summary {
-        border-bottom: 2px solid black;
-        padding-bottom: 5px;
-        margin-bottom: 5px;
-
-        .item {
-          display: grid;
-          grid-template-columns: repeat(70, minmax(0, 1fr));
-
-          .total-label {
-            grid-column: 1 / span 47;
-          }
-
-          .starting-total {
-            grid-column: 49 / span 5;
-            justify-self: flex-end;
-          }
-
-          .total-change {
-            grid-column: 55 / span 6;
-            justify-self: flex-end;
-          }
-
-          .ending-total {
-            grid-column: 62 / span 5;
-            justify-self: flex-end;
-          }
-        }
-      }
-    }
-
-    footer {
-      margin-top: 30px;
-
-      .signatures-container {
-        display: flex;
-        justify-content: flex-end;
-
-        .signatures {
-          width: 60%;
-          margin-right: 20px;
-          margin-bottom: 10px;
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          column-gap: 20px;
-
-          div {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            border-top: 1px solid black;
-          }
-        }
-      }
-
-      .end-delimiter {
+      body main section.items .item {
+        display: grid;
+        grid-template-columns: repeat(70, minmax(0, 1fr));
         border-bottom: 1px dashed black;
         padding-bottom: 5px;
         margin-bottom: 5px;
       }
-    }
-  }
-</style>
-</head>
+
+      body main section.items .item .nr {
+        grid-column: 1 / span 4;
+      }
+
+      body main section.items .item .article-number {
+        grid-column: 6 / span 8;
+      }
+
+      body main section.items .item .expires-at {
+        grid-column: 15 / span 27;
+      }
+
+      body main section.items .item .quantities {
+        grid-column: 42 / span 29;
+      }
+
+      body main section.items .item .item-name {
+        grid-column: 1 / span 40;
+        word-break: break-all;
+      }
+
+      body main section.items .item .unit {
+        grid-column: 42 / span 6;
+      }
+
+      body main section.items .item .starting-quantity {
+        grid-column: 49 / span 5;
+        justify-self: flex-end;
+      }
+
+      body main section.items .item .quantity-change {
+        grid-column: 55 / span 6;
+        justify-self: flex-end;
+      }
+
+      body main section.items .item .final-quantity {
+        grid-column: 62 / span 5;
+        justify-self: flex-end;
+      }
+
+      body main section.items .item .ok {
+        grid-column: 68 / span 3;
+        justify-self: flex-end;
+      }
+
+      body main section.items-summary {
+        border-bottom: 2px solid black;
+        padding-bottom: 5px;
+        margin-bottom: 5px;
+      }
+
+      body main section.items-summary .item {
+        display: grid;
+        grid-template-columns: repeat(70, minmax(0, 1fr));
+      }
+
+      body main section.items-summary .item .total-label {
+        grid-column: 1 / span 47;
+      }
+
+      body main section.items-summary .item .starting-total {
+        grid-column: 49 / span 5;
+        justify-self: flex-end;
+      }
+
+      body main section.items-summary .item .total-change {
+        grid-column: 55 / span 6;
+        justify-self: flex-end;
+      }
+
+      body main section.items-summary .item .ending-total {
+        grid-column: 62 / span 5;
+        justify-self: flex-end;
+      }
+
+      body footer {
+        margin-top: 30px;
+      }
+
+      body footer .signatures-container {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      body footer .signatures-container .signatures {
+        width: 60%;
+        margin-right: 20px;
+        margin-bottom: 10px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: 20px;
+      }
+
+      body footer .signatures-container .signatures div {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        border-top: 1px solid black;
+      }
+
+      body footer .end-delimiter {
+        border-bottom: 1px dashed black;
+        padding-bottom: 5px;
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
 `;
 
 export default function createPrint({
