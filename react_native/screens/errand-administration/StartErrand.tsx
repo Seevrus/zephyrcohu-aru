@@ -1,182 +1,77 @@
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useNetInfo } from '@react-native-community/netinfo';
+import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { isNil } from 'ramda';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import useToken from '../../api/queries/useToken';
-
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { fetchPartnerList, fetchPartners } from '../../store/partners-slice/partners-api-actions';
-import { fetchStore, fetchStoreList } from '../../store/stores-slice/stores-api-actions';
-
-import ErrorCard from '../../components/info-cards/ErrorCard';
+import usePartnerLists from '../../api/queries/usePartnerLists';
+import useStores from '../../api/queries/useStores';
 import Loading from '../../components/Loading';
+import ErrorCard from '../../components/info-cards/ErrorCard';
 import Button from '../../components/ui/Button';
 import Dropdown from '../../components/ui/Dropdown';
 import Input from '../../components/ui/Input';
 import colors from '../../constants/colors';
-import { fetchAgents } from '../../store/agents-slice/agents-api-actions';
-import { fetchItems } from '../../store/items-slice/items-api-actions';
-import { endRoundApi, initializeRound } from '../../store/round-slice/round-api-actions';
 import { StartErrandProps } from '../screen-types';
 
 export default function StartErrand({ navigation }: StartErrandProps) {
-  const dispatch = useAppDispatch();
   const { isInternetReachable } = useNetInfo();
-  const { deviceId, token, credentialsAvailable, tokenStorageError } = useToken();
+  const {
+    data: partnerLists,
+    isFetching: isPartnersListFetching,
+    isLoading: isPartnerListsLoading,
+  } = usePartnerLists();
+  const queryClient = useQueryClient();
+  const { data: stores, isFetching: isStoresFetching, isLoading: isStoresLoading } = useStores();
 
-  const agents = useAppSelector((state) => state.agents.data);
-  const currentAgentId = useAppSelector((state) => state.round.agentId);
-  const [agentId, setAgentId] = useState<number>(currentAgentId ?? -1);
+  const [storeId, setStoreId] = useState<number>(1);
+  const [partnerListId, setPartnerListId] = useState<number>(1);
+  const [date, setDate] = useState<Date>(new Date());
 
-  const storeList = useAppSelector((state) => state.stores.storeList);
-  const currentStoreId = useAppSelector((state) => state.round.storeId);
-  const [storeId, setStoreId] = useState<number>(currentStoreId ?? -1);
-
-  const partnerLists = useAppSelector((state) => state.partners.partnerLists);
-  const currentPartnerListId = useAppSelector((state) => state.round.partnerListId);
-  const [partnerListId, setPartnerListId] = useState<number>(currentPartnerListId ?? -1);
-
-  const currentDate = useAppSelector((state) => state.round.date);
-  const [date, setDate] = useState<Date>(new Date(currentDate ?? Date.now()));
-
-  const roundId = useAppSelector((state) => state.round.roundId);
-
-  const [loading, setLoading] = useState<boolean>(true);
-  const [fetching, setFetching] = useState<boolean>(false);
+  const [isSelectInProgress, setIsSelectInProgress] = useState<boolean>(false);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
-  const [roundDataError, setRoundDataError] = useState<string>('');
-  const [confirmRoundError, setConfirmRoundError] = useState<string>('');
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    if (isInternetReachable === false || tokenStorageError) {
+    if (isInternetReachable === false) {
       navigation.pop();
     }
-  }, [isInternetReachable, navigation, tokenStorageError]);
-
-  const fetchAgentsData = useCallback(async () => {
-    try {
-      await dispatch(fetchAgents({ deviceId, token }));
-    } catch (err) {
-      setRoundDataError(err.message);
-    }
-  }, [deviceId, dispatch, token]);
-
-  const fetchStoreData = useCallback(async () => {
-    try {
-      await dispatch(fetchStoreList({ deviceId, token }));
-    } catch (err) {
-      setRoundDataError(err.message);
-    }
-  }, [deviceId, dispatch, token]);
-
-  const fetchPartnerListData = useCallback(async () => {
-    try {
-      await dispatch(fetchPartnerList({ deviceId, token }));
-    } catch (err) {
-      setRoundDataError(err.message);
-    }
-  }, [deviceId, dispatch, token]);
-
-  const fetchErrandData = async () => {
-    setFetching(true);
-    await fetchAgentsData();
-    await fetchStoreData();
-    await fetchPartnerListData();
-    setFetching(false);
-  };
-
-  useEffect(() => {
-    if (credentialsAvailable && !roundDataError && isNil(agents)) {
-      fetchAgentsData();
-    }
-  }, [agents, credentialsAvailable, fetchAgentsData, roundDataError]);
-
-  useEffect(() => {
-    if (credentialsAvailable && !roundDataError && isNil(storeList)) {
-      fetchStoreData();
-    }
-  }, [credentialsAvailable, fetchStoreData, roundDataError, storeList]);
-
-  useEffect(() => {
-    if (credentialsAvailable && !roundDataError && isNil(partnerLists)) {
-      fetchPartnerListData();
-    }
-  }, [credentialsAvailable, fetchPartnerListData, partnerLists, roundDataError]);
-
-  useEffect(() => {
-    if (agents && storeList && partnerLists) {
-      setLoading(false);
-    }
-  }, [agents, partnerLists, storeList]);
+  }, [isInternetReachable, navigation]);
 
   const confirmRoundHandler = async () => {
-    setLoading(true);
+    setIsSelectInProgress(true);
     setLoadingMessage('Körindításhoz szükséges adatok letöltése folyamatban...');
 
-    const selectedAgent = agents.find((a) => a.id === agentId);
-    const selectedStore = storeList.find((s) => s.id === storeId);
-    const selectedPartnerList = partnerLists.find((pl) => pl.id === partnerListId);
-
     try {
-      if (roundId) {
-        await dispatch(endRoundApi({ deviceId, token, roundId }));
-      }
-
-      await dispatch(fetchItems({ deviceId, token }));
-      await dispatch(fetchPartners({ deviceId, token }));
-      const fetchedStore = await dispatch(
-        fetchStore({ deviceId, token, code: selectedStore.code })
-      ).unwrap();
-
-      await dispatch(
-        initializeRound({
-          deviceId,
-          token,
-          agentId,
-          agentCode: selectedAgent.code,
-          agentName: selectedAgent.name,
-          storeId: selectedStore.id,
-          storeCode: selectedStore.code,
-          storeName: selectedStore.name,
-          partnerListId,
-          partnerListName: selectedPartnerList.name,
-          date: format(date, 'yyyy-MM-dd'),
-          nextAvailableSerialNumber: fetchedStore.firstAvailableSerialNumber,
-        })
-      );
-
+      // TODO
       navigation.pop();
     } catch (err) {
-      setLoading(false);
+      setIsSelectInProgress(false);
       setLoadingMessage('');
-      setConfirmRoundError(err.message);
+      setError(err.message);
     }
   };
 
-  if (fetching || loading) {
+  const refreshHandler = () => {
+    queryClient.invalidateQueries(['partner-lists']);
+    queryClient.invalidateQueries(['stores']);
+  };
+
+  if (
+    isPartnersListFetching ||
+    isPartnerListsLoading ||
+    isStoresFetching ||
+    isStoresLoading ||
+    isSelectInProgress
+  ) {
     return <Loading message={loadingMessage} />;
   }
 
-  const mapItemToOption = (item) => ({
-    key: String(item.id),
-    value: item.name,
-  });
-
-  const displayNames = (agents ?? []).map(mapItemToOption);
-  const defaultName = displayNames.find((option) => +option.key === currentAgentId);
-
-  const selectAgentHandler = (key: string) => {
-    setAgentId(+key);
-  };
-
-  const displayStores = (storeList ?? []).map((store) => ({
+  const displayStores = (stores ?? []).map((store) => ({
     key: String(store.id),
     value: store.name,
   }));
-  const defaultStore = displayStores.find((option) => +option.key === currentStoreId);
 
   const selectStoreHandler = (key: string) => {
     setStoreId(+key);
@@ -186,7 +81,6 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     key: String(partnerList.id),
     value: partnerList.name,
   }));
-  const defaultPartners = displayPartners.find((option) => +option.key === currentPartnerListId);
 
   const selectPartnerListHandler = (key: string) => {
     setPartnerListId(+key);
@@ -206,44 +100,20 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     });
   };
 
-  const confirmButtonvariant =
-    agentId > -1 && storeId > -1 && partnerListId > -1 ? 'ok' : 'disabled';
+  const confirmButtonVariant = storeId > -1 && partnerListId > -1 ? 'ok' : 'disabled';
 
   return (
     <View style={styles.container}>
-      {!!roundDataError && (
+      {!!error && (
         <View style={styles.error}>
-          <ErrorCard>{roundDataError}</ErrorCard>
-        </View>
-      )}
-      {!!confirmRoundError && (
-        <View style={styles.error}>
-          <ErrorCard>{confirmRoundError}</ErrorCard>
+          <ErrorCard>{error}</ErrorCard>
         </View>
       )}
       <View style={styles.inputContainer}>
-        <Dropdown
-          label="Felhasználó"
-          data={displayNames}
-          defaultOption={defaultName}
-          onSelect={selectAgentHandler}
-        />
+        <Dropdown label="Raktár" data={displayStores} onSelect={selectStoreHandler} />
       </View>
       <View style={styles.inputContainer}>
-        <Dropdown
-          label="Raktár"
-          data={displayStores}
-          defaultOption={defaultStore}
-          onSelect={selectStoreHandler}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Dropdown
-          label="Partnerlista"
-          data={displayPartners}
-          defaultOption={defaultPartners}
-          onSelect={selectPartnerListHandler}
-        />
+        <Dropdown label="Partnerlista" data={displayPartners} onSelect={selectPartnerListHandler} />
       </View>
       <View style={styles.dateContainer}>
         <Pressable onPress={showDatePicker} style={styles.dateInnerContainer}>
@@ -251,10 +121,10 @@ export default function StartErrand({ navigation }: StartErrandProps) {
         </Pressable>
       </View>
       <View style={styles.buttonContainer}>
-        <Button variant={confirmButtonvariant} onPress={confirmRoundHandler}>
+        <Button variant={confirmButtonVariant} onPress={confirmRoundHandler}>
           Kör indítása
         </Button>
-        <Button variant="warning" onPress={fetchErrandData}>
+        <Button variant="warning" onPress={refreshHandler}>
           Adatok frissítése
         </Button>
       </View>
