@@ -26,7 +26,11 @@ class RoundController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $rounds = $sender->company->rounds;
+            if (in_array('I', $sender->roleList())) {
+                $rounds = $sender->company->rounds;
+            } else {
+                $rounds = $sender->company->rounds()->where(['user_id' => $sender->id])->get();
+            }
 
             return new RoundCollection($rounds);
         } catch (Exception $e) {

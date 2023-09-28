@@ -149,7 +149,7 @@ Route::controller(ReceiptController::class)->prefix('receipts')->group(function 
 
 Route::controller(RoundController::class)->prefix('rounds')->group(function () {
     Route::get('/', 'view_all')
-        ->middleware(['auth:sanctum', 'ability:I']);
+        ->middleware(['auth:sanctum', 'ability:I,A']);
     Route::post('/start', 'start_round')
         ->middleware(['auth:sanctum', 'ability:A']);
     Route::post('/finish', 'finish_round')
