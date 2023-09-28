@@ -35,7 +35,7 @@ export function useOrdersContext() {
   const ordersContext = useContext(OrdersContext);
 
   if (ordersContext === undefined) {
-    throw new Error('useUserContext must be used within OrdersProvider.');
+    throw new Error('useOrdersContext must be used within OrdersProvider.');
   }
 
   return ordersContext;

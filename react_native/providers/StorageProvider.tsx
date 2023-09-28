@@ -18,7 +18,7 @@ type StorageContextType = {
   isLoading: boolean;
   storage: StoreDetailsResponseData | null;
   originalStorage: StoreDetailsResponseData | null;
-  saveStorageExpirations: (storageExpirations: Record<number, Record<number, number>>) => void;
+  slowSaveStorageExpirations: (storageExpirations: Record<number, Record<number, number>>) => void;
   clearStorageFromContext(): void;
 };
 
@@ -27,6 +27,8 @@ const storageContextKey = 'boreal-storage-context';
 
 export default function StorageProvider({ children }: PropsWithChildren) {
   const { data: user } = useCheckToken();
+
+  const [isLocalStorageLoaded, setIsLocalStorageLoaded] = useState<boolean>(false);
   const [storage, setStorage] = useState<StoreDetailsResponseData | null>(null);
 
   const {
@@ -38,7 +40,16 @@ export default function StorageProvider({ children }: PropsWithChildren) {
   });
 
   /**
-   * Clear storage when storaging or round is finished - TODO
+   * Callback to set storage from the drive.
+   */
+  const persistStorage = useCallback(async () => {
+    if (storage) {
+      await AsyncStorage.setItem(storageContextKey, JSON.stringify(storage));
+    }
+  }, [storage]);
+
+  /**
+   * Callback to clear storage (drive and memory).
    */
   const clearStorageFromContext = useCallback(() => {
     AsyncStorage.removeItem(storageContextKey).then(() => {
@@ -47,9 +58,9 @@ export default function StorageProvider({ children }: PropsWithChildren) {
   }, []);
 
   /**
-   * Save storage from storage flow
+   * Save storage from storage flow. Slow because it will trigger a storage persist.
    */
-  const saveStorageExpirations = useCallback(
+  const slowSaveStorageExpirations = useCallback(
     (storageExpirations: Record<number, Record<number, number>>) => {
       setStorage(
         assoc(
@@ -75,7 +86,7 @@ export default function StorageProvider({ children }: PropsWithChildren) {
   );
 
   /**
-   * Initialize from local storage
+   * Initialize from local storage.
    */
   useEffect(() => {
     async function setStorageFromLocal() {
@@ -83,35 +94,33 @@ export default function StorageProvider({ children }: PropsWithChildren) {
       const localStorageValue = jsonValue ? JSON.parse(jsonValue) : null;
 
       setStorage(localStorageValue);
+      setIsLocalStorageLoaded(true);
     }
 
     setStorageFromLocal();
   }, []);
 
   /**
-   * Initialize from API response if it has not already been initialized
+   * Initialize from API response if it has not already been initialized.
    */
   useEffect(() => {
-    if (isNil(storage) && !isStoreDetailsStale && !!storeDetails) {
+    if (isLocalStorageLoaded && isNil(storage) && !isStoreDetailsStale && !!storeDetails) {
       setStorage(storeDetails);
     }
-  }, [isStoreDetailsStale, storage, storeDetails]);
+  }, [isLocalStorageLoaded, isStoreDetailsStale, storage, storeDetails]);
 
   /**
-   * Save state changes to local storage
+   * Save state changes to local storage.
    */
   useEffect(() => {
-    async function saveAndSetStorage() {
-      await AsyncStorage.setItem(storageContextKey, JSON.stringify(storage));
-    }
+    persistStorage();
 
-    if (storage) {
-      saveAndSetStorage();
-    }
-  }, [storage]);
+    const interval = setInterval(() => persistStorage(), 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [persistStorage]);
 
   /**
-   * Clear context if the user's store id does not match with the store's id
+   * Clear context if the user's store id does not match with the store's id.
    */
   useEffect(() => {
     if (user && storage && user.storeId !== storage.id) {
@@ -125,10 +134,16 @@ export default function StorageProvider({ children }: PropsWithChildren) {
       isLoading: isStoreDetailsLoading,
       storage,
       originalStorage: storeDetails,
-      saveStorageExpirations,
+      slowSaveStorageExpirations,
       clearStorageFromContext,
     }),
-    [clearStorageFromContext, isStoreDetailsLoading, saveStorageExpirations, storage, storeDetails]
+    [
+      clearStorageFromContext,
+      isStoreDetailsLoading,
+      slowSaveStorageExpirations,
+      storage,
+      storeDetails,
+    ]
   );
 
   return <StorageContext.Provider value={storageContextValue}>{children}</StorageContext.Provider>;

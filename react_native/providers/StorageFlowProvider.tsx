@@ -90,7 +90,7 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
     storage,
     originalStorage,
     isLoading: isStorageLoading,
-    saveStorageExpirations,
+    slowSaveStorageExpirations,
   } = useStorageContext();
   const { data: stores, isLoading: isStoresLoading } = useStores();
 
@@ -241,11 +241,11 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
   );
 
   const handleSendChanges = useCallback(async () => {
-    saveStorageExpirations(storageExpirations);
+    slowSaveStorageExpirations(storageExpirations);
     dispatchSearchState({ type: SearchStateActionKind.ClearSearch, payload: '' });
     await saveSelectedItems(storageExpirations);
     setAreModificationsSaved(true);
-  }, [saveSelectedItems, saveStorageExpirations, storageExpirations]);
+  }, [saveSelectedItems, slowSaveStorageExpirations, storageExpirations]);
 
   const resetStorageFlowContext = useCallback(() => {
     setPrimaryStoreExpirations({});
@@ -297,7 +297,7 @@ export function useStorageFlowContext() {
   const selectItemsContext = useContext(StorageFlowContext);
 
   if (selectItemsContext === undefined) {
-    throw new Error('useSelectItemsContext must be used within SelectItemsProvider.');
+    throw new Error('useStorageFlowContext must be used within StorageFlowProvider.');
   }
 
   return selectItemsContext;
