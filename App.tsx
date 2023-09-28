@@ -16,6 +16,7 @@ import OrdersProvider from './react_native/providers/OrdersProvider';
 import ReceiptsProvider from './react_native/providers/ReceiptsProvider';
 import StorageFlowProvider from './react_native/providers/StorageFlowProvider';
 import StorageProvider from './react_native/providers/StorageProvider';
+import StartErrand from './react_native/screens/errand-administration/StartErrand';
 import Login from './react_native/screens/login/Login';
 import { StackParams } from './react_native/screens/screen-types';
 import ChangePassword from './react_native/screens/start-page/ChangePassword';
@@ -171,6 +172,13 @@ function Main() {
             component={StorageChangesSummary}
             options={{ headerLeft: null, headerTitle: 'Összegzés' }}
           />
+          <Stack.Screen
+            name="StartErrand"
+            component={StartErrand}
+            options={{
+              headerTitle: 'Kör indítása',
+            }}
+          />
           {/*  <Stack.Screen
             name="SelectPartner"
             component={Partners}
@@ -211,13 +219,6 @@ function Main() {
             component={ReceiptDetails}
             options={{
               headerTitle: '',
-            }}
-          />
-          <Stack.Screen
-            name="StartErrand"
-            component={StartErrand}
-            options={{
-              headerTitle: 'Kör indítása',
             }}
           />
           <Stack.Screen

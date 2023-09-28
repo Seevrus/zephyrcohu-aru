@@ -23,7 +23,7 @@ export enum ReceiptsTileState {
 }
 
 export enum StartErrandTileState {
-  Neutral = 'neutral',
+  Ok = 'ok',
   Warning = 'warning',
   Disabled = 'disabled',
 }
@@ -124,7 +124,7 @@ export default function useTileStates() {
   useLayoutEffect(() => {
     if (!isTokenLoading && !isUserLoading) {
       if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isUserIdle) {
-        setStartErrandTileState(StartErrandTileState.Neutral);
+        setStartErrandTileState(StartErrandTileState.Ok);
         setEndErrandTileMessage('');
       } else if (
         !isTokenExpired &&

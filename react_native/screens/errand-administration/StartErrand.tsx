@@ -1,10 +1,11 @@
-import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { DateTimePickerAndroid, DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import useStartRound from '../../api/mutations/useStartRound';
 import usePartnerLists from '../../api/queries/usePartnerLists';
 import useStores from '../../api/queries/useStores';
 import Loading from '../../components/Loading';
@@ -23,13 +24,13 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     isLoading: isPartnerListsLoading,
   } = usePartnerLists();
   const queryClient = useQueryClient();
+  const { mutateAsync: startRound, isLoading: isStartRoundLoading } = useStartRound();
   const { data: stores, isFetching: isStoresFetching, isLoading: isStoresLoading } = useStores();
 
-  const [storeId, setStoreId] = useState<number>(1);
-  const [partnerListId, setPartnerListId] = useState<number>(1);
+  const [storeId, setStoreId] = useState<number>(-1);
+  const [partnerListId, setPartnerListId] = useState<number>(-1);
   const [date, setDate] = useState<Date>(new Date());
 
-  const [isSelectInProgress, setIsSelectInProgress] = useState<boolean>(false);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
   const [error, setError] = useState<string>('');
 
@@ -40,14 +41,15 @@ export default function StartErrand({ navigation }: StartErrandProps) {
   }, [isInternetReachable, navigation]);
 
   const confirmRoundHandler = async () => {
-    setIsSelectInProgress(true);
-    setLoadingMessage('Körindításhoz szükséges adatok letöltése folyamatban...');
+    setLoadingMessage('Körindítás folyamatban...');
 
     try {
-      // TODO
+      await startRound({
+        storeId,
+        partnerListId,
+      });
       navigation.pop();
     } catch (err) {
-      setIsSelectInProgress(false);
       setLoadingMessage('');
       setError(err.message);
     }
@@ -63,15 +65,17 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     isPartnerListsLoading ||
     isStoresFetching ||
     isStoresLoading ||
-    isSelectInProgress
+    isStartRoundLoading
   ) {
     return <Loading message={loadingMessage} />;
   }
 
-  const displayStores = (stores ?? []).map((store) => ({
-    key: String(store.id),
-    value: store.name,
-  }));
+  const displayStores = (stores ?? [])
+    .filter((store) => store.type !== 'P')
+    .map((store) => ({
+      key: String(store.id),
+      value: store.name,
+    }));
 
   const selectStoreHandler = (key: string) => {
     setStoreId(+key);
@@ -86,7 +90,7 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     setPartnerListId(+key);
   };
 
-  const selectDateHandler = (_, selectedDate: Date) => {
+  const selectDateHandler = (_: DateTimePickerEvent, selectedDate: Date) => {
     setDate(selectedDate);
   };
 

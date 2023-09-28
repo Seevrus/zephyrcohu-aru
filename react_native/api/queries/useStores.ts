@@ -23,6 +23,6 @@ export default function useStores({ enabled = true } = {}): UseQueryResult<Store
         throw new Error('Váratlan hiba lépett fel a raktárak adatainak lekérése során.');
       }
     },
-    enabled: enabled && isTokenSuccess && !(isTokenExpired || isPasswordExpired),
+    enabled: enabled && isTokenSuccess && !!token && !(isTokenExpired || isPasswordExpired),
   });
 }

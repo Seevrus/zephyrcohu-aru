@@ -15,8 +15,11 @@ export default function useLogout() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['check-token'] });
-      queryClient.invalidateQueries({ queryKey: ['token'] });
+      queryClient.invalidateQueries({ queryKey: ['items'] });
+      queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
+      queryClient.invalidateQueries({ queryKey: ['stores'] });
       queryClient.invalidateQueries({ queryKey: ['store-details'] });
+      queryClient.invalidateQueries({ queryKey: ['token'] });
     },
   });
 }

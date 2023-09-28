@@ -8,7 +8,7 @@ export type StoreType = {
   firstAvailableSerialNumber: number;
   lastAvailableSerialNumber: number;
   yearCode: number;
-  user: UserType;
+  user: UserType | null;
   createdAt: string; // UTC
   updatedAt: string; // UTC
 };
