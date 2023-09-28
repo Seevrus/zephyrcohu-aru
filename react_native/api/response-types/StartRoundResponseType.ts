@@ -1,14 +1,12 @@
-export type StartRoundResponseData = {
-  id: number;
-  userId: number;
-  storeId: number;
-  partnerListId: number;
+import { RoundType } from './common/RoundType';
+
+export type StartRoundResponseData = Omit<
+  RoundType,
+  'lastSerialNumber' | 'yearCode' | 'roundFinished'
+> & {
   lastSerialNumber: null;
   yearCode: null;
-  roundStarted: string; // UTC
   roundFinished: null;
-  createdAt: string; // UTC
-  updatedAt: string; // UTC
 };
 
 export type StartRoundResponseType = {
