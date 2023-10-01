@@ -72,7 +72,7 @@ class PriceListController extends Controller
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $priceLists = $sender->company->priceLists()->get();
+            $priceLists = $sender->company->priceLists()->with('items')->get();
 
             Log::insert([
                 'company_id' => $sender->company_id,

@@ -29,7 +29,7 @@ class RoundController extends Controller
             if (in_array('I', $sender->roleList())) {
                 $rounds = $sender->company->rounds;
             } else {
-                $rounds = $sender->company->rounds()->where(['user_id' => $sender->id])->get();
+                $rounds = $sender->company->rounds()->where(['user_id' => $sender->id])->latest()->take(10)->get();
             }
 
             return new RoundCollection($rounds);
@@ -79,7 +79,7 @@ class RoundController extends Controller
             $store->user_id = $sender->id;
             $store->save();
 
-            $sender->state = "R";
+            $sender->state = 'R';
             $sender->save();
 
             $round = Round::create([
@@ -94,7 +94,7 @@ class RoundController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Started round ' . $round->id,
+                'action' => 'Started round '.$round->id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -131,7 +131,7 @@ class RoundController extends Controller
             $store->user_id = null;
             $store->save();
 
-            $sender->state = "I";
+            $sender->state = 'I';
             $sender->save();
 
             $round->update([
@@ -144,7 +144,7 @@ class RoundController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Finished round ' . $round->id,
+                'action' => 'Finished round '.$round->id,
                 'occured_at' => Carbon::now(),
             ]);
 

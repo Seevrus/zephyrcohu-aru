@@ -1,3 +1,5 @@
+import { TimeStamps } from './TimeStamps';
+
 export type RoundType = {
   id: number;
   userId: number;
@@ -7,6 +9,4 @@ export type RoundType = {
   yearCode: number | null;
   roundStarted: string; // UTC
   roundFinished: number | null;
-  createdAt: string; // UTC
-  updatedAt: string; // UTC
-};
+} & TimeStamps;

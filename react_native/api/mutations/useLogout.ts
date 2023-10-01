@@ -14,11 +14,8 @@ export default function useLogout() {
       }
     },
     onSuccess: () => {
+      // only user related queries should be invalidated on logout
       queryClient.invalidateQueries({ queryKey: ['check-token'] });
-      queryClient.invalidateQueries({ queryKey: ['items'] });
-      queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
-      queryClient.invalidateQueries({ queryKey: ['stores'] });
-      queryClient.invalidateQueries({ queryKey: ['store-details'] });
       queryClient.invalidateQueries({ queryKey: ['token'] });
     },
   });

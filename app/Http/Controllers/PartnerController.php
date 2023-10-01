@@ -100,7 +100,7 @@ class PartnerController extends Controller
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $partners = $sender->company->partners()->with('locations')->get();
+            $partners = $sender->company->partners()->with('locations')->with('priceList')->get();
 
             Log::insert([
                 'company_id' => $sender->company_id,

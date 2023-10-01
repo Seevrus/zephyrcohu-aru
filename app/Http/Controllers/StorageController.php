@@ -35,7 +35,7 @@ class StorageController extends Controller
             }
 
             // load store - validation
-            if (!in_array('I', $sender->roleList())) {
+            if (! in_array('I', $sender->roleList())) {
                 throw new AuthorizationException();
             }
 
@@ -109,7 +109,7 @@ class StorageController extends Controller
                 ], 507);
             }
 
-            if ($store->type === 'P' && !in_array('I', $sender->roleList())) {
+            if ($store->type === 'P' && ! in_array('I', $sender->roleList())) {
                 return response([
                     'message' => 'Cannot lock primary store.',
                 ], 422);
@@ -159,7 +159,7 @@ class StorageController extends Controller
             // loading store - validation
             $store = $sender->store;
 
-            if (!$store) {
+            if (! $store) {
                 return response([
                     'message' => 'User has no store associated.',
                 ], 404);
@@ -213,7 +213,7 @@ class StorageController extends Controller
                     $store->expirations()->updateExistingPivot($existingExpiration->id, [
                         'quantity' => $newQuantity,
                     ]);
-                } elseif ($primaryExistingExpiration && !$existingExpiration) {
+                } elseif ($primaryExistingExpiration && ! $existingExpiration) {
                     $primaryCurrentQuantity = $primaryExistingExpiration->pivot->quantity;
                     $primaryNewQuantity = $primaryCurrentQuantity - $storageUpdate['quantityChange'];
 
@@ -222,7 +222,7 @@ class StorageController extends Controller
                     ]);
 
                     $store->expirations()->attach($expirationId, ['quantity' => $storageUpdate['quantityChange']]);
-                } elseif (!$primaryExistingExpiration && $existingExpiration) {
+                } elseif (! $primaryExistingExpiration && $existingExpiration) {
                     $currentQuantity = $existingExpiration->pivot->quantity;
                     $newQuantity = $currentQuantity + $storageUpdate['quantityChange'];
 

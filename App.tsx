@@ -14,6 +14,7 @@ import colors from './react_native/constants/colors';
 import fontSizes from './react_native/constants/fontSizes';
 import OrdersProvider from './react_native/providers/OrdersProvider';
 import ReceiptsProvider from './react_native/providers/ReceiptsProvider';
+import SellFlowProvider from './react_native/providers/SellFlowProvider';
 import StorageFlowProvider from './react_native/providers/StorageFlowProvider';
 import StorageProvider from './react_native/providers/StorageProvider';
 import StartErrand from './react_native/screens/errand-administration/StartErrand';
@@ -244,7 +245,9 @@ export default function App() {
         <StorageFlowProvider>
           <OrdersProvider>
             <ReceiptsProvider>
-              <Main />
+              <SellFlowProvider>
+                <Main />
+              </SellFlowProvider>
             </ReceiptsProvider>
           </OrdersProvider>
         </StorageFlowProvider>

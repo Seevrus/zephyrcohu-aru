@@ -1,3 +1,4 @@
+import { TimeStamps } from './TimeStamps';
 import { UserRoleType } from './UserRoleType';
 
 export type UserType = {
@@ -9,7 +10,5 @@ export type UserType = {
   phoneNumber: string;
   roles: UserRoleType[];
   storeId: number | null;
-  createdAt: string; // UTC
-  updatedAt: string; // UTC
   lastActive: string; // UTC
-};
+} & TimeStamps;

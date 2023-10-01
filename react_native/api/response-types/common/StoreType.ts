@@ -1,3 +1,4 @@
+import { TimeStamps } from './TimeStamps';
 import { UserType } from './UserType';
 
 export type StoreType = {
@@ -9,6 +10,4 @@ export type StoreType = {
   lastAvailableSerialNumber: number;
   yearCode: number;
   user: UserType | null;
-  createdAt: string; // UTC
-  updatedAt: string; // UTC
-};
+} & TimeStamps;

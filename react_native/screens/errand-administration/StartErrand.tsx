@@ -6,7 +6,12 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import useStartRound from '../../api/mutations/useStartRound';
+import useActiveRound from '../../api/queries/useActiveRound';
+import useItems from '../../api/queries/useItems';
+import useOtherItems from '../../api/queries/useOtherItems';
 import usePartnerLists from '../../api/queries/usePartnerLists';
+import usePartners from '../../api/queries/usePartners';
+import usePriceLists from '../../api/queries/usePriceLists';
 import useStores from '../../api/queries/useStores';
 import Loading from '../../components/Loading';
 import ErrorCard from '../../components/info-cards/ErrorCard';
@@ -17,14 +22,23 @@ import colors from '../../constants/colors';
 import { StartErrandProps } from '../screen-types';
 
 export default function StartErrand({ navigation }: StartErrandProps) {
+  const { isFetched: isActiveRoundFetched, isFetching: isActiveRoundFetching } = useActiveRound();
+  const { isFetched: isItemsFetched, isFetching: isItemsFetching } = useItems();
   const { isInternetReachable } = useNetInfo();
+  const { isFetched: isOtherItemsFetched, isFetching: isOtherItemsFetching } = useOtherItems();
+  const { isFetched: isPartnersFetched, isFetching: isPartnersFetching } = usePartners();
   const {
     data: partnerLists,
-    isFetching: isPartnersListFetching,
+    isFetching: isPartnersListsFetching,
     isLoading: isPartnerListsLoading,
   } = usePartnerLists();
+  const { isFetched: isPriceListsFetched, isFetching: isPriceListsFetching } = usePriceLists();
   const queryClient = useQueryClient();
-  const { mutateAsync: startRound, isLoading: isStartRoundLoading } = useStartRound();
+  const {
+    mutateAsync: startRound,
+    isLoading: isStartRoundLoading,
+    isSuccess: isStartRoundSuccess,
+  } = useStartRound();
   const { data: stores, isFetching: isStoresFetching, isLoading: isStoresLoading } = useStores();
 
   const [storeId, setStoreId] = useState<number>(-1);
@@ -40,6 +54,27 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     }
   }, [isInternetReachable, navigation]);
 
+  useEffect(() => {
+    if (
+      isStartRoundSuccess &&
+      isActiveRoundFetched &&
+      isItemsFetched &&
+      isOtherItemsFetched &&
+      isPartnersFetched &&
+      isPriceListsFetched
+    ) {
+      navigation.pop();
+    }
+  }, [
+    isActiveRoundFetched,
+    isItemsFetched,
+    isOtherItemsFetched,
+    isPartnersFetched,
+    isPriceListsFetched,
+    isStartRoundSuccess,
+    navigation,
+  ]);
+
   const confirmRoundHandler = async () => {
     setLoadingMessage('Körindítás folyamatban...');
 
@@ -48,7 +83,6 @@ export default function StartErrand({ navigation }: StartErrandProps) {
         storeId,
         partnerListId,
       });
-      navigation.pop();
     } catch (err) {
       setLoadingMessage('');
       setError(err.message);
@@ -61,11 +95,16 @@ export default function StartErrand({ navigation }: StartErrandProps) {
   };
 
   if (
-    isPartnersListFetching ||
+    isActiveRoundFetching ||
+    isItemsFetching ||
+    isOtherItemsFetching ||
+    isPartnersFetching ||
+    isPartnersListsFetching ||
     isPartnerListsLoading ||
+    isPriceListsFetching ||
+    isStartRoundLoading ||
     isStoresFetching ||
-    isStoresLoading ||
-    isStartRoundLoading
+    isStoresLoading
   ) {
     return <Loading message={loadingMessage} />;
   }

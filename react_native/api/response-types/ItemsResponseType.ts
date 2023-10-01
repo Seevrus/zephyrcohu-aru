@@ -1,38 +1,28 @@
+import { BaseItemType } from './common/BaseItemType';
+import { TimeStamps } from './common/TimeStamps';
+
 type Expiration = {
   id: number;
   barcode: string | null;
   expiresAt: string; // UTC
-  createdAt: string; // UTC
-  updatedAt: string; // UTC
-};
+} & TimeStamps;
 
 type Discount = {
   id: number;
   name: string;
   type: 'absolute' | 'percentage' | 'freeForm';
   amount: number;
-  createdAt: string; // UTC
-  updatedAt: string; // UTC
-};
+} & TimeStamps;
 
-type Item = {
-  id: number;
+type ItemType = BaseItemType & {
   CNCode: string;
-  articleNumber: string;
   barcode: string | null;
-  name: string;
-  shortName: string;
-  unitName: string;
   productCatalogCode: string;
-  vatRate: string;
-  netPrice: number;
   expirations: Expiration[];
   discounts: Discount[];
-  createdAt: string; // UTC
-  updatedAt: string; // UTC
 };
 
-export type ItemsResponseData = Item[];
+export type ItemsResponseData = ItemType[];
 
 export type ItemsResponseType = {
   data: ItemsResponseData;

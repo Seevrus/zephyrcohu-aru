@@ -31,6 +31,8 @@ export default function useLogin() {
           })
         );
 
+        console.log(response.token.accessToken);
+
         return response;
       } catch (e) {
         if (isAxiosError(e) && e.response.status === 401) {

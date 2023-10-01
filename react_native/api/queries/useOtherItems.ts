@@ -2,17 +2,16 @@ import { UseQueryResult, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
 import env from '../../env.json';
-import mapRoundsResponse from '../response-mappers/mapRoundsResponse';
 import {
-  ActiveRoundResponseData,
-  RoundsResponseType,
-} from '../response-types/ActiveRoundResponseType';
+  OtherItemsResponseData,
+  OtherItemsResponseType,
+} from '../response-types/OtherItemsResponseType';
 import useCheckToken from './useCheckToken';
 import useToken from './useToken';
 
-export default function useActiveRound({
+export default function useOtherItems({
   enabled = true,
-} = {}): UseQueryResult<ActiveRoundResponseData> {
+} = {}): UseQueryResult<OtherItemsResponseData> {
   const { data: user } = useCheckToken();
   const { isSuccess: isTokenSuccess, data: { token, isTokenExpired, isPasswordExpired } = {} } =
     useToken();
@@ -20,16 +19,16 @@ export default function useActiveRound({
   const isRoundStarted = user?.state === 'R';
 
   return useQuery({
-    queryKey: ['active-round'],
-    queryFn: async () => {
+    queryKey: ['other-items'],
+    queryFn: async (): Promise<OtherItemsResponseData> => {
       try {
-        const response = await axios.get<RoundsResponseType>(`${env.api_url}/rounds`, {
+        const response = await axios.get<OtherItemsResponseType>(`${env.api_url}/other_items`, {
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
         });
 
-        return mapRoundsResponse(response.data);
+        return response.data.data;
       } catch (_) {
-        throw new Error('Váratlan hiba lépett fel a kör adatainak lekérése során.');
+        throw new Error('Váratlan hiba lépett fel az egyéb tételek adatainak lekérése során.');
       }
     },
     enabled: enabled && isTokenSuccess && !(isTokenExpired || isPasswordExpired) && isRoundStarted,

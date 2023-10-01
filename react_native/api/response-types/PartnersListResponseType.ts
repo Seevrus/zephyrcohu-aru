@@ -1,38 +1,11 @@
-type PartnerLocation = {
-  name: string;
-  locationType: 'C' | 'D';
-  country: string;
-  postalCode: string;
-  city: string;
-  address: string;
-  createdAt: string; // UTC
-  updatedAt: string; // UTC
-};
+import { PartnerType } from './common/PartnerType';
+import { TimeStamps } from './common/TimeStamps';
 
-type Partner = {
-  id: number;
-  code: string;
-  siteCode: string;
-  vatNumber: string;
-  invoiceType: 'P' | 'E';
-  invoiceCopies: number;
-  paymentDays: number;
-  iban: string;
-  bankAccount: string;
-  phoneNumber: string | null;
-  email: string | null;
-  locations: PartnerLocation[];
-  createdAt: string; // UTC
-  updatedAt: string; // UTC
-};
-
-export type PartnersListResponseData = {
+export type PartnersListResponseData = ({
   id: number;
   name: string;
-  partners: Partner[];
-  createdAt: string; // UTC
-  updatedAt: string; // UTC
-}[];
+  partners: PartnerType[];
+} & TimeStamps)[];
 
 export type PartnersListResponseType = {
   data: PartnersListResponseData;
