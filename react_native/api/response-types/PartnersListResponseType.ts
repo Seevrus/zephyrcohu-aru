@@ -1,10 +1,9 @@
-import { PartnerType } from './common/PartnerType';
 import { TimeStamps } from './common/TimeStamps';
 
 export type PartnersListResponseData = ({
   id: number;
   name: string;
-  partners: PartnerType[];
+  partners: number[];
 } & TimeStamps)[];
 
 export type PartnersListResponseType = {

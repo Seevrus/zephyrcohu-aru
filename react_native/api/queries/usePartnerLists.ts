@@ -16,7 +16,7 @@ export default function usePartnerLists({
 
   return useQuery({
     queryKey: ['partner-lists'],
-    queryFn: async () => {
+    queryFn: async (): Promise<PartnersListResponseData> => {
       try {
         const response = await axios.get<PartnersListResponseType>(`${env.api_url}/partner_lists`, {
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },

@@ -1,6 +1,6 @@
 import { TimeStamps } from './TimeStamps';
 
-type PartnerLocation = {
+export type PartnerLocation = {
   name: string;
   locationType: 'C' | 'D';
   country: string;
