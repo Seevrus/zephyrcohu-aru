@@ -423,7 +423,7 @@ class PartnerController extends Controller
 
     private function generateRequestSignature(string $requestId)
     {
-        $timeStamp = Carbon::now();
+        $timeStamp = Carbon::now()->utc();
         $fingerPrint = $requestId.$timeStamp->format('Ymd').$timeStamp->format('His').env('NAV_SIGNKEY');
         $hash = hash('sha3-512', $fingerPrint);
 
