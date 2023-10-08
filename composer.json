@@ -9,19 +9,19 @@
   "license": "MIT",
   "require": {
     "php": "^8.0.2",
-    "doctrine/dbal": "^3.6",
-    "guzzlehttp/guzzle": "^7.7",
-    "laravel/framework": "^9.52.15",
-    "laravel/sanctum": "^3.2.6",
-    "laravel/tinker": "^2.8.1"
+    "doctrine/dbal": "^3.7",
+    "guzzlehttp/guzzle": "^7.8",
+    "laravel/framework": "^9.52.16",
+    "laravel/sanctum": "^3.3.1",
+    "laravel/tinker": "^2.8.2"
   },
   "require-dev": {
     "fakerphp/faker": "^1.23.0",
-    "laravel/pint": "^1.5.0",
-    "laravel/sail": "^1.23.4",
+    "laravel/pint": "~1.5.0",
+    "laravel/sail": "^1.25.0",
     "mockery/mockery": "^1.6.6",
     "nunomaduro/collision": "^6.4.0",
-    "phpunit/phpunit": "^9.6.11",
+    "phpunit/phpunit": "^9.6.13",
     "spatie/laravel-ignition": "^1.6.4"
   },
   "autoload": {
