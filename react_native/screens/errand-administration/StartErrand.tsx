@@ -1,5 +1,11 @@
 import { DateTimePickerAndroid, DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useNetInfo } from '@react-native-community/netinfo';
+import {
+  EventListenerCallback,
+  EventMapCore,
+  StackNavigationState,
+} from '@react-navigation/native';
+import { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
@@ -19,7 +25,7 @@ import Button from '../../components/ui/Button';
 import Dropdown from '../../components/ui/Dropdown';
 import Input from '../../components/ui/Input';
 import colors from '../../constants/colors';
-import { StartErrandProps } from '../screen-types';
+import { StackParams, StartErrandProps } from '../screen-types';
 
 export default function StartErrand({ navigation }: StartErrandProps) {
   const { isFetched: isActiveRoundFetched, isFetching: isActiveRoundFetching } = useActiveRound();
@@ -47,6 +53,35 @@ export default function StartErrand({ navigation }: StartErrandProps) {
 
   const [loadingMessage, setLoadingMessage] = useState<string>('');
   const [error, setError] = useState<string>('');
+
+  useEffect(() => {
+    const preventGoBackWhileLoading: EventListenerCallback<
+      NativeStackNavigationEventMap & EventMapCore<StackNavigationState<StackParams>>,
+      'beforeRemove'
+    > = (event) => {
+      if (
+        isStartRoundLoading ||
+        isActiveRoundFetching ||
+        isItemsFetching ||
+        isOtherItemsFetching ||
+        isPartnersFetching ||
+        isPriceListsFetching
+      ) {
+        event.preventDefault();
+      }
+    };
+
+    navigation.addListener('beforeRemove', preventGoBackWhileLoading);
+    return () => navigation.removeListener('beforeRemove', preventGoBackWhileLoading);
+  }, [
+    isActiveRoundFetching,
+    isItemsFetching,
+    isOtherItemsFetching,
+    isPartnersFetching,
+    isPriceListsFetching,
+    isStartRoundLoading,
+    navigation,
+  ]);
 
   useEffect(() => {
     if (isInternetReachable === false) {

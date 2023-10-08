@@ -16,7 +16,9 @@ export type StackParams = {
   ReviewStorageChanges: undefined;
   StorageChangesSummary: undefined;
 
-  SelectPartner: undefined;
+  SelectPartner: {
+    screen: 'SelectPartnerFromStore' | 'SelectPartnerFromAll';
+  };
   SelectItemsToSell: undefined;
   Review: undefined;
   Summary: undefined;

@@ -1,37 +1,57 @@
-import { filter, pipe, take } from 'ramda';
+import {
+  allPass,
+  complement,
+  filter,
+  includes,
+  isNil,
+  not,
+  pipe,
+  prepend,
+  prop,
+  take,
+  when,
+} from 'ramda';
 import { useEffect, useState } from 'react';
 import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
+import { Partners } from '../../../api/response-mappers/mapPartnersResponse';
 import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
-import { SelectPartnerProps } from '../../screen-types';
+import { useSellFlowContext } from '../../../providers/SellFlowProvider';
+import { PartnerList, SelectPartnerProps } from '../../screen-types';
 import Selection from './Selection';
 
 const NUM_PARTNERS_SHOWN = 10;
 
-export default function SelectPartnerFromAll({ route, navigation }: SelectPartnerProps) {
-  const dispatch = useAppDispatch();
+export default function SelectPartner({ route, navigation }: SelectPartnerProps) {
+  const { partners, selectedPartner, selectPartner, saveSelectedPartnerInFlow } =
+    useSellFlowContext();
 
   const partnerListType = route.params.partners;
-  const partners = usePartners(partnerListType);
-  const [partnersShown, setPartnersShown] = useState<PartnerDetails[]>(
-    take<PartnerDetails>(NUM_PARTNERS_SHOWN, partners)
-  );
-
-  const currentReceipt = useAppSelector((state) => state.round.currentReceipt);
-  const lastPartnerId = useAppSelector((state) => state.round.currentReceipt?.partnerId);
-  const [selectedPartnerId, setSelectedPartnerId] = useState(lastPartnerId);
+  const [partnersShown, setPartnersShown] = useState<Partners>(null);
 
   useEffect(() => {
-    if (!currentReceipt) {
-      dispatch(roundActions.addNewReceipt());
-    }
-  }, [currentReceipt, dispatch]);
+    setPartnersShown((prevPartnersShown) => {
+      if (!isNil(prevPartnersShown) || !partners) {
+        return prevPartnersShown;
+      }
+
+      return pipe(
+        prop(partnerListType),
+        take(NUM_PARTNERS_SHOWN),
+        when<Partners, Partners>(
+          allPass([() => not(isNil(selectedPartner)), complement(includes(selectedPartner))]),
+          prepend(selectedPartner)
+        )
+      )(partners);
+    });
+  }, [partnerListType, partners, selectedPartner]);
 
   const searchInputHandler = (inputValue: string) => {
     setPartnersShown(
-      pipe(
-        filter<PartnerDetails>((partner) => {
+      pipe<[Record<PartnerList, Partners>], Partners, Partners, Partners, Partners>(
+        prop(partnerListType),
+        filter<Partners[number]>((partner) => {
           const needle = inputValue.toLocaleLowerCase();
           const haystack = Object.values(partner.locations)
             .map((location) => `${location.name}${location.city}${location.address}`)
@@ -39,27 +59,27 @@ export default function SelectPartnerFromAll({ route, navigation }: SelectPartne
 
           return haystack.toLocaleLowerCase().includes(needle);
         }),
-        take<PartnerDetails>(NUM_PARTNERS_SHOWN)
+        take(NUM_PARTNERS_SHOWN),
+        when<Partners, Partners>(
+          allPass([() => not(isNil(selectedPartner)), complement(includes(selectedPartner))]),
+          prepend(selectedPartner)
+        )
       )(partners)
     );
   };
 
-  const selectPartnerHandler = (id: number) => {
-    setSelectedPartnerId(id);
-  };
-
-  const confirmPartnerHandler = (id: number) => {
-    dispatch(roundActions.selectPartner(id));
+  const confirmPartnerHandler = () => {
+    saveSelectedPartnerInFlow();
     navigation.navigate('SelectItems');
   };
 
-  const renderPartner: ListRenderItem<PartnerDetails> = (
-    info: ListRenderItemInfo<PartnerDetails>
+  const renderPartner: ListRenderItem<Partners[number]> = (
+    info: ListRenderItemInfo<Partners[number]>
   ) => (
     <Selection
       info={info}
-      selected={info.item.id === selectedPartnerId}
-      onSelect={selectPartnerHandler}
+      selected={info.item.id === selectedPartner?.id}
+      onSelect={selectPartner}
       onConfirmSelection={confirmPartnerHandler}
     />
   );

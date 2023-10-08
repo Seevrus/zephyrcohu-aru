@@ -1,5 +1,7 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
@@ -19,7 +21,8 @@ import StorageFlowProvider from './react_native/providers/StorageFlowProvider';
 import StorageProvider from './react_native/providers/StorageProvider';
 import StartErrand from './react_native/screens/errand-administration/StartErrand';
 import Login from './react_native/screens/login/Login';
-import { StackParams } from './react_native/screens/screen-types';
+import { PartnerList, PartnerTabParams, StackParams } from './react_native/screens/screen-types';
+import SelectPartner from './react_native/screens/sell/select-partner/SelectPartner';
 import ChangePassword from './react_native/screens/start-page/ChangePassword';
 import Index from './react_native/screens/start-page/Index';
 import Settings from './react_native/screens/start-page/Settings';
@@ -52,9 +55,9 @@ onlineManager.setEventListener((setOnline) =>
 );
 
 const Stack = createNativeStackNavigator<StackParams>();
-// const PartnerTab = createBottomTabNavigator<PartnerTabParams>();
+const PartnerTab = createBottomTabNavigator<PartnerTabParams>();
 
-/* function Partners() {
+function Partners() {
   const storePartnersIcon = ({ color }) => <MaterialIcons name="store" size={30} color={color} />;
 
   const allPartnersIcon = ({ color }) => (
@@ -97,7 +100,7 @@ const Stack = createNativeStackNavigator<StackParams>();
       />
     </PartnerTab.Navigator>
   );
-} */
+}
 
 function Main() {
   const [fontsLoaded] = useFonts({
@@ -180,14 +183,14 @@ function Main() {
               headerTitle: 'Kör indítása',
             }}
           />
-          {/*  <Stack.Screen
+          <Stack.Screen
             name="SelectPartner"
             component={Partners}
             options={{
               headerTitle: 'Partner kiválasztása',
             }}
           />
-          <Stack.Screen
+          {/*  <Stack.Screen
             name="SelectItems"
             component={SelectItems}
             options={{

@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { LayoutChangeEvent, ListRenderItemInfo, StyleSheet, Text, View } from 'react-native';
 
+import { Partners } from '../../../api/response-mappers/mapPartnersResponse';
 import AnimatedListItem from '../../../components/ui/AnimatedListItem';
 import Button from '../../../components/ui/Button';
 import LabeledItem from '../../../components/ui/LabeledItem';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
-import { PartnerDetails } from '../../../store/partners-slice/partners-slice-types';
 
 type SelectionProps = {
   selected: boolean;
-  info: ListRenderItemInfo<PartnerDetails>;
+  info: ListRenderItemInfo<Partners[number]>;
   onSelect: (id: number) => void;
   onConfirmSelection: (id: number) => void;
 };
@@ -44,8 +44,8 @@ export default function Selection({
     >
       <View
         style={styles.selectPartnerContainer}
-        onLayout={(e: LayoutChangeEvent) => {
-          setDropdownHeight(e.nativeEvent.layout.height);
+        onLayout={(event: LayoutChangeEvent) => {
+          setDropdownHeight(event.nativeEvent.layout.height);
         }}
       >
         <View style={styles.firstInfoGroup}>
