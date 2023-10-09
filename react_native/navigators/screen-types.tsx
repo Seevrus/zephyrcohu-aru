@@ -20,7 +20,7 @@ export type StackParams = {
   SelectItemsToSell: undefined;
   Review: undefined;
   Summary: undefined;
-  SearchPartnerFromNav: undefined;
+  AddPartnerForm: undefined;
 
   ReceiptList: undefined;
   ReceiptDetails: {
@@ -46,7 +46,7 @@ export type StorageChangesSummaryProps = NativeStackScreenProps<
   'StorageChangesSummary'
 >;
 
-export type SearchPartnerFromNavProps = NativeStackScreenProps<StackParams, 'SearchPartnerFromNav'>;
+export type AddPartnerFormProps = NativeStackScreenProps<StackParams, 'AddPartnerForm'>;
 export type SelectItemsToSellProps = BottomTabScreenProps<StackParams, 'SelectItemsToSell'>;
 export type ReviewProps = NativeStackScreenProps<StackParams, 'Review'>;
 export type SummaryProps = NativeStackScreenProps<StackParams, 'Summary'>;

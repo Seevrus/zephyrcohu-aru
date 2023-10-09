@@ -4,7 +4,7 @@ import colors from '../constants/colors';
 import fontSizes from '../constants/fontSizes';
 import StartErrand from '../screens/errand-administration/StartErrand';
 import Login from '../screens/login/Login';
-import { StackParams } from './screen-types';
+import AddPartnerForm from '../screens/sell/add-partner/AddPartnerForm';
 import ChangePassword from '../screens/start-page/ChangePassword';
 import Index from '../screens/start-page/Index';
 import Settings from '../screens/start-page/Settings';
@@ -15,7 +15,7 @@ import SelectItemsFromStore from '../screens/storage/select-items/SelectItemsFro
 import SelectStore from '../screens/storage/select-store/SelectStore';
 import StorageChangesSummary from '../screens/storage/summary/StorageChangesSummary';
 import PartnersBottomTab from './PartnersBottomTab';
-import SearchPartnerFromNav from '../screens/sell/add-partner/SearchPartnerFromNav';
+import { StackParams } from './screen-types';
 
 const Stack = createNativeStackNavigator<StackParams>();
 
@@ -89,10 +89,10 @@ export default function MainStack() {
         }}
       />
       <Stack.Screen
-        name="SearchPartnerFromNav"
-        component={SearchPartnerFromNav}
+        name="AddPartnerForm"
+        component={AddPartnerForm}
         options={{
-          headerTitle: 'Keresés adószámra',
+          headerTitle: 'Partner hozzáadása',
         }}
       />
       {/*  <Stack.Screen

@@ -1,3 +1,4 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import {
   allPass,
   complement,
@@ -12,13 +13,20 @@ import {
   when,
 } from 'ramda';
 import { useEffect, useState } from 'react';
-import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import {
+  FlatList,
+  ListRenderItem,
+  ListRenderItemInfo,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 import { Partners } from '../../../api/response-mappers/mapPartnersResponse';
 import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
+import { PartnerList, SelectPartnerProps } from '../../../navigators/screen-types';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
-import { PartnerList, SelectPartnerProps } from '../../screen-types';
 import Selection from './Selection';
 
 const NUM_PARTNERS_SHOWN = 10;
@@ -70,7 +78,7 @@ export default function SelectPartner({ route, navigation }: SelectPartnerProps)
 
   const confirmPartnerHandler = () => {
     saveSelectedPartnerInFlow();
-    navigation.navigate('SelectItems');
+    navigation.navigate('SelectItemsToSell');
   };
 
   const renderPartner: ListRenderItem<Partners[number]> = (
@@ -95,6 +103,13 @@ export default function SelectPartner({ route, navigation }: SelectPartnerProps)
               onChangeText: searchInputHandler,
             }}
           />
+          <Pressable
+            onPress={() => {
+              navigation.navigate('AddPartnerForm');
+            }}
+          >
+            <MaterialIcons name="add-circle-outline" size={40} color="white" />
+          </Pressable>
         </View>
       </View>
       <View style={styles.listContainer}>
@@ -124,6 +139,8 @@ const styles = StyleSheet.create({
   },
   searchInputContainer: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
     marginHorizontal: '7%',
   },
   listContainer: {
