@@ -34,7 +34,7 @@ import LabeledItem from '../../../components/ui/LabeledItem';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
 import { roundActions } from '../../../store/round-slice/round-slice';
-import { ReviewProps } from '../../screen-types';
+import { ReviewProps } from '../../../navigators/screen-types';
 import ReceiptHeader from './ReceiptHeader';
 import ReceiptRow, { ReceiptRowProps } from './ReceiptRow';
 

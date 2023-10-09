@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Pressable } from 'react-native';
 
-import { StackParams } from '../screen-types';
+import { StackParams } from '../../navigators/screen-types';
 
 export default function SettingsButton() {
   const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();

@@ -21,7 +21,7 @@ import Loading from '../../components/Loading';
 import Button from '../../components/ui/Button';
 import colors from '../../constants/colors';
 import fontSizes from '../../constants/fontSizes';
-import { EndErrandProps } from '../screen-types';
+import { EndErrandProps } from '../../navigators/screen-types';
 
 export default function EndErrand({ navigation }: EndErrandProps) {
   const dispatch = useAppDispatch();

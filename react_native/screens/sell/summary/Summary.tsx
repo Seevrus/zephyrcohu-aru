@@ -13,7 +13,7 @@ import Button from '../../../components/ui/Button';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
 import useUpsertReceipts from '../../../hooks/useUpsertReceipts';
-import { SummaryProps } from '../../screen-types';
+import { SummaryProps } from '../../../navigators/screen-types';
 
 export default function Summary({ navigation }: SummaryProps) {
   const { isInternetReachable } = useNetInfo();

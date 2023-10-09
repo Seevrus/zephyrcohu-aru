@@ -8,7 +8,7 @@ import PrintSection from '../../components/print-section/PrintSection';
 import Button from '../../components/ui/Button';
 import colors from '../../constants/colors';
 import fontSizes from '../../constants/fontSizes';
-import { ReceiptDetailsProps } from '../screen-types';
+import { ReceiptDetailsProps } from '../../navigators/screen-types';
 import useUpsertReceipts from '../../hooks/useUpsertReceipts';
 import Loading from '../../components/Loading';
 

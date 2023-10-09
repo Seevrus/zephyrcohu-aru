@@ -10,7 +10,7 @@ import { TileT } from '../components/Tile';
 import { useReceiptsContext } from '../providers/ReceiptsProvider';
 import { useSellFlowContext } from '../providers/SellFlowProvider';
 import { useStorageFlowContext } from '../providers/StorageFlowProvider';
-import { StackParams } from '../screens/screen-types';
+import { StackParams } from '../navigators/screen-types';
 import useTileStates, {
   EndErrandTileState,
   ReceiptsTileState,

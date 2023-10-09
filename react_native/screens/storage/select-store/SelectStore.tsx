@@ -24,7 +24,7 @@ import Tile, { TileT } from '../../../components/Tile';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
-import { SelectStoreProps } from '../../screen-types';
+import { SelectStoreProps } from '../../../navigators/screen-types';
 
 export default function SelectStore({ navigation }: SelectStoreProps) {
   const { isInternetReachable } = useNetInfo();

@@ -8,7 +8,7 @@ import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import colors from '../../constants/colors';
 import fontSizes from '../../constants/fontSizes';
-import { ChangePasswordProps } from '../screen-types';
+import { ChangePasswordProps } from '../../navigators/screen-types';
 
 export default function ChangePassword({ navigation }: ChangePasswordProps) {
   const passwordChange = usePasswordChange();

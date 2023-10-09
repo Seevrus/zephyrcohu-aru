@@ -1,5 +1,5 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { NavigatorScreenParams } from '@react-navigation/native';
+import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export type StackParams = {
@@ -16,12 +16,11 @@ export type StackParams = {
   ReviewStorageChanges: undefined;
   StorageChangesSummary: undefined;
 
-  SelectPartner: {
-    screen: 'SelectPartnerFromStore' | 'SelectPartnerFromAll';
-  };
+  SelectPartner: NavigatorScreenParams<PartnerTabParams>;
   SelectItemsToSell: undefined;
   Review: undefined;
   Summary: undefined;
+  SearchPartnerFromNav: undefined;
 
   ReceiptList: undefined;
   ReceiptDetails: {
@@ -47,6 +46,7 @@ export type StorageChangesSummaryProps = NativeStackScreenProps<
   'StorageChangesSummary'
 >;
 
+export type SearchPartnerFromNavProps = NativeStackScreenProps<StackParams, 'SearchPartnerFromNav'>;
 export type SelectItemsToSellProps = BottomTabScreenProps<StackParams, 'SelectItemsToSell'>;
 export type ReviewProps = NativeStackScreenProps<StackParams, 'Review'>;
 export type SummaryProps = NativeStackScreenProps<StackParams, 'Summary'>;
@@ -69,7 +69,9 @@ export type PartnerTabParams = {
   SelectPartnerFromAll: {
     partners: PartnerList;
   };
-  SelectItems: NavigatorScreenParams<StackParams>;
 };
 
-export type SelectPartnerProps = BottomTabScreenProps<PartnerTabParams, 'SelectPartnerFromStore'>;
+export type SelectPartnerProps = CompositeScreenProps<
+  BottomTabScreenProps<PartnerTabParams, 'SelectPartnerFromStore'>,
+  NativeStackScreenProps<StackParams>
+>;

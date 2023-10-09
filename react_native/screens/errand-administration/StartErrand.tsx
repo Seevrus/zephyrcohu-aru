@@ -25,7 +25,7 @@ import Button from '../../components/ui/Button';
 import Dropdown from '../../components/ui/Dropdown';
 import Input from '../../components/ui/Input';
 import colors from '../../constants/colors';
-import { StackParams, StartErrandProps } from '../screen-types';
+import { StackParams, StartErrandProps } from '../../navigators/screen-types';
 
 export default function StartErrand({ navigation }: StartErrandProps) {
   const { isFetched: isActiveRoundFetched, isFetching: isActiveRoundFetching } = useActiveRound();

@@ -8,7 +8,7 @@ import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
 import { ListItem, useStorageFlowContext } from '../../../providers/StorageFlowProvider';
-import { SelectItemsFromStoreProps } from '../../screen-types';
+import { SelectItemsFromStoreProps } from '../../../navigators/screen-types';
 import ExpirationAccordionDetails from './ExpirationAccordionDetails';
 
 const keyExtractor = (item: ListItem) => String(item.expirationId);

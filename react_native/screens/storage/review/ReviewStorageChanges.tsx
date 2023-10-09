@@ -8,7 +8,7 @@ import TextCard from '../../../components/info-cards/TextCard';
 import Button from '../../../components/ui/Button';
 import colors from '../../../constants/colors';
 import { ListItem, useStorageFlowContext } from '../../../providers/StorageFlowProvider';
-import { ReviewStorageChangesProps } from '../../screen-types';
+import { ReviewStorageChangesProps } from '../../../navigators/screen-types';
 import ReviewExpirationItem from './ReviewExpirationItem';
 
 const keyExtractor = (item: ListItem) => String(item.expirationId);

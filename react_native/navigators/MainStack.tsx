@@ -1,0 +1,142 @@
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+import colors from '../constants/colors';
+import fontSizes from '../constants/fontSizes';
+import StartErrand from '../screens/errand-administration/StartErrand';
+import Login from '../screens/login/Login';
+import { StackParams } from './screen-types';
+import ChangePassword from '../screens/start-page/ChangePassword';
+import Index from '../screens/start-page/Index';
+import Settings from '../screens/start-page/Settings';
+import SettingsButton from '../screens/start-page/SettingsButton';
+import ReviewStorageChanges from '../screens/storage/review/ReviewStorageChanges';
+import ScanBarCode from '../screens/storage/select-items/ScanBarCode';
+import SelectItemsFromStore from '../screens/storage/select-items/SelectItemsFromStore';
+import SelectStore from '../screens/storage/select-store/SelectStore';
+import StorageChangesSummary from '../screens/storage/summary/StorageChangesSummary';
+import PartnersBottomTab from './PartnersBottomTab';
+import SearchPartnerFromNav from '../screens/sell/add-partner/SearchPartnerFromNav';
+
+const Stack = createNativeStackNavigator<StackParams>();
+
+export default function MainStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: colors.neutral,
+        },
+        headerTitleAlign: 'center',
+        headerTitleStyle: {
+          fontFamily: 'Roboto-Bold',
+          fontSize: fontSizes.title,
+        },
+        headerTintColor: 'white',
+      }}
+    >
+      <Stack.Screen
+        name="Index"
+        component={Index}
+        options={{
+          headerTitle: 'Zephyr Boreal',
+          headerRight: SettingsButton,
+        }}
+      />
+      <Stack.Screen name="Settings" component={Settings} options={{ headerTitle: 'Beállítások' }} />
+      <Stack.Screen name="Login" component={Login} options={{ headerTitle: 'Bejelentkezés' }} />
+      <Stack.Screen
+        name="ChangePassword"
+        component={ChangePassword}
+        options={{ headerTitle: 'Új jelszó' }}
+      />
+      <Stack.Screen
+        name="SelectStore"
+        component={SelectStore}
+        options={{ headerTitle: 'Raktár választása' }}
+      />
+      <Stack.Screen
+        name="SelectItemsFromStore"
+        component={SelectItemsFromStore}
+        options={{ headerTitle: 'Tételek' }}
+      />
+      <Stack.Screen
+        name="ScanBarCode"
+        component={ScanBarCode}
+        options={{ headerTitle: 'Vonalkód olvasása' }}
+      />
+      <Stack.Screen
+        name="ReviewStorageChanges"
+        component={ReviewStorageChanges}
+        options={{ headerTitle: 'Áttekintés' }}
+      />
+      <Stack.Screen
+        name="StorageChangesSummary"
+        component={StorageChangesSummary}
+        options={{ headerLeft: null, headerTitle: 'Összegzés' }}
+      />
+      <Stack.Screen
+        name="StartErrand"
+        component={StartErrand}
+        options={{
+          headerTitle: 'Kör indítása',
+        }}
+      />
+      <Stack.Screen
+        name="SelectPartner"
+        component={PartnersBottomTab}
+        options={{
+          headerTitle: 'Partner kiválasztása',
+        }}
+      />
+      <Stack.Screen
+        name="SearchPartnerFromNav"
+        component={SearchPartnerFromNav}
+        options={{
+          headerTitle: 'Keresés adószámra',
+        }}
+      />
+      {/*  <Stack.Screen
+            name="SelectItems"
+            component={SelectItems}
+            options={{
+              headerTitle: 'Tételek',
+            }}
+          />
+          <Stack.Screen
+            name="Review"
+            component={Review}
+            options={{
+              headerTitle: 'Áttekintés',
+            }}
+          />
+          <Stack.Screen
+            name="Summary"
+            component={Summary}
+            options={{
+              headerTitle: 'Összegzés',
+            }}
+          />
+          <Stack.Screen
+            name="ReceiptList"
+            component={ReceiptList}
+            options={{
+              headerTitle: 'Bizonylatok',
+            }}
+          />
+          <Stack.Screen
+            name="ReceiptDetails"
+            component={ReceiptDetails}
+            options={{
+              headerTitle: '',
+            }}
+          />
+          <Stack.Screen
+            name="EndErrand"
+            component={EndErrand}
+            options={{
+              headerTitle: 'Kör zárása',
+            }}
+          /> */}
+    </Stack.Navigator>
+  );
+}

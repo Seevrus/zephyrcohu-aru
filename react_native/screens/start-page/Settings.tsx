@@ -5,7 +5,7 @@ import useLogout from '../../api/mutations/useLogout';
 import useToken from '../../api/queries/useToken';
 import Button from '../../components/ui/Button';
 import colors from '../../constants/colors';
-import { SettingsProps } from '../screen-types';
+import { SettingsProps } from '../../navigators/screen-types';
 import Loading from '../../components/Loading';
 
 export default function Settings({ navigation }: SettingsProps) {

@@ -15,7 +15,7 @@ import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
 import { useAppSelector } from '../../store/hooks';
 import { ExpirationItem } from '../../store/round-slice/round-slice-types';
-import { ReceiptListProps } from '../screen-types';
+import { ReceiptListProps } from '../../navigators/screen-types';
 
 import colors from '../../constants/colors';
 import fontSizes from '../../constants/fontSizes';

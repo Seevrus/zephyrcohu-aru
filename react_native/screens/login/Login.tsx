@@ -7,7 +7,7 @@ import TextCard from '../../components/info-cards/TextCard';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import colors from '../../constants/colors';
-import { LoginProps } from '../screen-types';
+import { LoginProps } from '../../navigators/screen-types';
 import Loading from '../../components/Loading';
 
 export default function Login({ navigation }: LoginProps) {

@@ -9,7 +9,7 @@ import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
 import { useStorageFlowContext } from '../../../providers/StorageFlowProvider';
 import { useStorageContext } from '../../../providers/StorageProvider';
-import { StorageChangesSummaryProps } from '../../screen-types';
+import { StorageChangesSummaryProps } from '../../../navigators/screen-types';
 import createPrint from './createPrint';
 
 export default function StorageChangesSummary({ navigation }: StorageChangesSummaryProps) {

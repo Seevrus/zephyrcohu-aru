@@ -1,5 +1,5 @@
 import BorealBarCodeScanner from '../../../components/bar-code-scanner/BorealBarCodeScanner';
-import { ScanBarCodeProps } from '../../screen-types';
+import { ScanBarCodeProps } from '../../../navigators/screen-types';
 
 export default function ScanBarCode({ navigation }: ScanBarCodeProps) {
   const handleBarCodeScanned = (code: string) => {

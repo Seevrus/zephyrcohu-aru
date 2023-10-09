@@ -13,7 +13,7 @@ import useActiveRound from '../api/queries/useActiveRound';
 import usePartnerLists from '../api/queries/usePartnerLists';
 import usePartners from '../api/queries/usePartners';
 import { Partners } from '../api/response-mappers/mapPartnersResponse';
-import { PartnerList } from '../screens/screen-types';
+import { PartnerList } from '../navigators/screen-types';
 import { useReceiptsContext } from './ReceiptsProvider';
 
 type SellFlowContextType = {
