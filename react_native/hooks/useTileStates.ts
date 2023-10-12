@@ -34,7 +34,7 @@ export enum EndErrandTileState {
 }
 
 export default function useTileStates() {
-  const { data: user, isLoading: isUserLoading } = useCheckToken();
+  const { data: user, isFetching: isUserLoading } = useCheckToken();
   const { isInternetReachable } = useNetInfo();
   const { numberOfOrders } = useOrdersContext();
   const { numberOfReceipts } = useReceiptsContext();
@@ -42,6 +42,8 @@ export default function useTileStates() {
     isLoading: isTokenLoading,
     data: { isPasswordExpired, isTokenExpired },
   } = useToken();
+
+  const isCheckTokenInProgress = !user && isUserLoading;
 
   const isUserIdle = user?.state === 'I';
   const isStorageStarted = user?.state === 'L';
@@ -79,22 +81,36 @@ export default function useTileStates() {
       Offline = 'A funkció csak online érhető el.',
     }
 
-    if (!isTokenLoading && !isUserLoading) {
+    if (!isTokenLoading && !isCheckTokenInProgress) {
       if (isTokenExpired) {
         setStorageTileMessage(DisabledTileMessage.LoggedOut);
         setStartErrandTileMessage(DisabledTileMessage.LoggedOut);
+        setEndErrandTileMessage(DisabledTileMessage.LoggedOut);
       } else if (isPasswordExpired) {
         setStorageTileMessage(DisabledTileMessage.PasswordExpired);
         setStartErrandTileMessage(DisabledTileMessage.PasswordExpired);
+        setEndErrandTileMessage(DisabledTileMessage.PasswordExpired);
       } else if (!isInternetReachable) {
         setStorageTileMessage(DisabledTileMessage.Offline);
         setStartErrandTileMessage(DisabledTileMessage.Offline);
+        setEndErrandTileMessage(DisabledTileMessage.Offline);
+      }
+
+      if (!user) {
+        setSelectPartnerTileMessage(DisabledTileMessage.LoggedOut);
       }
     }
-  }, [isInternetReachable, isPasswordExpired, isTokenExpired, isTokenLoading, isUserLoading]);
+  }, [
+    isCheckTokenInProgress,
+    isInternetReachable,
+    isPasswordExpired,
+    isTokenExpired,
+    isTokenLoading,
+    user,
+  ]);
 
   useLayoutEffect(() => {
-    if (!isTokenLoading && !isUserLoading) {
+    if (!isTokenLoading && !isCheckTokenInProgress) {
       if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isUserIdle) {
         setStorageTileState(StorageTileState.Ok);
         setStorageTileMessage('');
@@ -111,6 +127,7 @@ export default function useTileStates() {
       }
     }
   }, [
+    isCheckTokenInProgress,
     isInternetReachable,
     isPasswordExpired,
     isRoundStarted,
@@ -118,11 +135,10 @@ export default function useTileStates() {
     isTokenExpired,
     isTokenLoading,
     isUserIdle,
-    isUserLoading,
   ]);
 
   useLayoutEffect(() => {
-    if (!isTokenLoading && !isUserLoading) {
+    if (!isTokenLoading && !isCheckTokenInProgress) {
       if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isUserIdle) {
         setStartErrandTileState(StartErrandTileState.Ok);
         setEndErrandTileMessage('');
@@ -144,6 +160,7 @@ export default function useTileStates() {
       }
     }
   }, [
+    isCheckTokenInProgress,
     isInternetReachable,
     isPasswordExpired,
     isRoundStarted,
@@ -151,13 +168,12 @@ export default function useTileStates() {
     isTokenExpired,
     isTokenLoading,
     isUserIdle,
-    isUserLoading,
     numberOfOrders,
     numberOfReceipts,
   ]);
 
   useLayoutEffect(() => {
-    if (!isTokenLoading && !isUserLoading) {
+    if (!isTokenLoading && !isCheckTokenInProgress) {
       if (isRoundStarted) {
         setSelectPartnerTileState(SelectPartnerTileState.Neutral);
         setSelectPartnerTileMessage('');
@@ -169,37 +185,35 @@ export default function useTileStates() {
       }
     }
   }, [
+    isCheckTokenInProgress,
     isInternetReachable,
     isPasswordExpired,
     isRoundStarted,
     isTokenExpired,
     isTokenLoading,
-    isUserLoading,
   ]);
 
   useLayoutEffect(() => {
-    if (!isTokenLoading && !isUserLoading) {
+    if (!isTokenLoading && !isCheckTokenInProgress) {
       if (numberOfReceipts > 0) {
         setReceiptsTileState(ReceiptsTileState.Neutral);
         setReceiptsTileMessage('');
       } else {
         setReceiptsTileState(ReceiptsTileState.Disabled);
-        if (!isTokenExpired && !isPasswordExpired && isInternetReachable) {
-          setReceiptsTileMessage('Nincs elérhető bizonylat.');
-        }
+        setReceiptsTileMessage('Nincs elérhető bizonylat.');
       }
     }
   }, [
+    isCheckTokenInProgress,
     isInternetReachable,
     isPasswordExpired,
     isTokenExpired,
     isTokenLoading,
-    isUserLoading,
     numberOfReceipts,
   ]);
 
   useLayoutEffect(() => {
-    if (!isTokenLoading && !isUserLoading) {
+    if (!isTokenLoading && !isCheckTokenInProgress) {
       if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isRoundStarted) {
         setEndErrandTileState(EndErrandTileState.Warning);
         setEndErrandTileMessage('Biztosan szeretné zárni a kört?');
@@ -211,12 +225,12 @@ export default function useTileStates() {
       }
     }
   }, [
+    isCheckTokenInProgress,
     isInternetReachable,
     isPasswordExpired,
     isRoundStarted,
     isTokenExpired,
     isTokenLoading,
-    isUserLoading,
   ]);
 
   return {

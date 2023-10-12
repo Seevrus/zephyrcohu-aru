@@ -20,7 +20,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       cacheTime: Infinity,
-      keepPreviousData: false,
+      keepPreviousData: true,
       staleTime: Infinity,
       retry: 3,
     },

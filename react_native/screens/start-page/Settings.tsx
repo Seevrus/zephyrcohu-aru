@@ -12,7 +12,7 @@ export default function Settings({ navigation }: SettingsProps) {
   const {
     data: { isTokenExpired },
   } = useToken();
-  const logout = useLogout();
+  const { mutateAsync: logout } = useLogout();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -26,7 +26,7 @@ export default function Settings({ navigation }: SettingsProps) {
 
   const logoutHandler = async () => {
     setIsLoading(true);
-    await logout.mutateAsync();
+    await logout();
     navigation.reset({
       index: 0,
       routes: [{ name: 'Index' }],

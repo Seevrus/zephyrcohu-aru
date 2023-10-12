@@ -1,21 +1,21 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { UseQueryResult, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import env from '../../env.json';
-import useLogout from '../mutations/useLogout';
 import mapCheckTokenResponse, { CheckToken } from '../response-mappers/mapCheckTokenResponse';
 import { LoginResponse } from '../response-types/LoginResponseType';
 import useToken from './useToken';
 
-function useCheckTokenQuery({ enabled = true } = {}): UseQueryResult<CheckToken> {
+function useCheckTokenQuery({ enabled = true } = {}) {
   const { isInternetReachable } = useNetInfo();
   const { isSuccess: isTokenSuccess, data: { token } = {} } = useToken();
 
   return useQuery({
     queryKey: ['check-token'],
-    queryFn: async () => {
+    queryFn: async (): Promise<CheckToken> => {
       try {
         const response = await axios.get<LoginResponse>(`${env.api_url}/users/check-token`, {
           headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
@@ -33,21 +33,26 @@ function useCheckTokenQuery({ enabled = true } = {}): UseQueryResult<CheckToken>
   });
 }
 
-export default function useCheckToken({ enabled = true } = {}): UseQueryResult<CheckToken> {
+export default function useCheckToken({ enabled = true } = {}) {
   const checkTokenResult = useCheckTokenQuery({ enabled });
-  const { mutateAsync: logout } = useLogout();
   const { isInternetReachable } = useNetInfo();
   const queryClient = useQueryClient();
 
+  const [user, setUser] = useState<CheckToken>(null);
+
   useEffect(() => {
-    async function logoutOnError() {
-      if (checkTokenResult.isError) {
-        await logout();
+    async function getBackupUserData() {
+      const backup = await AsyncStorage.getItem('boreal-user-backup');
+      if (backup) {
+        const backupUser = JSON.parse(backup);
+        setUser(backupUser);
       }
     }
 
-    logoutOnError();
-  }, [checkTokenResult.isError, logout]);
+    if (checkTokenResult.isError) {
+      getBackupUserData();
+    }
+  }, [checkTokenResult.isError]);
 
   useEffect(() => {
     if (isInternetReachable === true && checkTokenResult.isSuccess) {
@@ -55,5 +60,20 @@ export default function useCheckToken({ enabled = true } = {}): UseQueryResult<C
     }
   }, [checkTokenResult.isSuccess, isInternetReachable, queryClient]);
 
-  return checkTokenResult;
+  useEffect(() => {
+    async function setBackupData() {
+      await AsyncStorage.setItem('boreal-user-backup', JSON.stringify(checkTokenResult.data));
+    }
+
+    if (checkTokenResult.isSuccess) {
+      setBackupData();
+      setUser(checkTokenResult.data);
+    }
+  }, [checkTokenResult.data, checkTokenResult.isSuccess]);
+
+  return {
+    data: user,
+    isFetching: checkTokenResult.isFetching,
+    isLoading: checkTokenResult.isLoading,
+  };
 }
