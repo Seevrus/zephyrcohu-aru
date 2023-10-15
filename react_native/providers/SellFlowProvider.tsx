@@ -23,6 +23,7 @@ type SellFlowContextType = {
   partners: Record<PartnerList, Partners>;
   selectedPartner: Partners[number];
   isSelectedPartnerOnCurrentPartnerList: boolean;
+  isPartnerChosenForCurrentReceipt: boolean;
   selectPartner: (id: number) => void;
   saveSelectedPartnerInFlow: () => Promise<void>;
   saveNewPartnerInFlow: (newPartner: TaxPayer) => Promise<void>;
@@ -35,6 +36,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
   const { data: partners, isLoading: isPartnersLoading } = usePartners();
   const { data: partnerLists, isLoading: isPartnersListsLoading } = usePartnerLists();
   const { currentReceipt, setCurrentReceiptBuyer } = useReceiptsContext();
+  const isPartnerChosenForCurrentReceipt = !!currentReceipt?.buyer;
 
   const currentPartnerList = useMemo(
     () => partnerLists?.find((partnerList) => partnerList.id === activeRound?.partnerListId),
@@ -156,12 +158,14 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       partners: partnersToShow,
       selectedPartner,
       isSelectedPartnerOnCurrentPartnerList,
+      isPartnerChosenForCurrentReceipt,
       selectPartner,
       saveSelectedPartnerInFlow,
       saveNewPartnerInFlow,
     }),
     [
       isActiveRoundLoading,
+      isPartnerChosenForCurrentReceipt,
       isPartnersListsLoading,
       isPartnersLoading,
       isSelectedPartnerOnCurrentPartnerList,

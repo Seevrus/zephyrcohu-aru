@@ -1,7 +1,8 @@
+import { EventArg } from '@react-navigation/native';
 import { formatISO } from 'date-fns';
 import { isEmpty } from 'ramda';
-import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import TextCard from '../../../components/info-cards/TextCard';
 import Button from '../../../components/ui/Button';
@@ -22,7 +23,7 @@ type FormErrors = {
   deliveryAddress: string;
 };
 
-export default function AddPartnerForm({ route: { params } }: AddPartnerFormProps) {
+export default function AddPartnerForm({ navigation, route: { params } }: AddPartnerFormProps) {
   const { saveNewPartnerInFlow } = useSellFlowContext();
 
   const [taxNumber, setTaxNumber] = useState<string>(params?.taxNumber ?? '');
@@ -39,6 +40,49 @@ export default function AddPartnerForm({ route: { params } }: AddPartnerFormProp
   const [deliveryAddress, setDeliveryAddress] = useState<string>(params?.deliveryAddress ?? '');
 
   const [formError, setFormError] = useState<Partial<FormErrors>>({});
+
+  const handleGoBack = useCallback(
+    (
+      event: EventArg<
+        'beforeRemove',
+        true,
+        {
+          action: Readonly<{
+            type: string;
+            payload?: object;
+            source?: string;
+            target?: string;
+          }>;
+        }
+      >
+    ) => {
+      event.preventDefault();
+
+      Alert.alert(
+        'Megerősítés szükséges',
+        'Biztosan vissza szeretne lépni? A megadott adatok nem kerülnek mentésre!',
+        [
+          { text: 'Mégsem' },
+          {
+            text: 'Igen',
+            style: 'destructive',
+            onPress: async () => {
+              navigation.dispatch(event.data.action);
+            },
+          },
+        ]
+      );
+    },
+    [navigation]
+  );
+
+  useEffect(() => {
+    navigation.addListener('beforeRemove', handleGoBack);
+
+    return () => {
+      navigation.removeListener('beforeRemove', handleGoBack);
+    };
+  }, [handleGoBack, navigation]);
 
   const handlePartnerSubmit = async () => {
     const formErrors: Partial<FormErrors> = {};
@@ -105,6 +149,12 @@ export default function AddPartnerForm({ route: { params } }: AddPartnerFormProp
         },
       });
     }
+
+    navigation.removeListener('beforeRemove', handleGoBack);
+    navigation.reset({
+      index: 1,
+      routes: [{ name: 'Index' }, { name: 'SelectItemsToSell' }],
+    });
   };
 
   return (

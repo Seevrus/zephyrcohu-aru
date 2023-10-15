@@ -17,6 +17,7 @@ type ReceiptsContextType = {
   receipts: ReceiptRequest[];
   numberOfReceipts: number;
   currentReceipt: Partial<ReceiptRequest>;
+  resetCurrentReceipt: () => Promise<void>;
   setCurrentReceiptBuyer: (buyer: ReceiptBuyer) => Promise<void>;
 };
 
@@ -83,6 +84,11 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
     [currentReceipt]
   );
 
+  const resetCurrentReceipt = useCallback(async () => {
+    await AsyncStorage.removeItem(currentReceiptContextStorageKey);
+    setCurrentReceipt(null);
+  }, []);
+
   const setCurrentReceiptBuyer = useCallback(
     async (buyer: ReceiptBuyer) => {
       setCurrentReceipt(assoc('buyer', buyer));
@@ -93,8 +99,14 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
   );
 
   const receiptsContextValue = useMemo(
-    () => ({ receipts, numberOfReceipts, currentReceipt, setCurrentReceiptBuyer }),
-    [currentReceipt, numberOfReceipts, receipts, setCurrentReceiptBuyer]
+    () => ({
+      receipts,
+      numberOfReceipts,
+      currentReceipt,
+      resetCurrentReceipt,
+      setCurrentReceiptBuyer,
+    }),
+    [currentReceipt, numberOfReceipts, receipts, resetCurrentReceipt, setCurrentReceiptBuyer]
   );
 
   return (

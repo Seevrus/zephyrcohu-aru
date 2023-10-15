@@ -79,7 +79,10 @@ function Header({
 
 const NUM_PARTNERS_SHOWN = 10;
 
-export default function SearchPartnerNavForm({ navigation }: SearchPartnerNavFormProps) {
+export default function SearchPartnerNavForm({
+  navigation,
+  route: { params },
+}: SearchPartnerNavFormProps) {
   const { isInternetReachable } = useNetInfo();
   const {
     isLoading: isTokenLoading,
@@ -88,7 +91,7 @@ export default function SearchPartnerNavForm({ navigation }: SearchPartnerNavFor
 
   // 10625790
   // 25145627
-  const [taxNumber, setTaxNumber] = useState<string>('');
+  const [taxNumber, setTaxNumber] = useState<string>(params?.taxNumber ?? '');
   const [searchValue, setSearchValue] = useState<string>('');
   const [selectedResult, setSelectedResult] = useState<TaxPayer>(null);
 
@@ -155,7 +158,20 @@ export default function SearchPartnerNavForm({ navigation }: SearchPartnerNavFor
   };
 
   const confirmResultHandler = (id: number) => {
-    setSelectedResult(taxPayerData?.find((tp) => tp.id === id));
+    const selectedTaxPayer = taxPayerData?.find((tp) => tp.id === id);
+    setSelectedResult(selectedTaxPayer);
+    if (selectedTaxPayer) {
+      navigation.navigate('AddPartnerForm', {
+        taxNumber: selectedTaxPayer.vatNumber,
+        name: selectedTaxPayer.locations.C.name ?? selectedTaxPayer.locations.D.name,
+        centralPostalCode: selectedTaxPayer.locations.C?.postalCode,
+        centralCity: selectedTaxPayer.locations.C?.city,
+        centralAddress: selectedTaxPayer.locations.C?.address,
+        deliveryPostalCode: selectedTaxPayer.locations.D?.postalCode,
+        deliveryCity: selectedTaxPayer.locations.D?.city,
+        deliveryAddress: selectedTaxPayer.locations.D?.address,
+      });
+    }
   };
 
   const renderPartner: ListRenderItem<TaxPayer> = (info: ListRenderItemInfo<TaxPayer>) => (

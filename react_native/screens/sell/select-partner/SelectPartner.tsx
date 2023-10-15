@@ -1,4 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { useNetInfo } from '@react-native-community/netinfo';
 import {
   allPass,
   complement,
@@ -21,7 +22,6 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { useNetInfo } from '@react-native-community/netinfo';
 
 import { Partners } from '../../../api/response-mappers/mapPartnersResponse';
 import Input from '../../../components/ui/Input';
@@ -80,7 +80,7 @@ export default function SelectPartner({ route, navigation }: SelectPartnerProps)
 
   const confirmPartnerHandler = async () => {
     await saveSelectedPartnerInFlow();
-    navigation.navigate('SelectItemsToSell');
+    navigation.replace('SelectItemsToSell');
   };
 
   const renderPartner: ListRenderItem<Partners[number]> = (

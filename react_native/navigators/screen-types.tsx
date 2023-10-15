@@ -21,15 +21,15 @@ export type StackParams = {
   Review: undefined;
   Summary: undefined;
 
-  SearchPartnerNavForm: undefined;
+  SearchPartnerNavForm: {
+    taxNumber?: string;
+  };
   AddPartnerForm: {
     taxNumber?: string;
     name?: string;
-    centralCountry?: string | undefined;
     centralPostalCode?: string | undefined;
     centralCity?: string | undefined;
     centralAddress?: string | undefined;
-    deliveryCountry?: string;
     deliveryPostalCode?: string;
     deliveryCity?: string;
     deliveryAddress?: string;

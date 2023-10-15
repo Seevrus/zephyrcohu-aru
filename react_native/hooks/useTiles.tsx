@@ -23,7 +23,8 @@ export default function useTiles(): TileT[] {
   const { data: user } = useCheckToken();
   const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
   const { numberOfReceipts } = useReceiptsContext();
-  const { isSelectedPartnerOnCurrentPartnerList } = useSellFlowContext();
+  const { isSelectedPartnerOnCurrentPartnerList, isPartnerChosenForCurrentReceipt } =
+    useSellFlowContext();
   const { areModificationsSaved } = useStorageFlowContext();
 
   const {
@@ -89,6 +90,8 @@ export default function useTiles(): TileT[] {
         onPress: () => {
           if (selectPartnerTileState === SelectPartnerTileState.Disabled) {
             Alert.alert('Funkció nem elérhető', selectPartnerTileMessage, [{ text: 'Értem' }]);
+          } else if (isPartnerChosenForCurrentReceipt) {
+            navigation.navigate('SelectItemsToSell');
           } else {
             const partnerScreen =
               isSelectedPartnerOnCurrentPartnerList === undefined ||
@@ -130,6 +133,7 @@ export default function useTiles(): TileT[] {
       areModificationsSaved,
       endErrandTileMessage,
       endErrandTileState,
+      isPartnerChosenForCurrentReceipt,
       isSelectedPartnerOnCurrentPartnerList,
       navigation,
       numberOfReceipts,

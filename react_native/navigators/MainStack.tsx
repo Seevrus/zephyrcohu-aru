@@ -6,6 +6,7 @@ import StartErrand from '../screens/errand-administration/StartErrand';
 import Login from '../screens/login/Login';
 import AddPartnerForm from '../screens/sell/add-partner/AddPartnerForm';
 import SearchPartnerNavForm from '../screens/sell/add-partner/SearchPartnerNavForm';
+import SelectItemsToSell from '../screens/sell/select-items/SelectItemsToSell';
 import ChangePassword from '../screens/start-page/ChangePassword';
 import Index from '../screens/start-page/Index';
 import Settings from '../screens/start-page/Settings';
@@ -103,14 +104,14 @@ export default function MainStack() {
           headerTitle: 'Új partner hozzáadása',
         }}
       />
+      <Stack.Screen
+        name="SelectItemsToSell"
+        component={SelectItemsToSell}
+        options={{
+          headerTitle: 'Tételek',
+        }}
+      />
       {/*  <Stack.Screen
-            name="SelectItems"
-            component={SelectItems}
-            options={{
-              headerTitle: 'Tételek',
-            }}
-          />
-          <Stack.Screen
             name="Review"
             component={Review}
             options={{
