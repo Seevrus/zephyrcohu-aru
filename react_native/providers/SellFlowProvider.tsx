@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -13,6 +14,7 @@ import useActiveRound from '../api/queries/useActiveRound';
 import usePartnerLists from '../api/queries/usePartnerLists';
 import usePartners from '../api/queries/usePartners';
 import { Partners } from '../api/response-mappers/mapPartnersResponse';
+import { TaxPayer } from '../api/response-mappers/mapSearchTaxPayerResponse';
 import { PartnerList } from '../navigators/screen-types';
 import { useReceiptsContext } from './ReceiptsProvider';
 
@@ -22,7 +24,8 @@ type SellFlowContextType = {
   selectedPartner: Partners[number];
   isSelectedPartnerOnCurrentPartnerList: boolean;
   selectPartner: (id: number) => void;
-  saveSelectedPartnerInFlow: () => void;
+  saveSelectedPartnerInFlow: () => Promise<void>;
+  saveNewPartnerInFlow: (newPartner: TaxPayer) => Promise<void>;
 };
 
 const SellFlowContext = createContext<SellFlowContextType>({} as SellFlowContextType);
@@ -44,6 +47,8 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       ? undefined
       : currentPartnerList?.partners?.includes(selectedPartner.id);
 
+  const maxPartnerIdInUse = useRef<number>(-1);
+
   const partnersToShow: Record<PartnerList, Partners> = useMemo(() => {
     const sortedPartners = sort(
       (partner1, partner2) =>
@@ -62,6 +67,15 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
   }, [currentPartnerList?.partners, partners]);
 
   useEffect(() => {
+    if (!!partners && maxPartnerIdInUse.current === -1) {
+      maxPartnerIdInUse.current = partners.reduce(
+        (currentMaxId, partner) => (partner.id > currentMaxId ? partner.id : currentMaxId),
+        -1
+      );
+    }
+  }, [partners]);
+
+  useEffect(() => {
     if (currentReceipt?.buyer) {
       const buyerId = currentReceipt.buyer?.id;
       setSelectedPartner(partners?.find((partner) => partner.id === buyerId) ?? null);
@@ -75,8 +89,8 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     [partners]
   );
 
-  const saveSelectedPartnerInFlow = useCallback(() => {
-    setCurrentReceiptBuyer({
+  const saveSelectedPartnerInFlow = useCallback(async () => {
+    await setCurrentReceiptBuyer({
       id: selectedPartner.id,
       name: selectedPartner.locations.C?.name ?? selectedPartner.locations.D?.name,
       country: selectedPartner.locations.C?.country ?? selectedPartner.locations.D?.country,
@@ -111,6 +125,31 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     setCurrentReceiptBuyer,
   ]);
 
+  const saveNewPartnerInFlow = useCallback(
+    async (newPartner: TaxPayer) => {
+      const newPartnerId = maxPartnerIdInUse.current + 1;
+      maxPartnerIdInUse.current = newPartnerId;
+
+      await setCurrentReceiptBuyer({
+        id: newPartnerId,
+        name: newPartner.locations.C?.name ?? newPartner.locations.D.name,
+        country: newPartner.locations.C?.country ?? newPartner.locations.D?.country,
+        postalCode: newPartner.locations.C?.postalCode ?? newPartner.locations.D?.postalCode,
+        city: newPartner.locations.C?.city ?? newPartner.locations.D?.city,
+        address: newPartner.locations.C?.address ?? newPartner.locations.D?.address,
+        deliveryName: newPartner.locations.D?.name,
+        deliveryCountry: newPartner.locations.D?.country,
+        deliveryPostalCode: newPartner.locations.D?.postalCode,
+        deliveryCity: newPartner.locations.D?.city,
+        deliveryAddress: newPartner.locations.D?.address,
+        iban: '',
+        bankAccount: '',
+        vatNumber: newPartner.vatNumber,
+      });
+    },
+    [setCurrentReceiptBuyer]
+  );
+
   const sellFlowContextValue = useMemo(
     () => ({
       isLoading: isActiveRoundLoading || isPartnersLoading || isPartnersListsLoading,
@@ -119,6 +158,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       isSelectedPartnerOnCurrentPartnerList,
       selectPartner,
       saveSelectedPartnerInFlow,
+      saveNewPartnerInFlow,
     }),
     [
       isActiveRoundLoading,
@@ -126,6 +166,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       isPartnersLoading,
       isSelectedPartnerOnCurrentPartnerList,
       partnersToShow,
+      saveNewPartnerInFlow,
       saveSelectedPartnerInFlow,
       selectPartner,
       selectedPartner,

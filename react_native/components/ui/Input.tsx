@@ -37,8 +37,9 @@ export default function Input({
       ...(labelPosition === 'top' && { marginBottom: 4 }),
     },
     input: {
-      ...(labelPosition === 'top' && { width: '100%' }),
+      backgroundColor: config.editable === false ? colors.disabled : colors.input,
       textAlign,
+      ...(labelPosition === 'top' && { width: '100%' }),
     },
   });
 
@@ -75,7 +76,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 8,
     borderRadius: 8,
-    backgroundColor: colors.input,
     color: 'white',
     fontSize: fontSizes.input,
     fontFamily: 'Roboto',

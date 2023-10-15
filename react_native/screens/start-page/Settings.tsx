@@ -2,17 +2,21 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import useLogout from '../../api/mutations/useLogout';
+import useCheckToken from '../../api/queries/useCheckToken';
 import useToken from '../../api/queries/useToken';
+import Loading from '../../components/Loading';
 import Button from '../../components/ui/Button';
 import colors from '../../constants/colors';
 import { SettingsProps } from '../../navigators/screen-types';
-import Loading from '../../components/Loading';
 
 export default function Settings({ navigation }: SettingsProps) {
+  const { data: user, isFetching: isUserLoading } = useCheckToken();
   const {
     data: { isTokenExpired },
   } = useToken();
   const { mutateAsync: logout } = useLogout();
+
+  const isRoundStarted = user?.state === 'R';
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -33,7 +37,7 @@ export default function Settings({ navigation }: SettingsProps) {
     });
   };
 
-  if (isLoading) {
+  if (isLoading || isUserLoading) {
     return <Loading />;
   }
 
@@ -50,7 +54,7 @@ export default function Settings({ navigation }: SettingsProps) {
           Jelszó megváltoztatása
         </Button>
       )}
-      {!isTokenExpired && (
+      {!isTokenExpired && !isRoundStarted && (
         <Button variant="neutral" onPress={logoutHandler}>
           Kijelentkezés
         </Button>

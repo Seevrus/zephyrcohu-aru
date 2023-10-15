@@ -25,7 +25,7 @@ class SearchTaxNumberRequest extends FormRequest
     {
         return [
             'data' => 'required',
-            'data.taxNumber' => 'required|string|min:0|size:8',
+            'data.taxNumber' => 'required|string|min:0|regex:/^\d{8}$/',
         ];
     }
 }

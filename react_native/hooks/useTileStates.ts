@@ -1,5 +1,5 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import useCheckToken from '../api/queries/useCheckToken';
 import useToken from '../api/queries/useToken';
@@ -74,7 +74,7 @@ export default function useTileStates() {
   );
   const [endErrandTileMessage, setEndErrandTileMessage] = useState<string>('');
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     enum DisabledTileMessage {
       LoggedOut = 'A funkció csak bejelentkezés után elérhető.',
       PasswordExpired = 'Az Ön jelszava lejárt, kérem változtassa meg.',
@@ -109,7 +109,7 @@ export default function useTileStates() {
     user,
   ]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!isTokenLoading && !isCheckTokenInProgress) {
       if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isUserIdle) {
         setStorageTileState(StorageTileState.Ok);
@@ -137,7 +137,7 @@ export default function useTileStates() {
     isUserIdle,
   ]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!isTokenLoading && !isCheckTokenInProgress) {
       if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isUserIdle) {
         setStartErrandTileState(StartErrandTileState.Ok);
@@ -172,7 +172,7 @@ export default function useTileStates() {
     numberOfReceipts,
   ]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!isTokenLoading && !isCheckTokenInProgress) {
       if (isRoundStarted) {
         setSelectPartnerTileState(SelectPartnerTileState.Neutral);
@@ -193,7 +193,7 @@ export default function useTileStates() {
     isTokenLoading,
   ]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!isTokenLoading && !isCheckTokenInProgress) {
       if (numberOfReceipts > 0) {
         setReceiptsTileState(ReceiptsTileState.Neutral);
@@ -212,7 +212,7 @@ export default function useTileStates() {
     numberOfReceipts,
   ]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!isTokenLoading && !isCheckTokenInProgress) {
       if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isRoundStarted) {
         setEndErrandTileState(EndErrandTileState.Warning);

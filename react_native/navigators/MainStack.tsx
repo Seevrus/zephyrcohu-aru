@@ -5,6 +5,7 @@ import fontSizes from '../constants/fontSizes';
 import StartErrand from '../screens/errand-administration/StartErrand';
 import Login from '../screens/login/Login';
 import AddPartnerForm from '../screens/sell/add-partner/AddPartnerForm';
+import SearchPartnerNavForm from '../screens/sell/add-partner/SearchPartnerNavForm';
 import ChangePassword from '../screens/start-page/ChangePassword';
 import Index from '../screens/start-page/Index';
 import Settings from '../screens/start-page/Settings';
@@ -89,10 +90,17 @@ export default function MainStack() {
         }}
       />
       <Stack.Screen
+        name="SearchPartnerNavForm"
+        component={SearchPartnerNavForm}
+        options={{
+          headerTitle: 'Új partner keresése',
+        }}
+      />
+      <Stack.Screen
         name="AddPartnerForm"
         component={AddPartnerForm}
         options={{
-          headerTitle: 'Partner hozzáadása',
+          headerTitle: 'Új partner hozzáadása',
         }}
       />
       {/*  <Stack.Screen

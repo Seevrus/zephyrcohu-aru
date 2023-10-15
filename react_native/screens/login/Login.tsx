@@ -1,22 +1,32 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import useLogin from '../../api/mutations/useLogin';
+import useCheckToken from '../../api/queries/useCheckToken';
+import Loading from '../../components/Loading';
 import ErrorCard from '../../components/info-cards/ErrorCard';
 import TextCard from '../../components/info-cards/TextCard';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import colors from '../../constants/colors';
 import { LoginProps } from '../../navigators/screen-types';
-import Loading from '../../components/Loading';
 
 export default function Login({ navigation }: LoginProps) {
+  const { data: user, isFetching: isUserLoading } = useCheckToken();
   const login = useLogin();
+
+  const isRoundStarted = user?.state === 'R';
 
   const [userName, setUserName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (user?.userName) {
+      setUserName(user?.userName);
+    }
+  }, [user?.userName]);
 
   const changeUserNameHandler = (value: string) => {
     setErrorMessage('');
@@ -47,17 +57,23 @@ export default function Login({ navigation }: LoginProps) {
 
   const isLoginButtonDisabled = userName.length === 0 || password.length === 0 || !!errorMessage;
 
-  if (isLoading) {
+  if (isLoading || isUserLoading) {
     return <Loading />;
   }
 
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
       <View style={styles.welcome}>
-        <TextCard>
-          Üdvözöljük a <Text style={styles.cardEmphasized}>Zephyr Boreal</Text> áruforgalmi
-          alkalmazás kezdőoldalán! Kérem jelentkezzen be.
-        </TextCard>
+        {isRoundStarted ? (
+          <TextCard>
+            Számlabeküldéshez és a kör zárásához kérem adja meg újból a jelszavát.
+          </TextCard>
+        ) : (
+          <TextCard>
+            Üdvözöljük a <Text style={styles.cardEmphasized}>Zephyr Boreal</Text> áruforgalmi
+            alkalmazás kezdőoldalán! Kérem jelentkezzen be.
+          </TextCard>
+        )}
       </View>
       {!!errorMessage && (
         <View style={styles.error}>
@@ -74,6 +90,7 @@ export default function Login({ navigation }: LoginProps) {
               autoCapitalize: 'none',
               autoComplete: 'off',
               autoCorrect: false,
+              editable: !isRoundStarted,
               importantForAutofill: 'no',
               onChangeText: changeUserNameHandler,
             }}

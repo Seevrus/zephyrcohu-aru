@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LayoutChangeEvent, ListRenderItemInfo, StyleSheet, Text, View } from 'react-native';
+import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
 
 import { Partners } from '../../../api/response-mappers/mapPartnersResponse';
 import AnimatedListItem from '../../../components/ui/AnimatedListItem';
@@ -10,20 +10,19 @@ import fontSizes from '../../../constants/fontSizes';
 
 type SelectionProps = {
   selected: boolean;
-  info: ListRenderItemInfo<Partners[number]>;
+  item: Partners[number];
   onSelect: (id: number) => void;
   onConfirmSelection: (id: number) => void;
 };
 
 export default function Selection({
   selected,
-  info,
+  item,
   onSelect,
   onConfirmSelection,
 }: SelectionProps) {
   const backgroundColor = selected ? colors.ok : colors.neutral;
-  const partner = info.item;
-  const { id, locations, phoneNumber } = partner;
+  const { id, locations, phoneNumber } = item;
 
   const deliveryName = locations.D?.name;
   const deliveryAddress = `${locations.D?.postalCode} ${locations.D?.city}, ${locations.D?.address}`;

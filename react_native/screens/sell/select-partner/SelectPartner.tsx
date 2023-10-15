@@ -21,6 +21,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 import { Partners } from '../../../api/response-mappers/mapPartnersResponse';
 import Input from '../../../components/ui/Input';
@@ -32,6 +33,7 @@ import Selection from './Selection';
 const NUM_PARTNERS_SHOWN = 10;
 
 export default function SelectPartner({ route, navigation }: SelectPartnerProps) {
+  const { isInternetReachable } = useNetInfo();
   const { partners, selectedPartner, selectPartner, saveSelectedPartnerInFlow } =
     useSellFlowContext();
 
@@ -76,8 +78,8 @@ export default function SelectPartner({ route, navigation }: SelectPartnerProps)
     );
   };
 
-  const confirmPartnerHandler = () => {
-    saveSelectedPartnerInFlow();
+  const confirmPartnerHandler = async () => {
+    await saveSelectedPartnerInFlow();
     navigation.navigate('SelectItemsToSell');
   };
 
@@ -85,7 +87,7 @@ export default function SelectPartner({ route, navigation }: SelectPartnerProps)
     info: ListRenderItemInfo<Partners[number]>
   ) => (
     <Selection
-      info={info}
+      item={info.item}
       selected={info.item.id === selectedPartner?.id}
       onSelect={selectPartner}
       onConfirmSelection={confirmPartnerHandler}
@@ -105,7 +107,11 @@ export default function SelectPartner({ route, navigation }: SelectPartnerProps)
           />
           <Pressable
             onPress={() => {
-              navigation.navigate('AddPartnerForm');
+              if (isInternetReachable) {
+                navigation.navigate('SearchPartnerNavForm');
+              } else {
+                navigation.navigate('AddPartnerForm');
+              }
             }}
           >
             <MaterialIcons name="add-circle-outline" size={40} color="white" />
@@ -114,6 +120,7 @@ export default function SelectPartner({ route, navigation }: SelectPartnerProps)
       </View>
       <View style={styles.listContainer}>
         <FlatList
+          key="select-partner-list"
           data={partnersShown}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderPartner}
