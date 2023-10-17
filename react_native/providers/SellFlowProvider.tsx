@@ -1,4 +1,4 @@
-import { sort } from 'ramda';
+import { indexBy, isEmpty, isNil, map, pipe, prop, sort, sortBy } from 'ramda';
 import {
   PropsWithChildren,
   createContext,
@@ -11,12 +11,34 @@ import {
 } from 'react';
 
 import useActiveRound from '../api/queries/useActiveRound';
+import useItems from '../api/queries/useItems';
 import usePartnerLists from '../api/queries/usePartnerLists';
 import usePartners from '../api/queries/usePartners';
 import { Partners } from '../api/response-mappers/mapPartnersResponse';
 import { TaxPayer } from '../api/response-mappers/mapSearchTaxPayerResponse';
+import { Expiration, ItemType } from '../api/response-types/ItemsResponseType';
 import { PartnerList } from '../navigators/screen-types';
 import { useReceiptsContext } from './ReceiptsProvider';
+import { useStorageContext } from './StorageProvider';
+import usePriceLists from '../api/queries/usePriceLists';
+
+export type SellExpiration = {
+  id: number;
+  expiresAt: string;
+  quantity: number | undefined;
+};
+
+export type SellExpirations = Record<number, SellExpiration>;
+
+export type SellItem = {
+  id: number;
+  name: string;
+  netPrice: number;
+  vatRate: string;
+  expirations: SellExpirations;
+};
+
+export type SellItems = SellItem[];
 
 type SellFlowContextType = {
   isLoading: boolean;
@@ -27,16 +49,25 @@ type SellFlowContextType = {
   selectPartner: (id: number) => void;
   saveSelectedPartnerInFlow: () => Promise<void>;
   saveNewPartnerInFlow: (newPartner: TaxPayer) => Promise<void>;
+  items: SellItems;
 };
 
 const SellFlowContext = createContext<SellFlowContextType>({} as SellFlowContextType);
 
 export default function SellFlowProvider({ children }: PropsWithChildren) {
   const { data: activeRound, isLoading: isActiveRoundLoading } = useActiveRound();
+  const { data: items } = useItems();
   const { data: partners, isLoading: isPartnersLoading } = usePartners();
   const { data: partnerLists, isLoading: isPartnersListsLoading } = usePartnerLists();
+  const { data: priceLists, isLoading: isPriceListsLoading } = usePriceLists();
   const { currentReceipt, setCurrentReceiptBuyer } = useReceiptsContext();
   const isPartnerChosenForCurrentReceipt = !!currentReceipt?.buyer;
+  const {
+    storage,
+    originalStorage,
+    isLoading: isStorageLoading,
+    slowSaveStorageExpirations,
+  } = useStorageContext();
 
   const currentPartnerList = useMemo(
     () => partnerLists?.find((partnerList) => partnerList.id === activeRound?.partnerListId),
@@ -48,6 +79,11 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     !currentPartnerList || !selectedPartner
       ? undefined
       : currentPartnerList?.partners?.includes(selectedPartner.id);
+
+  const currentPriceList = useMemo(
+    () => priceLists?.find((priceList) => priceList.id === selectedPartner?.priceList?.id),
+    [priceLists, selectedPartner?.priceList?.id]
+  );
 
   const maxPartnerIdInUse = useRef<number>(-1);
 
@@ -68,6 +104,13 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     };
   }, [currentPartnerList?.partners, partners]);
 
+  const [originalStorageExpirations, setOriginalStorageExpirations] = useState<
+    Record<number, Record<number, number>>
+  >({});
+  const [storageExpirations, setStorageExpirations] = useState<
+    Record<number, Record<number, number>>
+  >({});
+
   useEffect(() => {
     if (!!partners && maxPartnerIdInUse.current === -1) {
       maxPartnerIdInUse.current = partners.reduce(
@@ -83,6 +126,40 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       setSelectedPartner(partners?.find((partner) => partner.id === buyerId) ?? null);
     }
   }, [currentReceipt?.buyer, partners]);
+
+  useEffect(() => {
+    setOriginalStorageExpirations((prevExpirations) => {
+      if (!isEmpty(prevExpirations) || isNil(originalStorage)) return prevExpirations;
+
+      const originalExpirations: Record<number, Record<number, number>> = {};
+
+      originalStorage.expirations.forEach((expiration) => {
+        if (!originalExpirations[expiration.itemId]) {
+          originalExpirations[expiration.itemId] = {};
+        }
+        originalExpirations[expiration.itemId][expiration.expirationId] = expiration.quantity;
+      });
+
+      return originalExpirations;
+    });
+  }, [originalStorage]);
+
+  useEffect(() => {
+    setStorageExpirations((prevExpirations) => {
+      if (!isEmpty(prevExpirations) || isNil(storage)) return prevExpirations;
+
+      const expirations: Record<number, Record<number, number>> = {};
+
+      storage.expirations.forEach((expiration) => {
+        if (!expirations[expiration.itemId]) {
+          expirations[expiration.itemId] = {};
+        }
+        expirations[expiration.itemId][expiration.expirationId] = expiration.quantity;
+      });
+
+      return expirations;
+    });
+  }, [storage]);
 
   const selectPartner = useCallback(
     (id: number) => {
@@ -152,9 +229,37 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     [setCurrentReceiptBuyer]
   );
 
+  const sellItems = useMemo(
+    () =>
+      pipe(
+        map<ItemType, SellItem>((item) => ({
+          id: item.id,
+          name: item.name,
+          netPrice:
+            currentPriceList?.items.find((i) => i.itemId === item.id)?.netPrice ?? item.netPrice,
+          vatRate: item.vatRate,
+          expirations: pipe(
+            map<Expiration, SellExpiration>((expiration) => ({
+              id: expiration.id,
+              expiresAt: expiration.expiresAt,
+              quantity: storageExpirations[item.id]?.[expiration.id] ?? 0,
+            })),
+            indexBy(prop('id'))
+          )(item.expirations),
+        })),
+        sortBy(prop('name'))
+      )(items ?? []) satisfies SellItems,
+    [currentPriceList?.items, items, storageExpirations]
+  );
+
   const sellFlowContextValue = useMemo(
     () => ({
-      isLoading: isActiveRoundLoading || isPartnersLoading || isPartnersListsLoading,
+      isLoading:
+        isActiveRoundLoading ||
+        isPartnersLoading ||
+        isPartnersListsLoading ||
+        isPriceListsLoading ||
+        isStorageLoading,
       partners: partnersToShow,
       selectedPartner,
       isSelectedPartnerOnCurrentPartnerList,
@@ -162,18 +267,22 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       selectPartner,
       saveSelectedPartnerInFlow,
       saveNewPartnerInFlow,
+      items: sellItems,
     }),
     [
       isActiveRoundLoading,
       isPartnerChosenForCurrentReceipt,
       isPartnersListsLoading,
       isPartnersLoading,
+      isPriceListsLoading,
       isSelectedPartnerOnCurrentPartnerList,
+      isStorageLoading,
       partnersToShow,
       saveNewPartnerInFlow,
       saveSelectedPartnerInFlow,
       selectPartner,
       selectedPartner,
+      sellItems,
     ]
   );
 

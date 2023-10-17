@@ -1,7 +1,7 @@
 import { BaseItemType } from './common/BaseItemType';
 import { TimeStamps } from './common/TimeStamps';
 
-type Expiration = {
+export type Expiration = {
   id: number;
   barcode: string | null;
   expiresAt: string; // UTC
@@ -14,7 +14,7 @@ type Discount = {
   amount: number;
 } & TimeStamps;
 
-type ItemType = BaseItemType & {
+export type ItemType = BaseItemType & {
   CNCode: string;
   barcode: string | null;
   productCatalogCode: string;

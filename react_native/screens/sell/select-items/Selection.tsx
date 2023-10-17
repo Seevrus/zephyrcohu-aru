@@ -2,14 +2,14 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { eqProps, pipe, replace, trim } from 'ramda';
 import { memo, useState } from 'react';
 import { ListRenderItemInfo, Pressable, StyleSheet, View } from 'react-native';
+
+import { format } from 'date-fns';
 import Input from '../../../components/ui/Input';
+import { SellExpiration } from '../../../providers/SellFlowProvider';
 
 type SelectionProps = {
-  info: ListRenderItemInfo<{
-    expiresAt: string;
-    quantity: number;
-  }>;
-  onQuantityModified: (expiresAt: string, newQuantity: number) => void;
+  info: ListRenderItemInfo<SellExpiration>;
+  onQuantityModified: (expirationId: number, newQuantity: number) => void;
 };
 
 function Selection({ info, onQuantityModified }: SelectionProps) {
@@ -22,21 +22,21 @@ function Selection({ info, onQuantityModified }: SelectionProps) {
 
     if (formattedQuantity < 0) {
       setSelectedQuantity(null);
-      onQuantityModified(info.item.expiresAt, null);
+      onQuantityModified(info.item.id, null);
     } else if (formattedQuantity > info.item.quantity) {
       const newSelectedQuantity = info.item.quantity === 0 ? null : info.item.quantity;
       setSelectedQuantity(newSelectedQuantity);
-      onQuantityModified(info.item.expiresAt, newSelectedQuantity);
+      onQuantityModified(info.item.id, newSelectedQuantity);
     } else {
       setSelectedQuantity(nullIshFormattedQuantity);
-      onQuantityModified(info.item.expiresAt, nullIshFormattedQuantity);
+      onQuantityModified(info.item.id, nullIshFormattedQuantity);
     }
   };
 
   const label =
     info.item.expiresAt === 'Rendelés'
       ? info.item.expiresAt
-      : `${info.item.expiresAt} (${info.item.quantity})`;
+      : `${format(new Date(info.item.expiresAt), 'yyyy-MM')} (${info.item.quantity})`;
 
   return (
     <View style={styles.selectionContainer}>

@@ -4,9 +4,7 @@ import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
 import AnimatedListItem from '../../../components/ui/AnimatedListItem';
 import colors from '../../../constants/colors';
-import { useAppSelector } from '../../../store/hooks';
-import { Item } from '../../../store/items-slice/items-slice-types';
-import { Expiration } from '../../../store/stores-slice/stores-slice-types';
+import { SellExpiration, SellItem } from '../../../providers/SellFlowProvider';
 import Selection from './Selection';
 
 export enum ItemAvailability {
@@ -16,28 +14,27 @@ export enum ItemAvailability {
 }
 
 type SelectItemProps = {
-  info: ListRenderItemInfo<Item>;
+  info: ListRenderItemInfo<SellItem>;
   type: ItemAvailability;
-  upsertSelectedItem: (id: string, name: string, expiresAt: string, quantity: number) => void;
-  upsertOrderItem: (id: string, name: string, quantity: number) => void;
+  upsertSelectedItem: (id: number, expirationId: number, quantity: number) => void;
+  upsertOrderItem: (id: number, quantity: number) => void;
 };
 
 function SelectItem({ info, type, upsertSelectedItem, upsertOrderItem }: SelectItemProps) {
-  const storeItem = useAppSelector((state) => state.stores.store.items[info.item.id]);
-
-  const expirations: Expiration[] = pipe(
+  const expirations: SellExpiration[] = pipe(
     values,
     append({
+      id: -1000,
       expiresAt: 'Rendelés',
       quantity: 1000,
     })
-  )(storeItem.expirations ?? []);
+  )(info.item.expirations ?? []);
 
-  const modifyQuantity = (expiresAt: string, newQuantity: number) => {
-    if (expiresAt === 'Rendelés') {
-      upsertOrderItem(String(info.item.id), info.item.name, newQuantity);
+  const modifyQuantity = (expirationId: number, newQuantity: number) => {
+    if (expirationId === -1000) {
+      upsertOrderItem(info.item.id, newQuantity);
     } else {
-      upsertSelectedItem(String(info.item.id), info.item.name, expiresAt, newQuantity);
+      upsertSelectedItem(info.item.id, expirationId, newQuantity);
     }
   };
 
@@ -52,7 +49,7 @@ function SelectItem({ info, type, upsertSelectedItem, upsertOrderItem }: SelectI
       id={info.item.id}
       expandedInitially={false}
       title={info.item.name}
-      height={expirations.length * 100}
+      height={expirations.length * 105}
       backgroundColor={backgroundColors[type]}
     >
       <View style={styles.selectItemContainer}>

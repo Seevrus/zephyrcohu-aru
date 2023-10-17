@@ -66,10 +66,10 @@ export default function StorageProvider({ children }: PropsWithChildren) {
         assoc(
           'expirations',
           pipe(
-            toPairs<(typeof storageExpirations)[number]>,
+            toPairs<typeof storageExpirations>,
             map(([itemId, itemExpirations]) =>
               pipe(
-                toPairs<(typeof storageExpirations)[number][number]>,
+                toPairs<(typeof storageExpirations)[number]>,
                 map(([expirationId, quantity]) => ({
                   itemId: Number(itemId),
                   expirationId: Number(expirationId),
