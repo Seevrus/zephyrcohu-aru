@@ -27,7 +27,7 @@ export type ReceiptBuyer = {
   vatNumber: string;
 };
 
-type ReceiptItem = {
+export type ReceiptItem = {
   id: number;
   CNCode: string;
   articleNumber: string;

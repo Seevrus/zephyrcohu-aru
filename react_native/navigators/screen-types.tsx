@@ -12,12 +12,15 @@ export type StackParams = {
   SelectItemsFromStore: {
     scannedBarCode?: string;
   };
-  ScanBarCode: undefined;
+  ScanBarCodeInStorage: undefined;
   ReviewStorageChanges: undefined;
   StorageChangesSummary: undefined;
 
   SelectPartner: NavigatorScreenParams<PartnerTabParams>;
-  SelectItemsToSell: undefined;
+  SelectItemsToSell: {
+    scannedBarCode?: string;
+  };
+  ScanBarCodeInSell: undefined;
   Review: undefined;
   Summary: undefined;
 
@@ -52,7 +55,7 @@ export type SettingsProps = NativeStackScreenProps<StackParams, 'Settings'>;
 
 export type SelectStoreProps = NativeStackScreenProps<StackParams, 'SelectStore'>;
 export type SelectItemsFromStoreProps = NativeStackScreenProps<StackParams, 'SelectItemsFromStore'>;
-export type ScanBarCodeProps = NativeStackScreenProps<StackParams, 'ScanBarCode'>;
+export type ScanBarCodeInStorageProps = NativeStackScreenProps<StackParams, 'ScanBarCodeInStorage'>;
 export type ReviewStorageChangesProps = NativeStackScreenProps<StackParams, 'ReviewStorageChanges'>;
 export type StorageChangesSummaryProps = NativeStackScreenProps<
   StackParams,
@@ -60,6 +63,7 @@ export type StorageChangesSummaryProps = NativeStackScreenProps<
 >;
 
 export type SelectItemsToSellProps = BottomTabScreenProps<StackParams, 'SelectItemsToSell'>;
+export type ScanBarCodeInSellProps = NativeStackScreenProps<StackParams, 'ScanBarCodeInSell'>;
 export type ReviewProps = NativeStackScreenProps<StackParams, 'Review'>;
 export type SummaryProps = NativeStackScreenProps<StackParams, 'Summary'>;
 

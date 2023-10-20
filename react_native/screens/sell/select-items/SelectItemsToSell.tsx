@@ -1,26 +1,30 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { EventArg } from '@react-navigation/native';
 import {
   __,
   all,
   any,
   assocPath,
-  defaultTo,
   dissoc,
-  filter,
   gte,
-  includes,
   isEmpty,
   isNil,
   not,
   pipe,
   prop,
   propSatisfies,
-  take,
-  toLower,
   values,
 } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Animated, ListRenderItemInfo, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Animated,
+  ListRenderItemInfo,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { formatCurrency } from 'react-native-format-currency';
 
 import Loading from '../../../components/Loading';
@@ -30,21 +34,32 @@ import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
 import { SelectItemsToSellProps } from '../../../navigators/screen-types';
 import { useReceiptsContext } from '../../../providers/ReceiptsProvider';
-import { SellItem, SellItems, useSellFlowContext } from '../../../providers/SellFlowProvider';
+import { SellItem, useSellFlowContext } from '../../../providers/SellFlowProvider';
 import SelectItem, { ItemAvailability } from './SelectItem';
+import calculateAmounts from '../../../utils/calculateAmounts';
 
 const NUM_ITEMS_SHOWN = 10;
+const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
 
-export default function SelectItemsToSell({ navigation }: SelectItemsToSellProps) {
-  const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
+export default function SelectItemsToSell({ navigation, route }: SelectItemsToSellProps) {
+  const scannedBarCode = route.params?.scannedBarCode;
 
   const { resetCurrentReceipt } = useReceiptsContext();
-  const { isLoading, items } = useSellFlowContext();
+  const {
+    isLoading: isContextLoading,
+    items,
+    selectedItems,
+    setSelectedItems,
+    selectedOrderItems,
+    setSelectedOrderItems,
+    searchTerm,
+    setSearchTerm,
+    barCode,
+    setBarCode,
+    saveSelectedItemsInFlow,
+  } = useSellFlowContext();
 
-  const [itemsShown, setItemsShown] = useState<SellItems>(take(NUM_ITEMS_SHOWN, items));
-
-  const [selectedItems, setSelectedItems] = useState<Record<number, Record<number, number>>>({});
-  const [selectedOrderItems, setSelectedOrderItems] = useState<Record<number, number>>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [netTotal, grossTotal] = useMemo(
     () =>
@@ -60,11 +75,13 @@ export default function SelectItemsToSell({ navigation }: SelectItemsToSellProps
 
           const currentItem = items.find((item) => item.id === +itemId);
           const { netPrice, vatRate } = currentItem;
-          const netAmount = netPrice * currentQuantity;
-          const vatRateNumeric = defaultTo(0, +vatRate);
-          const vatAmount = Math.round(netAmount * (vatRateNumeric / 100));
+          const { netAmount, grossAmount } = calculateAmounts({
+            netPrice,
+            quantity: currentQuantity,
+            vatRate,
+          });
 
-          return [prevNetAmount + netAmount, prevGrossAmount + netAmount + vatAmount];
+          return [prevNetAmount + netAmount, prevGrossAmount + grossAmount];
         },
         [0, 0]
       ),
@@ -80,54 +97,60 @@ export default function SelectItemsToSell({ navigation }: SelectItemsToSellProps
 
           const currentItem = items.find((item) => item.id === +itemId);
           const { netPrice, vatRate } = currentItem;
-          const netAmount = netPrice * orderQuantity;
-          const vatRateNumeric = defaultTo(0, +vatRate);
-          const vatAmount = Math.round(netAmount * (vatRateNumeric / 100));
+          const { netAmount, grossAmount } = calculateAmounts({
+            netPrice,
+            quantity: orderQuantity,
+            vatRate,
+          });
 
-          return [prevNetOrderAmount + netAmount, prevGrossOrderAmount + netAmount + vatAmount];
+          return [prevNetOrderAmount + netAmount, prevGrossOrderAmount + grossAmount];
         },
         [0, 0]
       ),
     [items, selectedOrderItems]
   );
 
-  const upsertSelectedItem = useCallback((id: number, expirationId: number, quantity: number) => {
-    if (!quantity) {
-      setSelectedItems((currentItems) => {
-        const itemsWithNewQuantity = assocPath([id, expirationId], quantity, currentItems);
+  const upsertSelectedItem = useCallback(
+    (id: number, expirationId: number, quantity: number) => {
+      if (!quantity) {
+        setSelectedItems((currentItems) => {
+          const itemsWithNewQuantity = assocPath([id, expirationId], quantity, currentItems);
 
-        const areAllQuantitiesZero = pipe(
-          values,
-          all(propSatisfies(isNil, 'quantity'))
-        )(itemsWithNewQuantity[id]);
+          const areAllQuantitiesZero = pipe(
+            values,
+            all(propSatisfies(isNil, 'quantity'))
+          )(itemsWithNewQuantity[id]);
 
-        if (areAllQuantitiesZero) {
-          return dissoc(id, currentItems);
-        }
+          if (areAllQuantitiesZero) {
+            return dissoc(id, currentItems);
+          }
 
-        return itemsWithNewQuantity;
-      });
-    } else {
-      setSelectedItems(assocPath([id, expirationId], quantity));
+          return itemsWithNewQuantity;
+        });
+      } else {
+        setSelectedItems(assocPath([id, expirationId], quantity));
+      }
+    },
+    [setSelectedItems]
+  );
+
+  const upsertOrderItem = useCallback(
+    (id: number, quantity: number) => {
+      if (!quantity) {
+        setSelectedOrderItems(dissoc(String(id)));
+      } else {
+        setSelectedOrderItems((prevItems) => ({ ...prevItems, [id]: quantity }));
+      }
+    },
+    [setSelectedOrderItems]
+  );
+
+  useEffect(() => {
+    if (!isNil(scannedBarCode) && barCode !== scannedBarCode) {
+      setBarCode(scannedBarCode);
+      navigation.setParams({ scannedBarCode: undefined });
     }
-  }, []);
-
-  const upsertOrderItem = useCallback((id: number, quantity: number) => {
-    if (!quantity) {
-      setSelectedOrderItems(dissoc(String(id)));
-    } else {
-      setSelectedOrderItems((prevItems) => ({ ...prevItems, [id]: quantity }));
-    }
-  }, []);
-
-  const searchInputHandler = (inputValue: string) => {
-    setItemsShown(
-      pipe(
-        filter<SellItem>(pipe(prop('name'), toLower, includes(inputValue.toLowerCase()))),
-        (filteredItems: SellItems) => take(NUM_ITEMS_SHOWN, filteredItems)
-      )(items)
-    );
-  };
+  }, [barCode, navigation, scannedBarCode, setBarCode]);
 
   useEffect(() => {
     const listener = (
@@ -172,14 +195,14 @@ export default function SelectItemsToSell({ navigation }: SelectItemsToSellProps
 
   const canConfirmItems = not(isEmpty(selectedItems));
   const confirmButtonVariant = canConfirmItems ? 'ok' : 'disabled';
-  // const confirmItemsHandler = () => {
-  //   if (canConfirmItems) {
-  //     dispatch(roundActions.putItems(selectedItems));
-  //     dispatch(roundActions.putOrderItems(selectedOrderItems));
-  //     navigation.removeListener('beforeRemove', customBackHandler);
-  //     navigation.navigate('Review');
-  //   }
-  // };
+  const confirmItemsHandler = async () => {
+    if (canConfirmItems) {
+      setIsLoading(true);
+      await saveSelectedItemsInFlow();
+      setIsLoading(false);
+      // Navigate to review
+    }
+  };
 
   const renderItem = (info: ListRenderItemInfo<SellItem>) => {
     let type: ItemAvailability;
@@ -203,7 +226,7 @@ export default function SelectItemsToSell({ navigation }: SelectItemsToSellProps
     );
   };
 
-  if (isLoading) {
+  if (isContextLoading || isLoading) {
     return <Loading />;
   }
 
@@ -211,16 +234,35 @@ export default function SelectItemsToSell({ navigation }: SelectItemsToSellProps
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <View style={styles.searchInputContainer}>
+          <MaterialCommunityIcons name="magnify" size={30} color="white" />
           <Input
-            label="Keresés"
+            label=""
             labelPosition="left"
-            config={{ onChangeText: searchInputHandler }}
+            value={searchTerm}
+            config={{ onChangeText: setSearchTerm }}
           />
+          {barCode ? (
+            <Pressable
+              onPress={() => {
+                setBarCode('');
+              }}
+            >
+              <MaterialCommunityIcons name="barcode-off" size={40} color="white" />
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => {
+                navigation.navigate('ScanBarCodeInSell');
+              }}
+            >
+              <MaterialCommunityIcons name="barcode" size={40} color="white" />
+            </Pressable>
+          )}
         </View>
       </View>
       <View style={styles.listContainer}>
         <Animated.FlatList
-          data={itemsShown}
+          data={items.slice(0, NUM_ITEMS_SHOWN)}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderItem}
         />
@@ -235,7 +277,7 @@ export default function SelectItemsToSell({ navigation }: SelectItemsToSellProps
           </Text>
         </View>
         <View style={styles.buttonContainer}>
-          <Button variant={confirmButtonVariant} onPress={() => {}}>
+          <Button variant={confirmButtonVariant} onPress={confirmItemsHandler}>
             Tétellista véglegesítése
           </Button>
         </View>
@@ -255,6 +297,8 @@ const styles = StyleSheet.create({
   },
   searchInputContainer: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
     marginHorizontal: '7%',
   },
   listContainer: {

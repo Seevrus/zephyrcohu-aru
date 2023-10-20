@@ -10,7 +10,11 @@ import {
   useState,
 } from 'react';
 
-import { ReceiptBuyer, ReceiptRequest } from '../api/request-types/CreateReceiptsRequest';
+import {
+  ReceiptBuyer,
+  ReceiptItem,
+  ReceiptRequest,
+} from '../api/request-types/CreateReceiptsRequest';
 import useCheckToken from '../api/queries/useCheckToken';
 
 type ReceiptsContextType = {
@@ -19,6 +23,7 @@ type ReceiptsContextType = {
   currentReceipt: Partial<ReceiptRequest>;
   resetCurrentReceipt: () => Promise<void>;
   setCurrentReceiptBuyer: (buyer: ReceiptBuyer) => Promise<void>;
+  setCurrentReceiptItems: (items: ReceiptItem[]) => Promise<void>;
 };
 
 const ReceiptsContext = createContext<ReceiptsContextType>({} as ReceiptsContextType);
@@ -98,6 +103,15 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
     [currentReceipt, persistCurrentReceipt]
   );
 
+  const setCurrentReceiptItems = useCallback(
+    async (items: ReceiptItem[]) => {
+      setCurrentReceipt(assoc('items', items));
+      const updatedReceipt = assoc('items', items, currentReceipt);
+      await persistCurrentReceipt(updatedReceipt);
+    },
+    [currentReceipt, persistCurrentReceipt]
+  );
+
   const receiptsContextValue = useMemo(
     () => ({
       receipts,
@@ -105,8 +119,16 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
       currentReceipt,
       resetCurrentReceipt,
       setCurrentReceiptBuyer,
+      setCurrentReceiptItems,
     }),
-    [currentReceipt, numberOfReceipts, receipts, resetCurrentReceipt, setCurrentReceiptBuyer]
+    [
+      currentReceipt,
+      numberOfReceipts,
+      receipts,
+      resetCurrentReceipt,
+      setCurrentReceiptBuyer,
+      setCurrentReceiptItems,
+    ]
   );
 
   return (

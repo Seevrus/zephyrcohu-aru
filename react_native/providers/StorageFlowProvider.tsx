@@ -16,6 +16,7 @@ import useItems from '../api/queries/useItems';
 import useStoreDetails from '../api/queries/useStoreDetails';
 import useStores from '../api/queries/useStores';
 import { useStorageContext } from './StorageProvider';
+import itemsSearchReducer, { SearchStateActionKind } from '../hooks/itemsSearchReducer';
 
 export type ListItem = {
   itemId: number;
@@ -47,43 +48,6 @@ type StorageFlowContextType = {
 
 const StorageFlowContext = createContext<StorageFlowContextType>({} as StorageFlowContextType);
 
-type SearchState = {
-  searchTerm: string;
-  barCode: string;
-};
-
-enum SearchStateActionKind {
-  SetSearchTerm = 'SetSearchTerm',
-  SetBarCode = 'SetBarCode',
-  ClearSearch = 'ClearSearch',
-}
-
-type SearchStateAction = {
-  type: SearchStateActionKind;
-  payload: string;
-};
-
-function searchStateReducer(_: SearchState, action: SearchStateAction): SearchState {
-  switch (action.type) {
-    case SearchStateActionKind.SetSearchTerm:
-      return {
-        searchTerm: action.payload,
-        barCode: '',
-      };
-    case SearchStateActionKind.SetBarCode:
-      return {
-        searchTerm: '',
-        barCode: action.payload,
-      };
-    case SearchStateActionKind.ClearSearch:
-    default:
-      return {
-        searchTerm: '',
-        barCode: '',
-      };
-  }
-}
-
 export default function StorageFlowProvider({ children }: PropsWithChildren) {
   const { data: itemsResponse } = useItems();
   const {
@@ -114,7 +78,7 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
 
   const { mutateAsync: saveSelectedItems } = useSaveSelectedItems();
 
-  const [searchState, dispatchSearchState] = useReducer(searchStateReducer, {
+  const [searchState, dispatchSearchState] = useReducer(itemsSearchReducer, {
     searchTerm: '',
     barCode: '',
   });

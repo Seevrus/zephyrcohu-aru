@@ -70,7 +70,7 @@ export default function SelectItemsFromStore({ navigation, route }: SelectItemsF
           ) : (
             <Pressable
               onPress={() => {
-                navigation.navigate('ScanBarCode');
+                navigation.navigate('ScanBarCodeInStorage');
               }}
             >
               <MaterialCommunityIcons name="barcode" size={40} color="white" />

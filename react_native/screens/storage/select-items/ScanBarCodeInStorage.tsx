@@ -1,7 +1,7 @@
 import BorealBarCodeScanner from '../../../components/bar-code-scanner/BorealBarCodeScanner';
-import { ScanBarCodeProps } from '../../../navigators/screen-types';
+import { ScanBarCodeInStorageProps } from '../../../navigators/screen-types';
 
-export default function ScanBarCode({ navigation }: ScanBarCodeProps) {
+export default function ScanBarCodeInStorage({ navigation }: ScanBarCodeInStorageProps) {
   const handleBarCodeScanned = (code: string) => {
     navigation.replace('SelectItemsFromStore', { scannedBarCode: code });
   };

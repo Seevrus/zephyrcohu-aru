@@ -1,11 +1,15 @@
-import { indexBy, isEmpty, isNil, map, pipe, prop, sort, sortBy } from 'ramda';
+import { format } from 'date-fns';
+import { filter, identity, indexBy, isEmpty, isNil, map, pipe, prop, sort, sortBy } from 'ramda';
 import {
+  Dispatch,
   PropsWithChildren,
+  SetStateAction,
   createContext,
   useCallback,
   useContext,
   useEffect,
   useMemo,
+  useReducer,
   useRef,
   useState,
 } from 'react';
@@ -14,13 +18,15 @@ import useActiveRound from '../api/queries/useActiveRound';
 import useItems from '../api/queries/useItems';
 import usePartnerLists from '../api/queries/usePartnerLists';
 import usePartners from '../api/queries/usePartners';
+import usePriceLists from '../api/queries/usePriceLists';
 import { Partners } from '../api/response-mappers/mapPartnersResponse';
 import { TaxPayer } from '../api/response-mappers/mapSearchTaxPayerResponse';
 import { Expiration, ItemType } from '../api/response-types/ItemsResponseType';
+import itemsSearchReducer, { SearchStateActionKind } from '../hooks/itemsSearchReducer';
 import { PartnerList } from '../navigators/screen-types';
+import calculateAmounts from '../utils/calculateAmounts';
 import { useReceiptsContext } from './ReceiptsProvider';
 import { useStorageContext } from './StorageProvider';
-import usePriceLists from '../api/queries/usePriceLists';
 
 export type SellExpiration = {
   id: number;
@@ -33,6 +39,7 @@ export type SellExpirations = Record<number, SellExpiration>;
 export type SellItem = {
   id: number;
   name: string;
+  barcodes: string[];
   netPrice: number;
   vatRate: string;
   expirations: SellExpirations;
@@ -50,6 +57,15 @@ type SellFlowContextType = {
   saveSelectedPartnerInFlow: () => Promise<void>;
   saveNewPartnerInFlow: (newPartner: TaxPayer) => Promise<void>;
   items: SellItems;
+  selectedItems: Record<number, Record<number, number>>;
+  setSelectedItems: Dispatch<SetStateAction<Record<number, Record<number, number>>>>;
+  selectedOrderItems: Record<number, number>;
+  setSelectedOrderItems: Dispatch<SetStateAction<Record<number, number>>>;
+  searchTerm: string;
+  setSearchTerm: (payload: string) => void;
+  barCode: string;
+  setBarCode: (payload: string) => void;
+  saveSelectedItemsInFlow: () => Promise<void>;
 };
 
 const SellFlowContext = createContext<SellFlowContextType>({} as SellFlowContextType);
@@ -60,14 +76,9 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
   const { data: partners, isLoading: isPartnersLoading } = usePartners();
   const { data: partnerLists, isLoading: isPartnersListsLoading } = usePartnerLists();
   const { data: priceLists, isLoading: isPriceListsLoading } = usePriceLists();
-  const { currentReceipt, setCurrentReceiptBuyer } = useReceiptsContext();
+  const { currentReceipt, setCurrentReceiptBuyer, setCurrentReceiptItems } = useReceiptsContext();
   const isPartnerChosenForCurrentReceipt = !!currentReceipt?.buyer;
-  const {
-    storage,
-    originalStorage,
-    isLoading: isStorageLoading,
-    slowSaveStorageExpirations,
-  } = useStorageContext();
+  const { storage, isLoading: isStorageLoading } = useStorageContext();
 
   const currentPartnerList = useMemo(
     () => partnerLists?.find((partnerList) => partnerList.id === activeRound?.partnerListId),
@@ -104,12 +115,29 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     };
   }, [currentPartnerList?.partners, partners]);
 
-  const [originalStorageExpirations, setOriginalStorageExpirations] = useState<
-    Record<number, Record<number, number>>
-  >({});
   const [storageExpirations, setStorageExpirations] = useState<
     Record<number, Record<number, number>>
   >({});
+
+  const [selectedItems, setSelectedItems] = useState<Record<number, Record<number, number>>>({});
+  const [selectedOrderItems, setSelectedOrderItems] = useState<Record<number, number>>({});
+
+  const [searchState, dispatchSearchState] = useReducer(itemsSearchReducer, {
+    searchTerm: '',
+    barCode: '',
+  });
+
+  const { searchTerm, barCode } = searchState;
+
+  const setSearchTerm = useCallback(
+    (payload: string) =>
+      dispatchSearchState({ type: SearchStateActionKind.SetSearchTerm, payload }),
+    []
+  );
+  const setBarCode = useCallback(
+    (payload: string) => dispatchSearchState({ type: SearchStateActionKind.SetBarCode, payload }),
+    []
+  );
 
   useEffect(() => {
     if (!!partners && maxPartnerIdInUse.current === -1) {
@@ -126,23 +154,6 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       setSelectedPartner(partners?.find((partner) => partner.id === buyerId) ?? null);
     }
   }, [currentReceipt?.buyer, partners]);
-
-  useEffect(() => {
-    setOriginalStorageExpirations((prevExpirations) => {
-      if (!isEmpty(prevExpirations) || isNil(originalStorage)) return prevExpirations;
-
-      const originalExpirations: Record<number, Record<number, number>> = {};
-
-      originalStorage.expirations.forEach((expiration) => {
-        if (!originalExpirations[expiration.itemId]) {
-          originalExpirations[expiration.itemId] = {};
-        }
-        originalExpirations[expiration.itemId][expiration.expirationId] = expiration.quantity;
-      });
-
-      return originalExpirations;
-    });
-  }, [originalStorage]);
 
   useEffect(() => {
     setStorageExpirations((prevExpirations) => {
@@ -235,6 +246,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
         map<ItemType, SellItem>((item) => ({
           id: item.id,
           name: item.name,
+          barcodes: item.expirations.map((expiration) => `${item.barcode}${expiration.barcode}`),
           netPrice:
             currentPriceList?.items.find((i) => i.itemId === item.id)?.netPrice ?? item.netPrice,
           vatRate: item.vatRate,
@@ -247,10 +259,50 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
             indexBy(prop('id'))
           )(item.expirations),
         })),
+        filter<SellItem>(
+          (item) =>
+            item.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+            item.barcodes.some((bc) => bc.includes(barCode))
+        ),
         sortBy(prop('name'))
       )(items ?? []) satisfies SellItems,
-    [currentPriceList?.items, items, storageExpirations]
+    [barCode, currentPriceList?.items, items, searchTerm, storageExpirations]
   );
+
+  const saveSelectedItemsInFlow = useCallback(async () => {
+    await setCurrentReceiptItems(
+      items
+        .flatMap((item) =>
+          item.expirations.map((expiration) => {
+            const quantity = selectedItems[item.id]?.[expiration.id];
+
+            if (quantity === undefined) return undefined;
+
+            const { netAmount, vatAmount, grossAmount } = calculateAmounts({
+              netPrice: item.netPrice,
+              quantity,
+              vatRate: item.vatRate,
+            });
+
+            return {
+              id: item.id,
+              CNCode: item.CNCode,
+              articleNumber: item.articleNumber,
+              expiresAt: format(new Date(expiration.expiresAt), 'yyyy-MM'),
+              name: item.name,
+              quantity,
+              unitName: item.unitName,
+              netPrice: item.netPrice,
+              netAmount,
+              vatRate: item.vatRate,
+              vatAmount,
+              grossAmount,
+            };
+          })
+        )
+        .filter(identity)
+    );
+  }, [items, selectedItems, setCurrentReceiptItems]);
 
   const sellFlowContextValue = useMemo(
     () => ({
@@ -268,8 +320,18 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       saveSelectedPartnerInFlow,
       saveNewPartnerInFlow,
       items: sellItems,
+      selectedItems,
+      setSelectedItems,
+      selectedOrderItems,
+      setSelectedOrderItems,
+      searchTerm,
+      setSearchTerm,
+      barCode,
+      setBarCode,
+      saveSelectedItemsInFlow,
     }),
     [
+      barCode,
       isActiveRoundLoading,
       isPartnerChosenForCurrentReceipt,
       isPartnersListsLoading,
@@ -279,10 +341,16 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       isStorageLoading,
       partnersToShow,
       saveNewPartnerInFlow,
+      saveSelectedItemsInFlow,
       saveSelectedPartnerInFlow,
+      searchTerm,
       selectPartner,
+      selectedItems,
+      selectedOrderItems,
       selectedPartner,
       sellItems,
+      setBarCode,
+      setSearchTerm,
     ]
   );
 

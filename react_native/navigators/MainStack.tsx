@@ -6,13 +6,14 @@ import StartErrand from '../screens/errand-administration/StartErrand';
 import Login from '../screens/login/Login';
 import AddPartnerForm from '../screens/sell/add-partner/AddPartnerForm';
 import SearchPartnerNavForm from '../screens/sell/add-partner/SearchPartnerNavForm';
+import ScanBarCodeInSell from '../screens/sell/select-items/ScanBarCodeInSell';
 import SelectItemsToSell from '../screens/sell/select-items/SelectItemsToSell';
 import ChangePassword from '../screens/start-page/ChangePassword';
 import Index from '../screens/start-page/Index';
 import Settings from '../screens/start-page/Settings';
 import SettingsButton from '../screens/start-page/SettingsButton';
 import ReviewStorageChanges from '../screens/storage/review/ReviewStorageChanges';
-import ScanBarCode from '../screens/storage/select-items/ScanBarCode';
+import ScanBarCodeInStorage from '../screens/storage/select-items/ScanBarCodeInStorage';
 import SelectItemsFromStore from '../screens/storage/select-items/SelectItemsFromStore';
 import SelectStore from '../screens/storage/select-store/SelectStore';
 import StorageChangesSummary from '../screens/storage/summary/StorageChangesSummary';
@@ -62,8 +63,8 @@ export default function MainStack() {
         options={{ headerTitle: 'Tételek' }}
       />
       <Stack.Screen
-        name="ScanBarCode"
-        component={ScanBarCode}
+        name="ScanBarCodeInStorage"
+        component={ScanBarCodeInStorage}
         options={{ headerTitle: 'Vonalkód olvasása' }}
       />
       <Stack.Screen
@@ -110,6 +111,11 @@ export default function MainStack() {
         options={{
           headerTitle: 'Tételek',
         }}
+      />
+      <Stack.Screen
+        name="ScanBarCodeInSell"
+        component={ScanBarCodeInSell}
+        options={{ headerTitle: 'Vonalkód olvasása' }}
       />
       {/*  <Stack.Screen
             name="Review"
