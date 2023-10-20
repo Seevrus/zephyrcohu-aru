@@ -81,6 +81,7 @@ class CreateReceiptsRequest extends FormRequest
             'data.*.otherItems.*.vatRate' => 'required|string|size:2',
             'data.*.otherItems.*.vatAmount' => 'integer|min:-2147483648|max:2147483647',
             'data.*.otherItems.*.grossAmount' => 'required|integer|min:-2147483648|max:2147483647',
+            'data.*.otherItems.*.comment' => 'string|max:255',
             'data.*.quantity' => 'required|integer|min:-2147483648|max:2147483647',
             'data.*.netAmount' => 'required|integer|min:-2147483648|max:2147483647',
             'data.*.vatAmount' => 'integer|min:-2147483648|max:2147483647',

@@ -26,6 +26,7 @@ class ReceiptOtherItemResource extends JsonResource
             'vatRate' => $this->vat_rate,
             'vatAmount' => $this->vat_amount,
             'grossAmount' => $this->gross_amount,
+            'comment' => $this->comment,
         ];
     }
 }

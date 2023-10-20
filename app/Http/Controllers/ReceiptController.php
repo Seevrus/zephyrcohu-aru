@@ -115,6 +115,7 @@ class ReceiptController extends Controller
                             'vat_rate' => $receiptOtherItem['vatRate'],
                             'vat_amount' => $receiptOtherItem['vatAmount'] ?? null,
                             'gross_amount' => $receiptOtherItem['grossAmount'],
+                            'comment' => $receiptOtherItem['comment'] ?? null,
                         ]);
                     }
                 }
@@ -137,7 +138,7 @@ class ReceiptController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Created '.count($newReceipts).' receipts',
+                'action' => 'Created ' . count($newReceipts) . ' receipts',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -167,7 +168,7 @@ class ReceiptController extends Controller
                 $receipts = $sender->company->receipts()->with('items', 'otherItems', 'vatAmounts')->get();
             }
 
-            if (! $receipts->isEmpty()) {
+            if (!$receipts->isEmpty()) {
                 $receipts->toQuery()->update([
                     'last_downloaded_at' => Carbon::now(),
                 ]);
@@ -176,7 +177,7 @@ class ReceiptController extends Controller
                     'company_id' => $sender->company_id,
                     'user_id' => $sender->id,
                     'token_id' => $sender->currentAccessToken()->id,
-                    'action' => 'Accessed '.$receipts->count().' receipts',
+                    'action' => 'Accessed ' . $receipts->count() . ' receipts',
                     'occured_at' => Carbon::now(),
                 ]);
             }
@@ -220,7 +221,7 @@ class ReceiptController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Updated receipt '.$receipt->id,
+                'action' => 'Updated receipt ' . $receipt->id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -254,7 +255,7 @@ class ReceiptController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed receipt '.$receipt->id,
+                'action' => 'Removed receipt ' . $receipt->id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {
