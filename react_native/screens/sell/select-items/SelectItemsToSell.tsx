@@ -16,27 +16,19 @@ import {
   values,
 } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Alert,
-  Animated,
-  ListRenderItemInfo,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, Animated, ListRenderItemInfo, Pressable, StyleSheet, View } from 'react-native';
 import { formatCurrency } from 'react-native-format-currency';
 
 import Loading from '../../../components/Loading';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
+import LabeledItem from '../../../components/ui/LabeledItem';
 import colors from '../../../constants/colors';
-import fontSizes from '../../../constants/fontSizes';
 import { SelectItemsToSellProps } from '../../../navigators/screen-types';
 import { useReceiptsContext } from '../../../providers/ReceiptsProvider';
 import { SellItem, useSellFlowContext } from '../../../providers/SellFlowProvider';
-import SelectItem, { ItemAvailability } from './SelectItem';
 import calculateAmounts from '../../../utils/calculateAmounts';
+import SelectItem, { ItemAvailability } from './SelectItem';
 
 const NUM_ITEMS_SHOWN = 10;
 const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
@@ -68,20 +60,22 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
           const [prevNetAmount, prevGrossAmount] = prev;
           const [itemId, expirations] = curr;
 
-          const currentQuantity = Object.values(expirations).reduce(
-            (accumulatedQuantity, expirationQuantity) => accumulatedQuantity + expirationQuantity,
-            0
-          );
-
           const currentItem = items.find((item) => item.id === +itemId);
           const { netPrice, vatRate } = currentItem;
-          const { netAmount, grossAmount } = calculateAmounts({
-            netPrice,
-            quantity: currentQuantity,
-            vatRate,
-          });
 
-          return [prevNetAmount + netAmount, prevGrossAmount + grossAmount];
+          const [expirationsNetAmount, expirationsGrossAmount] = Object.values(expirations)
+            .map((expirationQuantity) => {
+              const { netAmount, grossAmount } = calculateAmounts({
+                netPrice,
+                quantity: expirationQuantity,
+                vatRate,
+              });
+
+              return [netAmount, grossAmount];
+            })
+            .reduce(([pn, pg], [cn, cg]) => [pn + cn, pg + cg], [0, 0]);
+
+          return [prevNetAmount + expirationsNetAmount, prevGrossAmount + expirationsGrossAmount];
         },
         [0, 0]
       ),
@@ -200,7 +194,7 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
       setIsLoading(true);
       await saveSelectedItemsInFlow();
       setIsLoading(false);
-      // Navigate to review
+      navigation.navigate('Review');
     }
   };
 
@@ -269,12 +263,14 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.summaryContainer}>
-          <Text style={styles.summary}>
-            Vásárlás: {formatPrice(netTotal)} / {formatPrice(grossTotal)}
-          </Text>
-          <Text style={styles.summary}>
-            Rendelés: {formatPrice(netOrderTotal)} / {formatPrice(grossOrderTotal)}
-          </Text>
+          <LabeledItem
+            label="Vásárlás"
+            text={`${formatPrice(netTotal)} / ${formatPrice(grossTotal)}`}
+          />
+          <LabeledItem
+            label="Rendelés"
+            text={`${formatPrice(netOrderTotal)} / ${formatPrice(grossOrderTotal)}`}
+          />
         </View>
         <View style={styles.buttonContainer}>
           <Button variant={confirmButtonVariant} onPress={confirmItemsHandler}>
@@ -305,10 +301,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   footerContainer: {
-    height: 150,
+    height: 135,
     paddingVertical: 10,
     borderTopColor: 'white',
     borderTopWidth: 2,
+    backgroundColor: colors.neutral,
   },
   buttonContainer: {
     flex: 1,
@@ -317,13 +314,7 @@ const styles = StyleSheet.create({
   },
   summaryContainer: {
     marginHorizontal: '7%',
-    marginBottom: 20,
+    marginBottom: 10,
     alignItems: 'flex-end',
-  },
-  summary: {
-    color: 'white',
-    fontFamily: 'Muli',
-    fontSize: fontSizes.input,
-    fontWeight: 'bold',
   },
 });

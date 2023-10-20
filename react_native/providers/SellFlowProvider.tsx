@@ -39,6 +39,8 @@ export type SellExpirations = Record<number, SellExpiration>;
 export type SellItem = {
   id: number;
   name: string;
+  articleNumber: string;
+  unitName: string;
   barcodes: string[];
   netPrice: number;
   vatRate: string;
@@ -66,6 +68,7 @@ type SellFlowContextType = {
   barCode: string;
   setBarCode: (payload: string) => void;
   saveSelectedItemsInFlow: () => Promise<void>;
+  resetSellFlowContext: () => Promise<void>;
 };
 
 const SellFlowContext = createContext<SellFlowContextType>({} as SellFlowContextType);
@@ -76,7 +79,8 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
   const { data: partners, isLoading: isPartnersLoading } = usePartners();
   const { data: partnerLists, isLoading: isPartnersListsLoading } = usePartnerLists();
   const { data: priceLists, isLoading: isPriceListsLoading } = usePriceLists();
-  const { currentReceipt, setCurrentReceiptBuyer, setCurrentReceiptItems } = useReceiptsContext();
+  const { currentReceipt, resetCurrentReceipt, setCurrentReceiptBuyer, setCurrentReceiptItems } =
+    useReceiptsContext();
   const isPartnerChosenForCurrentReceipt = !!currentReceipt?.buyer;
   const { storage, isLoading: isStorageLoading } = useStorageContext();
 
@@ -246,6 +250,8 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
         map<ItemType, SellItem>((item) => ({
           id: item.id,
           name: item.name,
+          articleNumber: item.articleNumber,
+          unitName: item.unitName,
           barcodes: item.expirations.map((expiration) => `${item.barcode}${expiration.barcode}`),
           netPrice:
             currentPriceList?.items.find((i) => i.itemId === item.id)?.netPrice ?? item.netPrice,
@@ -304,6 +310,16 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     );
   }, [items, selectedItems, setCurrentReceiptItems]);
 
+  const resetSellFlowContext = useCallback(async () => {
+    setSelectedPartner(null);
+    maxPartnerIdInUse.current = -1;
+    setStorageExpirations({});
+    setSelectedItems({});
+    setSelectedOrderItems({});
+    dispatchSearchState({ type: SearchStateActionKind.ClearSearch, payload: '' });
+    await resetCurrentReceipt();
+  }, [resetCurrentReceipt]);
+
   const sellFlowContextValue = useMemo(
     () => ({
       isLoading:
@@ -329,6 +345,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       barCode,
       setBarCode,
       saveSelectedItemsInFlow,
+      resetSellFlowContext,
     }),
     [
       barCode,
@@ -340,6 +357,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       isSelectedPartnerOnCurrentPartnerList,
       isStorageLoading,
       partnersToShow,
+      resetSellFlowContext,
       saveNewPartnerInFlow,
       saveSelectedItemsInFlow,
       saveSelectedPartnerInFlow,

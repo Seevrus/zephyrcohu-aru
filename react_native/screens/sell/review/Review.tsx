@@ -1,18 +1,5 @@
-import {
-  add,
-  ascend,
-  defaultTo,
-  flatten,
-  keys,
-  map,
-  pathOr,
-  pipe,
-  prop,
-  reduce,
-  sortWith,
-  __,
-} from 'ramda';
-import { useEffect, useState } from 'react';
+import { add, dissoc, dissocPath, identity, prop, reduce } from 'ramda';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -23,80 +10,99 @@ import {
 } from 'react-native';
 import { formatCurrency } from 'react-native-format-currency';
 
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { finalizeCurrentReceipt } from '../../../store/round-slice/round-api-actions';
-import { ExpirationItem, Item } from '../../../store/round-slice/round-slice-types';
-import { removeItemsFromStore } from '../../../store/stores-slice/stores-api-actions';
-
+import Loading from '../../../components/Loading';
 import ErrorCard from '../../../components/info-cards/ErrorCard';
 import Button from '../../../components/ui/Button';
 import LabeledItem from '../../../components/ui/LabeledItem';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
-import { roundActions } from '../../../store/round-slice/round-slice';
 import { ReviewProps } from '../../../navigators/screen-types';
-import ReceiptHeader from './ReceiptHeader';
-import ReceiptRow, { ReceiptRowProps } from './ReceiptRow';
+import { useSellFlowContext } from '../../../providers/SellFlowProvider';
+import calculateAmounts from '../../../utils/calculateAmounts';
+import Selection from './Selection';
+import { ReviewRow } from './types';
+
+const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
 
 export default function Review({ navigation }: ReviewProps) {
-  const dispatch = useAppDispatch();
-  const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
+  const {
+    isLoading: isContextLoading,
+    items,
+    selectedItems,
+    setSelectedItems,
+    resetSellFlowContext,
+  } = useSellFlowContext();
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [selectedRow, setSelectedRow] = useState<ReviewRow>(null);
   const [saveReceiptError, setSaveReceiptError] = useState<string>('');
 
-  const receiptRows = useAppSelector((state) => {
-    const { currentReceipt } = state.round;
-    const partner = state.partners.partners.find((p) => p.id === currentReceipt?.partnerId);
-    const priceList = partner?.priceList || {};
-    const receiptItems = pathOr<Item>({}, ['round', 'currentReceipt', 'items'], state);
+  const receiptRows: ReviewRow[] = useMemo(
+    () =>
+      Object.entries(selectedItems)
+        .flatMap(([itemId, expirations]) => {
+          const item = items.find((i) => i.id === +itemId);
 
-    return pipe(
-      keys,
-      map((itemId) =>
-        pipe(
-          prop<Record<string, ExpirationItem>>(__, receiptItems),
-          keys,
-          map((expiresAt) => {
-            const item = state.items.data.find((itm) => itm.id === +itemId);
-            const priceListItem = priceList[item.id];
-            const netPrice = priceListItem?.netPrice || item.netPrice;
-            const netAmount = netPrice * receiptItems[itemId][expiresAt].quantity;
-            const vatRateNumeric = defaultTo(0, +item.vatRate);
-            const vatAmount = Math.round(netAmount * (vatRateNumeric / 100));
+          if (!item) return undefined;
 
-            return {
-              id: item.id,
-              articleNumber: item.articleNumber,
-              name: item.name,
-              expiresAt,
-              quantity: receiptItems[itemId][expiresAt].quantity,
-              unitName: item.unitName,
-              grossAmount: netAmount + vatAmount,
-            };
-          })
-        )(itemId)
-      ),
-      flatten,
-      sortWith([ascend(prop('name')), ascend(prop('expiresAt'))])
-    )(receiptItems);
-  });
+          return Object.entries(expirations)
+            .map(([expirationId, quantity]) => {
+              const expiration = item.expirations[expirationId];
+
+              if (!expiration) return undefined;
+
+              const { grossAmount } = calculateAmounts({
+                netPrice: item.netPrice,
+                quantity,
+                vatRate: item.vatRate,
+              });
+
+              return {
+                itemId: item.id,
+                articleNumber: item.articleNumber,
+                name: item.name,
+                expirationId: expiration.id,
+                expiresAt: expiration.expiresAt,
+                quantity,
+                unitName: item.unitName,
+                grossAmount,
+              };
+            })
+            .filter(identity);
+        })
+        .filter(identity),
+    [items, selectedItems]
+  );
 
   const grossAmount = reduce((acc, value) => add(prop('grossAmount', value), acc), 0, receiptRows);
 
-  const removeItemHandler = ({ id, expiresAt }: { id: number; expiresAt: string }) =>
-    dispatch(roundActions.removeItem({ id, expiresAt }));
+  const removeItemHandler = useCallback(
+    ({ itemId, expirationId }: { itemId: number; expirationId: number }) => {
+      setSelectedItems((prevItems) => {
+        if (Object.keys(prevItems[itemId]).length === 1) {
+          return dissoc(itemId, prevItems);
+        }
+
+        return dissocPath([itemId, expirationId], prevItems);
+      });
+    },
+    [setSelectedItems]
+  );
 
   useEffect(() => {
     if (receiptRows?.length === 0) {
-      dispatch(roundActions.removeLastUnsentReceipt());
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Index' }],
+      setIsLoading(true);
+      resetSellFlowContext().then(() => {
+        setIsLoading(false);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Index' }],
+        });
       });
     }
-  }, [dispatch, navigation, receiptRows.length]);
+  }, [navigation, receiptRows?.length, resetSellFlowContext]);
 
-  const removeReceiptHandler = () => {
+  const removeReceiptHandler = useCallback(() => {
     Alert.alert(
       'Folyamat törlése',
       'Ez a lépés törli a jelenlegi árulevételi munkamenetet és visszairányít a kezdőoldalra. Biztosan folytatni szeretné?',
@@ -104,8 +110,10 @@ export default function Review({ navigation }: ReviewProps) {
         { text: 'Mégse' },
         {
           text: 'Biztosan ezt szeretném',
-          onPress: () => {
-            dispatch(roundActions.removeLastUnsentReceipt());
+          onPress: async () => {
+            setIsLoading(true);
+            await resetSellFlowContext();
+            setIsLoading(false);
             navigation.reset({
               index: 0,
               routes: [{ name: 'Index' }],
@@ -114,9 +122,9 @@ export default function Review({ navigation }: ReviewProps) {
         },
       ]
     );
-  };
+  }, [navigation, resetSellFlowContext]);
 
-  const confirmReceiptHandler = async () => {
+  /* const confirmReceiptHandler = async () => {
     Alert.alert(
       'Árulevétel véglegesítése',
       'Ez a lépés számlakészítéssel jár, ezután már nem lesz lehetőség semmilyen módosításra. Biztosan folytatni szeretné?',
@@ -139,11 +147,25 @@ export default function Review({ navigation }: ReviewProps) {
         },
       ]
     );
-  };
+  }; */
 
-  const renderReceiptRow: ListRenderItem<ReceiptRowProps['item']> = (
-    info: ListRenderItemInfo<ReceiptRowProps['item']>
-  ) => <ReceiptRow item={info.item} onRemoveItem={removeItemHandler} />;
+  const renderReceiptRow: ListRenderItem<ReviewRow> = (info: ListRenderItemInfo<ReviewRow>) => (
+    <Selection
+      selected={
+        `${info.item.itemId}-${info.item.expirationId}` ===
+        `${selectedRow?.itemId}-${selectedRow?.expirationId}`
+      }
+      item={info.item}
+      onSelect={(id: string) => {
+        setSelectedRow(receiptRows.find((row) => `${row.itemId}-${row.expirationId}` === id));
+      }}
+      onDelete={removeItemHandler}
+    />
+  );
+
+  if (isLoading || isContextLoading) {
+    return <Loading />;
+  }
 
   return (
     <View style={styles.container}>
@@ -155,9 +177,8 @@ export default function Review({ navigation }: ReviewProps) {
       <View style={styles.receiptContainer}>
         <FlatList
           data={receiptRows}
-          ListHeaderComponent={ReceiptHeader}
           renderItem={renderReceiptRow}
-          keyExtractor={(item) => `${item.id}-${item.expiresAt}`}
+          keyExtractor={(item) => `${item.itemId}-${item.expirationId}`}
         />
       </View>
       <View style={styles.footerContainer}>
@@ -165,11 +186,11 @@ export default function Review({ navigation }: ReviewProps) {
           <LabeledItem label="Mindösszesen" text={formatPrice(grossAmount)} />
         </View>
         <View style={styles.buttonsContainer}>
-          <Button variant="ok" onPress={confirmReceiptHandler}>
-            Véglegesítés
-          </Button>
           <Button variant="warning" onPress={removeReceiptHandler}>
             Elvetés
+          </Button>
+          <Button variant="ok" onPress={() => {}}>
+            Véglegesítés
           </Button>
         </View>
       </View>
@@ -194,7 +215,6 @@ const styles = StyleSheet.create({
   receiptContainer: {
     flex: 1,
     marginTop: 10,
-    marginHorizontal: '4%',
   },
   fieldContainer: {
     marginTop: 5,

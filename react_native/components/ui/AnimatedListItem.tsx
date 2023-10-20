@@ -6,12 +6,12 @@ import colors from '../../constants/colors';
 import fontSizes from '../../constants/fontSizes';
 
 type AnimatedListItemProps = {
-  id: number;
+  id: string | number;
   expandedInitially: boolean;
   title: string | ReactNode;
   height: number;
   backgroundColor: string;
-  onSelect?: (id: number) => void;
+  onSelect?: (id: string | number) => void;
 };
 
 const defaultProps = {
