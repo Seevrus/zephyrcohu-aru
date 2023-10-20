@@ -6,7 +6,7 @@ type PriceListItemType = {
   netPrice: number;
 };
 
-type PriceListType = BasePriceListType & {
+export type PriceListType = BasePriceListType & {
   items: PriceListItemType[];
 };
 

@@ -26,7 +26,8 @@ import LabeledItem from '../../../components/ui/LabeledItem';
 import colors from '../../../constants/colors';
 import { SelectItemsToSellProps } from '../../../navigators/screen-types';
 import { useReceiptsContext } from '../../../providers/ReceiptsProvider';
-import { SellItem, useSellFlowContext } from '../../../providers/SellFlowProvider';
+import { useSellFlowContext } from '../../../providers/SellFlowProvider';
+import { SellItem } from '../../../providers/sell-flow-hooks/useSelectItems';
 import calculateAmounts from '../../../utils/calculateAmounts';
 import SelectItem, { ItemAvailability } from './SelectItem';
 

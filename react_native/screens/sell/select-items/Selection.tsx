@@ -5,7 +5,7 @@ import { ListRenderItemInfo, Pressable, StyleSheet, View } from 'react-native';
 
 import { format } from 'date-fns';
 import Input from '../../../components/ui/Input';
-import { SellExpiration } from '../../../providers/SellFlowProvider';
+import { SellExpiration } from '../../../providers/sell-flow-hooks/useSelectItems';
 
 type SelectionProps = {
   info: ListRenderItemInfo<SellExpiration>;

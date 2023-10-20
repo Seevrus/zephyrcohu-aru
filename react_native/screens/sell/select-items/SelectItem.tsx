@@ -4,7 +4,7 @@ import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
 import AnimatedListItem from '../../../components/ui/AnimatedListItem';
 import colors from '../../../constants/colors';
-import { SellExpiration, SellItem } from '../../../providers/SellFlowProvider';
+import { SellExpiration, SellItem } from '../../../providers/sell-flow-hooks/useSelectItems';
 import Selection from './Selection';
 
 export enum ItemAvailability {
