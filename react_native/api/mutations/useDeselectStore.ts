@@ -25,10 +25,10 @@ export default function useDeselectStore() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['check-token']);
-      queryClient.invalidateQueries(['items']);
-      queryClient.invalidateQueries(['stores']);
-      queryClient.invalidateQueries(['store-details']);
+      queryClient.invalidateQueries({ queryKey: ['check-token'] });
+      queryClient.invalidateQueries({ queryKey: ['items'] });
+      queryClient.invalidateQueries({ queryKey: ['stores'] });
+      queryClient.invalidateQueries({ queryKey: ['store-details'] });
     },
   });
 }

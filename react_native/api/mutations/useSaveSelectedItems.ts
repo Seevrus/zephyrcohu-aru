@@ -40,8 +40,8 @@ export default function useSaveSelectedItems() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['stores']);
-      queryClient.invalidateQueries(['store-details']);
+      queryClient.invalidateQueries({ queryKey: ['stores'] });
+      queryClient.invalidateQueries({ queryKey: ['store-details'] });
     },
   });
 }

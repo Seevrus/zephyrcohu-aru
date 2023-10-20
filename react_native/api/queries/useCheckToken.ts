@@ -56,7 +56,7 @@ export default function useCheckToken({ enabled = true } = {}) {
 
   useEffect(() => {
     if (isInternetReachable === true && checkTokenResult.isSuccess) {
-      queryClient.invalidateQueries(['stores']);
+      queryClient.invalidateQueries({ queryKey: ['stores'] });
     }
   }, [checkTokenResult.isSuccess, isInternetReachable, queryClient]);
 

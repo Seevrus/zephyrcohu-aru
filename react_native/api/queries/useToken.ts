@@ -47,6 +47,6 @@ export default function useToken(): UseQueryResult<Token> {
       }
     },
     staleTime: 0,
-    cacheTime: 300000,
+    gcTime: 300000,
   });
 }

@@ -31,9 +31,9 @@ export default function useSelectStore() {
       }
     },
     onSuccess: (response) => {
-      queryClient.invalidateQueries(['check-token']);
-      queryClient.invalidateQueries(['stores']);
-      queryClient.invalidateQueries(['store-details', response.storeId]);
+      queryClient.invalidateQueries({ queryKey: ['check-token'] });
+      queryClient.invalidateQueries({ queryKey: ['stores'] });
+      queryClient.invalidateQueries({ queryKey: ['store-details', response.storeId] });
     },
   });
 }
