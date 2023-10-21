@@ -35,7 +35,6 @@ export type ListItem = {
 type StorageFlowContextType = {
   isLoading: boolean;
   items: ListItem[];
-  isAnyItemChanged: boolean;
   areModificationsSaved: boolean;
   setCurrentQuantity: (item: ListItem, newCurrentQuantity: number | null) => void;
   searchTerm: string;
@@ -199,11 +198,6 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
     ]
   );
 
-  const isAnyItemChanged = useMemo(
-    () => items?.some((item) => item.currentQuantity !== item.originalQuantity),
-    [items]
-  );
-
   const handleSendChanges = useCallback(async () => {
     slowSaveStorageExpirations(storageExpirations);
     dispatchSearchState({ type: SearchStateActionKind.ClearSearch, payload: '' });
@@ -223,7 +217,6 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
     () => ({
       isLoading: isStorageLoading || isPrimaryStoreLoading || isStoresLoading,
       items,
-      isAnyItemChanged,
       areModificationsSaved,
       setCurrentQuantity,
       searchTerm,
@@ -237,7 +230,6 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
       areModificationsSaved,
       barCode,
       handleSendChanges,
-      isAnyItemChanged,
       isPrimaryStoreLoading,
       isStorageLoading,
       isStoresLoading,

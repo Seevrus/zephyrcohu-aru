@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { isNil } from 'ramda';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Animated, ListRenderItemInfo, Pressable, StyleSheet, View } from 'react-native';
 
 import Loading from '../../../components/Loading';
@@ -16,16 +16,13 @@ const keyExtractor = (item: ListItem) => String(item.expirationId);
 export default function SelectItemsFromStore({ navigation, route }: SelectItemsFromStoreProps) {
   const scannedBarCode = route.params?.scannedBarCode;
 
-  const {
-    isLoading,
-    items = [],
-    isAnyItemChanged,
-    setCurrentQuantity,
-    searchTerm,
-    setSearchTerm,
-    barCode,
-    setBarCode,
-  } = useStorageFlowContext();
+  const { isLoading, items, setCurrentQuantity, searchTerm, setSearchTerm, barCode, setBarCode } =
+    useStorageFlowContext();
+
+  const isAnyItemChanged = useMemo(
+    () => items?.some((item) => item.currentQuantity !== item.originalQuantity),
+    [items]
+  );
 
   useEffect(() => {
     if (!isNil(scannedBarCode) && barCode !== scannedBarCode) {
@@ -80,7 +77,7 @@ export default function SelectItemsFromStore({ navigation, route }: SelectItemsF
       </View>
       <View style={styles.listContainer}>
         <Animated.FlatList
-          data={items.slice(0, 10)}
+          data={(items ?? []).slice(0, 10)}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
         />

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { equals } from 'ramda';
+import { memo, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
 
 import { Partners } from '../../../api/response-mappers/mapPartnersResponse';
@@ -15,12 +16,7 @@ type SelectionProps = {
   onConfirmSelection: (id: number) => void;
 };
 
-export default function Selection({
-  selected,
-  item,
-  onSelect,
-  onConfirmSelection,
-}: SelectionProps) {
+function Selection({ selected, item, onSelect, onConfirmSelection }: SelectionProps) {
   const backgroundColor = selected ? colors.ok : colors.neutral;
   const { id, locations, phoneNumber } = item;
 
@@ -70,6 +66,8 @@ export default function Selection({
     </AnimatedListItem>
   );
 }
+
+export default memo(Selection, equals);
 
 const styles = StyleSheet.create({
   selectPartnerContainer: {

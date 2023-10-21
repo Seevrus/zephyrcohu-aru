@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { isNil, pipe, replace, trim } from 'ramda';
-import { useState } from 'react';
+import { eqProps, isNil, pipe, replace, trim } from 'ramda';
+import { memo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import AnimatedListItem from '../../../components/ui/AnimatedListItem';
@@ -14,10 +14,7 @@ type ExpirationAccordionDetailsProps = {
   setCurrentQuantity: (item: ListItem, newCurrentQuantity: number | null) => void;
 };
 
-export default function ExpirationAccordionDetails({
-  item,
-  setCurrentQuantity,
-}: ExpirationAccordionDetailsProps) {
+function ExpirationAccordionDetails({ item, setCurrentQuantity }: ExpirationAccordionDetailsProps) {
   const [selectedQuantity, setSelectedQuantity] = useState<number | null>(
     item.currentQuantity ?? 0
   );
@@ -116,6 +113,15 @@ export default function ExpirationAccordionDetails({
     </AnimatedListItem>
   );
 }
+
+function arePropsEqual(
+  oldProps: ExpirationAccordionDetailsProps,
+  newProps: ExpirationAccordionDetailsProps
+) {
+  return eqProps('item', oldProps, newProps);
+}
+
+export default memo(ExpirationAccordionDetails, arePropsEqual);
 
 const styles = StyleSheet.create({
   selectItemTitle: {

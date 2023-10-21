@@ -89,8 +89,6 @@ export default function SearchPartnerNavForm({
     data: { isTokenExpired },
   } = useToken();
 
-  // 10625790
-  // 25145627
   const [taxNumber, setTaxNumber] = useState<string>(params?.taxNumber ?? '');
   const [searchValue, setSearchValue] = useState<string>('');
   const [selectedResult, setSelectedResult] = useState<TaxPayer>(null);
