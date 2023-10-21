@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { filter, identity, indexBy, isEmpty, isNil, map, pipe, prop, sortBy } from 'ramda';
+import { filter, identity, indexBy, isEmpty, isNil, map, not, pipe, prop, sortBy } from 'ramda';
 import {
   Dispatch,
   SetStateAction,
@@ -11,7 +11,7 @@ import {
 } from 'react';
 
 import useItems from '../../api/queries/useItems';
-import { Expiration, ItemType } from '../../api/response-types/ItemsResponseType';
+import { Discount, Expiration, ItemType } from '../../api/response-types/ItemsResponseType';
 import { PriceListType } from '../../api/response-types/PriceListResponseType';
 import itemsSearchReducer, { SearchStateActionKind } from '../../hooks/itemsSearchReducer';
 import calculateAmounts from '../../utils/calculateAmounts';
@@ -35,6 +35,7 @@ export type SellItem = {
   netPrice: number;
   vatRate: string;
   expirations: SellExpirations;
+  availableDiscounts: Discount[] | null;
 };
 
 export type SellItems = SellItem[];
@@ -60,7 +61,7 @@ export default function useSelectItems({
   currentPriceList: PriceListType;
 }): UseSelectItems {
   const { data: items } = useItems();
-  const { setCurrentReceiptItems } = useReceiptsContext();
+  const { currentReceipt, setCurrentReceiptItems } = useReceiptsContext();
   const { storage, isLoading: isStorageLoading } = useStorageContext();
 
   const [storageExpirations, setStorageExpirations] = useState<
@@ -107,6 +108,7 @@ export default function useSelectItems({
             })),
             indexBy(prop('id'))
           )(item.expirations),
+          availableDiscounts: item.discounts,
         })),
         filter<SellItem>(
           (item) =>
@@ -135,6 +137,7 @@ export default function useSelectItems({
 
             return {
               id: item.id,
+              expirationId: expiration.id,
               CNCode: item.CNCode,
               articleNumber: item.articleNumber,
               expiresAt: format(new Date(expiration.expiresAt), 'yyyy-MM'),
@@ -176,6 +179,27 @@ export default function useSelectItems({
       return expirations;
     });
   }, [storage]);
+
+  useEffect(() => {
+    setSelectedItems((prevItems) => {
+      if (not(isEmpty(prevItems)) || isEmpty(currentReceipt?.items ?? [])) {
+        return prevItems;
+      }
+
+      const newItems = {};
+      currentReceipt.items.forEach((item) => {
+        if (newItems[item.id]) {
+          newItems[item.id][item.expirationId] = item.quantity;
+        } else {
+          newItems[item.id] = {
+            [item.expirationId]: item.quantity,
+          };
+        }
+      });
+
+      return newItems;
+    });
+  }, [currentReceipt?.items]);
 
   return useMemo(
     () => ({

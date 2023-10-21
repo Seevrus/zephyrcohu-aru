@@ -29,6 +29,7 @@ export type ReceiptBuyer = {
 
 export type ReceiptItem = {
   id: number;
+  expirationId: number;
   CNCode: string;
   articleNumber: string;
   expiresAt: string; // yyyy-MM

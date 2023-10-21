@@ -6,6 +6,7 @@ import StartErrand from '../screens/errand-administration/StartErrand';
 import Login from '../screens/login/Login';
 import AddPartnerForm from '../screens/sell/add-partner/AddPartnerForm';
 import SearchPartnerNavForm from '../screens/sell/add-partner/SearchPartnerNavForm';
+import Discounts from '../screens/sell/review/Discounts';
 import Review from '../screens/sell/review/Review';
 import ScanBarCodeInSell from '../screens/sell/select-items/ScanBarCodeInSell';
 import SelectItemsToSell from '../screens/sell/select-items/SelectItemsToSell';
@@ -123,6 +124,13 @@ export default function MainStack() {
         component={Review}
         options={{
           headerTitle: 'Áttekintés',
+        }}
+      />
+      <Stack.Screen
+        name="Discounts"
+        component={Discounts}
+        options={{
+          headerTitle: 'Kedvezmények',
         }}
       />
       {/*  <Stack.Screen

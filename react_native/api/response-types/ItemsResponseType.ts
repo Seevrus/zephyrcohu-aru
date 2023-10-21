@@ -7,7 +7,7 @@ export type Expiration = {
   expiresAt: string; // UTC
 } & TimeStamps;
 
-type Discount = {
+export type Discount = {
   id: number;
   name: string;
   type: 'absolute' | 'percentage' | 'freeForm';
@@ -19,7 +19,7 @@ export type ItemType = BaseItemType & {
   barcode: string | null;
   productCatalogCode: string;
   expirations: Expiration[];
-  discounts: Discount[];
+  discounts: Discount[] | null;
 };
 
 export type ItemsResponseData = ItemType[];

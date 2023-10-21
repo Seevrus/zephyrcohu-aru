@@ -65,7 +65,9 @@ export default function Review({ navigation }: ReviewProps) {
                 expiresAt: expiration.expiresAt,
                 quantity,
                 unitName: item.unitName,
+                netPrice: item.netPrice,
                 grossAmount,
+                availableDiscounts: item.availableDiscounts,
               };
             })
             .filter(identity);
@@ -174,6 +176,13 @@ export default function Review({ navigation }: ReviewProps) {
           <ErrorCard>{saveReceiptError}</ErrorCard>
         </View>
       )}
+      <View style={styles.headerContainer}>
+        <View style={styles.headerButtonContainer}>
+          <Button variant="ok" onPress={() => {}}>
+            Extra tételek
+          </Button>
+        </View>
+      </View>
       <View style={styles.receiptContainer}>
         <FlatList
           data={receiptRows}
@@ -206,15 +215,17 @@ const styles = StyleSheet.create({
   error: {
     marginTop: 30,
   },
-  title: {
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    textDecorationLine: 'underline',
-    textDecorationColor: 'white',
+  headerContainer: {
+    height: 70,
+    marginHorizontal: '7%',
+    marginTop: 10,
+    alignItems: 'flex-end',
+  },
+  headerButtonContainer: {
+    width: '40%',
   },
   receiptContainer: {
     flex: 1,
-    marginTop: 10,
   },
   fieldContainer: {
     marginTop: 5,

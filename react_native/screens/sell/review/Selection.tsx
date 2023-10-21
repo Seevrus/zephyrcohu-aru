@@ -1,3 +1,5 @@
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
@@ -8,6 +10,7 @@ import Button from '../../../components/ui/Button';
 import LabeledItem from '../../../components/ui/LabeledItem';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
+import { StackParams } from '../../../navigators/screen-types';
 import { ReviewRow } from './types';
 
 const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
@@ -20,6 +23,8 @@ type SelectionProps = {
 };
 
 export default function Selection({ selected, item, onSelect, onDelete }: SelectionProps) {
+  const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
+
   const backgroundColor = selected ? colors.ok : colors.neutral;
   const expiresAt = format(new Date(item.expiresAt), 'yyyy-MM');
 
@@ -55,9 +60,16 @@ export default function Selection({ selected, item, onSelect, onDelete }: Select
           >
             Törlés
           </Button>
-          <Button variant="ok" onPress={() => {}}>
-            Kedvezmények
-          </Button>
+          {item.availableDiscounts?.length > 0 && (
+            <Button
+              variant="ok"
+              onPress={() => {
+                navigation.navigate('Discounts', { item });
+              }}
+            >
+              Kedvezmények
+            </Button>
+          )}
         </View>
       </View>
     </AnimatedListItem>

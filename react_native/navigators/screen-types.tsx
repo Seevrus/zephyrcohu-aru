@@ -2,6 +2,8 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
+import { ReviewRow } from '../screens/sell/review/types';
+
 export type StackParams = {
   Login: undefined;
   ChangePassword: undefined;
@@ -22,6 +24,9 @@ export type StackParams = {
   };
   ScanBarCodeInSell: undefined;
   Review: undefined;
+  Discounts: {
+    item: ReviewRow;
+  };
   Summary: undefined;
 
   SearchPartnerNavForm: {
@@ -65,6 +70,7 @@ export type StorageChangesSummaryProps = NativeStackScreenProps<
 export type SelectItemsToSellProps = BottomTabScreenProps<StackParams, 'SelectItemsToSell'>;
 export type ScanBarCodeInSellProps = NativeStackScreenProps<StackParams, 'ScanBarCodeInSell'>;
 export type ReviewProps = NativeStackScreenProps<StackParams, 'Review'>;
+export type DiscountsProps = NativeStackScreenProps<StackParams, 'Discounts'>;
 export type SummaryProps = NativeStackScreenProps<StackParams, 'Summary'>;
 
 export type SearchPartnerNavFormProps = NativeStackScreenProps<StackParams, 'SearchPartnerNavForm'>;
