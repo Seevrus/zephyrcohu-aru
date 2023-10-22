@@ -61,14 +61,14 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
   const sellFlowContextValue = useMemo(
     () => ({
       isLoading:
-        isUseSelectPartnersDataLoading || isUseSelectItemsDataLoading || isReviewDataLoading,
+        isUseSelectPartnersDataLoading || isUseSelectItemsDataLoading || isReviewDataLoading, // ok
       partners,
       selectedPartner,
-      isSelectedPartnerOnCurrentPartnerList,
-      isPartnerChosenForCurrentReceipt,
+      isSelectedPartnerOnCurrentPartnerList, // ok
+      isPartnerChosenForCurrentReceipt, // ok
       selectPartner,
       saveSelectedPartnerInFlow,
-      saveNewPartnerInFlow,
+      saveNewPartnerInFlow, // ok
       items,
       selectedItems,
       setSelectedItems,
@@ -78,9 +78,9 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       setSearchTerm,
       barCode,
       setBarCode,
-      saveSelectedItemsInFlow,
+      saveSelectedItemsInFlow, // ok
       reviewItems,
-      saveDiscountedItemsInFlow,
+      saveDiscountedItemsInFlow, // ok
       resetSellFlowContext,
     }),
     [

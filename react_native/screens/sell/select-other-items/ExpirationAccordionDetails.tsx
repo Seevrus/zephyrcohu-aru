@@ -7,19 +7,18 @@ import AnimatedListItem from '../../../components/ui/AnimatedListItem';
 import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
-import { ListItem } from '../../../providers/StorageFlowProvider';
+import { OtherItem } from '../../../providers/sell-flow-hooks/useSelectOtherItems';
 
 type ExpirationAccordionDetailsProps = {
-  item: ListItem;
-  setCurrentQuantity: (item: ListItem, newCurrentQuantity: number | null) => void;
+  item: OtherItem;
+  setCurrentQuantity: (item: OtherItem, newCurrentQuantity: number | null) => void;
 };
 
 function ExpirationAccordionDetails({ item, setCurrentQuantity }: ExpirationAccordionDetailsProps) {
-  const [selectedQuantity, setSelectedQuantity] = useState<number | null>(
-    item.currentQuantity ?? 0
-  );
+  const backgroundColor = item.quantity > 0 ? colors.ok : colors.neutral;
 
-  const [dropdownHeight, setDropdownHeight] = useState(170);
+  const [dropdownHeight, setDropdownHeight] = useState(250);
+  const [selectedQuantity, setSelectedQuantity] = useState<number | null>(null);
 
   const quantityHandler = (newQuantity: string) => {
     const formattedQuantity = pipe(trim, replace(',', '.'), Number, Math.floor)(newQuantity);
@@ -34,31 +33,19 @@ function ExpirationAccordionDetails({ item, setCurrentQuantity }: ExpirationAcco
     }
   };
 
-  const listItemColor = (() => {
-    if (item.primaryStoreQuantity < 0) {
-      return colors.error;
-    }
-    if ((item.currentQuantity || 0) !== (item.originalQuantity || 0)) {
-      return colors.warning;
-    }
-
-    return colors.neutral;
-  })();
-
   return (
     <AnimatedListItem
-      id={item.expirationId}
+      id={item.id}
       expandedInitially={false}
       title={
         <View style={styles.selectItemTitle}>
           <View style={styles.selectItemNameContainer}>
             <Text style={styles.selectItemText}>{item.name}</Text>
           </View>
-          <Text style={styles.selectItemText}>{item.expiresAt}</Text>
         </View>
       }
       height={dropdownHeight}
-      backgroundColor={listItemColor}
+      backgroundColor={backgroundColor}
     >
       <View
         style={styles.selectItemContainer}
@@ -66,16 +53,6 @@ function ExpirationAccordionDetails({ item, setCurrentQuantity }: ExpirationAcco
           setDropdownHeight(event.nativeEvent.layout.height);
         }}
       >
-        <View style={styles.detailsRow}>
-          <Text style={styles.detailsRowText}>Kód:</Text>
-          <Text style={styles.detailsRowText}>
-            {trim(`${item.itemBarcode} ${item.expirationBarcode}`)}
-          </Text>
-        </View>
-        <View style={styles.detailsRow}>
-          <Text style={styles.detailsRowText}>Főraktárkészlet:</Text>
-          <Text style={styles.detailsRowText}>{item.primaryStoreQuantity}</Text>
-        </View>
         <View style={styles.selectionContainer}>
           <Pressable
             style={styles.selectIconContainer}
@@ -116,6 +93,7 @@ function ExpirationAccordionDetails({ item, setCurrentQuantity }: ExpirationAcco
             />
           </Pressable>
         </View>
+        {/* TODO add comment box */}
       </View>
     </AnimatedListItem>
   );
@@ -147,17 +125,6 @@ const styles = StyleSheet.create({
   },
   selectItemContainer: {
     padding: 10,
-  },
-  detailsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  detailsRowText: {
-    color: 'white',
-    fontFamily: 'Muli',
-    fontSize: fontSizes.body,
-    fontWeight: 'bold',
   },
   selectionContainer: {
     marginTop: 10,
