@@ -1,5 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { eqProps, pipe, replace, trim } from 'ramda';
+import { equals, pipe, replace, trim } from 'ramda';
 import { memo, useState } from 'react';
 import { ListRenderItemInfo, Pressable, StyleSheet, View } from 'react-native';
 
@@ -9,11 +9,12 @@ import { SellExpiration } from '../../../providers/sell-flow-hooks/useSelectItem
 
 type SelectionProps = {
   info: ListRenderItemInfo<SellExpiration>;
+  quantity: number | null;
   onQuantityModified: (expirationId: number, newQuantity: number) => void;
 };
 
-function Selection({ info, onQuantityModified }: SelectionProps) {
-  const [selectedQuantity, setSelectedQuantity] = useState<number>(null);
+function Selection({ info, quantity, onQuantityModified }: SelectionProps) {
+  const [selectedQuantity, setSelectedQuantity] = useState<number>(quantity);
 
   const quantityHandler = (newQuantity: string) => {
     const formattedQuantity = pipe(trim, replace(',', '.'), Number)(newQuantity);
@@ -22,14 +23,14 @@ function Selection({ info, onQuantityModified }: SelectionProps) {
 
     if (formattedQuantity < 0) {
       setSelectedQuantity(null);
-      onQuantityModified(info.item.id, null);
+      onQuantityModified(info.item.expirationId, null);
     } else if (formattedQuantity > info.item.quantity) {
       const newSelectedQuantity = info.item.quantity === 0 ? null : info.item.quantity;
       setSelectedQuantity(newSelectedQuantity);
-      onQuantityModified(info.item.id, newSelectedQuantity);
+      onQuantityModified(info.item.expirationId, newSelectedQuantity);
     } else {
       setSelectedQuantity(nullIshFormattedQuantity);
-      onQuantityModified(info.item.id, nullIshFormattedQuantity);
+      onQuantityModified(info.item.expirationId, nullIshFormattedQuantity);
     }
   };
 
@@ -92,8 +93,4 @@ const styles = StyleSheet.create({
   },
 });
 
-function arePropsEqual(oldProps: SelectionProps, newProps: SelectionProps) {
-  return eqProps('info', oldProps, newProps);
-}
-
-export default memo(Selection, arePropsEqual);
+export default memo(Selection, equals);

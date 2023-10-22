@@ -1,5 +1,5 @@
 import { append, eqProps, pipe, values } from 'ramda';
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
 import AnimatedListItem from '../../../components/ui/AnimatedListItem';
@@ -16,27 +16,38 @@ export enum ItemAvailability {
 type SelectItemProps = {
   info: ListRenderItemInfo<SellItem>;
   type: ItemAvailability;
+  selectedItems: Record<number, Record<number, number>>;
   upsertSelectedItem: (id: number, expirationId: number, quantity: number) => void;
   upsertOrderItem: (id: number, quantity: number) => void;
 };
 
-function SelectItem({ info, type, upsertSelectedItem, upsertOrderItem }: SelectItemProps) {
+function SelectItem({
+  info,
+  type,
+  selectedItems,
+  upsertSelectedItem,
+  upsertOrderItem,
+}: SelectItemProps) {
   const expirations: SellExpiration[] = pipe(
     values,
     append({
-      id: -1000,
+      itemId: info.item.id,
+      expirationId: -1000,
       expiresAt: 'Rendelés',
       quantity: 1000,
     })
   )(info.item.expirations ?? []);
 
-  const modifyQuantity = (expirationId: number, newQuantity: number) => {
-    if (expirationId === -1000) {
-      upsertOrderItem(info.item.id, newQuantity);
-    } else {
-      upsertSelectedItem(info.item.id, expirationId, newQuantity);
-    }
-  };
+  const modifyQuantity = useCallback(
+    (expirationId: number, newQuantity: number) => {
+      if (expirationId === -1000) {
+        upsertOrderItem(info.item.id, newQuantity);
+      } else {
+        upsertSelectedItem(info.item.id, expirationId, newQuantity);
+      }
+    },
+    [info.item.id, upsertOrderItem, upsertSelectedItem]
+  );
 
   const backgroundColors = {
     [ItemAvailability.AVAILABLE]: colors.neutral,
@@ -55,9 +66,16 @@ function SelectItem({ info, type, upsertSelectedItem, upsertOrderItem }: SelectI
       <View style={styles.selectItemContainer}>
         <FlatList
           data={expirations}
-          keyExtractor={(item) => item.expiresAt}
+          keyExtractor={(expiration) => expiration.expiresAt}
           renderItem={(expirationInfo) => (
-            <Selection info={expirationInfo} onQuantityModified={modifyQuantity} />
+            <Selection
+              info={expirationInfo}
+              quantity={
+                selectedItems[expirationInfo.item.itemId]?.[expirationInfo.item.expirationId] ??
+                null
+              }
+              onQuantityModified={modifyQuantity}
+            />
           )}
         />
       </View>

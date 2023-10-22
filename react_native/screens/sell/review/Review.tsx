@@ -1,5 +1,5 @@
-import { add, dissoc, dissocPath, identity, prop, reduce } from 'ramda';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { dissoc, dissocPath, reduce } from 'ramda';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -18,65 +18,77 @@ import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
 import { ReviewProps } from '../../../navigators/screen-types';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
+import { ReviewItem } from '../../../providers/sell-flow-hooks/useReview';
 import calculateAmounts from '../../../utils/calculateAmounts';
 import Selection from './Selection';
-import { ReviewRow } from './types';
 
 const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
 
 export default function Review({ navigation }: ReviewProps) {
   const {
     isLoading: isContextLoading,
-    items,
-    selectedItems,
     setSelectedItems,
+    reviewItems,
     resetSellFlowContext,
   } = useSellFlowContext();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [selectedRow, setSelectedRow] = useState<ReviewRow>(null);
+  const [selectedRow, setSelectedRow] = useState<ReviewItem>(null);
   const [saveReceiptError, setSaveReceiptError] = useState<string>('');
 
-  const receiptRows: ReviewRow[] = useMemo(
-    () =>
-      Object.entries(selectedItems)
-        .flatMap(([itemId, expirations]) => {
-          const item = items.find((i) => i.id === +itemId);
+  const discountedGrossAmount = reduce(
+    (accumulatedGrossAmount, reviewItem) => {
+      if (!reviewItem.selectedDiscounts) {
+        return accumulatedGrossAmount + reviewItem.grossAmount;
+      }
 
-          if (!item) return undefined;
+      const [totalDiscountedQuantity, totalDiscountedGrossAmount] =
+        reviewItem.selectedDiscounts.reduce(
+          ([accumulatedDiscountedQuantity, accumulatedDiscountedGrossAmount], discount) => {
+            let newNetPrice: number;
+            switch (discount.type) {
+              case 'absolute':
+                newNetPrice = reviewItem.netPrice - discount.amount;
+                break;
+              case 'percentage':
+                newNetPrice = reviewItem.netPrice * (100 - discount.amount);
+                break;
+              case 'freeForm':
+                newNetPrice = discount.price ?? 1;
+                break;
+              default:
+                newNetPrice = reviewItem.netPrice;
+            }
 
-          return Object.entries(expirations)
-            .map(([expirationId, quantity]) => {
-              const expiration = item.expirations[expirationId];
+            const { grossAmount: discountGrossAmount } = calculateAmounts({
+              netPrice: newNetPrice,
+              quantity: discount.quantity,
+              vatRate: reviewItem.vatRate,
+            });
 
-              if (!expiration) return undefined;
+            return [
+              accumulatedDiscountedQuantity + discount.quantity,
+              accumulatedDiscountedGrossAmount + discountGrossAmount,
+            ];
+          },
+          [0, 0]
+        );
 
-              const { grossAmount } = calculateAmounts({
-                netPrice: item.netPrice,
-                quantity,
-                vatRate: item.vatRate,
-              });
+      if (totalDiscountedQuantity === reviewItem.quantity) {
+        return totalDiscountedGrossAmount;
+      }
 
-              return {
-                itemId: item.id,
-                articleNumber: item.articleNumber,
-                name: item.name,
-                expirationId: expiration.id,
-                expiresAt: expiration.expiresAt,
-                quantity,
-                unitName: item.unitName,
-                netPrice: item.netPrice,
-                grossAmount,
-                availableDiscounts: item.availableDiscounts,
-              };
-            })
-            .filter(identity);
-        })
-        .filter(identity),
-    [items, selectedItems]
+      const { grossAmount: listPricedGrossAmount } = calculateAmounts({
+        netPrice: reviewItem.netPrice,
+        quantity: reviewItem.quantity - totalDiscountedQuantity,
+        vatRate: reviewItem.vatRate,
+      });
+
+      return listPricedGrossAmount + totalDiscountedGrossAmount;
+    },
+    0,
+    reviewItems
   );
-
-  const grossAmount = reduce((acc, value) => add(prop('grossAmount', value), acc), 0, receiptRows);
 
   const removeItemHandler = useCallback(
     ({ itemId, expirationId }: { itemId: number; expirationId: number }) => {
@@ -92,7 +104,7 @@ export default function Review({ navigation }: ReviewProps) {
   );
 
   useEffect(() => {
-    if (receiptRows?.length === 0) {
+    if (reviewItems && reviewItems.length === 0) {
       setIsLoading(true);
       resetSellFlowContext().then(() => {
         setIsLoading(false);
@@ -102,7 +114,7 @@ export default function Review({ navigation }: ReviewProps) {
         });
       });
     }
-  }, [navigation, receiptRows?.length, resetSellFlowContext]);
+  }, [navigation, resetSellFlowContext, reviewItems]);
 
   const removeReceiptHandler = useCallback(() => {
     Alert.alert(
@@ -151,7 +163,7 @@ export default function Review({ navigation }: ReviewProps) {
     );
   }; */
 
-  const renderReceiptRow: ListRenderItem<ReviewRow> = (info: ListRenderItemInfo<ReviewRow>) => (
+  const renderReceiptRow: ListRenderItem<ReviewItem> = (info: ListRenderItemInfo<ReviewItem>) => (
     <Selection
       selected={
         `${info.item.itemId}-${info.item.expirationId}` ===
@@ -159,7 +171,7 @@ export default function Review({ navigation }: ReviewProps) {
       }
       item={info.item}
       onSelect={(id: string) => {
-        setSelectedRow(receiptRows.find((row) => `${row.itemId}-${row.expirationId}` === id));
+        setSelectedRow(reviewItems.find((row) => `${row.itemId}-${row.expirationId}` === id));
       }}
       onDelete={removeItemHandler}
     />
@@ -185,14 +197,14 @@ export default function Review({ navigation }: ReviewProps) {
       </View>
       <View style={styles.receiptContainer}>
         <FlatList
-          data={receiptRows}
+          data={reviewItems}
           renderItem={renderReceiptRow}
           keyExtractor={(item) => `${item.itemId}-${item.expirationId}`}
         />
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.grossAmountContainer}>
-          <LabeledItem label="Mindösszesen" text={formatPrice(grossAmount)} />
+          <LabeledItem label="Mindösszesen" text={formatPrice(discountedGrossAmount)} />
         </View>
         <View style={styles.buttonsContainer}>
           <Button variant="warning" onPress={removeReceiptHandler}>

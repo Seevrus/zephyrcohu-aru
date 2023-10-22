@@ -187,7 +187,7 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
             `${item.name.toLowerCase()}${item.expiresAt}`.includes(searchTerm.toLowerCase()) &&
             `${item.itemBarcode}${item.expirationBarcode}`.includes(barCode)
         )
-        .sort((itemA, itemB) => itemA.name.localeCompare(itemB.name)),
+        .sort((itemA, itemB) => itemA.name.localeCompare(itemB.name, 'HU-hu')),
     [
       barCode,
       itemsResponse,

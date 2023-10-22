@@ -17,13 +17,38 @@ import {
 } from '../api/request-types/CreateReceiptsRequest';
 import useCheckToken from '../api/queries/useCheckToken';
 
+export type SelectedDiscount = {
+  id: number;
+  quantity: number;
+  name: string;
+} & (
+  | {
+      type: 'absolute' | 'percentage';
+      amount: number;
+      price?: undefined;
+    }
+  | {
+      type: 'freeForm';
+      amount?: undefined;
+      price: number;
+    }
+);
+
+type ContextReceiptItem = ReceiptItem & {
+  discounts?: SelectedDiscount[];
+};
+
+type ContextReceipt = Omit<ReceiptRequest, 'items'> & {
+  items: ContextReceiptItem[];
+};
+
 type ReceiptsContextType = {
-  receipts: ReceiptRequest[];
+  receipts: ContextReceipt[];
   numberOfReceipts: number;
-  currentReceipt: Partial<ReceiptRequest>;
+  currentReceipt: Partial<ContextReceipt>;
   resetCurrentReceipt: () => Promise<void>;
   setCurrentReceiptBuyer: (buyer: ReceiptBuyer) => Promise<void>;
-  setCurrentReceiptItems: (items: ReceiptItem[]) => Promise<void>;
+  setCurrentReceiptItems: (items: ContextReceiptItem[]) => Promise<void>;
 };
 
 const ReceiptsContext = createContext<ReceiptsContextType>({} as ReceiptsContextType);

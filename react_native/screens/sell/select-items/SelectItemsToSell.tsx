@@ -1,18 +1,18 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { EventArg } from '@react-navigation/native';
+import { EventArg, useFocusEffect } from '@react-navigation/native';
 import {
   __,
   all,
   any,
-  assocPath,
+  anyPass,
   dissoc,
+  equals,
   gte,
   isEmpty,
   isNil,
   not,
   pipe,
   prop,
-  propSatisfies,
   values,
 } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -25,7 +25,6 @@ import Input from '../../../components/ui/Input';
 import LabeledItem from '../../../components/ui/LabeledItem';
 import colors from '../../../constants/colors';
 import { SelectItemsToSellProps } from '../../../navigators/screen-types';
-import { useReceiptsContext } from '../../../providers/ReceiptsProvider';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
 import { SellItem } from '../../../providers/sell-flow-hooks/useSelectItems';
 import calculateAmounts from '../../../utils/calculateAmounts';
@@ -37,7 +36,6 @@ const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[
 export default function SelectItemsToSell({ navigation, route }: SelectItemsToSellProps) {
   const scannedBarCode = route.params?.scannedBarCode;
 
-  const { resetCurrentReceipt } = useReceiptsContext();
   const {
     isLoading: isContextLoading,
     items,
@@ -50,6 +48,7 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
     barCode,
     setBarCode,
     saveSelectedItemsInFlow,
+    resetSellFlowContext,
   } = useSellFlowContext();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -61,7 +60,12 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
           const [prevNetAmount, prevGrossAmount] = prev;
           const [itemId, expirations] = curr;
 
-          const currentItem = items.find((item) => item.id === +itemId);
+          const currentItem = items?.find((item) => item.id === +itemId);
+
+          if (!currentItem) {
+            return prev;
+          }
+
           const { netPrice, vatRate } = currentItem;
 
           const [expirationsNetAmount, expirationsGrossAmount] = Object.values(expirations)
@@ -90,7 +94,12 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
           const [prevNetOrderAmount, prevGrossOrderAmount] = prev;
           const [itemId, orderQuantity] = curr;
 
-          const currentItem = items.find((item) => item.id === +itemId);
+          const currentItem = items?.find((item) => item.id === +itemId);
+
+          if (!currentItem) {
+            return prev;
+          }
+
           const { netPrice, vatRate } = currentItem;
           const { netAmount, grossAmount } = calculateAmounts({
             netPrice,
@@ -106,25 +115,29 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
   );
 
   const upsertSelectedItem = useCallback(
-    (id: number, expirationId: number, quantity: number) => {
-      if (!quantity) {
-        setSelectedItems((currentItems) => {
-          const itemsWithNewQuantity = assocPath([id, expirationId], quantity, currentItems);
+    (id: number, expirationId: number, quantity: number | null) => {
+      const newQuantity = quantity ?? undefined;
 
-          const areAllQuantitiesZero = pipe(
-            values,
-            all(propSatisfies(isNil, 'quantity'))
-          )(itemsWithNewQuantity[id]);
+      setSelectedItems((currentItems) => {
+        const itemsWithNewQuantity = {
+          ...currentItems,
+          [id]: {
+            ...(currentItems[id] ?? {}),
+            [expirationId]: newQuantity,
+          },
+        };
 
-          if (areAllQuantitiesZero) {
-            return dissoc(id, currentItems);
-          }
+        const areAllQuantitiesZero = pipe(
+          values,
+          all(anyPass([equals(0), isNil]))
+        )(itemsWithNewQuantity[id]);
 
-          return itemsWithNewQuantity;
-        });
-      } else {
-        setSelectedItems(assocPath([id, expirationId], quantity));
-      }
+        if (areAllQuantitiesZero) {
+          return dissoc(id, itemsWithNewQuantity);
+        }
+
+        return itemsWithNewQuantity;
+      });
     },
     [setSelectedItems]
   );
@@ -147,8 +160,8 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
     }
   }, [barCode, navigation, scannedBarCode, setBarCode]);
 
-  useEffect(() => {
-    const listener = (
+  const exitConfimationHandler = useCallback(
+    (
       event: EventArg<
         'beforeRemove',
         true,
@@ -173,53 +186,59 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
             text: 'Igen',
             style: 'destructive',
             onPress: async () => {
-              await resetCurrentReceipt();
+              setIsLoading(true);
+              await resetSellFlowContext();
+              setIsLoading(false);
               navigation.dispatch(event.data.action);
             },
           },
         ]
       );
-    };
+    },
+    [navigation, resetSellFlowContext]
+  );
 
-    navigation.addListener('beforeRemove', listener);
-
-    return () => {
-      navigation.removeListener('beforeRemove', listener);
-    };
-  }, [navigation, resetCurrentReceipt]);
+  useFocusEffect(() => {
+    navigation.addListener('beforeRemove', exitConfimationHandler);
+  });
 
   const canConfirmItems = not(isEmpty(selectedItems));
   const confirmButtonVariant = canConfirmItems ? 'ok' : 'disabled';
-  const confirmItemsHandler = async () => {
+  const confirmItemsHandler = useCallback(async () => {
     if (canConfirmItems) {
       setIsLoading(true);
       await saveSelectedItemsInFlow();
       setIsLoading(false);
+      navigation.removeListener('beforeRemove', exitConfimationHandler);
       navigation.navigate('Review');
     }
-  };
+  }, [canConfirmItems, exitConfimationHandler, navigation, saveSelectedItemsInFlow]);
 
-  const renderItem = (info: ListRenderItemInfo<SellItem>) => {
-    let type: ItemAvailability;
-    if (!!selectedItems[info.item.id] || !!selectedOrderItems[info.item.id]) {
-      type = ItemAvailability.IN_RECEIPT;
-    } else if (
-      any(pipe(prop('quantity'), gte(__, 0)), pipe(prop('expirations'), values)(info.item))
-    ) {
-      type = ItemAvailability.AVAILABLE;
-    } else {
-      type = ItemAvailability.ONLY_ORDER;
-    }
+  const renderItem = useCallback(
+    (info: ListRenderItemInfo<SellItem>) => {
+      let type: ItemAvailability;
+      if (!!selectedItems[info.item.id] || !!selectedOrderItems[info.item.id]) {
+        type = ItemAvailability.IN_RECEIPT;
+      } else if (
+        any(pipe(prop('quantity'), gte(__, 0)), pipe(prop('expirations'), values)(info.item))
+      ) {
+        type = ItemAvailability.AVAILABLE;
+      } else {
+        type = ItemAvailability.ONLY_ORDER;
+      }
 
-    return (
-      <SelectItem
-        info={info}
-        type={type}
-        upsertSelectedItem={upsertSelectedItem}
-        upsertOrderItem={upsertOrderItem}
-      />
-    );
-  };
+      return (
+        <SelectItem
+          info={info}
+          type={type}
+          selectedItems={selectedItems}
+          upsertSelectedItem={upsertSelectedItem}
+          upsertOrderItem={upsertOrderItem}
+        />
+      );
+    },
+    [selectedItems, selectedOrderItems, upsertOrderItem, upsertSelectedItem]
+  );
 
   if (isContextLoading || isLoading) {
     return <Loading />;

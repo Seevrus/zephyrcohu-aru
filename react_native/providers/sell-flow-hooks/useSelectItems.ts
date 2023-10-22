@@ -19,7 +19,8 @@ import { useReceiptsContext } from '../ReceiptsProvider';
 import { useStorageContext } from '../StorageProvider';
 
 export type SellExpiration = {
-  id: number;
+  itemId: number;
+  expirationId: number;
   expiresAt: string;
   quantity: number | undefined;
 };
@@ -102,11 +103,12 @@ export default function useSelectItems({
           vatRate: item.vatRate,
           expirations: pipe(
             map<Expiration, SellExpiration>((expiration) => ({
-              id: expiration.id,
+              itemId: item.id,
+              expirationId: expiration.id,
               expiresAt: expiration.expiresAt,
               quantity: storageExpirations[item.id]?.[expiration.id] ?? 0,
             })),
-            indexBy(prop('id'))
+            indexBy(prop('itemId'))
           )(item.expirations),
           availableDiscounts: item.discounts,
         })),

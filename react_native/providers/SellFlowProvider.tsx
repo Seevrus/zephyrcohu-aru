@@ -1,11 +1,13 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from 'react';
 
 import { useReceiptsContext } from './ReceiptsProvider';
+import useReview, { UseReview } from './sell-flow-hooks/useReview';
 import useSelectItems, { UseSelectItems } from './sell-flow-hooks/useSelectItems';
 import useSelectPartners, { UseSelectPartners } from './sell-flow-hooks/useSelectPartners';
 
 type SellFlowContextType = Omit<UseSelectPartners, 'currentPriceList' | 'resetUseSelectPartners'> &
-  Omit<UseSelectItems, 'resetUseSelectItems'> & {
+  Omit<UseSelectItems, 'resetUseSelectItems'> &
+  Omit<UseReview, 'resetUseReview'> & {
     isLoading: boolean;
     resetSellFlowContext: () => Promise<void>;
   };
@@ -42,16 +44,24 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
   } = useSelectItems({
     currentPriceList,
   });
+  const {
+    isLoading: isReviewDataLoading,
+    reviewItems,
+    saveDiscountedItemsInFlow,
+    resetUseReview,
+  } = useReview({ currentPriceList, selectedItems });
 
   const resetSellFlowContext = useCallback(async () => {
     resetUseSelectPartners();
     resetUseSelectItems();
+    resetUseReview();
     await resetCurrentReceipt();
-  }, [resetCurrentReceipt, resetUseSelectItems, resetUseSelectPartners]);
+  }, [resetCurrentReceipt, resetUseReview, resetUseSelectItems, resetUseSelectPartners]);
 
   const sellFlowContextValue = useMemo(
     () => ({
-      isLoading: isUseSelectPartnersDataLoading || isUseSelectItemsDataLoading,
+      isLoading:
+        isUseSelectPartnersDataLoading || isUseSelectItemsDataLoading || isReviewDataLoading,
       partners,
       selectedPartner,
       isSelectedPartnerOnCurrentPartnerList,
@@ -69,17 +79,22 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       barCode,
       setBarCode,
       saveSelectedItemsInFlow,
+      reviewItems,
+      saveDiscountedItemsInFlow,
       resetSellFlowContext,
     }),
     [
       barCode,
       isPartnerChosenForCurrentReceipt,
+      isReviewDataLoading,
       isSelectedPartnerOnCurrentPartnerList,
       isUseSelectItemsDataLoading,
       isUseSelectPartnersDataLoading,
       items,
       partners,
       resetSellFlowContext,
+      reviewItems,
+      saveDiscountedItemsInFlow,
       saveNewPartnerInFlow,
       saveSelectedItemsInFlow,
       saveSelectedPartnerInFlow,

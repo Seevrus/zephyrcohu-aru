@@ -4,6 +4,7 @@ import { isEmpty } from 'ramda';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import Loading from '../../../components/Loading';
 import TextCard from '../../../components/info-cards/TextCard';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
@@ -24,7 +25,9 @@ type FormErrors = {
 };
 
 export default function AddPartnerForm({ navigation, route: { params } }: AddPartnerFormProps) {
-  const { saveNewPartnerInFlow } = useSellFlowContext();
+  const { isLoading: isContextLoading, saveNewPartnerInFlow } = useSellFlowContext();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [taxNumber, setTaxNumber] = useState<string>(params?.taxNumber ?? '');
   const [name, setName] = useState<string>(params?.name ?? '');
@@ -121,6 +124,7 @@ export default function AddPartnerForm({ navigation, route: { params } }: AddPar
     if (!isEmpty(formErrors)) {
       setFormError(formErrors);
     } else {
+      setIsLoading(true);
       const now = formatISO(new Date());
       await saveNewPartnerInFlow({
         id: -1,
@@ -150,12 +154,17 @@ export default function AddPartnerForm({ navigation, route: { params } }: AddPar
       });
     }
 
+    setIsLoading(false);
     navigation.removeListener('beforeRemove', handleGoBack);
     navigation.reset({
       index: 1,
       routes: [{ name: 'Index' }, { name: 'SelectItemsToSell' }],
     });
   };
+
+  if (isLoading || isContextLoading) {
+    return <Loading />;
+  }
 
   return (
     <ScrollView style={styles.container}>

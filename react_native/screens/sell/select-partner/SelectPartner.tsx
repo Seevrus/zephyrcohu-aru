@@ -24,6 +24,7 @@ import {
 } from 'react-native';
 
 import { Partners } from '../../../api/response-mappers/mapPartnersResponse';
+import Loading from '../../../components/Loading';
 import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
 import { PartnerList, SelectPartnerProps } from '../../../navigators/screen-types';
@@ -34,8 +35,15 @@ const NUM_PARTNERS_SHOWN = 10;
 
 export default function SelectPartner({ route, navigation }: SelectPartnerProps) {
   const { isInternetReachable } = useNetInfo();
-  const { partners, selectedPartner, selectPartner, saveSelectedPartnerInFlow } =
-    useSellFlowContext();
+  const {
+    isLoading: isContextLoading,
+    partners,
+    selectedPartner,
+    selectPartner,
+    saveSelectedPartnerInFlow,
+  } = useSellFlowContext();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const partnerListType = route.params.partners;
   const [partnersShown, setPartnersShown] = useState<Partners>(null);
@@ -79,7 +87,9 @@ export default function SelectPartner({ route, navigation }: SelectPartnerProps)
   };
 
   const confirmPartnerHandler = async () => {
+    setIsLoading(true);
     await saveSelectedPartnerInFlow();
+    setIsLoading(false);
     navigation.replace('SelectItemsToSell');
   };
 
@@ -93,6 +103,10 @@ export default function SelectPartner({ route, navigation }: SelectPartnerProps)
       onConfirmSelection={confirmPartnerHandler}
     />
   );
+
+  if (isLoading || isContextLoading) {
+    return <Loading />;
+  }
 
   return (
     <View style={styles.container}>

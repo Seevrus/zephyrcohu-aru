@@ -2,7 +2,7 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import { ReviewRow } from '../screens/sell/review/types';
+import { ReviewItem } from '../providers/sell-flow-hooks/useReview';
 
 export type StackParams = {
   Login: undefined;
@@ -25,7 +25,7 @@ export type StackParams = {
   ScanBarCodeInSell: undefined;
   Review: undefined;
   Discounts: {
-    item: ReviewRow;
+    item: ReviewItem;
   };
   Summary: undefined;
 
