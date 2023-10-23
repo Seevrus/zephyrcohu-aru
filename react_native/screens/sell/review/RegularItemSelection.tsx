@@ -4,7 +4,6 @@ import { format } from 'date-fns';
 import { equals } from 'ramda';
 import { memo, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
-import { formatCurrency } from 'react-native-format-currency';
 
 import AnimatedListItem from '../../../components/ui/AnimatedListItem';
 import Button from '../../../components/ui/Button';
@@ -12,18 +11,18 @@ import LabeledItem from '../../../components/ui/LabeledItem';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
 import { StackParams } from '../../../navigators/screen-types';
-import { ReviewItem } from '../../../providers/sell-flow-hooks/useReview';
-
-const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
+import { RegularReviewItem } from '../../../providers/sell-flow-hooks/useReview';
+import formatPrice from '../../../utils/formatPrice';
+import getReviewItemId from './getReviewItemId';
 
 type SelectionProps = {
   selected: boolean;
-  item: ReviewItem;
+  item: RegularReviewItem;
   onSelect: (id: string) => void;
   onDelete: ({ itemId, expirationId }: { itemId: number; expirationId: number }) => void;
 };
 
-function Selection({ selected, item, onSelect, onDelete }: SelectionProps) {
+function RegularItemSelection({ selected, item, onSelect, onDelete }: SelectionProps) {
   const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
 
   const backgroundColor = selected ? colors.ok : colors.neutral;
@@ -37,7 +36,7 @@ function Selection({ selected, item, onSelect, onDelete }: SelectionProps) {
 
   return (
     <AnimatedListItem
-      id={`${item.itemId}-${item.expirationId}`}
+      id={getReviewItemId(item)}
       title={`${item.name} (${expiresAt})`}
       expandedInitially={selected}
       height={dropdownHeight}
@@ -114,7 +113,7 @@ function Selection({ selected, item, onSelect, onDelete }: SelectionProps) {
   );
 }
 
-export default memo(Selection, equals);
+export default memo(RegularItemSelection, equals);
 
 const styles = StyleSheet.create({
   selectPartnerContainer: {

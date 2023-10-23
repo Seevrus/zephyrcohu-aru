@@ -27,12 +27,9 @@ export type ReceiptBuyer = {
   vatNumber: string;
 };
 
-export type ReceiptItem = {
+type ReceiptBaseItem = {
   id: number;
-  expirationId: number;
-  CNCode: string;
   articleNumber: string;
-  expiresAt: string; // yyyy-MM
   name: string;
   quantity: number;
   unitName: string;
@@ -41,6 +38,16 @@ export type ReceiptItem = {
   vatRate: string;
   vatAmount: number;
   grossAmount: number;
+};
+
+export type ReceiptOtherItem = ReceiptBaseItem & {
+  comment: string;
+};
+
+export type ReceiptItem = ReceiptBaseItem & {
+  expirationId: number;
+  CNCode: string;
+  expiresAt: string; // yyyy-MM
 };
 
 type ReceiptVatAmount = {
@@ -63,6 +70,7 @@ export type ReceiptRequest = {
   invoiceType: 'P' | 'E';
   paidDate: string; // yyyy-MM-dd
   items: ReceiptItem[];
+  otherItems?: ReceiptOtherItem[];
   quantity: number;
   netAmount: number;
   vatAmount: number;

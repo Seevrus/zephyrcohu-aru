@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { assoc, isNil } from 'ramda';
+import { assoc, dissoc, isNil } from 'ramda';
 import {
   PropsWithChildren,
   createContext,
@@ -13,6 +13,7 @@ import {
 import {
   ReceiptBuyer,
   ReceiptItem,
+  ReceiptOtherItem,
   ReceiptRequest,
 } from '../api/request-types/CreateReceiptsRequest';
 import useCheckToken from '../api/queries/useCheckToken';
@@ -49,6 +50,7 @@ type ReceiptsContextType = {
   resetCurrentReceipt: () => Promise<void>;
   setCurrentReceiptBuyer: (buyer: ReceiptBuyer) => Promise<void>;
   setCurrentReceiptItems: (items: ContextReceiptItem[]) => Promise<void>;
+  setCurrentReceiptOtherItems: (otherItems?: ReceiptOtherItem[]) => Promise<void>;
 };
 
 const ReceiptsContext = createContext<ReceiptsContextType>({} as ReceiptsContextType);
@@ -137,6 +139,21 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
     [currentReceipt, persistCurrentReceipt]
   );
 
+  const setCurrentReceiptOtherItems = useCallback(
+    async (otherItems?: ReceiptOtherItem[]) => {
+      if (otherItems) {
+        setCurrentReceipt(assoc('otherItems', otherItems));
+        const updatedReceipt = assoc('otherItems', otherItems, currentReceipt);
+        await persistCurrentReceipt(updatedReceipt);
+      } else {
+        setCurrentReceipt(dissoc('otherItems'));
+        const updatedReceipt = dissoc('otherItems', currentReceipt);
+        await persistCurrentReceipt(updatedReceipt);
+      }
+    },
+    [currentReceipt, persistCurrentReceipt]
+  );
+
   const receiptsContextValue = useMemo(
     () => ({
       receipts,
@@ -145,6 +162,7 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
       resetCurrentReceipt,
       setCurrentReceiptBuyer,
       setCurrentReceiptItems,
+      setCurrentReceiptOtherItems,
     }),
     [
       currentReceipt,
@@ -153,6 +171,7 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
       resetCurrentReceipt,
       setCurrentReceiptBuyer,
       setCurrentReceiptItems,
+      setCurrentReceiptOtherItems,
     ]
   );
 

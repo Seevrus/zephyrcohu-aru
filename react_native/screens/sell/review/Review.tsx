@@ -1,5 +1,5 @@
 import { dissoc, dissocPath, reduce } from 'ramda';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -8,7 +8,6 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { formatCurrency } from 'react-native-format-currency';
 
 import Loading from '../../../components/Loading';
 import ErrorCard from '../../../components/info-cards/ErrorCard';
@@ -20,14 +19,16 @@ import { ReviewProps } from '../../../navigators/screen-types';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
 import { ReviewItem } from '../../../providers/sell-flow-hooks/useReview';
 import calculateAmounts from '../../../utils/calculateAmounts';
-import Selection from './Selection';
-
-const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
+import formatPrice from '../../../utils/formatPrice';
+import OtherItemSelection from './OtherItemSelection';
+import RegularItemSelection from './RegularItemSelection';
+import getReviewItemId from './getReviewItemId';
 
 export default function Review({ navigation }: ReviewProps) {
   const {
     isLoading: isContextLoading,
     setSelectedItems,
+    setSelectedOtherItems,
     reviewItems,
     resetSellFlowContext,
   } = useSellFlowContext();
@@ -36,58 +37,62 @@ export default function Review({ navigation }: ReviewProps) {
   const [selectedRow, setSelectedRow] = useState<ReviewItem>(null);
   const [saveReceiptError, setSaveReceiptError] = useState<string>('');
 
-  const discountedGrossAmount = reduce(
-    (accumulatedGrossAmount, reviewItem) => {
-      if (!reviewItem.selectedDiscounts) {
-        return accumulatedGrossAmount + reviewItem.grossAmount;
-      }
+  const discountedGrossAmount = useMemo(
+    () =>
+      reduce(
+        (accumulatedGrossAmount, reviewItem) => {
+          if (!reviewItem.selectedDiscounts) {
+            return accumulatedGrossAmount + reviewItem.grossAmount;
+          }
 
-      const [totalDiscountedQuantity, totalDiscountedGrossAmount] =
-        reviewItem.selectedDiscounts.reduce(
-          ([accumulatedDiscountedQuantity, accumulatedDiscountedGrossAmount], discount) => {
-            let newNetPrice: number;
-            switch (discount.type) {
-              case 'absolute':
-                newNetPrice = reviewItem.netPrice - discount.amount;
-                break;
-              case 'percentage':
-                newNetPrice = reviewItem.netPrice * (100 - discount.amount);
-                break;
-              case 'freeForm':
-                newNetPrice = discount.price ?? 1;
-                break;
-              default:
-                newNetPrice = reviewItem.netPrice;
-            }
+          const [totalDiscountedQuantity, totalDiscountedGrossAmount] =
+            reviewItem.selectedDiscounts.reduce(
+              ([accumulatedDiscountedQuantity, accumulatedDiscountedGrossAmount], discount) => {
+                let newNetPrice: number;
+                switch (discount.type) {
+                  case 'absolute':
+                    newNetPrice = reviewItem.netPrice - discount.amount;
+                    break;
+                  case 'percentage':
+                    newNetPrice = reviewItem.netPrice * (100 - discount.amount);
+                    break;
+                  case 'freeForm':
+                    newNetPrice = discount.price ?? 1;
+                    break;
+                  default:
+                    newNetPrice = reviewItem.netPrice;
+                }
 
-            const { grossAmount: discountGrossAmount } = calculateAmounts({
-              netPrice: newNetPrice,
-              quantity: discount.quantity,
-              vatRate: reviewItem.vatRate,
-            });
+                const { grossAmount: discountGrossAmount } = calculateAmounts({
+                  netPrice: newNetPrice,
+                  quantity: discount.quantity,
+                  vatRate: reviewItem.vatRate,
+                });
 
-            return [
-              accumulatedDiscountedQuantity + discount.quantity,
-              accumulatedDiscountedGrossAmount + discountGrossAmount,
-            ];
-          },
-          [0, 0]
-        );
+                return [
+                  accumulatedDiscountedQuantity + discount.quantity,
+                  accumulatedDiscountedGrossAmount + discountGrossAmount,
+                ];
+              },
+              [0, 0]
+            );
 
-      if (totalDiscountedQuantity === reviewItem.quantity) {
-        return totalDiscountedGrossAmount;
-      }
+          if (totalDiscountedQuantity === reviewItem.quantity) {
+            return totalDiscountedGrossAmount;
+          }
 
-      const { grossAmount: listPricedGrossAmount } = calculateAmounts({
-        netPrice: reviewItem.netPrice,
-        quantity: reviewItem.quantity - totalDiscountedQuantity,
-        vatRate: reviewItem.vatRate,
-      });
+          const { grossAmount: listPricedGrossAmount } = calculateAmounts({
+            netPrice: reviewItem.netPrice,
+            quantity: reviewItem.quantity - totalDiscountedQuantity,
+            vatRate: reviewItem.vatRate,
+          });
 
-      return listPricedGrossAmount + totalDiscountedGrossAmount;
-    },
-    0,
-    reviewItems
+          return listPricedGrossAmount + totalDiscountedGrossAmount;
+        },
+        0,
+        reviewItems
+      ),
+    [reviewItems]
   );
 
   const removeItemHandler = useCallback(
@@ -103,8 +108,20 @@ export default function Review({ navigation }: ReviewProps) {
     [setSelectedItems]
   );
 
+  const removeOtherItemHandler = useCallback(
+    (otherItemId: number) => {
+      setSelectedOtherItems(dissoc(otherItemId));
+    },
+    [setSelectedOtherItems]
+  );
+
   useEffect(() => {
-    if (reviewItems && reviewItems.length === 0) {
+    const numberOfRegularReviewItems = reviewItems?.reduce(
+      (numberOfItems, item) => (item.type === 'item' ? numberOfItems + 1 : numberOfItems),
+      0
+    );
+
+    if (reviewItems && numberOfRegularReviewItems === 0) {
       setIsLoading(true);
       resetSellFlowContext().then(() => {
         setIsLoading(false);
@@ -163,19 +180,30 @@ export default function Review({ navigation }: ReviewProps) {
     );
   }; */
 
-  const renderReceiptRow: ListRenderItem<ReviewItem> = (info: ListRenderItemInfo<ReviewItem>) => (
-    <Selection
-      selected={
-        `${info.item.itemId}-${info.item.expirationId}` ===
-        `${selectedRow?.itemId}-${selectedRow?.expirationId}`
-      }
-      item={info.item}
-      onSelect={(id: string) => {
-        setSelectedRow(reviewItems.find((row) => `${row.itemId}-${row.expirationId}` === id));
-      }}
-      onDelete={removeItemHandler}
-    />
-  );
+  const renderReceiptRow: ListRenderItem<ReviewItem> = (info: ListRenderItemInfo<ReviewItem>) => {
+    const reviewItemId = getReviewItemId(info.item);
+    const selectedRowId = getReviewItemId(selectedRow);
+
+    return info.item.type === 'item' ? (
+      <RegularItemSelection
+        selected={reviewItemId === selectedRowId}
+        item={info.item}
+        onSelect={(id: string) => {
+          setSelectedRow(reviewItems.find((row) => getReviewItemId(row) === id));
+        }}
+        onDelete={removeItemHandler}
+      />
+    ) : (
+      <OtherItemSelection
+        selected={reviewItemId === selectedRowId}
+        item={info.item}
+        onSelect={(id: string) => {
+          setSelectedRow(reviewItems.find((row) => getReviewItemId(row) === id));
+        }}
+        onDelete={removeOtherItemHandler}
+      />
+    );
+  };
 
   if (isLoading || isContextLoading) {
     return <Loading />;
@@ -196,11 +224,7 @@ export default function Review({ navigation }: ReviewProps) {
         </View>
       </View>
       <View style={styles.receiptContainer}>
-        <FlatList
-          data={reviewItems}
-          renderItem={renderReceiptRow}
-          keyExtractor={(item) => `${item.itemId}-${item.expirationId}`}
-        />
+        <FlatList data={reviewItems} renderItem={renderReceiptRow} keyExtractor={getReviewItemId} />
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.grossAmountContainer}>

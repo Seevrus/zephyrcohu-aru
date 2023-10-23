@@ -7,30 +7,40 @@ import AnimatedListItem from '../../../components/ui/AnimatedListItem';
 import Input from '../../../components/ui/Input';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
-import { OtherItem } from '../../../providers/sell-flow-hooks/useSelectOtherItems';
+import { OtherSellItem } from '../../../providers/sell-flow-hooks/useSelectOtherItems';
 
 type ExpirationAccordionDetailsProps = {
-  item: OtherItem;
-  setCurrentQuantity: (item: OtherItem, newCurrentQuantity: number | null) => void;
+  item: OtherSellItem;
+  quantity: number | null;
+  setQuantity: (item: OtherSellItem, quantity: number | null) => void;
+  comment: string | null;
+  setComment: (item: OtherSellItem, comment: string | null) => void;
 };
 
-function ExpirationAccordionDetails({ item, setCurrentQuantity }: ExpirationAccordionDetailsProps) {
-  const backgroundColor = item.quantity > 0 ? colors.ok : colors.neutral;
-
+function ExpirationAccordionDetails({
+  item,
+  quantity,
+  setQuantity,
+  comment,
+  setComment,
+}: ExpirationAccordionDetailsProps) {
   const [dropdownHeight, setDropdownHeight] = useState(250);
-  const [selectedQuantity, setSelectedQuantity] = useState<number | null>(null);
+
+  const backgroundColor = quantity > 0 ? colors.ok : colors.neutral;
 
   const quantityHandler = (newQuantity: string) => {
     const formattedQuantity = pipe(trim, replace(',', '.'), Number, Math.floor)(newQuantity);
     const nullIshFormattedQuantity = Number.isNaN(formattedQuantity) ? null : formattedQuantity;
 
     if (newQuantity === '' || formattedQuantity < 0 || isNil(nullIshFormattedQuantity)) {
-      setSelectedQuantity(null);
-      setCurrentQuantity(item, null);
+      setQuantity(item, null);
     } else {
-      setSelectedQuantity(nullIshFormattedQuantity);
-      setCurrentQuantity(item, nullIshFormattedQuantity);
+      setQuantity(item, nullIshFormattedQuantity);
     }
+  };
+
+  const commentHandler = (newComment: string) => {
+    setComment(item, newComment);
   };
 
   return (
@@ -56,7 +66,7 @@ function ExpirationAccordionDetails({ item, setCurrentQuantity }: ExpirationAcco
         <View style={styles.selectionContainer}>
           <Pressable
             style={styles.selectIconContainer}
-            onPress={() => quantityHandler(String((selectedQuantity ?? 0) - 1))}
+            onPress={() => quantityHandler(String((quantity ?? 0) - 1))}
           >
             <MaterialIcons
               name="remove-circle-outline"
@@ -67,7 +77,7 @@ function ExpirationAccordionDetails({ item, setCurrentQuantity }: ExpirationAcco
           </Pressable>
           <View style={styles.quantityContainer}>
             <Input
-              label="Raktárkészlet:"
+              label="Mennyiség:"
               textAlign="center"
               config={{
                 autoCapitalize: 'none',
@@ -76,14 +86,14 @@ function ExpirationAccordionDetails({ item, setCurrentQuantity }: ExpirationAcco
                 contextMenuHidden: true,
                 keyboardType: 'numeric',
                 maxLength: 4,
-                value: String(selectedQuantity ?? ''),
+                value: String(quantity ?? ''),
                 onChangeText: quantityHandler,
               }}
             />
           </View>
           <Pressable
             style={styles.selectIconContainer}
-            onPress={() => quantityHandler(String((selectedQuantity ?? 0) + 1))}
+            onPress={() => quantityHandler(String((quantity ?? 0) + 1))}
           >
             <MaterialIcons
               name="add-circle-outline"
@@ -93,7 +103,18 @@ function ExpirationAccordionDetails({ item, setCurrentQuantity }: ExpirationAcco
             />
           </Pressable>
         </View>
-        {/* TODO add comment box */}
+        <View>
+          <Input
+            label="Megjegyzés:"
+            config={{
+              multiline: true,
+              numberOfLines: 10,
+              maxLength: 100,
+              value: String(comment ?? ''),
+              onChangeText: commentHandler,
+            }}
+          />
+        </View>
       </View>
     </AnimatedListItem>
   );

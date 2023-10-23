@@ -1,8 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { formatCurrency } from 'react-native-format-currency';
 
 import colors from '../../constants/colors';
 import fontSizes from '../../constants/fontSizes';
+import formatPrice from '../../utils/formatPrice';
 
 type ReceiptListItemProps = {
   partnerName: string;
@@ -19,8 +19,6 @@ export default function ReceiptListItem({
   total,
   onPress,
 }: ReceiptListItemProps) {
-  const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
-
   return (
     <View style={styles.container}>
       <Pressable

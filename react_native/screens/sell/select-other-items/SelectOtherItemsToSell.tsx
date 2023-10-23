@@ -1,8 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { isEmpty, not } from 'ramda';
+import { assoc, dissoc, isEmpty, not } from 'ramda';
 import { useCallback, useMemo, useState } from 'react';
 import { Animated, ListRenderItemInfo, StyleSheet, View } from 'react-native';
-import { formatCurrency } from 'react-native-format-currency';
 
 import Loading from '../../../components/Loading';
 import Button from '../../../components/ui/Button';
@@ -10,19 +9,19 @@ import Input from '../../../components/ui/Input';
 import LabeledItem from '../../../components/ui/LabeledItem';
 import colors from '../../../constants/colors';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
-import { OtherItem } from '../../../providers/sell-flow-hooks/useSelectOtherItems';
+import { OtherSellItem } from '../../../providers/sell-flow-hooks/useSelectOtherItems';
 import calculateAmounts from '../../../utils/calculateAmounts';
+import formatPrice from '../../../utils/formatPrice';
 import ExpirationAccordionDetails from './ExpirationAccordionDetails';
 
 const NUM_ITEMS_SHOWN = 10;
-const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
 
 export default function SelectOtherItemsToSell({ navigation }) {
   const {
     isLoading: isContextLoading,
     otherItems,
-    setOtherItemsQuantity,
     selectedOtherItems,
+    setSelectedOtherItems,
     saveSelectedOtherItemsInFlow,
   } = useSellFlowContext();
 
@@ -33,23 +32,23 @@ export default function SelectOtherItemsToSell({ navigation }) {
     () =>
       Object.entries(selectedOtherItems).reduce(
         (prev, curr) => {
-          const [prevNetOrderAmount, prevGrossOrderAmount] = prev;
-          const [itemId, orderQuantity] = curr;
+          const [prevNetAmount, prevGrossAmount] = prev;
+          const [itemId, { quantity }] = curr;
 
           const currentItem = otherItems?.find((item) => item.id === +itemId);
 
-          if (!currentItem) {
+          if (!currentItem || quantity === null) {
             return prev;
           }
 
           const { netPrice, vatRate } = currentItem;
           const { netAmount, grossAmount } = calculateAmounts({
             netPrice,
-            quantity: orderQuantity,
+            quantity,
             vatRate,
           });
 
-          return [prevNetOrderAmount + netAmount, prevGrossOrderAmount + grossAmount];
+          return [prevNetAmount + netAmount, prevGrossAmount + grossAmount];
         },
         [0, 0]
       ),
@@ -65,13 +64,57 @@ export default function SelectOtherItemsToSell({ navigation }) {
       setIsLoading(false);
       navigation.goBack();
     }
-  }, []);
+  }, [canConfirmItems, navigation, saveSelectedOtherItemsInFlow]);
+
+  const quantityChangeHandler = useCallback(
+    (item: OtherSellItem, quantity: number | null) => {
+      setSelectedOtherItems((prevItems) => {
+        const selectedOtherItem = prevItems[item.id];
+
+        if (!selectedOtherItem) {
+          return assoc(item.id, { quantity, comment: null }, prevItems);
+        }
+
+        if (selectedOtherItem.comment === null && quantity === null) {
+          return dissoc(item.id, prevItems);
+        }
+
+        return assoc(item.id, { ...selectedOtherItem, quantity }, prevItems);
+      });
+    },
+    [setSelectedOtherItems]
+  );
+
+  const commentChangeHandler = useCallback(
+    (item: OtherSellItem, comment: string | null) => {
+      setSelectedOtherItems((prevItems) => {
+        const selectedOtherItem = prevItems[item.id];
+
+        if (!selectedOtherItem) {
+          return assoc(item.id, { quantity: null, comment }, prevItems);
+        }
+
+        if (selectedOtherItem.quantity === null && comment === null) {
+          return dissoc(item.id, prevItems);
+        }
+
+        return assoc(item.id, { ...selectedOtherItem, comment }, prevItems);
+      });
+    },
+    [setSelectedOtherItems]
+  );
 
   const renderItem = useCallback(
-    (info: ListRenderItemInfo<OtherItem>) => (
-      <ExpirationAccordionDetails item={info.item} setCurrentQuantity={setOtherItemsQuantity} />
+    (info: ListRenderItemInfo<OtherSellItem>) => (
+      <ExpirationAccordionDetails
+        item={info.item}
+        quantity={selectedOtherItems[info.item.id]?.quantity ?? null}
+        setQuantity={quantityChangeHandler}
+        comment={selectedOtherItems[info.item.id]?.comment ?? null}
+        setComment={commentChangeHandler}
+      />
     ),
-    []
+    [commentChangeHandler, quantityChangeHandler, selectedOtherItems]
   );
 
   if (isContextLoading || isLoading) {

@@ -3,10 +3,12 @@ import { PropsWithChildren, createContext, useCallback, useContext, useMemo } fr
 import { useReceiptsContext } from './ReceiptsProvider';
 import useReview, { UseReview } from './sell-flow-hooks/useReview';
 import useSelectItems, { UseSelectItems } from './sell-flow-hooks/useSelectItems';
+import useSelectOtherItems, { UseSelectOtherItems } from './sell-flow-hooks/useSelectOtherItems';
 import useSelectPartners, { UseSelectPartners } from './sell-flow-hooks/useSelectPartners';
 
 type SellFlowContextType = Omit<UseSelectPartners, 'currentPriceList' | 'resetUseSelectPartners'> &
   Omit<UseSelectItems, 'resetUseSelectItems'> &
+  Omit<UseSelectOtherItems, 'resetUseSelectOtherItems'> &
   Omit<UseReview, 'resetUseReview'> & {
     isLoading: boolean;
     resetSellFlowContext: () => Promise<void>;
@@ -45,30 +47,48 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     currentPriceList,
   });
   const {
+    isLoading: isUseSelectOtherItemsDataLoading,
+    otherItems,
+    selectedOtherItems,
+    setSelectedOtherItems,
+    saveSelectedOtherItemsInFlow,
+    resetUseSelectOtherItems,
+  } = useSelectOtherItems();
+  const {
     isLoading: isReviewDataLoading,
     reviewItems,
     saveDiscountedItemsInFlow,
     resetUseReview,
-  } = useReview({ currentPriceList, selectedItems });
+  } = useReview({ currentPriceList, selectedItems, selectedOtherItems });
 
   const resetSellFlowContext = useCallback(async () => {
     resetUseSelectPartners();
     resetUseSelectItems();
+    resetUseSelectOtherItems();
     resetUseReview();
     await resetCurrentReceipt();
-  }, [resetCurrentReceipt, resetUseReview, resetUseSelectItems, resetUseSelectPartners]);
+  }, [
+    resetCurrentReceipt,
+    resetUseReview,
+    resetUseSelectItems,
+    resetUseSelectOtherItems,
+    resetUseSelectPartners,
+  ]);
 
   const sellFlowContextValue = useMemo(
     () => ({
       isLoading:
-        isUseSelectPartnersDataLoading || isUseSelectItemsDataLoading || isReviewDataLoading, // ok
+        isUseSelectPartnersDataLoading ||
+        isUseSelectItemsDataLoading ||
+        isUseSelectOtherItemsDataLoading ||
+        isReviewDataLoading,
       partners,
       selectedPartner,
-      isSelectedPartnerOnCurrentPartnerList, // ok
-      isPartnerChosenForCurrentReceipt, // ok
+      isSelectedPartnerOnCurrentPartnerList,
+      isPartnerChosenForCurrentReceipt,
       selectPartner,
       saveSelectedPartnerInFlow,
-      saveNewPartnerInFlow, // ok
+      saveNewPartnerInFlow,
       items,
       selectedItems,
       setSelectedItems,
@@ -78,9 +98,13 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       setSearchTerm,
       barCode,
       setBarCode,
-      saveSelectedItemsInFlow, // ok
+      saveSelectedItemsInFlow,
+      otherItems,
+      selectedOtherItems,
+      setSelectedOtherItems,
+      saveSelectedOtherItemsInFlow,
       reviewItems,
-      saveDiscountedItemsInFlow, // ok
+      saveDiscountedItemsInFlow,
       resetSellFlowContext,
     }),
     [
@@ -89,24 +113,29 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       isReviewDataLoading,
       isSelectedPartnerOnCurrentPartnerList,
       isUseSelectItemsDataLoading,
+      isUseSelectOtherItemsDataLoading,
       isUseSelectPartnersDataLoading,
       items,
+      otherItems,
       partners,
       resetSellFlowContext,
       reviewItems,
       saveDiscountedItemsInFlow,
       saveNewPartnerInFlow,
       saveSelectedItemsInFlow,
+      saveSelectedOtherItemsInFlow,
       saveSelectedPartnerInFlow,
       searchTerm,
       selectPartner,
       selectedItems,
       selectedOrderItems,
+      selectedOtherItems,
       selectedPartner,
       setBarCode,
       setSearchTerm,
       setSelectedItems,
       setSelectedOrderItems,
+      setSelectedOtherItems,
     ]
   );
 

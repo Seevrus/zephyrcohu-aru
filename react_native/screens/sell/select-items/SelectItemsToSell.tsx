@@ -17,7 +17,6 @@ import {
 } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Animated, ListRenderItemInfo, Pressable, StyleSheet, View } from 'react-native';
-import { formatCurrency } from 'react-native-format-currency';
 
 import Loading from '../../../components/Loading';
 import Button from '../../../components/ui/Button';
@@ -28,10 +27,10 @@ import { SelectItemsToSellProps } from '../../../navigators/screen-types';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
 import { SellItem } from '../../../providers/sell-flow-hooks/useSelectItems';
 import calculateAmounts from '../../../utils/calculateAmounts';
+import formatPrice from '../../../utils/formatPrice';
 import SelectItem, { ItemAvailability } from './SelectItem';
 
 const NUM_ITEMS_SHOWN = 10;
-const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
 
 export default function SelectItemsToSell({ navigation, route }: SelectItemsToSellProps) {
   const scannedBarCode = route.params?.scannedBarCode;

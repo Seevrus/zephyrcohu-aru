@@ -1,26 +1,40 @@
-import { assoc, dissoc, identity, isEmpty } from 'ramda';
+import { and, assoc, dissoc, identity, isEmpty } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import useItems from '../../api/queries/useItems';
+import useOtherItems from '../../api/queries/useOtherItems';
 import { Discount } from '../../api/response-types/ItemsResponseType';
 import { PriceListType } from '../../api/response-types/PriceListResponseType';
 import calculateAmounts from '../../utils/calculateAmounts';
 import { SelectedDiscount, useReceiptsContext } from '../ReceiptsProvider';
+import { SelectedOtherItems } from './useSelectOtherItems';
 
-export type ReviewItem = {
+type BaseReviewItem = {
   itemId: number;
   articleNumber: string;
   name: string;
-  expirationId: number;
-  expiresAt: string;
   quantity: number;
   unitName: string;
   netPrice: number;
   vatRate: string;
   grossAmount: number;
+};
+
+export type RegularReviewItem = BaseReviewItem & {
+  type: 'item';
+  expirationId: number;
+  expiresAt: string;
   availableDiscounts: Discount[] | null;
   selectedDiscounts?: SelectedDiscount[];
 };
+
+export type OtherReviewItem = BaseReviewItem & {
+  type: 'otherItem';
+  comment: string;
+  selectedDiscounts?: undefined;
+};
+
+export type ReviewItem = RegularReviewItem | OtherReviewItem;
 
 export type UseReview = {
   isLoading: boolean;
@@ -32,11 +46,14 @@ export type UseReview = {
 export default function useReview({
   currentPriceList,
   selectedItems,
+  selectedOtherItems,
 }: {
   currentPriceList: PriceListType;
   selectedItems: Record<number, Record<number, number>>;
+  selectedOtherItems: SelectedOtherItems;
 }): UseReview {
   const { data: items, isLoading: isItemsLoading } = useItems();
+  const { data: otherItems, isLoading: isOtherItemsLoading } = useOtherItems();
   const { currentReceipt, setCurrentReceiptItems } = useReceiptsContext();
 
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>(null);
@@ -44,7 +61,7 @@ export default function useReview({
   const applyDiscounts = useCallback((itemId: number, discounts?: SelectedDiscount[]) => {
     setReviewItems((prevItems) =>
       prevItems.map((item) => {
-        if (item.itemId !== itemId) {
+        if (item.itemId !== itemId || item.type !== 'item') {
           return item;
         }
 
@@ -80,24 +97,28 @@ export default function useReview({
 
   useEffect(() => {
     setReviewItems((prevItems) => {
-      if (!items || isEmpty(selectedItems)) {
+      if (!items || !otherItems || and(isEmpty(selectedItems), isEmpty(selectedOtherItems))) {
         return prevItems;
       }
 
-      return Object.entries(selectedItems)
+      const regularReviewItems: RegularReviewItem[] = Object.entries(selectedItems)
         .flatMap(([itemId, expirations]) => {
           const item = items.find((i) => i.id === +itemId);
 
-          if (!item) return undefined;
+          if (!item) {
+            return undefined;
+          }
 
           return Object.entries(expirations)
             .map(([expirationId, quantity]) => {
               const expiration = item.expirations.find((e) => e.id === +expirationId);
               const currentReviewItem = prevItems?.find(
-                (i) => i.itemId === +itemId && i.expirationId === +expirationId
+                (i) => i.itemId === +itemId && i.type === 'item' && i.expirationId === +expirationId
               );
 
-              if (!expiration) return undefined;
+              if (!expiration) {
+                return undefined;
+              }
 
               const netPrice =
                 currentPriceList?.items.find((i) => i.itemId === item.id)?.netPrice ??
@@ -110,6 +131,7 @@ export default function useReview({
               });
 
               return {
+                type: 'item',
                 itemId: item.id,
                 articleNumber: item.articleNumber,
                 name: item.name,
@@ -122,14 +144,45 @@ export default function useReview({
                 grossAmount,
                 availableDiscounts: item.discounts,
                 selectedDiscounts: currentReviewItem?.selectedDiscounts,
-              };
+              } as const;
             })
             .filter(identity);
         })
         .filter(identity)
         .sort((item1, item2) => item1.name.localeCompare(item2.name, 'HU-hu'));
+
+      const otherReviewItems: OtherReviewItem[] = Object.entries(selectedOtherItems)
+        .map(([otherItemId, { quantity, comment }]) => {
+          const otherItem = otherItems.find((i) => i.id === +otherItemId);
+
+          if (!otherItem) {
+            return undefined;
+          }
+
+          const { grossAmount } = calculateAmounts({
+            netPrice: otherItem.netPrice,
+            quantity,
+            vatRate: otherItem.vatRate,
+          });
+
+          return {
+            type: 'otherItem',
+            itemId: otherItem.id,
+            articleNumber: otherItem.articleNumber,
+            name: otherItem.name,
+            quantity,
+            unitName: otherItem.unitName,
+            netPrice: otherItem.netPrice,
+            vatRate: otherItem.vatRate,
+            grossAmount,
+            comment,
+          } as const;
+        })
+        .filter(identity);
+
+      return [...regularReviewItems, ...otherReviewItems];
     });
-  }, [currentPriceList?.items, items, selectedItems]);
+  }, [currentPriceList?.items, items, otherItems, selectedItems, selectedOtherItems]);
 
   const resetUseReview = useCallback(() => {
     setReviewItems(null);
@@ -137,11 +190,11 @@ export default function useReview({
 
   return useMemo(
     () => ({
-      isLoading: isItemsLoading,
+      isLoading: isItemsLoading || isOtherItemsLoading,
       reviewItems,
       saveDiscountedItemsInFlow,
       resetUseReview,
     }),
-    [isItemsLoading, resetUseReview, reviewItems, saveDiscountedItemsInFlow]
+    [isItemsLoading, isOtherItemsLoading, resetUseReview, reviewItems, saveDiscountedItemsInFlow]
   );
 }
