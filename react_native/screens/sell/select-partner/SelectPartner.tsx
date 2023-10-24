@@ -36,7 +36,7 @@ const NUM_PARTNERS_SHOWN = 10;
 export default function SelectPartner({ route, navigation }: SelectPartnerProps) {
   const { isInternetReachable } = useNetInfo();
   const {
-    isLoading: isContextLoading,
+    isPending: isContextPending,
     partners,
     selectedPartner,
     selectPartner,
@@ -104,7 +104,7 @@ export default function SelectPartner({ route, navigation }: SelectPartnerProps)
     />
   );
 
-  if (isLoading || isContextLoading) {
+  if (isLoading || isContextPending) {
     return <Loading />;
   }
 

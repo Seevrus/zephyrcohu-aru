@@ -18,7 +18,7 @@ const NUM_ITEMS_SHOWN = 10;
 
 export default function SelectOtherItemsToSell({ navigation }) {
   const {
-    isLoading: isContextLoading,
+    isPending: isContextPending,
     otherItems,
     selectedOtherItems,
     setSelectedOtherItems,
@@ -117,7 +117,7 @@ export default function SelectOtherItemsToSell({ navigation }) {
     [commentChangeHandler, quantityChangeHandler, selectedOtherItems]
   );
 
-  if (isContextLoading || isLoading) {
+  if (isContextPending || isLoading) {
     return <Loading />;
   }
 

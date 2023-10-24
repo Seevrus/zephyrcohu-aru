@@ -34,16 +34,16 @@ export enum EndErrandTileState {
 }
 
 export default function useTileStates() {
-  const { data: user, isFetching: isUserLoading } = useCheckToken();
+  const { data: user, isFetching: isUserFetching } = useCheckToken();
   const { isInternetReachable } = useNetInfo();
   const { numberOfOrders } = useOrdersContext();
   const { numberOfReceipts } = useReceiptsContext();
   const {
-    isLoading: isTokenLoading,
+    isPending: isTokenPending,
     data: { isPasswordExpired, isTokenExpired },
   } = useToken();
 
-  const isCheckTokenInProgress = !user && isUserLoading;
+  const isCheckTokenInProgress = !user && isUserFetching;
 
   const isUserIdle = user?.state === 'I';
   const isStorageStarted = user?.state === 'L';
@@ -81,7 +81,7 @@ export default function useTileStates() {
       Offline = 'A funkció csak online érhető el.',
     }
 
-    if (!isTokenLoading && !isCheckTokenInProgress) {
+    if (!isTokenPending && !isCheckTokenInProgress) {
       if (isTokenExpired) {
         setStorageTileMessage(DisabledTileMessage.LoggedOut);
         setStartErrandTileMessage(DisabledTileMessage.LoggedOut);
@@ -105,12 +105,12 @@ export default function useTileStates() {
     isInternetReachable,
     isPasswordExpired,
     isTokenExpired,
-    isTokenLoading,
+    isTokenPending,
     user,
   ]);
 
   useEffect(() => {
-    if (!isTokenLoading && !isCheckTokenInProgress) {
+    if (!isTokenPending && !isCheckTokenInProgress) {
       if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isUserIdle) {
         setStorageTileState(StorageTileState.Ok);
         setStorageTileMessage('');
@@ -133,12 +133,12 @@ export default function useTileStates() {
     isRoundStarted,
     isStorageStarted,
     isTokenExpired,
-    isTokenLoading,
+    isTokenPending,
     isUserIdle,
   ]);
 
   useEffect(() => {
-    if (!isTokenLoading && !isCheckTokenInProgress) {
+    if (!isTokenPending && !isCheckTokenInProgress) {
       if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isUserIdle) {
         setStartErrandTileState(StartErrandTileState.Ok);
         setEndErrandTileMessage('');
@@ -166,14 +166,14 @@ export default function useTileStates() {
     isRoundStarted,
     isStorageStarted,
     isTokenExpired,
-    isTokenLoading,
+    isTokenPending,
     isUserIdle,
     numberOfOrders,
     numberOfReceipts,
   ]);
 
   useEffect(() => {
-    if (!isTokenLoading && !isCheckTokenInProgress) {
+    if (!isTokenPending && !isCheckTokenInProgress) {
       if (isRoundStarted) {
         setSelectPartnerTileState(SelectPartnerTileState.Neutral);
         setSelectPartnerTileMessage('');
@@ -190,11 +190,11 @@ export default function useTileStates() {
     isPasswordExpired,
     isRoundStarted,
     isTokenExpired,
-    isTokenLoading,
+    isTokenPending,
   ]);
 
   useEffect(() => {
-    if (!isTokenLoading && !isCheckTokenInProgress) {
+    if (!isTokenPending && !isCheckTokenInProgress) {
       if (numberOfReceipts > 0) {
         setReceiptsTileState(ReceiptsTileState.Neutral);
         setReceiptsTileMessage('');
@@ -208,12 +208,12 @@ export default function useTileStates() {
     isInternetReachable,
     isPasswordExpired,
     isTokenExpired,
-    isTokenLoading,
+    isTokenPending,
     numberOfReceipts,
   ]);
 
   useEffect(() => {
-    if (!isTokenLoading && !isCheckTokenInProgress) {
+    if (!isTokenPending && !isCheckTokenInProgress) {
       if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isRoundStarted) {
         setEndErrandTileState(EndErrandTileState.Warning);
         setEndErrandTileMessage('Biztosan szeretné zárni a kört?');
@@ -230,7 +230,7 @@ export default function useTileStates() {
     isPasswordExpired,
     isRoundStarted,
     isTokenExpired,
-    isTokenLoading,
+    isTokenPending,
   ]);
 
   return {

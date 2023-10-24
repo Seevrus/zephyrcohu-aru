@@ -85,7 +85,7 @@ export default function SearchPartnerNavForm({
 }: SearchPartnerNavFormProps) {
   const { isInternetReachable } = useNetInfo();
   const {
-    isLoading: isTokenLoading,
+    isPending: isTokenPending,
     data: { isTokenExpired },
   } = useToken();
 
@@ -93,7 +93,7 @@ export default function SearchPartnerNavForm({
   const [searchValue, setSearchValue] = useState<string>('');
   const [selectedResult, setSelectedResult] = useState<TaxPayer>(null);
 
-  const { data: taxPayerData, isLoading, isSuccess } = useSearchTaxNumber({ taxNumber });
+  const { data: taxPayerData, isPending, isSuccess } = useSearchTaxNumber({ taxNumber });
 
   const [taxPayersShown, setTaxPayersShown] = useState<TaxPayer[]>(null);
 
@@ -104,14 +104,14 @@ export default function SearchPartnerNavForm({
   }, [isInternetReachable, isTokenExpired, navigation]);
 
   useEffect(() => {
-    if (isLoading) {
+    if (isPending) {
       setTaxPayersShown(null);
     }
-  }, [isLoading]);
+  }, [isPending]);
 
   useEffect(() => {
     setTaxPayersShown((prevTaxpayersShown) => {
-      if (!isNil(prevTaxpayersShown) || isLoading || !taxPayerData) {
+      if (!isNil(prevTaxpayersShown) || isPending || !taxPayerData) {
         return prevTaxpayersShown;
       }
 
@@ -123,7 +123,7 @@ export default function SearchPartnerNavForm({
         )
       )(taxPayerData);
     });
-  }, [isLoading, selectedResult, taxPayerData]);
+  }, [isPending, selectedResult, taxPayerData]);
 
   const taxNumberSearchHandler = (value: string) => {
     setTaxNumber(value);
@@ -186,7 +186,7 @@ export default function SearchPartnerNavForm({
     />
   );
 
-  if (isTokenLoading) {
+  if (isTokenPending) {
     return <Loading />;
   }
 

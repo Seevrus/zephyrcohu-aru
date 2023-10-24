@@ -16,7 +16,7 @@ const keyExtractor = (item: ListItem) => String(item.expirationId);
 export default function SelectItemsFromStore({ navigation, route }: SelectItemsFromStoreProps) {
   const scannedBarCode = route.params?.scannedBarCode;
 
-  const { isLoading, items, setCurrentQuantity, searchTerm, setSearchTerm, barCode, setBarCode } =
+  const { isPending, items, setCurrentQuantity, searchTerm, setSearchTerm, barCode, setBarCode } =
     useStorageFlowContext();
 
   const isAnyItemChanged = useMemo(
@@ -31,7 +31,7 @@ export default function SelectItemsFromStore({ navigation, route }: SelectItemsF
     }
   }, [barCode, navigation, scannedBarCode, setBarCode]);
 
-  if (isLoading) {
+  if (isPending) {
     return <Loading />;
   }
 

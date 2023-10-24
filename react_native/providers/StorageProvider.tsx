@@ -15,7 +15,7 @@ import useStoreDetails from '../api/queries/useStoreDetails';
 import { StoreDetailsResponseData } from '../api/response-types/StoreDetailsResponseType';
 
 type StorageContextType = {
-  isLoading: boolean;
+  isPending: boolean;
   storage: StoreDetailsResponseData | null;
   originalStorage: StoreDetailsResponseData | null;
   slowSaveStorageExpirations: (storageExpirations: Record<number, Record<number, number>>) => void;
@@ -33,7 +33,7 @@ export default function StorageProvider({ children }: PropsWithChildren) {
 
   const {
     data: storeDetails,
-    isLoading: isStoreDetailsLoading,
+    isPending: isStoreDetailsPending,
     isStale: isStoreDetailsStale,
   } = useStoreDetails({
     storeId: user?.storeId,
@@ -131,7 +131,7 @@ export default function StorageProvider({ children }: PropsWithChildren) {
 
   const storageContextValue = useMemo(
     () => ({
-      isLoading: isStoreDetailsLoading,
+      isPending: isStoreDetailsPending,
       storage,
       originalStorage: storeDetails,
       slowSaveStorageExpirations,
@@ -139,7 +139,7 @@ export default function StorageProvider({ children }: PropsWithChildren) {
     }),
     [
       clearStorageFromContext,
-      isStoreDetailsLoading,
+      isStoreDetailsPending,
       slowSaveStorageExpirations,
       storage,
       storeDetails,

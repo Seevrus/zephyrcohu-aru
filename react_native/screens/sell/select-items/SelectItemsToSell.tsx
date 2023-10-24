@@ -36,7 +36,7 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
   const scannedBarCode = route.params?.scannedBarCode;
 
   const {
-    isLoading: isContextLoading,
+    isPending: isContextPending,
     items,
     selectedItems,
     setSelectedItems,
@@ -239,7 +239,7 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
     [selectedItems, selectedOrderItems, upsertOrderItem, upsertSelectedItem]
   );
 
-  if (isContextLoading || isLoading) {
+  if (isContextPending || isLoading) {
     return <Loading />;
   }
 

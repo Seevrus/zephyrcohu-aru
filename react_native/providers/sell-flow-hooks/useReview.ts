@@ -37,7 +37,7 @@ export type OtherReviewItem = BaseReviewItem & {
 export type ReviewItem = RegularReviewItem | OtherReviewItem;
 
 export type UseReview = {
-  isLoading: boolean;
+  isPending: boolean;
   reviewItems: ReviewItem[];
   saveDiscountedItemsInFlow: (itemId: number, discounts?: SelectedDiscount[]) => Promise<void>;
   resetUseReview: () => void;
@@ -52,8 +52,8 @@ export default function useReview({
   selectedItems: Record<number, Record<number, number>>;
   selectedOtherItems: SelectedOtherItems;
 }): UseReview {
-  const { data: items, isLoading: isItemsLoading } = useItems();
-  const { data: otherItems, isLoading: isOtherItemsLoading } = useOtherItems();
+  const { data: items, isPending: isItemsPending } = useItems();
+  const { data: otherItems, isPending: isOtherItemsPending } = useOtherItems();
   const { currentReceipt, setCurrentReceiptItems } = useReceiptsContext();
 
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>(null);
@@ -190,11 +190,11 @@ export default function useReview({
 
   return useMemo(
     () => ({
-      isLoading: isItemsLoading || isOtherItemsLoading,
+      isPending: isItemsPending || isOtherItemsPending,
       reviewItems,
       saveDiscountedItemsInFlow,
       resetUseReview,
     }),
-    [isItemsLoading, isOtherItemsLoading, resetUseReview, reviewItems, saveDiscountedItemsInFlow]
+    [isItemsPending, isOtherItemsPending, resetUseReview, reviewItems, saveDiscountedItemsInFlow]
   );
 }

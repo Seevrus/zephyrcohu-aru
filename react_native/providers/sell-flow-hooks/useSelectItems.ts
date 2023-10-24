@@ -42,7 +42,7 @@ export type SellItem = {
 export type SellItems = SellItem[];
 
 export type UseSelectItems = {
-  isLoading: boolean;
+  isPending: boolean;
   items: SellItems;
   selectedItems: Record<number, Record<number, number>>;
   setSelectedItems: Dispatch<SetStateAction<Record<number, Record<number, number>>>>;
@@ -63,7 +63,7 @@ export default function useSelectItems({
 }): UseSelectItems {
   const { data: items } = useItems();
   const { currentReceipt, setCurrentReceiptItems } = useReceiptsContext();
-  const { storage, isLoading: isStorageLoading } = useStorageContext();
+  const { storage, isPending: isStoragePending } = useStorageContext();
 
   const [storageExpirations, setStorageExpirations] = useState<
     Record<number, Record<number, number>>
@@ -205,7 +205,7 @@ export default function useSelectItems({
 
   return useMemo(
     () => ({
-      isLoading: isStorageLoading,
+      isPending: isStoragePending,
       items: sellItems,
       selectedItems,
       setSelectedItems,
@@ -220,7 +220,7 @@ export default function useSelectItems({
     }),
     [
       barCode,
-      isStorageLoading,
+      isStoragePending,
       resetUseSelectItems,
       saveSelectedItemsInFlow,
       searchTerm,

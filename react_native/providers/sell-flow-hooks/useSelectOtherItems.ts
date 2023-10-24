@@ -24,7 +24,7 @@ export type SelectedOtherItems = Record<
 >;
 
 export type UseSelectOtherItems = {
-  isLoading: boolean;
+  isPending: boolean;
   otherItems: OtherSellItems;
   selectedOtherItems: SelectedOtherItems;
   setSelectedOtherItems: Dispatch<SetStateAction<SelectedOtherItems>>;
@@ -33,7 +33,7 @@ export type UseSelectOtherItems = {
 };
 
 export default function useSelectOtherItems(): UseSelectOtherItems {
-  const { data: otherItems, isLoading: isOtherItemsLoading } = useOtherItems();
+  const { data: otherItems, isPending: isOtherItemsPending } = useOtherItems();
   const { setCurrentReceiptOtherItems } = useReceiptsContext();
 
   const [selectedOtherItems, setSelectedOtherItems] = useState<
@@ -100,7 +100,7 @@ export default function useSelectOtherItems(): UseSelectOtherItems {
 
   return useMemo(
     () => ({
-      isLoading: isOtherItemsLoading,
+      isPending: isOtherItemsPending,
       otherItems: otherSellItems,
       selectedOtherItems,
       setSelectedOtherItems,
@@ -108,7 +108,7 @@ export default function useSelectOtherItems(): UseSelectOtherItems {
       resetUseSelectOtherItems,
     }),
     [
-      isOtherItemsLoading,
+      isOtherItemsPending,
       otherSellItems,
       resetUseSelectOtherItems,
       saveSelectedOtherItemsInFlow,

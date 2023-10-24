@@ -10,10 +10,10 @@ import colors from '../../constants/colors';
 import useTiles from '../../hooks/useTiles';
 
 export default function Index() {
-  const { isFetching: isUserLoading } = useCheckToken();
+  const { isFetching: isUserFetching } = useCheckToken();
   const { isInternetReachable } = useNetInfo();
   const {
-    isLoading: isTokenLoading,
+    isPending: isTokenPending,
     data: { isPasswordExpired, isTokenExpired },
   } = useToken();
 
@@ -29,7 +29,7 @@ export default function Index() {
     />
   );
 
-  if (isTokenLoading || isUserLoading) {
+  if (isTokenPending || isUserFetching) {
     return <Loading />;
   }
 

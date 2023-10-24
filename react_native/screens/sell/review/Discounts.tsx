@@ -21,7 +21,7 @@ type FormErrors = {
 };
 
 export default function Discounts({ navigation, route }: DiscountsProps) {
-  const { isLoading: isContextLoading, saveDiscountedItemsInFlow } = useSellFlowContext();
+  const { isPending: isContextPending, saveDiscountedItemsInFlow } = useSellFlowContext();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -128,7 +128,7 @@ export default function Discounts({ navigation, route }: DiscountsProps) {
     }
   };
 
-  if (isLoading || isContextLoading) {
+  if (isLoading || isContextPending) {
     return <Loading />;
   }
 

@@ -36,16 +36,16 @@ export default function StartErrand({ navigation }: StartErrandProps) {
   const {
     data: partnerLists,
     isFetching: isPartnersListsFetching,
-    isLoading: isPartnerListsLoading,
+    isPending: isPartnerListsPending,
   } = usePartnerLists();
   const { isFetched: isPriceListsFetched, isFetching: isPriceListsFetching } = usePriceLists();
   const queryClient = useQueryClient();
   const {
     mutateAsync: startRound,
-    isLoading: isStartRoundLoading,
+    isPending: isStartRoundPending,
     isSuccess: isStartRoundSuccess,
   } = useStartRound();
-  const { data: stores, isFetching: isStoresFetching, isLoading: isStoresLoading } = useStores();
+  const { data: stores, isFetching: isStoresFetching, isPending: isStoresPending } = useStores();
 
   const [storeId, setStoreId] = useState<number>(-1);
   const [partnerListId, setPartnerListId] = useState<number>(-1);
@@ -60,7 +60,7 @@ export default function StartErrand({ navigation }: StartErrandProps) {
       'beforeRemove'
     > = (event) => {
       if (
-        isStartRoundLoading ||
+        isStartRoundPending ||
         isActiveRoundFetching ||
         isItemsFetching ||
         isOtherItemsFetching ||
@@ -79,7 +79,7 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     isOtherItemsFetching,
     isPartnersFetching,
     isPriceListsFetching,
-    isStartRoundLoading,
+    isStartRoundPending,
     navigation,
   ]);
 
@@ -125,8 +125,8 @@ export default function StartErrand({ navigation }: StartErrandProps) {
   };
 
   const refreshHandler = () => {
-    queryClient.invalidateQueries(['partner-lists']);
-    queryClient.invalidateQueries(['stores']);
+    queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
+    queryClient.invalidateQueries({ queryKey: ['stores'] });
   };
 
   if (
@@ -135,11 +135,11 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     isOtherItemsFetching ||
     isPartnersFetching ||
     isPartnersListsFetching ||
-    isPartnerListsLoading ||
+    isPartnerListsPending ||
     isPriceListsFetching ||
-    isStartRoundLoading ||
+    isStartRoundPending ||
     isStoresFetching ||
-    isStoresLoading
+    isStoresPending
   ) {
     return <Loading message={loadingMessage} />;
   }

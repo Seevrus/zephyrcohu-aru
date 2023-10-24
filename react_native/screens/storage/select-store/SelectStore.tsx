@@ -29,7 +29,7 @@ import { SelectStoreProps } from '../../../navigators/screen-types';
 export default function SelectStore({ navigation }: SelectStoreProps) {
   const { isInternetReachable } = useNetInfo();
   const { mutateAsync: selectStore } = useSelectStore();
-  const { isLoading: isStoresLoading, data: stores } = useStores();
+  const { isPending: isStoresPending, data: stores } = useStores();
 
   const [isSubmitInProgress, setIsSubmitInProgress] = useState<boolean>(false);
   const [selectedStoreId, setSelectedStoreId] = useState<number | null>(null);
@@ -104,7 +104,7 @@ export default function SelectStore({ navigation }: SelectStoreProps) {
 
   const confirmButtonVariant = isNil(selectedStoreId) ? 'disabled' : 'neutral';
 
-  if (isStoresLoading || isSubmitInProgress) {
+  if (isStoresPending || isSubmitInProgress) {
     return <Loading />;
   }
 

@@ -26,7 +26,7 @@ import getReviewItemId from './getReviewItemId';
 
 export default function Review({ navigation }: ReviewProps) {
   const {
-    isLoading: isContextLoading,
+    isPending: isContextPending,
     setSelectedItems,
     setSelectedOtherItems,
     reviewItems,
@@ -205,7 +205,7 @@ export default function Review({ navigation }: ReviewProps) {
     );
   };
 
-  if (isLoading || isContextLoading) {
+  if (isLoading || isContextPending) {
     return <Loading />;
   }
 

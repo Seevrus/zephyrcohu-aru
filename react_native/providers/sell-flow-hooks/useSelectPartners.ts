@@ -12,7 +12,7 @@ import { PartnerList } from '../../navigators/screen-types';
 import { useReceiptsContext } from '../ReceiptsProvider';
 
 export type UseSelectPartners = {
-  isLoading: boolean;
+  isPending: boolean;
   partners: Record<PartnerList, Partners>;
   selectedPartner: Partners[number];
   isSelectedPartnerOnCurrentPartnerList: boolean;
@@ -25,10 +25,10 @@ export type UseSelectPartners = {
 };
 
 export default function useSelectPartners(): UseSelectPartners {
-  const { data: activeRound, isLoading: isActiveRoundLoading } = useActiveRound();
-  const { data: partnerLists, isLoading: isPartnersListsLoading } = usePartnerLists();
-  const { data: partners, isLoading: isPartnersLoading } = usePartners();
-  const { data: priceLists, isLoading: isPriceListsLoading } = usePriceLists();
+  const { data: activeRound, isPending: isActiveRoundPending } = useActiveRound();
+  const { data: partnerLists, isPending: isPartnersListsPending } = usePartnerLists();
+  const { data: partners, isPending: isPartnersPending } = usePartners();
+  const { data: priceLists, isPending: isPriceListsPending } = usePriceLists();
   const { currentReceipt, setCurrentReceiptBuyer } = useReceiptsContext();
 
   const isPartnerChosenForCurrentReceipt = !!currentReceipt?.buyer;
@@ -160,8 +160,8 @@ export default function useSelectPartners(): UseSelectPartners {
 
   return useMemo(
     () => ({
-      isLoading:
-        isActiveRoundLoading || isPartnersListsLoading || isPartnersLoading || isPriceListsLoading,
+      isPending:
+        isActiveRoundPending || isPartnersListsPending || isPartnersPending || isPriceListsPending,
       partners: partnersToShow,
       selectedPartner,
       isSelectedPartnerOnCurrentPartnerList,
@@ -174,11 +174,11 @@ export default function useSelectPartners(): UseSelectPartners {
     }),
     [
       currentPriceList,
-      isActiveRoundLoading,
+      isActiveRoundPending,
       isPartnerChosenForCurrentReceipt,
-      isPartnersListsLoading,
-      isPartnersLoading,
-      isPriceListsLoading,
+      isPartnersListsPending,
+      isPartnersPending,
+      isPriceListsPending,
       isSelectedPartnerOnCurrentPartnerList,
       partnersToShow,
       resetUseSelectPartners,

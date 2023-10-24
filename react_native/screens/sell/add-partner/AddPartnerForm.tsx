@@ -25,7 +25,7 @@ type FormErrors = {
 };
 
 export default function AddPartnerForm({ navigation, route: { params } }: AddPartnerFormProps) {
-  const { isLoading: isContextLoading, saveNewPartnerInFlow } = useSellFlowContext();
+  const { isPending: isContextPending, saveNewPartnerInFlow } = useSellFlowContext();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -162,7 +162,7 @@ export default function AddPartnerForm({ navigation, route: { params } }: AddPar
     });
   };
 
-  if (isLoading || isContextLoading) {
+  if (isLoading || isContextPending) {
     return <Loading />;
   }
 

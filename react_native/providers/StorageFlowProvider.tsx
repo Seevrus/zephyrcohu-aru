@@ -33,7 +33,7 @@ export type ListItem = {
 };
 
 type StorageFlowContextType = {
-  isLoading: boolean;
+  isPending: boolean;
   items: ListItem[];
   areModificationsSaved: boolean;
   setCurrentQuantity: (item: ListItem, newCurrentQuantity: number | null) => void;
@@ -52,14 +52,14 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
   const {
     storage,
     originalStorage,
-    isLoading: isStorageLoading,
+    isPending: isStoragePending,
     slowSaveStorageExpirations,
   } = useStorageContext();
-  const { data: stores, isLoading: isStoresLoading } = useStores();
+  const { data: stores, isPending: isStoresPending } = useStores();
 
   const primaryStoreId = stores?.find((store) => store.type === 'P')?.id;
 
-  const { data: primaryStore, isLoading: isPrimaryStoreLoading } = useStoreDetails({
+  const { data: primaryStore, isPending: isPrimaryStorePending } = useStoreDetails({
     storeId: primaryStoreId,
   });
 
@@ -215,7 +215,7 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
 
   const selectItemsContextValue = useMemo(
     () => ({
-      isLoading: isStorageLoading || isPrimaryStoreLoading || isStoresLoading,
+      isPending: isStoragePending || isPrimaryStorePending || isStoresPending,
       items,
       areModificationsSaved,
       setCurrentQuantity,
@@ -230,9 +230,9 @@ export default function StorageFlowProvider({ children }: PropsWithChildren) {
       areModificationsSaved,
       barCode,
       handleSendChanges,
-      isPrimaryStoreLoading,
-      isStorageLoading,
-      isStoresLoading,
+      isPrimaryStorePending,
+      isStoragePending,
+      isStoresPending,
       items,
       resetStorageFlowContext,
       searchTerm,

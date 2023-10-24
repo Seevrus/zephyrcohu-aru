@@ -10,7 +10,7 @@ type SellFlowContextType = Omit<UseSelectPartners, 'currentPriceList' | 'resetUs
   Omit<UseSelectItems, 'resetUseSelectItems'> &
   Omit<UseSelectOtherItems, 'resetUseSelectOtherItems'> &
   Omit<UseReview, 'resetUseReview'> & {
-    isLoading: boolean;
+    isPending: boolean;
     resetSellFlowContext: () => Promise<void>;
   };
 
@@ -19,7 +19,7 @@ const SellFlowContext = createContext<SellFlowContextType>({} as SellFlowContext
 export default function SellFlowProvider({ children }: PropsWithChildren) {
   const { resetCurrentReceipt } = useReceiptsContext();
   const {
-    isLoading: isUseSelectPartnersDataLoading,
+    isPending: isUseSelectPartnersDataPending,
     partners,
     selectedPartner,
     isSelectedPartnerOnCurrentPartnerList,
@@ -31,7 +31,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     resetUseSelectPartners,
   } = useSelectPartners();
   const {
-    isLoading: isUseSelectItemsDataLoading,
+    isPending: isUseSelectItemsDataPending,
     items,
     selectedItems,
     setSelectedItems,
@@ -47,7 +47,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     currentPriceList,
   });
   const {
-    isLoading: isUseSelectOtherItemsDataLoading,
+    isPending: isUseSelectOtherItemsDataPending,
     otherItems,
     selectedOtherItems,
     setSelectedOtherItems,
@@ -55,7 +55,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     resetUseSelectOtherItems,
   } = useSelectOtherItems();
   const {
-    isLoading: isReviewDataLoading,
+    isPending: isReviewDataPending,
     reviewItems,
     saveDiscountedItemsInFlow,
     resetUseReview,
@@ -77,11 +77,11 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
 
   const sellFlowContextValue = useMemo(
     () => ({
-      isLoading:
-        isUseSelectPartnersDataLoading ||
-        isUseSelectItemsDataLoading ||
-        isUseSelectOtherItemsDataLoading ||
-        isReviewDataLoading,
+      isPending:
+        isUseSelectPartnersDataPending ||
+        isUseSelectItemsDataPending ||
+        isUseSelectOtherItemsDataPending ||
+        isReviewDataPending,
       partners,
       selectedPartner,
       isSelectedPartnerOnCurrentPartnerList,
@@ -110,11 +110,11 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     [
       barCode,
       isPartnerChosenForCurrentReceipt,
-      isReviewDataLoading,
+      isReviewDataPending,
       isSelectedPartnerOnCurrentPartnerList,
-      isUseSelectItemsDataLoading,
-      isUseSelectOtherItemsDataLoading,
-      isUseSelectPartnersDataLoading,
+      isUseSelectItemsDataPending,
+      isUseSelectOtherItemsDataPending,
+      isUseSelectPartnersDataPending,
       items,
       otherItems,
       partners,
