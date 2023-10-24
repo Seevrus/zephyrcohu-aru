@@ -11,6 +11,8 @@ import { OtherSellItem } from '../../../providers/sell-flow-hooks/useSelectOther
 
 type ExpirationAccordionDetailsProps = {
   item: OtherSellItem;
+  netPrice: number | null;
+  setNetPrice: (item: OtherSellItem, price: number | null) => void;
   quantity: number | null;
   setQuantity: (item: OtherSellItem, quantity: number | null) => void;
   comment: string | null;
@@ -19,14 +21,27 @@ type ExpirationAccordionDetailsProps = {
 
 function ExpirationAccordionDetails({
   item,
+  netPrice,
+  setNetPrice,
   quantity,
   setQuantity,
   comment,
   setComment,
 }: ExpirationAccordionDetailsProps) {
-  const [dropdownHeight, setDropdownHeight] = useState(250);
+  const [dropdownHeight, setDropdownHeight] = useState(0);
 
   const backgroundColor = quantity > 0 ? colors.ok : colors.neutral;
+
+  const priceHandler = (newPrice: string) => {
+    const formattedPrice = pipe(trim, replace(',', '.'), Number, Math.floor)(newPrice);
+    const nullIshFormattedPrice = Number.isNaN(formattedPrice) ? null : formattedPrice;
+
+    if (newPrice === '' || formattedPrice < 0 || isNil(nullIshFormattedPrice)) {
+      setNetPrice(item, null);
+    } else {
+      setNetPrice(item, nullIshFormattedPrice);
+    }
+  };
 
   const quantityHandler = (newQuantity: string) => {
     const formattedQuantity = pipe(trim, replace(',', '.'), Number, Math.floor)(newQuantity);
@@ -40,7 +55,11 @@ function ExpirationAccordionDetails({
   };
 
   const commentHandler = (newComment: string) => {
-    setComment(item, newComment);
+    if (newComment.trim().length === 0) {
+      setComment(item, null);
+    } else {
+      setComment(item, newComment);
+    }
   };
 
   return (
@@ -49,9 +68,7 @@ function ExpirationAccordionDetails({
       expandedInitially={false}
       title={
         <View style={styles.selectItemTitle}>
-          <View style={styles.selectItemNameContainer}>
-            <Text style={styles.selectItemText}>{item.name}</Text>
-          </View>
+          <Text style={styles.selectItemText}>{item.name}</Text>
         </View>
       }
       height={dropdownHeight}
@@ -103,12 +120,28 @@ function ExpirationAccordionDetails({
             />
           </Pressable>
         </View>
-        <View>
+        <View style={styles.priceContainer}>
+          <Input
+            label="Ár:"
+            textAlign="center"
+            config={{
+              autoCapitalize: 'none',
+              autoComplete: 'off',
+              autoCorrect: false,
+              contextMenuHidden: true,
+              keyboardType: 'numeric',
+              maxLength: 4,
+              value: String(netPrice ?? ''),
+              onChangeText: priceHandler,
+            }}
+          />
+        </View>
+        <View style={styles.commentContainer}>
           <Input
             label="Megjegyzés:"
             config={{
               multiline: true,
-              numberOfLines: 10,
+              numberOfLines: 5,
               maxLength: 100,
               value: String(comment ?? ''),
               onChangeText: commentHandler,
@@ -124,33 +157,34 @@ function arePropsEqual(
   oldProps: ExpirationAccordionDetailsProps,
   newProps: ExpirationAccordionDetailsProps
 ) {
-  return eqProps('item', oldProps, newProps);
+  return (
+    eqProps('item', oldProps, newProps) &&
+    oldProps.netPrice === newProps.netPrice &&
+    oldProps.quantity === newProps.quantity &&
+    oldProps.comment === newProps.comment
+  );
 }
 
 export default memo(ExpirationAccordionDetails, arePropsEqual);
 
 const styles = StyleSheet.create({
-  selectItemTitle: {
-    flexDirection: 'row',
+  selectItemContainer: {
+    padding: 10,
     justifyContent: 'space-between',
-    alignItems: 'center',
   },
-  selectItemNameContainer: {
-    width: '70%',
+  selectionContainer: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  selectItemTitle: {
+    alignItems: 'flex-start',
   },
   selectItemText: {
     color: 'white',
     fontFamily: 'Muli',
     fontSize: fontSizes.body,
     fontWeight: 'bold',
-  },
-  selectItemContainer: {
-    padding: 10,
-  },
-  selectionContainer: {
-    marginTop: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
   },
   selectIconContainer: {
     justifyContent: 'flex-end',
@@ -162,5 +196,11 @@ const styles = StyleSheet.create({
   quantityContainer: {
     height: 90,
     width: '50%',
+  },
+  priceContainer: {
+    height: 90,
+  },
+  commentContainer: {
+    height: 200,
   },
 });

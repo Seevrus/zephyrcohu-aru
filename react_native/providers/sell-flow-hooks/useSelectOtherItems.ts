@@ -18,6 +18,7 @@ type OtherSellItems = OtherSellItem[];
 export type SelectedOtherItems = Record<
   number,
   {
+    netPrice: number | null;
     quantity: number | null;
     comment: string | null;
   }
@@ -36,9 +37,7 @@ export default function useSelectOtherItems(): UseSelectOtherItems {
   const { data: otherItems, isPending: isOtherItemsPending } = useOtherItems();
   const { setCurrentReceiptOtherItems } = useReceiptsContext();
 
-  const [selectedOtherItems, setSelectedOtherItems] = useState<
-    Record<number, { quantity: number; comment: string }>
-  >({});
+  const [selectedOtherItems, setSelectedOtherItems] = useState<SelectedOtherItems>({});
 
   const otherSellItems = useMemo(
     () =>
@@ -63,10 +62,10 @@ export default function useSelectOtherItems(): UseSelectOtherItems {
           return undefined;
         }
 
-        const { quantity, comment } = selectedOtherItem;
+        const { netPrice, quantity, comment } = selectedOtherItem;
 
         const { netAmount, vatAmount, grossAmount } = calculateAmounts({
-          netPrice: otherItem.netPrice,
+          netPrice: netPrice ?? otherItem.netPrice,
           quantity,
           vatRate: otherItem.vatRate,
         });
@@ -77,7 +76,7 @@ export default function useSelectOtherItems(): UseSelectOtherItems {
           name: otherItem.name,
           quantity,
           unitName: otherItem.unitName,
-          netPrice: otherItem.netPrice,
+          netPrice: netPrice ?? otherItem.netPrice,
           netAmount,
           vatRate: otherItem.vatRate,
           vatAmount,

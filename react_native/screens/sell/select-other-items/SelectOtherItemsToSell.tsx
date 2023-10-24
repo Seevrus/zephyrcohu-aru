@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { assoc, dissoc, isEmpty, not } from 'ramda';
+import { assoc, dissoc } from 'ramda';
 import { useCallback, useMemo, useState } from 'react';
 import { Animated, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
@@ -33,7 +33,7 @@ export default function SelectOtherItemsToSell({ navigation }) {
       Object.entries(selectedOtherItems).reduce(
         (prev, curr) => {
           const [prevNetAmount, prevGrossAmount] = prev;
-          const [itemId, { quantity }] = curr;
+          const [itemId, { netPrice: userNetPrice, quantity }] = curr;
 
           const currentItem = otherItems?.find((item) => item.id === +itemId);
 
@@ -43,7 +43,7 @@ export default function SelectOtherItemsToSell({ navigation }) {
 
           const { netPrice, vatRate } = currentItem;
           const { netAmount, grossAmount } = calculateAmounts({
-            netPrice,
+            netPrice: userNetPrice ?? netPrice,
             quantity,
             vatRate,
           });
@@ -55,7 +55,7 @@ export default function SelectOtherItemsToSell({ navigation }) {
     [otherItems, selectedOtherItems]
   );
 
-  const canConfirmItems = not(isEmpty(selectedOtherItems));
+  const canConfirmItems = Object.values(selectedOtherItems)?.some((oi) => !!oi?.quantity);
   const confirmButtonVariant = canConfirmItems ? 'ok' : 'disabled';
   const confirmItemsHandler = useCallback(async () => {
     if (canConfirmItems) {
@@ -66,16 +66,43 @@ export default function SelectOtherItemsToSell({ navigation }) {
     }
   }, [canConfirmItems, navigation, saveSelectedOtherItemsInFlow]);
 
+  const priceChangeHandler = useCallback(
+    (item: OtherSellItem, netPrice: number | null) => {
+      setSelectedOtherItems((prevItems) => {
+        const selectedOtherItem = prevItems[item.id];
+
+        if (!selectedOtherItem) {
+          return assoc(item.id, { netPrice, quantity: null, comment: null }, prevItems);
+        }
+
+        if (
+          netPrice === null &&
+          selectedOtherItem.quantity === null &&
+          selectedOtherItem.comment === null
+        ) {
+          return dissoc(item.id, prevItems);
+        }
+
+        return assoc(item.id, { ...selectedOtherItem, netPrice }, prevItems);
+      });
+    },
+    [setSelectedOtherItems]
+  );
+
   const quantityChangeHandler = useCallback(
     (item: OtherSellItem, quantity: number | null) => {
       setSelectedOtherItems((prevItems) => {
         const selectedOtherItem = prevItems[item.id];
 
         if (!selectedOtherItem) {
-          return assoc(item.id, { quantity, comment: null }, prevItems);
+          return assoc(item.id, { netPrice: null, quantity, comment: null }, prevItems);
         }
 
-        if (selectedOtherItem.comment === null && quantity === null) {
+        if (
+          selectedOtherItem.netPrice === null &&
+          quantity === null &&
+          selectedOtherItem.comment === null
+        ) {
           return dissoc(item.id, prevItems);
         }
 
@@ -91,10 +118,14 @@ export default function SelectOtherItemsToSell({ navigation }) {
         const selectedOtherItem = prevItems[item.id];
 
         if (!selectedOtherItem) {
-          return assoc(item.id, { quantity: null, comment }, prevItems);
+          return assoc(item.id, { netPrice: null, quantity: null, comment }, prevItems);
         }
 
-        if (selectedOtherItem.quantity === null && comment === null) {
+        if (
+          selectedOtherItem.netPrice === null &&
+          selectedOtherItem.quantity === null &&
+          comment === null
+        ) {
           return dissoc(item.id, prevItems);
         }
 
@@ -108,13 +139,15 @@ export default function SelectOtherItemsToSell({ navigation }) {
     (info: ListRenderItemInfo<OtherSellItem>) => (
       <ExpirationAccordionDetails
         item={info.item}
+        netPrice={selectedOtherItems[info.item.id]?.netPrice ?? info.item.netPrice ?? null}
+        setNetPrice={priceChangeHandler}
         quantity={selectedOtherItems[info.item.id]?.quantity ?? null}
         setQuantity={quantityChangeHandler}
         comment={selectedOtherItems[info.item.id]?.comment ?? null}
         setComment={commentChangeHandler}
       />
     ),
-    [commentChangeHandler, quantityChangeHandler, selectedOtherItems]
+    [commentChangeHandler, priceChangeHandler, quantityChangeHandler, selectedOtherItems]
   );
 
   if (isContextPending || isLoading) {
@@ -136,7 +169,7 @@ export default function SelectOtherItemsToSell({ navigation }) {
       </View>
       <View style={styles.listContainer}>
         <Animated.FlatList
-          data={[].slice(0, NUM_ITEMS_SHOWN)}
+          data={otherItems.slice(0, NUM_ITEMS_SHOWN)}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderItem}
         />

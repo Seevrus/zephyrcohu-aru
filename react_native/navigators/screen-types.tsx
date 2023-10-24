@@ -27,6 +27,7 @@ export type StackParams = {
   Discounts: {
     item: RegularReviewItem;
   };
+  SelectOtherItemsToSell: undefined;
   Summary: undefined;
 
   SearchPartnerNavForm: {
@@ -71,6 +72,10 @@ export type SelectItemsToSellProps = BottomTabScreenProps<StackParams, 'SelectIt
 export type ScanBarCodeInSellProps = NativeStackScreenProps<StackParams, 'ScanBarCodeInSell'>;
 export type ReviewProps = NativeStackScreenProps<StackParams, 'Review'>;
 export type DiscountsProps = NativeStackScreenProps<StackParams, 'Discounts'>;
+export type SelectOtherItemsToSellProps = BottomTabScreenProps<
+  StackParams,
+  'SelectOtherItemsToSell'
+>;
 export type SummaryProps = NativeStackScreenProps<StackParams, 'Summary'>;
 
 export type SearchPartnerNavFormProps = NativeStackScreenProps<StackParams, 'SearchPartnerNavForm'>;

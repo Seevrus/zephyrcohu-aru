@@ -144,7 +144,6 @@ export default function Review({ navigation }: ReviewProps) {
           onPress: async () => {
             setIsLoading(true);
             await resetSellFlowContext();
-            setIsLoading(false);
             navigation.reset({
               index: 0,
               routes: [{ name: 'Index' }],
@@ -218,7 +217,12 @@ export default function Review({ navigation }: ReviewProps) {
       )}
       <View style={styles.headerContainer}>
         <View style={styles.headerButtonContainer}>
-          <Button variant="ok" onPress={() => {}}>
+          <Button
+            variant="ok"
+            onPress={() => {
+              navigation.navigate('SelectOtherItemsToSell');
+            }}
+          >
             Extra tételek
           </Button>
         </View>

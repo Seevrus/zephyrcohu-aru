@@ -10,6 +10,7 @@ import Discounts from '../screens/sell/review/Discounts';
 import Review from '../screens/sell/review/Review';
 import ScanBarCodeInSell from '../screens/sell/select-items/ScanBarCodeInSell';
 import SelectItemsToSell from '../screens/sell/select-items/SelectItemsToSell';
+import SelectOtherItemsToSell from '../screens/sell/select-other-items/SelectOtherItemsToSell';
 import ChangePassword from '../screens/start-page/ChangePassword';
 import Index from '../screens/start-page/Index';
 import Settings from '../screens/start-page/Settings';
@@ -131,6 +132,13 @@ export default function MainStack() {
         component={Discounts}
         options={{
           headerTitle: 'Kedvezmények',
+        }}
+      />
+      <Stack.Screen
+        name="SelectOtherItemsToSell"
+        component={SelectOtherItemsToSell}
+        options={{
+          headerTitle: 'Egyéb Tételek',
         }}
       />
       {/*  <Stack.Screen

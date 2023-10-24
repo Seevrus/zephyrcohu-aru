@@ -152,7 +152,7 @@ export default function useReview({
         .sort((item1, item2) => item1.name.localeCompare(item2.name, 'HU-hu'));
 
       const otherReviewItems: OtherReviewItem[] = Object.entries(selectedOtherItems)
-        .map(([otherItemId, { quantity, comment }]) => {
+        .map(([otherItemId, { netPrice, quantity, comment }]) => {
           const otherItem = otherItems.find((i) => i.id === +otherItemId);
 
           if (!otherItem) {
@@ -160,7 +160,7 @@ export default function useReview({
           }
 
           const { grossAmount } = calculateAmounts({
-            netPrice: otherItem.netPrice,
+            netPrice: netPrice ?? otherItem.netPrice,
             quantity,
             vatRate: otherItem.vatRate,
           });
@@ -172,7 +172,7 @@ export default function useReview({
             name: otherItem.name,
             quantity,
             unitName: otherItem.unitName,
-            netPrice: otherItem.netPrice,
+            netPrice: netPrice ?? otherItem.netPrice,
             vatRate: otherItem.vatRate,
             grossAmount,
             comment,
