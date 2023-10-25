@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { assoc, dissoc, isNil } from 'ramda';
+import { add, format, parseISO } from 'date-fns';
+import { append, assoc, dissoc, isEmpty, isNil } from 'ramda';
 import {
   PropsWithChildren,
   createContext,
@@ -10,36 +11,24 @@ import {
   useState,
 } from 'react';
 
+import useActiveRound from '../api/queries/useActiveRound';
+import useCheckToken from '../api/queries/useCheckToken';
 import {
   ReceiptBuyer,
   ReceiptItem,
   ReceiptOtherItem,
   ReceiptRequest,
 } from '../api/request-types/CreateReceiptsRequest';
-import useCheckToken from '../api/queries/useCheckToken';
-
-export type SelectedDiscount = {
-  id: number;
-  quantity: number;
-  name: string;
-} & (
-  | {
-      type: 'absolute' | 'percentage';
-      amount: number;
-      price?: undefined;
-    }
-  | {
-      type: 'freeForm';
-      amount?: undefined;
-      price: number;
-    }
-);
+import calculateReceiptTotals from '../utils/calculateReceiptTotals';
+import { useStorageContext } from './StorageProvider';
+import { SelectedDiscount } from './types/receipts-provider-types';
 
 type ContextReceiptItem = ReceiptItem & {
-  discounts?: SelectedDiscount[];
+  selectedDiscounts?: SelectedDiscount[];
 };
 
 type ContextReceipt = Omit<ReceiptRequest, 'items'> & {
+  isSent: boolean;
   items: ContextReceiptItem[];
 };
 
@@ -48,7 +37,19 @@ type ReceiptsContextType = {
   numberOfReceipts: number;
   currentReceipt: Partial<ContextReceipt>;
   resetCurrentReceipt: () => Promise<void>;
-  setCurrentReceiptBuyer: (buyer: ReceiptBuyer) => Promise<void>;
+  setCurrentReceiptBuyer: ({
+    partnerCode,
+    partnerSiteCode,
+    buyer,
+    paymentDays,
+    invoiceType,
+  }: {
+    partnerCode: string;
+    partnerSiteCode: string;
+    buyer: ReceiptBuyer;
+    paymentDays: number;
+    invoiceType: 'P' | 'E';
+  }) => Promise<void>;
   setCurrentReceiptItems: (items: ContextReceiptItem[]) => Promise<void>;
   setCurrentReceiptOtherItems: (otherItems?: ReceiptOtherItem[]) => Promise<void>;
 };
@@ -58,11 +59,13 @@ const receiptsContextStorageKey = 'boreal-receipts-context';
 const currentReceiptContextStorageKey = 'bureal-current-receipt-context';
 
 export default function ReceiptsProvider({ children }: PropsWithChildren) {
-  const { data: user } = useCheckToken();
+  const { data: activeRound, isPending: isActiveRoundPending } = useActiveRound();
+  const { data: user, isPending: isUserPending } = useCheckToken();
+  const { storage, isPending: isStoreDetailsPending } = useStorageContext();
 
-  const [receipts, setReceipts] = useState<ReceiptRequest[]>(null);
+  const [receipts, setReceipts] = useState<ContextReceipt[]>(null);
   const numberOfReceipts = receipts?.length ?? 0;
-  const [currentReceipt, setCurrentReceipt] = useState<Partial<ReceiptRequest>>(null);
+  const [currentReceipt, setCurrentReceipt] = useState<Partial<ContextReceipt>>(null);
 
   const isRoundStarted = user?.state === 'R';
 
@@ -84,9 +87,9 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
   /**
    * Persist receipts to local storage
    */
-  async function persistReceipts() {
-    await AsyncStorage.setItem(receiptsContextStorageKey, JSON.stringify(receipts));
-  }
+  const persistReceipts = useCallback(async (receiptsToSave: ContextReceipt[]) => {
+    await AsyncStorage.setItem(receiptsContextStorageKey, JSON.stringify(receiptsToSave));
+  }, []);
 
   /**
    * Initialize current receipt from local storage
@@ -122,12 +125,38 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
   }, []);
 
   const setCurrentReceiptBuyer = useCallback(
-    async (buyer: ReceiptBuyer) => {
-      setCurrentReceipt(assoc('buyer', buyer));
-      const updatedReceipt = assoc('buyer', buyer, currentReceipt);
+    async ({
+      partnerCode,
+      partnerSiteCode,
+      buyer,
+      paymentDays,
+      invoiceType,
+    }: {
+      partnerCode: string;
+      partnerSiteCode: string;
+      buyer: ReceiptBuyer;
+      paymentDays: number;
+      invoiceType: 'P' | 'E';
+    }) => {
+      const invoiceDate = parseISO(activeRound.roundStarted);
+      const fulfillmentDate = add(invoiceDate, { days: paymentDays });
+      const paidDate = fulfillmentDate;
+
+      setCurrentReceipt((prevState) => ({
+        ...prevState,
+        partnerCode,
+        partnerSiteCode,
+        buyer,
+        invoiceDate: format(invoiceDate, 'yyyy-MM-dd'),
+        fulfillmentDate: format(fulfillmentDate, 'yyyy-MM-dd'),
+        invoiceType,
+        paidDate: format(paidDate, 'yyyy-MM-dd'),
+      }));
+
+      const updatedReceipt = { ...currentReceipt, partnerCode, partnerSiteCode, buyer };
       await persistCurrentReceipt(updatedReceipt);
     },
-    [currentReceipt, persistCurrentReceipt]
+    [activeRound?.roundStarted, currentReceipt, persistCurrentReceipt]
   );
 
   const setCurrentReceiptItems = useCallback(
@@ -153,6 +182,68 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
     },
     [currentReceipt, persistCurrentReceipt]
   );
+
+  const finalizeCurrentReceipt = useCallback(async () => {
+    const serialNumber = isEmpty(receipts)
+      ? storage.firstAvailableSerialNumber
+      : receipts.reduce((sn, { serialNumber: receiptSn }) => (receiptSn > sn ? receiptSn : sn), 0) +
+        1;
+
+    const receiptTotals = calculateReceiptTotals({
+      items: currentReceipt.items,
+      otherItems: currentReceipt.otherItems,
+    });
+
+    const roundedAmount =
+      currentReceipt.invoiceType === 'P'
+        ? Math.round(receiptTotals.grossAmount / 5) * 5
+        : receiptTotals.grossAmount;
+    const roundAmount = roundedAmount - receiptTotals.grossAmount;
+
+    const finalReceipt = {
+      ...currentReceipt,
+      isSent: false,
+      serialNumber,
+      yearCode: storage.yearCode,
+      originalCopiesPrinted: 0,
+      vendor: {
+        name: user.company.name,
+        country: user.company.country,
+        postalCode: user.company.postalCode,
+        city: user.company.city,
+        address: user.company.address,
+        felir: user.company.felir,
+        iban: user.company.iban,
+        bankAccount: user.company.bankAccount,
+        vatNumber: user.company.vatNumber,
+      },
+      ...receiptTotals,
+      roundAmount,
+      roundedAmount,
+    } as ContextReceipt;
+
+    setCurrentReceipt(finalReceipt);
+    await persistCurrentReceipt(finalReceipt);
+
+    setReceipts(append(finalReceipt));
+    await persistReceipts(append(finalReceipt, receipts));
+  }, [
+    currentReceipt,
+    persistCurrentReceipt,
+    persistReceipts,
+    receipts,
+    storage?.firstAvailableSerialNumber,
+    storage?.yearCode,
+    user?.company.address,
+    user?.company.bankAccount,
+    user?.company.city,
+    user?.company.country,
+    user?.company.felir,
+    user?.company.iban,
+    user?.company.name,
+    user?.company.postalCode,
+    user?.company.vatNumber,
+  ]);
 
   const receiptsContextValue = useMemo(
     () => ({

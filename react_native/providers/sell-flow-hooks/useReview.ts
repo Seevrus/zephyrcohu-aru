@@ -6,8 +6,9 @@ import useOtherItems from '../../api/queries/useOtherItems';
 import { Discount } from '../../api/response-types/ItemsResponseType';
 import { PriceListType } from '../../api/response-types/PriceListResponseType';
 import calculateAmounts from '../../utils/calculateAmounts';
-import { SelectedDiscount, useReceiptsContext } from '../ReceiptsProvider';
+import { useReceiptsContext } from '../ReceiptsProvider';
 import { SelectedOtherItems } from './useSelectOtherItems';
+import { SelectedDiscount } from '../types/receipts-provider-types';
 
 type BaseReviewItem = {
   itemId: number;
@@ -85,10 +86,10 @@ export default function useReview({
           }
 
           if (discounts) {
-            return assoc('discounts', discounts, contextReceiptItem);
+            return assoc('selectedDiscounts', discounts, contextReceiptItem);
           }
 
-          return dissoc('discounts', contextReceiptItem);
+          return dissoc('selectedDiscounts', contextReceiptItem);
         })
       );
     },

@@ -50,7 +50,7 @@ export type ReceiptItem = ReceiptBaseItem & {
   expiresAt: string; // yyyy-MM
 };
 
-type ReceiptVatAmount = {
+export type ReceiptVatAmount = {
   vatRate: string;
   netAmount: number;
   vatAmount: number;

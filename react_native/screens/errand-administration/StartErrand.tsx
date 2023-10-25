@@ -72,7 +72,10 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     };
 
     navigation.addListener('beforeRemove', preventGoBackWhileLoading);
-    return () => navigation.removeListener('beforeRemove', preventGoBackWhileLoading);
+
+    return () => {
+      navigation.removeListener('beforeRemove', preventGoBackWhileLoading);
+    };
   }, [
     isActiveRoundFetching,
     isItemsFetching,
@@ -117,6 +120,7 @@ export default function StartErrand({ navigation }: StartErrandProps) {
       await startRound({
         storeId,
         partnerListId,
+        roundStarted: format(date, 'yyyy-MM-dd'),
       });
     } catch (err) {
       setLoadingMessage('');

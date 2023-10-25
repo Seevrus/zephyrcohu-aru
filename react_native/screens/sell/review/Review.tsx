@@ -18,7 +18,7 @@ import fontSizes from '../../../constants/fontSizes';
 import { ReviewProps } from '../../../navigators/screen-types';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
 import { ReviewItem } from '../../../providers/sell-flow-hooks/useReview';
-import calculateAmounts from '../../../utils/calculateAmounts';
+import calculateDiscountedItemAmounts from '../../../utils/calculateDiscountedItemAmounts';
 import formatPrice from '../../../utils/formatPrice';
 import OtherItemSelection from './OtherItemSelection';
 import RegularItemSelection from './RegularItemSelection';
@@ -41,53 +41,8 @@ export default function Review({ navigation }: ReviewProps) {
     () =>
       reduce(
         (accumulatedGrossAmount, reviewItem) => {
-          if (!reviewItem.selectedDiscounts) {
-            return accumulatedGrossAmount + reviewItem.grossAmount;
-          }
-
-          const [totalDiscountedQuantity, totalDiscountedGrossAmount] =
-            reviewItem.selectedDiscounts.reduce(
-              ([accumulatedDiscountedQuantity, accumulatedDiscountedGrossAmount], discount) => {
-                let newNetPrice: number;
-                switch (discount.type) {
-                  case 'absolute':
-                    newNetPrice = reviewItem.netPrice - discount.amount;
-                    break;
-                  case 'percentage':
-                    newNetPrice = reviewItem.netPrice * (100 - discount.amount);
-                    break;
-                  case 'freeForm':
-                    newNetPrice = discount.price ?? 1;
-                    break;
-                  default:
-                    newNetPrice = reviewItem.netPrice;
-                }
-
-                const { grossAmount: discountGrossAmount } = calculateAmounts({
-                  netPrice: newNetPrice,
-                  quantity: discount.quantity,
-                  vatRate: reviewItem.vatRate,
-                });
-
-                return [
-                  accumulatedDiscountedQuantity + discount.quantity,
-                  accumulatedDiscountedGrossAmount + discountGrossAmount,
-                ];
-              },
-              [0, 0]
-            );
-
-          if (totalDiscountedQuantity === reviewItem.quantity) {
-            return totalDiscountedGrossAmount;
-          }
-
-          const { grossAmount: listPricedGrossAmount } = calculateAmounts({
-            netPrice: reviewItem.netPrice,
-            quantity: reviewItem.quantity - totalDiscountedQuantity,
-            vatRate: reviewItem.vatRate,
-          });
-
-          return listPricedGrossAmount + totalDiscountedGrossAmount;
+          const { grossAmount } = calculateDiscountedItemAmounts(reviewItem);
+          return accumulatedGrossAmount + grossAmount;
         },
         0,
         reviewItems

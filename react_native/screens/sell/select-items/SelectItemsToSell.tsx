@@ -197,9 +197,15 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
     [navigation, resetSellFlowContext]
   );
 
-  useFocusEffect(() => {
-    navigation.addListener('beforeRemove', exitConfimationHandler);
-  });
+  useFocusEffect(
+    useCallback(() => {
+      navigation.addListener('beforeRemove', exitConfimationHandler);
+
+      return () => {
+        navigation.removeListener('beforeRemove', exitConfimationHandler);
+      };
+    }, [exitConfimationHandler, navigation])
+  );
 
   const canConfirmItems = not(isEmpty(selectedItems));
   const confirmButtonVariant = canConfirmItems ? 'ok' : 'disabled';

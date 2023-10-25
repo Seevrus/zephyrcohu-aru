@@ -74,5 +74,6 @@ export default function useCheckToken({ enabled = true } = {}) {
   return {
     data: user,
     isFetching: checkTokenResult.isFetching,
+    isPending: checkTokenResult.isPending,
   };
 }

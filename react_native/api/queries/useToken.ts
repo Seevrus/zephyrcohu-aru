@@ -1,5 +1,5 @@
 import { UseQueryResult, useQuery } from '@tanstack/react-query';
-import { isPast } from 'date-fns';
+import { isPast, parseISO } from 'date-fns';
 import * as SecureStore from 'expo-secure-store';
 
 type StoredToken = {
@@ -38,7 +38,7 @@ export default function useToken(): UseQueryResult<Token> {
         return {
           token,
           isPasswordExpired: !token || isPasswordExpired,
-          isTokenExpired: isPast(new Date(expiresAt)),
+          isTokenExpired: isPast(parseISO(expiresAt)),
         };
       } catch (error) {
         console.log(error.message);
