@@ -87,14 +87,14 @@ class RoundController extends Controller
                 'user_id' => $sender->id,
                 'store_id' => $storeId,
                 'partner_list_id' => $request->data['partnerListId'],
-                'round_started' => Carbon::now(),
+                'round_started' => Carbon::createFromFormat('Y-m-d', $request->data['roundStarted'])->setHour(6)->setMinute(0)->setSecond(0),
             ]);
 
             Log::insert([
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Started round '.$round->id,
+                'action' => 'Started round ' . $round->id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -144,7 +144,7 @@ class RoundController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Finished round '.$round->id,
+                'action' => 'Finished round ' . $round->id,
                 'occured_at' => Carbon::now(),
             ]);
 

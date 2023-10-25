@@ -27,6 +27,7 @@ class StartRoundRequest extends FormRequest
             'data' => 'required|array',
             'data.storeId' => 'required|integer|min:0|exists:stores,id',
             'data.partnerListId' => 'required|integer|min:0|exists:partner_lists,id',
+            'data.roundStarted' => 'required|date_format:Y-m-d',
         ];
     }
 }
