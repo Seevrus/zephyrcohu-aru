@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+import { equals } from 'ramda';
 import { useEffect, useState } from 'react';
 
 import env from '../../env.json';
@@ -40,38 +41,27 @@ export default function useCheckToken({ enabled = true } = {}) {
 
   const [user, setUser] = useState<CheckToken>(null);
 
-  // console.log(user);
-
   useEffect(() => {
-    async function getBackupUserData() {
-      const backup = await AsyncStorage.getItem('boreal-user-backup');
-      if (backup) {
-        const backupUser = JSON.parse(backup);
-        setUser(backupUser);
-      }
-    }
-
     if (checkTokenResult.isError) {
-      getBackupUserData();
+      AsyncStorage.getItem('boreal-user-backup').then((backup) => {
+        if (backup) {
+          const backupUser = JSON.parse(backup);
+          setUser(backupUser);
+        }
+      });
     }
   }, [checkTokenResult.isError]);
 
   useEffect(() => {
-    if (isInternetReachable === true && checkTokenResult.isSuccess) {
-      queryClient.invalidateQueries({ queryKey: ['stores'] });
+    if (checkTokenResult.isSuccess && !equals(user, checkTokenResult.data)) {
+      AsyncStorage.setItem('boreal-user-backup', JSON.stringify(checkTokenResult.data)).then(() => {
+        setUser(checkTokenResult.data);
+        if (isInternetReachable === true) {
+          queryClient.invalidateQueries({ queryKey: ['stores'] });
+        }
+      });
     }
-  }, [checkTokenResult.isSuccess, isInternetReachable, queryClient]);
-
-  useEffect(() => {
-    async function setBackupData() {
-      await AsyncStorage.setItem('boreal-user-backup', JSON.stringify(checkTokenResult.data));
-    }
-
-    if (checkTokenResult.isSuccess) {
-      setBackupData();
-      setUser(checkTokenResult.data);
-    }
-  }, [checkTokenResult.data, checkTokenResult.isSuccess]);
+  }, [checkTokenResult.data, checkTokenResult.isSuccess, isInternetReachable, queryClient, user]);
 
   return {
     data: user,
