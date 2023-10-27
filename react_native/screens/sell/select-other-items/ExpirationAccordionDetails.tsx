@@ -36,7 +36,7 @@ function ExpirationAccordionDetails({
     const formattedPrice = pipe(trim, replace(',', '.'), Number, Math.floor)(newPrice);
     const nullIshFormattedPrice = Number.isNaN(formattedPrice) ? null : formattedPrice;
 
-    if (newPrice === '' || formattedPrice < 0 || isNil(nullIshFormattedPrice)) {
+    if (newPrice === '' || isNil(nullIshFormattedPrice)) {
       setNetPrice(item, null);
     } else {
       setNetPrice(item, nullIshFormattedPrice);
@@ -159,7 +159,6 @@ function arePropsEqual(
 ) {
   return (
     eqProps('item', oldProps, newProps) &&
-    oldProps.netPrice === newProps.netPrice &&
     oldProps.quantity === newProps.quantity &&
     oldProps.comment === newProps.comment
   );

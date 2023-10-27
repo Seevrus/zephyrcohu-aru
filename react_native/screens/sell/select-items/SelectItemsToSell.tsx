@@ -246,6 +246,7 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
           info={info}
           type={type}
           selectedItems={selectedItems}
+          selectedOrderItems={selectedOrderItems}
           upsertSelectedItem={upsertSelectedItem}
           upsertOrderItem={upsertOrderItem}
         />

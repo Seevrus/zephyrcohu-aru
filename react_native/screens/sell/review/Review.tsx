@@ -133,30 +133,33 @@ export default function Review({ navigation }: ReviewProps) {
     );
   }; */
 
-  const renderReceiptRow: ListRenderItem<ReviewItem> = (info: ListRenderItemInfo<ReviewItem>) => {
-    const reviewItemId = getReviewItemId(info.item);
-    const selectedRowId = getReviewItemId(selectedRow);
+  const renderReceiptRow: ListRenderItem<ReviewItem> = useCallback(
+    (info: ListRenderItemInfo<ReviewItem>) => {
+      const reviewItemId = getReviewItemId(info.item);
+      const selectedRowId = getReviewItemId(selectedRow);
 
-    return info.item.type === 'item' ? (
-      <RegularItemSelection
-        selected={reviewItemId === selectedRowId}
-        item={info.item}
-        onSelect={(id: string) => {
-          setSelectedRow(reviewItems.find((row) => getReviewItemId(row) === id));
-        }}
-        onDelete={removeItemHandler}
-      />
-    ) : (
-      <OtherItemSelection
-        selected={reviewItemId === selectedRowId}
-        item={info.item}
-        onSelect={(id: string) => {
-          setSelectedRow(reviewItems.find((row) => getReviewItemId(row) === id));
-        }}
-        onDelete={removeOtherItemHandler}
-      />
-    );
-  };
+      return info.item.type === 'item' ? (
+        <RegularItemSelection
+          selected={reviewItemId === selectedRowId}
+          item={info.item}
+          onSelect={(id: string) => {
+            setSelectedRow(reviewItems.find((row) => getReviewItemId(row) === id));
+          }}
+          onDelete={removeItemHandler}
+        />
+      ) : (
+        <OtherItemSelection
+          selected={reviewItemId === selectedRowId}
+          item={info.item}
+          onSelect={(id: string) => {
+            setSelectedRow(reviewItems.find((row) => getReviewItemId(row) === id));
+          }}
+          onDelete={removeOtherItemHandler}
+        />
+      );
+    },
+    [removeItemHandler, removeOtherItemHandler, reviewItems, selectedRow]
+  );
 
   if (isLoading || isContextPending) {
     return <Loading />;

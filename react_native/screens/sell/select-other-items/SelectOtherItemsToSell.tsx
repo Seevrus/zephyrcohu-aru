@@ -183,7 +183,7 @@ export default function SelectOtherItemsToSell({ navigation }) {
         </View>
         <View style={styles.buttonContainer}>
           <Button variant={confirmButtonVariant} onPress={confirmItemsHandler}>
-            Tétellista véglegesítése
+            Kiválaszott tételek hozzáadása
           </Button>
         </View>
       </View>

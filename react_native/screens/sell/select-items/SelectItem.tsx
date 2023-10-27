@@ -1,4 +1,4 @@
-import { append, eqProps, pipe, values } from 'ramda';
+import { append, eqProps, equals, pipe, values } from 'ramda';
 import { memo, useCallback } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 
@@ -17,6 +17,7 @@ type SelectItemProps = {
   info: ListRenderItemInfo<SellItem>;
   type: ItemAvailability;
   selectedItems: Record<number, Record<number, number>>;
+  selectedOrderItems: Record<number, number>;
   upsertSelectedItem: (id: number, expirationId: number, quantity: number) => void;
   upsertOrderItem: (id: number, quantity: number) => void;
 };
@@ -25,6 +26,7 @@ function SelectItem({
   info,
   type,
   selectedItems,
+  selectedOrderItems,
   upsertSelectedItem,
   upsertOrderItem,
 }: SelectItemProps) {
@@ -71,8 +73,10 @@ function SelectItem({
             <Selection
               info={expirationInfo}
               quantity={
-                selectedItems[expirationInfo.item.itemId]?.[expirationInfo.item.expirationId] ??
-                null
+                expirationInfo.item.expiresAt === 'Rendelés'
+                  ? selectedOrderItems[expirationInfo.item.itemId] ?? null
+                  : selectedItems[expirationInfo.item.itemId]?.[expirationInfo.item.expirationId] ??
+                    null
               }
               onQuantityModified={modifyQuantity}
             />
@@ -103,7 +107,16 @@ const styles = StyleSheet.create({
 });
 
 function arePropsEqual(oldProps: SelectItemProps, newProps: SelectItemProps) {
-  return eqProps('info', oldProps, newProps) && eqProps('type', oldProps, newProps);
+  return (
+    eqProps('info', oldProps, newProps) &&
+    eqProps('type', oldProps, newProps) &&
+    equals(
+      oldProps.selectedItems[oldProps.info.item.id],
+      newProps.selectedItems[newProps.info.item.id]
+    ) &&
+    oldProps.selectedOrderItems[oldProps.info.item.id] ===
+      newProps.selectedOrderItems[newProps.info.item.id]
+  );
 }
 
 export default memo(SelectItem, arePropsEqual);

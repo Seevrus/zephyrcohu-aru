@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { equals, pipe, replace, trim } from 'ramda';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { ListRenderItemInfo, Pressable, StyleSheet, View } from 'react-native';
 
 import { format } from 'date-fns';
@@ -14,22 +14,17 @@ type SelectionProps = {
 };
 
 function Selection({ info, quantity, onQuantityModified }: SelectionProps) {
-  const [selectedQuantity, setSelectedQuantity] = useState<number>(quantity);
-
   const quantityHandler = (newQuantity: string) => {
     const formattedQuantity = pipe(trim, replace(',', '.'), Number)(newQuantity);
     const nullIshFormattedQuantity =
       Number.isNaN(formattedQuantity) || !formattedQuantity ? null : formattedQuantity;
 
     if (formattedQuantity < 0) {
-      setSelectedQuantity(null);
       onQuantityModified(info.item.expirationId, null);
     } else if (formattedQuantity > info.item.quantity) {
       const newSelectedQuantity = info.item.quantity === 0 ? null : info.item.quantity;
-      setSelectedQuantity(newSelectedQuantity);
       onQuantityModified(info.item.expirationId, newSelectedQuantity);
     } else {
-      setSelectedQuantity(nullIshFormattedQuantity);
       onQuantityModified(info.item.expirationId, nullIshFormattedQuantity);
     }
   };
@@ -41,7 +36,7 @@ function Selection({ info, quantity, onQuantityModified }: SelectionProps) {
 
   return (
     <View style={styles.selectionContainer}>
-      <Pressable onPress={() => quantityHandler(String(selectedQuantity - 1))}>
+      <Pressable onPress={() => quantityHandler(String(quantity - 1))}>
         <MaterialIcons
           name="remove-circle-outline"
           size={40}
@@ -60,12 +55,12 @@ function Selection({ info, quantity, onQuantityModified }: SelectionProps) {
             contextMenuHidden: true,
             keyboardType: 'numeric',
             maxLength: 4,
-            value: String(selectedQuantity ?? ''),
+            value: String(quantity ?? ''),
             onChangeText: quantityHandler,
           }}
         />
       </View>
-      <Pressable onPress={() => quantityHandler(String(selectedQuantity + 1))}>
+      <Pressable onPress={() => quantityHandler(String(quantity + 1))}>
         <MaterialIcons
           name="add-circle-outline"
           size={40}

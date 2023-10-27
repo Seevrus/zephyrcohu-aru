@@ -186,7 +186,7 @@ export default function useSelectItems({
         })
         .filter(identity),
     });
-  }, [items, saveCurrentOrder, selectedOrderItems, selectedPartner.id]);
+  }, [items, saveCurrentOrder, selectedOrderItems, selectedPartner?.id]);
 
   const resetUseSelectItems = useCallback(() => {
     setStorageExpirations({});
