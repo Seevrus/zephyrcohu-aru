@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, formatISO } from 'date-fns';
 import { filter, identity, indexBy, isEmpty, isNil, map, not, pipe, prop, sortBy } from 'ramda';
 import {
   Dispatch,
@@ -11,10 +11,12 @@ import {
 } from 'react';
 
 import useItems from '../../api/queries/useItems';
+import { Partners } from '../../api/response-mappers/mapPartnersResponse';
 import { Discount, Expiration, ItemType } from '../../api/response-types/ItemsResponseType';
 import { PriceListType } from '../../api/response-types/PriceListResponseType';
 import itemsSearchReducer, { SearchStateActionKind } from '../../hooks/itemsSearchReducer';
 import calculateAmounts from '../../utils/calculateAmounts';
+import { useOrdersContext } from '../OrdersProvider';
 import { useReceiptsContext } from '../ReceiptsProvider';
 import { useStorageContext } from '../StorageProvider';
 
@@ -53,16 +55,24 @@ export type UseSelectItems = {
   barCode: string;
   setBarCode: (payload: string) => void;
   saveSelectedItemsInFlow: () => Promise<void>;
+  saveSelectedOrderItemsInFlow: () => Promise<void>;
   resetUseSelectItems: () => void;
 };
 
 export default function useSelectItems({
+  selectedPartner,
   currentPriceList,
 }: {
+  selectedPartner: Partners[number];
   currentPriceList: PriceListType;
 }): UseSelectItems {
   const { data: items } = useItems();
-  const { currentReceipt, setCurrentReceiptItems } = useReceiptsContext();
+  const {
+    isPending: isReceiptsContextPending,
+    currentReceipt,
+    setCurrentReceiptItems,
+  } = useReceiptsContext();
+  const { isPending: isOrdersContextPending, saveCurrentOrder } = useOrdersContext();
   const { storage, isPending: isStoragePending } = useStorageContext();
 
   const [storageExpirations, setStorageExpirations] = useState<
@@ -158,6 +168,26 @@ export default function useSelectItems({
     );
   }, [items, selectedItems, setCurrentReceiptItems]);
 
+  const saveSelectedOrderItemsInFlow = useCallback(async () => {
+    await saveCurrentOrder({
+      partnerId: selectedPartner.id,
+      orderedAt: formatISO(new Date()),
+      items: items
+        .map((item) => {
+          const quantity = selectedOrderItems[item.id];
+
+          if (quantity === undefined) return undefined;
+
+          return {
+            articleNumber: item.articleNumber,
+            name: item.name,
+            quantity,
+          };
+        })
+        .filter(identity),
+    });
+  }, [items, saveCurrentOrder, selectedOrderItems, selectedPartner.id]);
+
   const resetUseSelectItems = useCallback(() => {
     setStorageExpirations({});
     setSelectedItems({});
@@ -205,7 +235,7 @@ export default function useSelectItems({
 
   return useMemo(
     () => ({
-      isPending: isStoragePending,
+      isPending: isReceiptsContextPending || isOrdersContextPending || isStoragePending,
       items: sellItems,
       selectedItems,
       setSelectedItems,
@@ -216,13 +246,17 @@ export default function useSelectItems({
       barCode,
       setBarCode,
       saveSelectedItemsInFlow,
+      saveSelectedOrderItemsInFlow,
       resetUseSelectItems,
     }),
     [
       barCode,
+      isOrdersContextPending,
+      isReceiptsContextPending,
       isStoragePending,
       resetUseSelectItems,
       saveSelectedItemsInFlow,
+      saveSelectedOrderItemsInFlow,
       searchTerm,
       selectedItems,
       selectedOrderItems,

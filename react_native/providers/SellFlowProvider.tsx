@@ -17,7 +17,7 @@ type SellFlowContextType = Omit<UseSelectPartners, 'currentPriceList' | 'resetUs
 const SellFlowContext = createContext<SellFlowContextType>({} as SellFlowContextType);
 
 export default function SellFlowProvider({ children }: PropsWithChildren) {
-  const { resetCurrentReceipt } = useReceiptsContext();
+  const { isPending: isReceiptsContextPending, resetCurrentReceipt } = useReceiptsContext();
   const {
     isPending: isUseSelectPartnersDataPending,
     partners,
@@ -42,8 +42,10 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     barCode,
     setBarCode,
     saveSelectedItemsInFlow,
+    saveSelectedOrderItemsInFlow,
     resetUseSelectItems,
   } = useSelectItems({
+    selectedPartner,
     currentPriceList,
   });
   const {
@@ -78,6 +80,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
   const sellFlowContextValue = useMemo(
     () => ({
       isPending:
+        isReceiptsContextPending ||
         isUseSelectPartnersDataPending ||
         isUseSelectItemsDataPending ||
         isUseSelectOtherItemsDataPending ||
@@ -99,6 +102,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       barCode,
       setBarCode,
       saveSelectedItemsInFlow,
+      saveSelectedOrderItemsInFlow,
       otherItems,
       selectedOtherItems,
       setSelectedOtherItems,
@@ -110,6 +114,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     [
       barCode,
       isPartnerChosenForCurrentReceipt,
+      isReceiptsContextPending,
       isReviewDataPending,
       isSelectedPartnerOnCurrentPartnerList,
       isUseSelectItemsDataPending,
@@ -123,6 +128,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       saveDiscountedItemsInFlow,
       saveNewPartnerInFlow,
       saveSelectedItemsInFlow,
+      saveSelectedOrderItemsInFlow,
       saveSelectedOtherItemsInFlow,
       saveSelectedPartnerInFlow,
       searchTerm,

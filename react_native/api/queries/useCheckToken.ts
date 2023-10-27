@@ -40,6 +40,8 @@ export default function useCheckToken({ enabled = true } = {}) {
 
   const [user, setUser] = useState<CheckToken>(null);
 
+  // console.log(user);
+
   useEffect(() => {
     async function getBackupUserData() {
       const backup = await AsyncStorage.getItem('boreal-user-backup');

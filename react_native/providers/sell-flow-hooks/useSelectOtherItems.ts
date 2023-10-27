@@ -35,7 +35,7 @@ export type UseSelectOtherItems = {
 
 export default function useSelectOtherItems(): UseSelectOtherItems {
   const { data: otherItems, isPending: isOtherItemsPending } = useOtherItems();
-  const { setCurrentReceiptOtherItems } = useReceiptsContext();
+  const { isPending: isReceiptsContextPending, setCurrentReceiptOtherItems } = useReceiptsContext();
 
   const [selectedOtherItems, setSelectedOtherItems] = useState<SelectedOtherItems>({});
 
@@ -99,7 +99,7 @@ export default function useSelectOtherItems(): UseSelectOtherItems {
 
   return useMemo(
     () => ({
-      isPending: isOtherItemsPending,
+      isPending: isOtherItemsPending || isReceiptsContextPending,
       otherItems: otherSellItems,
       selectedOtherItems,
       setSelectedOtherItems,
@@ -108,6 +108,7 @@ export default function useSelectOtherItems(): UseSelectOtherItems {
     }),
     [
       isOtherItemsPending,
+      isReceiptsContextPending,
       otherSellItems,
       resetUseSelectOtherItems,
       saveSelectedOtherItemsInFlow,

@@ -55,7 +55,11 @@ export default function useReview({
 }): UseReview {
   const { data: items, isPending: isItemsPending } = useItems();
   const { data: otherItems, isPending: isOtherItemsPending } = useOtherItems();
-  const { currentReceipt, setCurrentReceiptItems } = useReceiptsContext();
+  const {
+    isPending: isReceiptsContextPending,
+    currentReceipt,
+    setCurrentReceiptItems,
+  } = useReceiptsContext();
 
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>(null);
 
@@ -191,11 +195,18 @@ export default function useReview({
 
   return useMemo(
     () => ({
-      isPending: isItemsPending || isOtherItemsPending,
+      isPending: isReceiptsContextPending || isItemsPending || isOtherItemsPending,
       reviewItems,
       saveDiscountedItemsInFlow,
       resetUseReview,
     }),
-    [isItemsPending, isOtherItemsPending, resetUseReview, reviewItems, saveDiscountedItemsInFlow]
+    [
+      isItemsPending,
+      isOtherItemsPending,
+      isReceiptsContextPending,
+      resetUseReview,
+      reviewItems,
+      saveDiscountedItemsInFlow,
+    ]
   );
 }

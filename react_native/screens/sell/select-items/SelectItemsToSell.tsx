@@ -47,6 +47,7 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
     barCode,
     setBarCode,
     saveSelectedItemsInFlow,
+    saveSelectedOrderItemsInFlow,
     resetSellFlowContext,
   } = useSellFlowContext();
 
@@ -212,12 +213,20 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
   const confirmItemsHandler = useCallback(async () => {
     if (canConfirmItems) {
       setIsLoading(true);
-      await saveSelectedItemsInFlow();
-      setIsLoading(false);
-      navigation.removeListener('beforeRemove', exitConfimationHandler);
-      navigation.navigate('Review');
+
+      Promise.all([saveSelectedItemsInFlow(), saveSelectedOrderItemsInFlow()]).then(() => {
+        setIsLoading(false);
+        navigation.removeListener('beforeRemove', exitConfimationHandler);
+        navigation.navigate('Review');
+      });
     }
-  }, [canConfirmItems, exitConfimationHandler, navigation, saveSelectedItemsInFlow]);
+  }, [
+    canConfirmItems,
+    exitConfimationHandler,
+    navigation,
+    saveSelectedItemsInFlow,
+    saveSelectedOrderItemsInFlow,
+  ]);
 
   const renderItem = useCallback(
     (info: ListRenderItemInfo<SellItem>) => {

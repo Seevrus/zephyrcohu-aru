@@ -33,6 +33,7 @@ type ContextReceipt = Omit<ReceiptRequest, 'items'> & {
 };
 
 type ReceiptsContextType = {
+  isPending: boolean;
   receipts: ContextReceipt[];
   numberOfReceipts: number;
   currentReceipt: Partial<ContextReceipt>;
@@ -52,11 +53,12 @@ type ReceiptsContextType = {
   }) => Promise<void>;
   setCurrentReceiptItems: (items: ContextReceiptItem[]) => Promise<void>;
   setCurrentReceiptOtherItems: (otherItems?: ReceiptOtherItem[]) => Promise<void>;
+  finalizeCurrentReceipt: () => Promise<void>;
 };
 
 const ReceiptsContext = createContext<ReceiptsContextType>({} as ReceiptsContextType);
 const receiptsContextStorageKey = 'boreal-receipts-context';
-const currentReceiptContextStorageKey = 'bureal-current-receipt-context';
+const currentReceiptContextStorageKey = 'boreal-current-receipt-context';
 
 export default function ReceiptsProvider({ children }: PropsWithChildren) {
   const { data: activeRound, isPending: isActiveRoundPending } = useActiveRound();
@@ -110,7 +112,7 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
    * Persist current receipt to local storage
    */
   const persistCurrentReceipt = useCallback(
-    async (receipt?: Partial<ReceiptRequest>) => {
+    async (receipt?: Partial<ContextReceipt>) => {
       await AsyncStorage.setItem(
         currentReceiptContextStorageKey,
         JSON.stringify(receipt ?? currentReceipt)
@@ -225,8 +227,8 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
     setCurrentReceipt(finalReceipt);
     await persistCurrentReceipt(finalReceipt);
 
-    setReceipts(append(finalReceipt));
     await persistReceipts(append(finalReceipt, receipts));
+    setReceipts(append(finalReceipt));
   }, [
     currentReceipt,
     persistCurrentReceipt,
@@ -247,6 +249,7 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
 
   const receiptsContextValue = useMemo(
     () => ({
+      isPending: isActiveRoundPending || isUserPending || isStoreDetailsPending,
       receipts,
       numberOfReceipts,
       currentReceipt,
@@ -254,9 +257,14 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
       setCurrentReceiptBuyer,
       setCurrentReceiptItems,
       setCurrentReceiptOtherItems,
+      finalizeCurrentReceipt,
     }),
     [
       currentReceipt,
+      finalizeCurrentReceipt,
+      isActiveRoundPending,
+      isStoreDetailsPending,
+      isUserPending,
       numberOfReceipts,
       receipts,
       resetCurrentReceipt,

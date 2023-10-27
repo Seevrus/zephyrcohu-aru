@@ -29,7 +29,11 @@ export default function useSelectPartners(): UseSelectPartners {
   const { data: partnerLists, isPending: isPartnersListsPending } = usePartnerLists();
   const { data: partners, isPending: isPartnersPending } = usePartners();
   const { data: priceLists, isPending: isPriceListsPending } = usePriceLists();
-  const { currentReceipt, setCurrentReceiptBuyer } = useReceiptsContext();
+  const {
+    isPending: isReceiptsContextPending,
+    currentReceipt,
+    setCurrentReceiptBuyer,
+  } = useReceiptsContext();
 
   const isPartnerChosenForCurrentReceipt = !!currentReceipt?.buyer;
 
@@ -177,7 +181,11 @@ export default function useSelectPartners(): UseSelectPartners {
   return useMemo(
     () => ({
       isPending:
-        isActiveRoundPending || isPartnersListsPending || isPartnersPending || isPriceListsPending,
+        isActiveRoundPending ||
+        isPartnersListsPending ||
+        isPartnersPending ||
+        isPriceListsPending ||
+        isReceiptsContextPending,
       partners: partnersToShow,
       selectedPartner,
       isSelectedPartnerOnCurrentPartnerList,
@@ -195,6 +203,7 @@ export default function useSelectPartners(): UseSelectPartners {
       isPartnersListsPending,
       isPartnersPending,
       isPriceListsPending,
+      isReceiptsContextPending,
       isSelectedPartnerOnCurrentPartnerList,
       partnersToShow,
       resetUseSelectPartners,

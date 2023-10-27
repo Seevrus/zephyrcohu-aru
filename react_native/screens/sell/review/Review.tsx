@@ -119,8 +119,7 @@ export default function Review({ navigation }: ReviewProps) {
           text: 'Biztosan ezt szeretném',
           onPress: async () => {
             try {
-              await dispatch(removeItemsFromStore());
-              await dispatch(finalizeCurrentReceipt());
+              await finalizeCurrentReceipt();
               navigation.reset({
                 index: 1,
                 routes: [{ name: 'Index' }, { name: 'Summary' }],
