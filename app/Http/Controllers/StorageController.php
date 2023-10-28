@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LoadPrimaryStoreRequest;
 use App\Http\Requests\LoadStoreRequest;
 use App\Http\Requests\LockStoreToUserRequest;
+use App\Http\Requests\SellItemsFromStoreRequest;
 use App\Http\Resources\StoreResource;
 use App\Http\Resources\UserResource;
 use App\Models\Store;
@@ -242,6 +243,71 @@ class StorageController extends Controller
             $primaryStore->save();
             $store->state = 'I';
             $store->save();
+
+            return new StoreResource($store->refresh());
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
+            ) {
+                throw $e;
+            }
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function sell_items_from_store(SellItemsFromStoreRequest $request)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            // validation of the store associated with the user
+            $store = $sender->store;
+
+            if (! $store) {
+                return response([
+                    'message' => 'User has no store associated.',
+                ], 404);
+            }
+
+            if ($store->type !== 'S') {
+                return response([
+                    'message' => 'Store ID is invalid.',
+                ], 422);
+            }
+
+            if ($store->state !== 'R') {
+                return response([
+                    'message' => 'Round is not yet started.',
+                ], 422);
+            }
+
+            foreach ($request['data']['changes'] as $storageUpdate) {
+                $expirationId = $storageUpdate['expirationId'];
+                $existingExpiration = $store->expirations->find($expirationId);
+
+                if (! $existingExpiration) {
+                    return response([
+                        'message' => 'At least expiration ID '.$expirationId.' is invalid',
+                    ], 422);
+                }
+            }
+
+            foreach ($request['data']['changes'] as $storageUpdate) {
+                $expirationId = $storageUpdate['expirationId'];
+
+                $existingExpiration = $store->expirations->find($expirationId);
+                $currentQuantity = $existingExpiration->pivot->quantity;
+                $newQuantity = $currentQuantity + $storageUpdate['quantityChange'];
+
+                $store->expirations()->updateExistingPivot($existingExpiration->id, [
+                    'quantity' => $newQuantity,
+                ]);
+            }
 
             return new StoreResource($store->refresh());
         } catch (Exception $e) {

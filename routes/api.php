@@ -123,6 +123,9 @@ Route::controller(StorageController::class)->prefix('/storage')->group(function 
     Route::post('/load', 'load')
         ->middleware(['auth:sanctum', 'ability:I,A']);
 
+    Route::post('/sell', 'sell_items_from_store')
+        ->middleware((['auth:sanctum', 'ability:A']));
+
     Route::post('/unlock_from_user', 'unlock_from_user')
         ->middleware(['auth:sanctum', 'ability:I,A']);
 });
