@@ -65,6 +65,7 @@ class CreateReceiptsRequest extends FormRequest
             'data.*.items.*.name' => 'required|string|max:60',
             'data.*.items.*.quantity' => 'required|integer|min:-2147483648|max:2147483647',
             'data.*.items.*.unitName' => 'required|string|max:6',
+            'data.*.items.*.discountName' => 'string|max:255',
             'data.*.items.*.netPrice' => 'required|integer|min:-2147483648|max:2147483647',
             'data.*.items.*.netAmount' => 'required|integer|min:-2147483648|max:2147483647',
             'data.*.items.*.vatRate' => 'required|string|size:2',

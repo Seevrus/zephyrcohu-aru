@@ -94,6 +94,7 @@ class ReceiptController extends Controller
                         'name' => $receiptItem['name'],
                         'quantity' => $receiptItem['quantity'],
                         'unit_name' => $receiptItem['unitName'],
+                        'discount_name' => $receiptItem['discountName'] ?? null,
                         'net_price' => $receiptItem['netPrice'],
                         'net_amount' => $receiptItem['netAmount'],
                         'vat_rate' => $receiptItem['vatRate'],

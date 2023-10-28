@@ -24,6 +24,7 @@ class ReceiptItemResource extends JsonResource
             'name' => $this->name,
             'quantity' => $this->quantity,
             'unitName' => $this->unit_name,
+            'discountName' => $this->discount_name,
             'netPrice' => $this->net_price,
             'netAmount' => $this->net_amount,
             'vatRate' => $this->vat_rate,
