@@ -9,7 +9,7 @@ export default function mapSaveSelectedItemsRequest(
     values,
     map(
       pipe(
-        toPairs<number>,
+        toPairs<Record<number, number>>,
         map(([expirationId, quantityChange]) => ({
           expirationId: +expirationId,
           quantityChange,

@@ -1,7 +1,4 @@
-export type ExpirationChange = {
-  expirationId: number;
-  quantityChange: number;
-};
+import { ExpirationChange } from './common/ExpirationChange';
 
 type SaveSelectedItemsRequestData = {
   primaryStoreId: number;
