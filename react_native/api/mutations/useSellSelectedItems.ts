@@ -6,7 +6,10 @@ import useCheckToken from '../queries/useCheckToken';
 import useStoreDetails from '../queries/useStoreDetails';
 import useToken from '../queries/useToken';
 import mapSellSelectedItemsRequest from '../request-mappers/mapSellSelectedItemsRequest';
-import { StoreDetailsResponseType } from '../response-types/StoreDetailsResponseType';
+import {
+  StoreDetailsResponseData,
+  StoreDetailsResponseType,
+} from '../response-types/StoreDetailsResponseType';
 
 export default function useSellSelectedItems() {
   const queryClient = useQueryClient();
@@ -18,13 +21,13 @@ export default function useSellSelectedItems() {
 
   return useMutation({
     mutationKey: ['sell-selected-items'],
-    mutationFn: async (soldItems: Record<number, Record<number, number>>) => {
+    mutationFn: async (updatedStorage: StoreDetailsResponseData) => {
       try {
         if (!storeDetails) {
           throw new Error('Raktár adatai nem elérhetőek');
         }
 
-        const request = mapSellSelectedItemsRequest(storeDetails, soldItems);
+        const request = mapSellSelectedItemsRequest(storeDetails, updatedStorage);
 
         const response = await axios.post<StoreDetailsResponseType>(
           `${env.api_url}/storage/sell`,

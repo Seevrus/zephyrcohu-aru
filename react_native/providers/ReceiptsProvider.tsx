@@ -97,14 +97,11 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
    * Initialize current receipt from local storage
    */
   useEffect(() => {
-    async function setCurrentReceiptFromLocalStorage() {
-      const jsonData = await AsyncStorage.getItem(currentReceiptContextStorageKey);
-      const localStorageCurrentReceipt = jsonData ? JSON.parse(jsonData) : {};
-      setCurrentReceipt(localStorageCurrentReceipt);
-    }
-
     if (isRoundStarted && isNil(currentReceipt)) {
-      setCurrentReceiptFromLocalStorage();
+      AsyncStorage.getItem(currentReceiptContextStorageKey).then((jsonData) => {
+        const localStorageCurrentReceipt = jsonData ? JSON.parse(jsonData) : {};
+        setCurrentReceipt(localStorageCurrentReceipt);
+      });
     }
   }, [currentReceipt, isRoundStarted]);
 

@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNetInfo } from '@react-native-community/netinfo';
 import { assoc, flatten, isNil, map, pipe, toPairs } from 'ramda';
 import {
   PropsWithChildren,
@@ -10,6 +11,7 @@ import {
   useState,
 } from 'react';
 
+import useSellSelectedItems from '../api/mutations/useSellSelectedItems';
 import useCheckToken from '../api/queries/useCheckToken';
 import useStoreDetails from '../api/queries/useStoreDetails';
 import { StoreDetailsResponseData } from '../api/response-types/StoreDetailsResponseType';
@@ -19,6 +21,7 @@ type StorageContextType = {
   storage: StoreDetailsResponseData | null;
   originalStorage: StoreDetailsResponseData | null;
   slowSaveStorageExpirations: (storageExpirations: Record<number, Record<number, number>>) => void;
+  removeSoldItemsFromStorage: (soldItems: Record<number, Record<number, number>>) => Promise<void>;
   clearStorageFromContext(): void;
 };
 
@@ -26,11 +29,10 @@ const StorageContext = createContext<StorageContextType>({} as StorageContextTyp
 const storageContextKey = 'boreal-storage-context';
 
 export default function StorageProvider({ children }: PropsWithChildren) {
+  const { isInternetReachable } = useNetInfo();
+
   const { data: user } = useCheckToken();
-
-  const [isLocalStorageLoaded, setIsLocalStorageLoaded] = useState<boolean>(false);
-  const [storage, setStorage] = useState<StoreDetailsResponseData | null>(null);
-
+  const { mutateAsync: updateStorageAPI } = useSellSelectedItems();
   const {
     data: storeDetails,
     isPending: isStoreDetailsPending,
@@ -39,65 +41,94 @@ export default function StorageProvider({ children }: PropsWithChildren) {
     storeId: user?.storeId,
   });
 
+  const [isLocalStorageLoaded, setIsLocalStorageLoaded] = useState<boolean>(false);
+  const [storage, setStorage] = useState<StoreDetailsResponseData | null>(null);
+
   /**
    * Callback to set storage from the drive.
    */
-  const persistStorage = useCallback(async () => {
-    if (storage) {
-      await AsyncStorage.setItem(storageContextKey, JSON.stringify(storage));
-    }
-  }, [storage]);
+  const persistStorage = useCallback(async (storageToPersist: StoreDetailsResponseData) => {
+    await AsyncStorage.setItem(storageContextKey, JSON.stringify(storageToPersist));
+  }, []);
 
   /**
    * Callback to clear storage (drive and memory).
    */
-  const clearStorageFromContext = useCallback(() => {
-    AsyncStorage.removeItem(storageContextKey).then(() => {
-      setStorage(null);
-    });
+  const clearStorageFromContext = useCallback(async () => {
+    await AsyncStorage.removeItem(storageContextKey);
+    setStorage(null);
   }, []);
 
   /**
    * Save storage from storage flow. Slow because it will trigger a storage persist.
    */
   const slowSaveStorageExpirations = useCallback(
-    (storageExpirations: Record<number, Record<number, number>>) => {
-      setStorage(
-        assoc(
-          'expirations',
-          pipe(
-            toPairs<typeof storageExpirations>,
-            map(([itemId, itemExpirations]) =>
-              pipe(
-                toPairs<(typeof storageExpirations)[number]>,
-                map(([expirationId, quantity]) => ({
-                  itemId: Number(itemId),
-                  expirationId: Number(expirationId),
-                  quantity,
-                }))
-              )(itemExpirations)
-            ),
-            flatten
-          )(storageExpirations)
-        )
+    async (storageExpirations: Record<number, Record<number, number>>) => {
+      const updatedStorage = assoc(
+        'expirations',
+        pipe(
+          toPairs<typeof storageExpirations>,
+          map(([itemId, itemExpirations]) =>
+            pipe(
+              toPairs<(typeof storageExpirations)[number]>,
+              map(([expirationId, quantity]) => ({
+                itemId: Number(itemId),
+                expirationId: Number(expirationId),
+                quantity,
+              }))
+            )(itemExpirations)
+          ),
+          flatten
+        )(storageExpirations),
+        storage
       );
+
+      await persistStorage(updatedStorage);
+      setStorage(updatedStorage);
     },
-    []
+    [persistStorage, storage]
+  );
+
+  /**
+   * Remove sold items from storage
+   */
+  const removeSoldItemsFromStorage = useCallback(
+    async (soldItems: Record<number, Record<number, number>>) => {
+      const updatedStorage: StoreDetailsResponseData = {
+        ...storage,
+        expirations: storage.expirations.map((expiration) => {
+          const soldItemQuantity = soldItems?.[expiration.itemId]?.[expiration.expirationId];
+
+          if (!soldItemQuantity) {
+            return expiration;
+          }
+
+          return {
+            ...expiration,
+            quantity: expiration.quantity - soldItemQuantity,
+          };
+        }),
+      };
+
+      if (isInternetReachable === true) {
+        await updateStorageAPI(updatedStorage);
+      }
+
+      await persistStorage(updatedStorage);
+      setStorage(updatedStorage);
+    },
+    [isInternetReachable, persistStorage, storage, updateStorageAPI]
   );
 
   /**
    * Initialize from local storage.
    */
   useEffect(() => {
-    async function setStorageFromLocal() {
-      const jsonValue = await AsyncStorage.getItem(storageContextKey);
-      const localStorageValue = jsonValue ? JSON.parse(jsonValue) : null;
-
+    AsyncStorage.getItem(storageContextKey).then((storageBackupJson) => {
+      const localStorageValue = storageBackupJson ? JSON.parse(storageBackupJson) : null;
       setStorage(localStorageValue);
       setIsLocalStorageLoaded(true);
-    }
-
-    setStorageFromLocal();
+    });
   }, []);
 
   /**
@@ -108,16 +139,6 @@ export default function StorageProvider({ children }: PropsWithChildren) {
       setStorage(storeDetails);
     }
   }, [isLocalStorageLoaded, isStoreDetailsStale, storage, storeDetails]);
-
-  /**
-   * Save state changes to local storage.
-   */
-  useEffect(() => {
-    persistStorage();
-
-    const interval = setInterval(() => persistStorage(), 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [persistStorage]);
 
   /**
    * Clear context if the user's store id does not match with the store's id.
@@ -136,10 +157,12 @@ export default function StorageProvider({ children }: PropsWithChildren) {
       originalStorage: storeDetails,
       slowSaveStorageExpirations,
       clearStorageFromContext,
+      removeSoldItemsFromStorage,
     }),
     [
       clearStorageFromContext,
       isStoreDetailsPending,
+      removeSoldItemsFromStorage,
       slowSaveStorageExpirations,
       storage,
       storeDetails,

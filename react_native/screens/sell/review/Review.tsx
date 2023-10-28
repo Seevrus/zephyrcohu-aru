@@ -31,6 +31,7 @@ export default function Review({ navigation }: ReviewProps) {
     setSelectedOtherItems,
     reviewItems,
     resetSellFlowContext,
+    finishReview,
   } = useSellFlowContext();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -79,7 +80,6 @@ export default function Review({ navigation }: ReviewProps) {
     if (reviewItems && numberOfRegularReviewItems === 0) {
       setIsLoading(true);
       resetSellFlowContext().then(() => {
-        setIsLoading(false);
         navigation.reset({
           index: 0,
           routes: [{ name: 'Index' }],
@@ -109,7 +109,7 @@ export default function Review({ navigation }: ReviewProps) {
     );
   }, [navigation, resetSellFlowContext]);
 
-  /* const confirmReceiptHandler = async () => {
+  const confirmReceiptHandler = useCallback(() => {
     Alert.alert(
       'Árulevétel véglegesítése',
       'Ez a lépés számlakészítéssel jár, ezután már nem lesz lehetőség semmilyen módosításra. Biztosan folytatni szeretné?',
@@ -119,7 +119,8 @@ export default function Review({ navigation }: ReviewProps) {
           text: 'Biztosan ezt szeretném',
           onPress: async () => {
             try {
-              await finalizeCurrentReceipt();
+              setIsLoading(true);
+              await finishReview();
               navigation.reset({
                 index: 1,
                 routes: [{ name: 'Index' }, { name: 'Summary' }],
@@ -131,7 +132,7 @@ export default function Review({ navigation }: ReviewProps) {
         },
       ]
     );
-  }; */
+  }, [finishReview, navigation]);
 
   const renderReceiptRow: ListRenderItem<ReviewItem> = useCallback(
     (info: ListRenderItemInfo<ReviewItem>) => {
@@ -195,7 +196,7 @@ export default function Review({ navigation }: ReviewProps) {
           <Button variant="warning" onPress={removeReceiptHandler}>
             Elvetés
           </Button>
-          <Button variant="ok" onPress={() => {}}>
+          <Button variant="ok" onPress={confirmReceiptHandler}>
             Véglegesítés
           </Button>
         </View>

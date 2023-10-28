@@ -1,5 +1,6 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from 'react';
 
+import { useOrdersContext } from './OrdersProvider';
 import { useReceiptsContext } from './ReceiptsProvider';
 import useReview, { UseReview } from './sell-flow-hooks/useReview';
 import useSelectItems, { UseSelectItems } from './sell-flow-hooks/useSelectItems';
@@ -17,6 +18,7 @@ type SellFlowContextType = Omit<UseSelectPartners, 'currentPriceList' | 'resetUs
 const SellFlowContext = createContext<SellFlowContextType>({} as SellFlowContextType);
 
 export default function SellFlowProvider({ children }: PropsWithChildren) {
+  const { isPending: isOrdersContextPending, resetCurrentOrder } = useOrdersContext();
   const { isPending: isReceiptsContextPending, resetCurrentReceipt } = useReceiptsContext();
   const {
     isPending: isUseSelectPartnersDataPending,
@@ -61,6 +63,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     reviewItems,
     saveDiscountedItemsInFlow,
     resetUseReview,
+    finishReview,
   } = useReview({ currentPriceList, selectedItems, selectedOtherItems });
 
   const resetSellFlowContext = useCallback(async () => {
@@ -68,8 +71,10 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     resetUseSelectItems();
     resetUseSelectOtherItems();
     resetUseReview();
+    await resetCurrentOrder();
     await resetCurrentReceipt();
   }, [
+    resetCurrentOrder,
     resetCurrentReceipt,
     resetUseReview,
     resetUseSelectItems,
@@ -80,6 +85,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
   const sellFlowContextValue = useMemo(
     () => ({
       isPending:
+        isOrdersContextPending ||
         isReceiptsContextPending ||
         isUseSelectPartnersDataPending ||
         isUseSelectItemsDataPending ||
@@ -109,10 +115,13 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       saveSelectedOtherItemsInFlow,
       reviewItems,
       saveDiscountedItemsInFlow,
+      finishReview,
       resetSellFlowContext,
     }),
     [
       barCode,
+      finishReview,
+      isOrdersContextPending,
       isPartnerChosenForCurrentReceipt,
       isReceiptsContextPending,
       isReviewDataPending,

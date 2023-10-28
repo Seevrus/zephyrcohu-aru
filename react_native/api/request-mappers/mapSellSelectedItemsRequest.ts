@@ -5,19 +5,21 @@ import { StoreDetailsResponseData } from '../response-types/StoreDetailsResponse
 
 export default function mapSellSelectedItemsRequest(
   storeDetails: StoreDetailsResponseData,
-  soldItems: Record<number, Record<number, number>>
+  updatedStorage: StoreDetailsResponseData
 ): SellSelectedItemsRequest {
   const changes = storeDetails.expirations
     .map((expiration) => {
-      const soldItemQuantity = soldItems?.[expiration.itemId]?.[expiration.expirationId];
+      const soldItemExpiration = updatedStorage.expirations.find(
+        (e) => e.expirationId === expiration.expirationId
+      );
 
-      if (!soldItemQuantity) {
+      if (!soldItemExpiration || expiration.quantity === soldItemExpiration.quantity) {
         return undefined;
       }
 
       return {
         expirationId: expiration.expirationId,
-        quantityChange: expiration.quantity - soldItemQuantity,
+        quantityChange: soldItemExpiration.quantity - expiration.quantity,
       };
     })
     .filter(identity);

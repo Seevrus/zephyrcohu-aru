@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { isNil } from 'ramda';
+import { append, isNil } from 'ramda';
 import {
   PropsWithChildren,
   createContext,
@@ -18,6 +18,8 @@ type OrdersContextType = {
   orders: OrderRequest[];
   numberOfOrders: number;
   saveCurrentOrder: (order: OrderRequest) => Promise<void>;
+  resetCurrentOrder: () => Promise<void>;
+  finalizeCurrentOrder: () => Promise<void>;
 };
 
 const OrdersContext = createContext<OrdersContextType>({} as OrdersContextType);
@@ -94,9 +96,28 @@ export default function OrdersProvider({ children }: PropsWithChildren) {
     [persistCurrentOrder]
   );
 
+  const finalizeCurrentOrder = useCallback(async () => {
+    await persistOrders(append(currentOrder as OrderRequest, orders));
+    setOrders(append(currentOrder as OrderRequest));
+  }, [currentOrder, orders, persistOrders]);
+
   const ordersContextValue = useMemo(
-    () => ({ isPending: isUserPending, orders, numberOfOrders, saveCurrentOrder }),
-    [isUserPending, numberOfOrders, orders, saveCurrentOrder]
+    () => ({
+      isPending: isUserPending,
+      orders,
+      numberOfOrders,
+      saveCurrentOrder,
+      resetCurrentOrder,
+      finalizeCurrentOrder,
+    }),
+    [
+      finalizeCurrentOrder,
+      isUserPending,
+      numberOfOrders,
+      orders,
+      resetCurrentOrder,
+      saveCurrentOrder,
+    ]
   );
 
   return <OrdersContext.Provider value={ordersContextValue}>{children}</OrdersContext.Provider>;

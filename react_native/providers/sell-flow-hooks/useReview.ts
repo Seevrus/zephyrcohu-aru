@@ -9,6 +9,8 @@ import calculateAmounts from '../../utils/calculateAmounts';
 import { useReceiptsContext } from '../ReceiptsProvider';
 import { SelectedOtherItems } from './useSelectOtherItems';
 import { SelectedDiscount } from '../types/receipts-provider-types';
+import { useOrdersContext } from '../OrdersProvider';
+import { useStorageContext } from '../StorageProvider';
 
 type BaseReviewItem = {
   itemId: number;
@@ -42,6 +44,7 @@ export type UseReview = {
   reviewItems: ReviewItem[];
   saveDiscountedItemsInFlow: (itemId: number, discounts?: SelectedDiscount[]) => Promise<void>;
   resetUseReview: () => void;
+  finishReview: () => Promise<void>;
 };
 
 export default function useReview({
@@ -55,11 +58,14 @@ export default function useReview({
 }): UseReview {
   const { data: items, isPending: isItemsPending } = useItems();
   const { data: otherItems, isPending: isOtherItemsPending } = useOtherItems();
+  const { isPending: isOrdersContextPending, finalizeCurrentOrder } = useOrdersContext();
   const {
     isPending: isReceiptsContextPending,
     currentReceipt,
     setCurrentReceiptItems,
+    finalizeCurrentReceipt,
   } = useReceiptsContext();
+  const { isPending: isStorageContextPending, removeSoldItemsFromStorage } = useStorageContext();
 
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>(null);
 
@@ -193,17 +199,32 @@ export default function useReview({
     setReviewItems(null);
   }, []);
 
+  const finishReview = useCallback(async () => {
+    await finalizeCurrentOrder();
+    await finalizeCurrentReceipt();
+    await removeSoldItemsFromStorage(selectedItems);
+  }, [finalizeCurrentOrder, finalizeCurrentReceipt, removeSoldItemsFromStorage, selectedItems]);
+
   return useMemo(
     () => ({
-      isPending: isReceiptsContextPending || isItemsPending || isOtherItemsPending,
+      isPending:
+        isOrdersContextPending ||
+        isReceiptsContextPending ||
+        isStorageContextPending ||
+        isItemsPending ||
+        isOtherItemsPending,
       reviewItems,
       saveDiscountedItemsInFlow,
       resetUseReview,
+      finishReview,
     }),
     [
+      finishReview,
       isItemsPending,
+      isOrdersContextPending,
       isOtherItemsPending,
       isReceiptsContextPending,
+      isStorageContextPending,
       resetUseReview,
       reviewItems,
       saveDiscountedItemsInFlow,
