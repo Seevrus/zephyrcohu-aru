@@ -1,6 +1,6 @@
 import { assoc, complement, dissoc, filter, map, mergeLeft, pipe, prepend, prop } from 'ramda';
 
-import { ContextReceipt } from '../../providers/ReceiptsProvider';
+import { ContextReceipt } from '../../providers/types/receipts-provider-types';
 import calculateAmounts from '../../utils/calculateAmounts';
 import { ReceiptRequest, ReceiptRequestData } from '../request-types/CreateReceiptsRequestType';
 import { ReceiptItem } from '../request-types/common/ReceiptItemsTypes';

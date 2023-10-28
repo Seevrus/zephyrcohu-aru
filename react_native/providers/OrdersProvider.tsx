@@ -10,12 +10,10 @@ import {
   useState,
 } from 'react';
 
+import useCreateOrders from '../api/mutations/useCreateOrders';
 import useCheckToken from '../api/queries/useCheckToken';
 import { OrderRequest } from '../api/request-types/CreateOrdersRequestType';
-
-export type ContextOrder = OrderRequest & {
-  isSent: boolean;
-};
+import { ContextOrder } from './types/orders-provider-types';
 
 type OrdersContextType = {
   isPending: boolean;
@@ -24,6 +22,7 @@ type OrdersContextType = {
   saveCurrentOrder: (order: ContextOrder) => Promise<void>;
   resetCurrentOrder: () => Promise<void>;
   finalizeCurrentOrder: () => Promise<void>;
+  sendInOrders: () => Promise<void>;
 };
 
 const OrdersContext = createContext<OrdersContextType>({} as OrdersContextType);
@@ -32,6 +31,7 @@ const currentOrderContextStorageKey = 'boreal-current-order-context';
 
 export default function OrdersProvider({ children }: PropsWithChildren) {
   const { data: user, isPending: isUserPending } = useCheckToken();
+  const { isPending: isCreateOrdersPending, mutateAsync: createOrdersAPI } = useCreateOrders();
 
   const [orders, setOrders] = useState<ContextOrder[]>([]);
   const numberOfOrders = orders.length;
@@ -107,6 +107,15 @@ export default function OrdersProvider({ children }: PropsWithChildren) {
     setOrders(append(currentOrder));
   }, [currentOrder, orders, persistOrders]);
 
+  const sendInOrders = useCallback(async () => {
+    if (!isCreateOrdersPending && orders.some((o) => !o.isSent)) {
+      await createOrdersAPI(orders);
+      const updatedOrders = orders.map<ContextOrder>(assoc('isSent', true));
+      await persistOrders(updatedOrders);
+      setOrders(updatedOrders);
+    }
+  }, [createOrdersAPI, isCreateOrdersPending, orders, persistOrders]);
+
   const ordersContextValue = useMemo(
     () => ({
       isPending: isUserPending,
@@ -115,6 +124,7 @@ export default function OrdersProvider({ children }: PropsWithChildren) {
       saveCurrentOrder,
       resetCurrentOrder,
       finalizeCurrentOrder,
+      sendInOrders,
     }),
     [
       finalizeCurrentOrder,
@@ -123,6 +133,7 @@ export default function OrdersProvider({ children }: PropsWithChildren) {
       orders,
       resetCurrentOrder,
       saveCurrentOrder,
+      sendInOrders,
     ]
   );
 

@@ -6,11 +6,13 @@ import useReview, { UseReview } from './sell-flow-hooks/useReview';
 import useSelectItems, { UseSelectItems } from './sell-flow-hooks/useSelectItems';
 import useSelectOtherItems, { UseSelectOtherItems } from './sell-flow-hooks/useSelectOtherItems';
 import useSelectPartners, { UseSelectPartners } from './sell-flow-hooks/useSelectPartners';
+import useSummary, { UseSummary } from './sell-flow-hooks/useSummary';
 
 type SellFlowContextType = Omit<UseSelectPartners, 'currentPriceList' | 'resetUseSelectPartners'> &
   Omit<UseSelectItems, 'resetUseSelectItems'> &
   Omit<UseSelectOtherItems, 'resetUseSelectOtherItems'> &
-  Omit<UseReview, 'resetUseReview'> & {
+  Omit<UseReview, 'resetUseReview'> &
+  UseSummary & {
     isPending: boolean;
     resetSellFlowContext: () => Promise<void>;
   };
@@ -65,6 +67,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
     resetUseReview,
     finishReview,
   } = useReview({ currentPriceList, selectedItems, selectedOtherItems });
+  const { isPending: isSummarydataPending, syncSellFlowWithApi } = useSummary();
 
   const resetSellFlowContext = useCallback(async () => {
     resetUseSelectPartners();
@@ -90,7 +93,8 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
         isUseSelectPartnersDataPending ||
         isUseSelectItemsDataPending ||
         isUseSelectOtherItemsDataPending ||
-        isReviewDataPending,
+        isReviewDataPending ||
+        isSummarydataPending,
       partners,
       selectedPartner,
       isSelectedPartnerOnCurrentPartnerList,
@@ -117,6 +121,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       saveDiscountedItemsInFlow,
       finishReview,
       resetSellFlowContext,
+      syncSellFlowWithApi,
     }),
     [
       barCode,
@@ -126,6 +131,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       isReceiptsContextPending,
       isReviewDataPending,
       isSelectedPartnerOnCurrentPartnerList,
+      isSummarydataPending,
       isUseSelectItemsDataPending,
       isUseSelectOtherItemsDataPending,
       isUseSelectPartnersDataPending,
@@ -151,6 +157,7 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
       setSelectedItems,
       setSelectedOrderItems,
       setSelectedOtherItems,
+      syncSellFlowWithApi,
     ]
   );
 

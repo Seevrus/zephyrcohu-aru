@@ -11,23 +11,14 @@ import {
   useState,
 } from 'react';
 
+import useCreateReceipts from '../api/mutations/useCreateReceipts';
 import useActiveRound from '../api/queries/useActiveRound';
 import useCheckToken from '../api/queries/useCheckToken';
-import { ReceiptRequest } from '../api/request-types/CreateReceiptsRequestType';
 import { ReceiptBuyer } from '../api/request-types/common/ReceiptBuyer';
 import { ReceiptItem, ReceiptOtherItem } from '../api/request-types/common/ReceiptItemsTypes';
 import calculateReceiptTotals from '../utils/calculateReceiptTotals';
 import { useStorageContext } from './StorageProvider';
-import { SelectedDiscount } from './types/receipts-provider-types';
-
-type ContextReceiptItem = ReceiptItem & {
-  selectedDiscounts?: SelectedDiscount[];
-};
-
-export type ContextReceipt = Omit<ReceiptRequest, 'items'> & {
-  isSent: boolean;
-  items: ContextReceiptItem[];
-};
+import { ContextReceipt, ContextReceiptItem } from './types/receipts-provider-types';
 
 type ReceiptsContextType = {
   isPending: boolean;
@@ -51,6 +42,7 @@ type ReceiptsContextType = {
   setCurrentReceiptItems: (items: ContextReceiptItem[]) => Promise<void>;
   setCurrentReceiptOtherItems: (otherItems?: ReceiptOtherItem[]) => Promise<void>;
   finalizeCurrentReceipt: () => Promise<void>;
+  sendInReceipts: () => Promise<void>;
 };
 
 const ReceiptsContext = createContext<ReceiptsContextType>({} as ReceiptsContextType);
@@ -60,6 +52,8 @@ const currentReceiptContextStorageKey = 'boreal-current-receipt-context';
 export default function ReceiptsProvider({ children }: PropsWithChildren) {
   const { data: activeRound, isPending: isActiveRoundPending } = useActiveRound();
   const { data: user, isPending: isUserPending } = useCheckToken();
+  const { isPending: isCreateReceiptsPending, mutateAsync: createReceiptsAPI } =
+    useCreateReceipts();
   const { storage, isPending: isStoreDetailsPending } = useStorageContext();
 
   const [receipts, setReceipts] = useState<ContextReceipt[]>(null);
@@ -241,6 +235,15 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
     user?.company?.vatNumber,
   ]);
 
+  const sendInReceipts = useCallback(async () => {
+    if (!isCreateReceiptsPending && receipts.some((r) => !r.isSent)) {
+      await createReceiptsAPI(receipts);
+      const updatedReceipts = receipts.map<ContextReceipt>(assoc('isSent', true));
+      await persistReceipts(updatedReceipts);
+      setReceipts(updatedReceipts);
+    }
+  }, [createReceiptsAPI, isCreateReceiptsPending, persistReceipts, receipts]);
+
   const receiptsContextValue = useMemo(
     () => ({
       isPending: isActiveRoundPending || isUserPending || isStoreDetailsPending,
@@ -252,6 +255,7 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
       setCurrentReceiptItems,
       setCurrentReceiptOtherItems,
       finalizeCurrentReceipt,
+      sendInReceipts,
     }),
     [
       currentReceipt,
@@ -262,6 +266,7 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
       numberOfReceipts,
       receipts,
       resetCurrentReceipt,
+      sendInReceipts,
       setCurrentReceiptBuyer,
       setCurrentReceiptItems,
       setCurrentReceiptOtherItems,

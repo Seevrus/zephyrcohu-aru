@@ -2,13 +2,13 @@ import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 
 import env from '../../env.json';
-import { ContextReceipt } from '../../providers/ReceiptsProvider';
+import { ContextReceipt } from '../../providers/types/receipts-provider-types';
 import useToken from '../queries/useToken';
+import mapCreateReceiptsRequest from '../request-mappers/mapCreateReceiptsRequest';
 import {
   CreateReceiptsResponseType,
   ReceiptResponseData,
 } from '../response-types/CreateReceiptsResponseType';
-import mapCreateReceiptsRequest from '../request-mappers/mapCreateReceiptsRequest';
 
 export default function useCreateReceipts() {
   const { data: { token } = {} } = useToken();
@@ -28,7 +28,7 @@ export default function useCreateReceipts() {
         return response.data.data;
       } catch (e) {
         console.log(e.message);
-        throw new Error('Váratlan hiba lépett fel a rendelések beküldése során.');
+        throw new Error('Váratlan hiba lépett fel a számlák beküldése során.');
       }
     },
   });

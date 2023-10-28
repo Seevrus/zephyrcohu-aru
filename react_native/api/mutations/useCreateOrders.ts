@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 
 import env from '../../env.json';
-import { ContextOrder } from '../../providers/OrdersProvider';
+import { ContextOrder } from '../../providers/types/orders-provider-types';
 import useToken from '../queries/useToken';
 import mapCreateOrdersRequest from '../request-mappers/mapCreateOrdersRequest';
 import {
