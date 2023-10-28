@@ -1,8 +1,4 @@
-type OrderItem = {
-  articleNumber: string;
-  name: string;
-  quantity: number;
-};
+import { OrderItem } from './common/OrderItem';
 
 export type OrderRequest = {
   partnerId: number;
@@ -10,7 +6,7 @@ export type OrderRequest = {
   items: OrderItem[];
 };
 
-type OrderRequestData = OrderRequest[];
+export type OrderRequestData = OrderRequest[];
 
 export type CreateOrdersRequest = {
   data: OrderRequestData;

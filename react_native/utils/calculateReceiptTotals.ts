@@ -1,10 +1,7 @@
 import { groupBy, map, prop, values } from 'ramda';
 
-import {
-  ReceiptItem,
-  ReceiptOtherItem,
-  ReceiptVatAmount,
-} from '../api/request-types/CreateReceiptsRequest';
+import { ReceiptItem, ReceiptOtherItem } from '../api/request-types/common/ReceiptItemsTypes';
+import { ReceiptVatAmount } from '../api/request-types/common/ReceiptVatAmount';
 import { SelectedDiscount } from '../providers/types/receipts-provider-types';
 import calculateDiscountedItemAmounts from './calculateDiscountedItemAmounts';
 

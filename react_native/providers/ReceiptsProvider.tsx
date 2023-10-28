@@ -13,12 +13,9 @@ import {
 
 import useActiveRound from '../api/queries/useActiveRound';
 import useCheckToken from '../api/queries/useCheckToken';
-import {
-  ReceiptBuyer,
-  ReceiptItem,
-  ReceiptOtherItem,
-  ReceiptRequest,
-} from '../api/request-types/CreateReceiptsRequest';
+import { ReceiptRequest } from '../api/request-types/CreateReceiptsRequestType';
+import { ReceiptBuyer } from '../api/request-types/common/ReceiptBuyer';
+import { ReceiptItem, ReceiptOtherItem } from '../api/request-types/common/ReceiptItemsTypes';
 import calculateReceiptTotals from '../utils/calculateReceiptTotals';
 import { useStorageContext } from './StorageProvider';
 import { SelectedDiscount } from './types/receipts-provider-types';
@@ -27,7 +24,7 @@ type ContextReceiptItem = ReceiptItem & {
   selectedDiscounts?: SelectedDiscount[];
 };
 
-type ContextReceipt = Omit<ReceiptRequest, 'items'> & {
+export type ContextReceipt = Omit<ReceiptRequest, 'items'> & {
   isSent: boolean;
   items: ContextReceiptItem[];
 };

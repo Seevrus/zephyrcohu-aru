@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { append, isNil } from 'ramda';
+import { append, assoc, isNil } from 'ramda';
 import {
   PropsWithChildren,
   createContext,
@@ -13,11 +13,15 @@ import {
 import useCheckToken from '../api/queries/useCheckToken';
 import { OrderRequest } from '../api/request-types/CreateOrdersRequestType';
 
+export type ContextOrder = OrderRequest & {
+  isSent: boolean;
+};
+
 type OrdersContextType = {
   isPending: boolean;
-  orders: OrderRequest[];
+  orders: ContextOrder[];
   numberOfOrders: number;
-  saveCurrentOrder: (order: OrderRequest) => Promise<void>;
+  saveCurrentOrder: (order: ContextOrder) => Promise<void>;
   resetCurrentOrder: () => Promise<void>;
   finalizeCurrentOrder: () => Promise<void>;
 };
@@ -29,9 +33,9 @@ const currentOrderContextStorageKey = 'boreal-current-order-context';
 export default function OrdersProvider({ children }: PropsWithChildren) {
   const { data: user, isPending: isUserPending } = useCheckToken();
 
-  const [orders, setOrders] = useState<OrderRequest[]>([]);
+  const [orders, setOrders] = useState<ContextOrder[]>([]);
   const numberOfOrders = orders.length;
-  const [currentOrder, setCurrentOrder] = useState<Partial<OrderRequest>>(null);
+  const [currentOrder, setCurrentOrder] = useState<ContextOrder>(null);
 
   const isRoundStarted = user?.state === 'R';
 
@@ -51,7 +55,7 @@ export default function OrdersProvider({ children }: PropsWithChildren) {
   /**
    * Persist orders to local storage
    */
-  const persistOrders = useCallback(async (ordersToSave: OrderRequest[]) => {
+  const persistOrders = useCallback(async (ordersToSave: ContextOrder[]) => {
     await AsyncStorage.setItem(ordersContextStorageKey, JSON.stringify(ordersToSave));
   }, []);
 
@@ -74,7 +78,7 @@ export default function OrdersProvider({ children }: PropsWithChildren) {
    * Persist current order to local storage
    */
   const persistCurrentOrder = useCallback(
-    async (order?: Partial<OrderRequest>) => {
+    async (order?: ContextOrder) => {
       await AsyncStorage.setItem(
         currentOrderContextStorageKey,
         JSON.stringify(order ?? currentOrder)
@@ -90,15 +94,17 @@ export default function OrdersProvider({ children }: PropsWithChildren) {
 
   const saveCurrentOrder = useCallback(
     async (order: OrderRequest) => {
-      await persistCurrentOrder(order);
-      setCurrentOrder(order);
+      const contextOrder: ContextOrder = assoc('isSent', false, order);
+
+      await persistCurrentOrder(contextOrder);
+      setCurrentOrder(contextOrder);
     },
     [persistCurrentOrder]
   );
 
   const finalizeCurrentOrder = useCallback(async () => {
-    await persistOrders(append(currentOrder as OrderRequest, orders));
-    setOrders(append(currentOrder as OrderRequest));
+    await persistOrders(append(currentOrder, orders));
+    setOrders(append(currentOrder));
   }, [currentOrder, orders, persistOrders]);
 
   const ordersContextValue = useMemo(
