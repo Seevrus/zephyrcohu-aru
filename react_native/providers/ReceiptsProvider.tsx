@@ -195,6 +195,7 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
     const finalReceipt = {
       ...currentReceipt,
       isSent: false,
+      shouldBeUpdated: false,
       serialNumber,
       yearCode: storage.yearCode,
       originalCopiesPrinted: 0,
@@ -241,8 +242,20 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
     if (!isReceiptsSyncInProgress && receipts.some((r) => !r.isSent)) {
       setIsReceiptsSyncInProgress(true);
 
-      await createReceiptsAPI(receipts);
-      const updatedReceipts = receipts.map<ContextReceipt>(assoc('isSent', true));
+      const updateReceiptsResponse = await createReceiptsAPI(receipts);
+      const updatedReceipts = receipts.map((receipt) => {
+        const updatedReceipt = updateReceiptsResponse.find(
+          (receiptResponse) =>
+            receiptResponse.serialNumber === receipt.serialNumber &&
+            receiptResponse.yearCode === receipt.yearCode
+        );
+
+        return {
+          ...receipt,
+          id: updatedReceipt?.id,
+          isSent: receipt.isSent || !!updatedReceipt,
+        };
+      });
       await persistReceipts(updatedReceipts);
       setReceipts(updatedReceipts);
 

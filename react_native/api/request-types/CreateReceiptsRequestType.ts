@@ -3,7 +3,7 @@ import { ReceiptItem, ReceiptOtherItem } from './common/ReceiptItemsTypes';
 import { ReceiptVatAmount } from './common/ReceiptVatAmount';
 import { ReceiptVendor } from './common/ReceiptVendor';
 
-export type ReceiptRequest = {
+export type CreateReceiptRequest = {
   partnerCode: string;
   partnerSiteCode: string;
   serialNumber: number;
@@ -26,8 +26,8 @@ export type ReceiptRequest = {
   roundedAmount: number;
 };
 
-export type ReceiptRequestData = ReceiptRequest[];
+export type CreateReceiptRequestData = CreateReceiptRequest[];
 
 export type CreateReceiptsRequestType = {
-  data: ReceiptRequestData;
+  data: CreateReceiptRequestData;
 };

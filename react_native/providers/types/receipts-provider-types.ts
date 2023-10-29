@@ -1,4 +1,4 @@
-import { ReceiptRequest } from '../../api/request-types/CreateReceiptsRequestType';
+import { CreateReceiptRequest } from '../../api/request-types/CreateReceiptsRequestType';
 import { ReceiptItem } from '../../api/request-types/common/ReceiptItemsTypes';
 
 export type SelectedDiscount = {
@@ -22,7 +22,9 @@ export type ContextReceiptItem = ReceiptItem & {
   selectedDiscounts?: SelectedDiscount[];
 };
 
-export type ContextReceipt = Omit<ReceiptRequest, 'items'> & {
+export type ContextReceipt = Omit<CreateReceiptRequest, 'items'> & {
+  id: number;
   isSent: boolean;
+  shouldBeUpdated: boolean;
   items: ContextReceiptItem[];
 };

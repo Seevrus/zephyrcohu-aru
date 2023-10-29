@@ -16,6 +16,11 @@ type ReceiptResponse = {
   companyId: number;
   companyCode: string;
   partnerId: number;
+  partnerCode: string;
+  partnerSiteCode: string;
+  serialNumber: number;
+  yearCode: number;
+  originalCopiesPrinted: number;
   vendor: ReceiptVendor;
   buyer: ReceiptBuyer;
   invoiceDate: string; // yyyy-MM-dd
@@ -37,6 +42,6 @@ type ReceiptResponse = {
 
 export type ReceiptResponseData = ReceiptResponse[];
 
-export type CreateReceiptsResponseType = {
+export type ReceiptsResponseType = {
   data: ReceiptResponseData;
 };

@@ -4,20 +4,20 @@ import axios from 'axios';
 import env from '../../env.json';
 import { ContextReceipt } from '../../providers/types/receipts-provider-types';
 import useToken from '../queries/useToken';
-import mapCreateReceiptsRequest from '../request-mappers/mapCreateReceiptsRequest';
+import mapUpdateReceiptsRequest from '../request-mappers/mapUpdateReceiptsRequest';
 import { ReceiptsResponseType, ReceiptResponseData } from '../response-types/ReceiptsResponseType';
 
-export default function useCreateReceipts() {
+export default function useUpdateReceipts() {
   const { data: { token } = {} } = useToken();
 
   return useMutation({
-    mutationKey: ['create-receipts'],
+    mutationKey: ['update-receipts'],
     mutationFn: async (receipts: ContextReceipt[]): Promise<ReceiptResponseData> => {
       try {
-        const receiptRequestData = mapCreateReceiptsRequest(receipts);
+        const receiptRequestData = mapUpdateReceiptsRequest(receipts);
 
         const response = await axios.post<ReceiptsResponseType>(
-          `${env.api_url}/receipts`,
+          `${env.api_url}/receipts/update_printed_copies`,
           { data: receiptRequestData },
           { headers: { Accept: 'application/json', Authorization: `Bearer ${token}` } }
         );
@@ -25,7 +25,7 @@ export default function useCreateReceipts() {
         return response.data.data;
       } catch (e) {
         console.log(e.message);
-        throw new Error('Váratlan hiba lépett fel a számlák beküldése során.');
+        throw new Error('Váratlan hiba lépett fel a számlák frissítése során.');
       }
     },
   });
