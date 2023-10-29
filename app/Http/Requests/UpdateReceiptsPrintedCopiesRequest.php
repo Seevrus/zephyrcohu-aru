@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateReceiptRequest extends FormRequest
+class UpdateReceiptsPrintedCopiesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,9 @@ class UpdateReceiptRequest extends FormRequest
     public function rules()
     {
         return [
-            'data' => 'required',
-            'data.originalCopiesPrinted' => 'integer|min:0|max:999',
+            'data' => 'required|array|bail',
+            'data.*.id' => 'required|integer|min:0', // intentionally not checking if id exists
+            'data.*.originalCopiesPrinted' => 'required|integer|min:0|max:999',
         ];
     }
 }

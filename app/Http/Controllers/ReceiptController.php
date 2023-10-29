@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateReceiptsRequest;
-use App\Http\Requests\UpdateReceiptRequest;
+use App\Http\Requests\UpdateReceiptsPrintedCopiesRequest;
 use App\Http\Resources\ReceiptCollection;
-use App\Http\Resources\ReceiptResource;
 use App\Models\Log;
 use App\Models\Receipt;
 use Carbon\Carbon;
@@ -196,37 +195,39 @@ class ReceiptController extends Controller
         }
     }
 
-    public function update_receipt_partial(UpdateReceiptRequest $request, int $id)
+    public function update_receipt_original_copies_printed(UpdateReceiptsPrintedCopiesRequest $request)
     {
         try {
             $sender = $request->user();
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $receipt = $sender->company->receipts()->findOrFail($id);
-            $this->authorize('update', $receipt);
+            $updatedReceipts = [];
+            foreach ($request->data as $receiptUpdateRequest) {
+                $receiptId = $receiptUpdateRequest['id'];
+                $receipt = $sender->company->receipts()->find($receiptId);
 
-            if ($receipt->invoice_type === 'E') {
-                return response([
-                    'message' => 'Receipt is Invoice Type E',
-                ], 422);
+                if ($receipt) {
+                    $this->authorize('update', $receipt);
+
+                    if ($receipt->invoice_type === 'P') {
+                        $receipt->original_copies_printed = $receiptUpdateRequest['originalCopiesPrinted'];
+
+                        $receipt->save();
+                        array_push($updatedReceipts, $receipt);
+
+                        Log::insert([
+                            'company_id' => $sender->company_id,
+                            'user_id' => $sender->id,
+                            'token_id' => $sender->currentAccessToken()->id,
+                            'action' => 'Updated printed copies on receipt '.$receipt->id,
+                            'occured_at' => Carbon::now(),
+                        ]);
+                    }
+                }
             }
 
-            if (@$request->data['originalCopiesPrinted']) {
-                $receipt->original_copies_printed = $request->data['originalCopiesPrinted'];
-            }
-
-            $receipt->save();
-
-            Log::insert([
-                'company_id' => $sender->company_id,
-                'user_id' => $sender->id,
-                'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Updated receipt '.$receipt->id,
-                'occured_at' => Carbon::now(),
-            ]);
-
-            return new ReceiptResource($receipt->refresh());
+            return new ReceiptCollection($updatedReceipts);
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
