@@ -15,7 +15,7 @@ import useCreateReceipts from '../api/mutations/useCreateReceipts';
 import useActiveRound from '../api/queries/useActiveRound';
 import useCheckToken from '../api/queries/useCheckToken';
 import { ReceiptBuyer } from '../api/request-types/common/ReceiptBuyer';
-import { ReceiptItem, ReceiptOtherItem } from '../api/request-types/common/ReceiptItemsTypes';
+import { ReceiptOtherItem } from '../api/request-types/common/ReceiptItemsTypes';
 import calculateReceiptTotals from '../utils/calculateReceiptTotals';
 import { useStorageContext } from './StorageProvider';
 import { ContextReceipt, ContextReceiptItem } from './types/receipts-provider-types';
@@ -59,6 +59,8 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
   const [receipts, setReceipts] = useState<ContextReceipt[]>(null);
   const numberOfReceipts = receipts?.length ?? 0;
   const [currentReceipt, setCurrentReceipt] = useState<Partial<ContextReceipt>>(null);
+  const [isReceiptsSyncInProgress, setIsReceiptsSyncInProgress] =
+    useState<boolean>(isCreateReceiptsPending);
 
   const isRoundStarted = user?.state === 'R';
 
@@ -150,7 +152,7 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
   );
 
   const setCurrentReceiptItems = useCallback(
-    async (items: ReceiptItem[]) => {
+    async (items: ContextReceiptItem[]) => {
       setCurrentReceipt(assoc('items', items));
       const updatedReceipt = assoc('items', items, currentReceipt);
       await persistCurrentReceipt(updatedReceipt);
@@ -236,13 +238,17 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
   ]);
 
   const sendInReceipts = useCallback(async () => {
-    if (!isCreateReceiptsPending && receipts.some((r) => !r.isSent)) {
+    if (!isReceiptsSyncInProgress && receipts.some((r) => !r.isSent)) {
+      setIsReceiptsSyncInProgress(true);
+
       await createReceiptsAPI(receipts);
       const updatedReceipts = receipts.map<ContextReceipt>(assoc('isSent', true));
       await persistReceipts(updatedReceipts);
       setReceipts(updatedReceipts);
+
+      setIsReceiptsSyncInProgress(false);
     }
-  }, [createReceiptsAPI, isCreateReceiptsPending, persistReceipts, receipts]);
+  }, [createReceiptsAPI, isReceiptsSyncInProgress, persistReceipts, receipts]);
 
   const receiptsContextValue = useMemo(
     () => ({

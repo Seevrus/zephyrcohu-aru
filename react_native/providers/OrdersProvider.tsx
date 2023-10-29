@@ -36,6 +36,8 @@ export default function OrdersProvider({ children }: PropsWithChildren) {
   const [orders, setOrders] = useState<ContextOrder[]>([]);
   const numberOfOrders = orders.length;
   const [currentOrder, setCurrentOrder] = useState<ContextOrder>(null);
+  const [isOrdersSyncInProgress, setIsOrdersSyncInProgress] =
+    useState<boolean>(isCreateOrdersPending);
 
   const isRoundStarted = user?.state === 'R';
 
@@ -108,13 +110,17 @@ export default function OrdersProvider({ children }: PropsWithChildren) {
   }, [currentOrder, orders, persistOrders]);
 
   const sendInOrders = useCallback(async () => {
-    if (!isCreateOrdersPending && orders.some((o) => !o.isSent)) {
+    if (!isOrdersSyncInProgress && orders.some((o) => !o.isSent)) {
+      setIsOrdersSyncInProgress(true);
+
       await createOrdersAPI(orders);
       const updatedOrders = orders.map<ContextOrder>(assoc('isSent', true));
       await persistOrders(updatedOrders);
       setOrders(updatedOrders);
+
+      setIsOrdersSyncInProgress(false);
     }
-  }, [createOrdersAPI, isCreateOrdersPending, orders, persistOrders]);
+  }, [createOrdersAPI, isOrdersSyncInProgress, orders, persistOrders]);
 
   const ordersContextValue = useMemo(
     () => ({

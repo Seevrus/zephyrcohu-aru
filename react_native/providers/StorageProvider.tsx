@@ -31,7 +31,7 @@ const storageContextKey = 'boreal-storage-context';
 export default function StorageProvider({ children }: PropsWithChildren) {
   const { isInternetReachable } = useNetInfo();
 
-  const { data: user } = useCheckToken();
+  const { data: user, isPending: isUserPending } = useCheckToken();
   const { mutateAsync: updateStorageAPI } = useSellSelectedItems();
   const {
     data: storeDetails,
@@ -152,7 +152,7 @@ export default function StorageProvider({ children }: PropsWithChildren) {
 
   const storageContextValue = useMemo(
     () => ({
-      isPending: isStoreDetailsPending,
+      isPending: isUserPending || isStoreDetailsPending,
       storage,
       originalStorage: storeDetails,
       slowSaveStorageExpirations,
@@ -162,6 +162,7 @@ export default function StorageProvider({ children }: PropsWithChildren) {
     [
       clearStorageFromContext,
       isStoreDetailsPending,
+      isUserPending,
       removeSoldItemsFromStorage,
       slowSaveStorageExpirations,
       storage,

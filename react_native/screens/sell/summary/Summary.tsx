@@ -1,9 +1,7 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { last, prop } from 'ramda';
+import { isEmpty, not } from 'ramda';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-
-import { useAppSelector } from '../../../store/hooks';
-import { getLastReceiptPayload } from '../../../store/round-slice/round-api-mappers';
 
 import ErrorCard from '../../../components/info-cards/ErrorCard';
 import TextCard from '../../../components/info-cards/TextCard';
@@ -12,46 +10,95 @@ import PrintSection from '../../../components/print-section/PrintSection';
 import Button from '../../../components/ui/Button';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
-import useUpsertReceipts from '../../../hooks/useUpsertReceipts';
 import { SummaryProps } from '../../../navigators/screen-types';
+import { useSellFlowContext } from '../../../providers/SellFlowProvider';
 
 export default function Summary({ navigation }: SummaryProps) {
   const { isInternetReachable } = useNetInfo();
+  const {
+    isPending: isSellFlowContextPending,
+    selectedOrderItems,
+    resetSellFlowContext,
+    syncSellFlowWithApi,
+  } = useSellFlowContext();
 
-  const currentPartner = useAppSelector((state) =>
-    state.partners.partners.find((p) => p.id === prop('partnerId', last(state.round.receipts)))
-  );
-  const receiptPayload = useAppSelector(getLastReceiptPayload);
+  const [ordersSuccess, setOrdersSuccess] = useState<string>('');
+  const [ordersError, setOrdersError] = useState<string>('');
+  const [receiptsSuccess, setReceiptsSuccess] = useState<string>('');
+  const [receiptsError, setReceiptsError] = useState<string>('');
 
-  const { loading, upsertReceiptSuccess, upsertReceiptError } = useUpsertReceipts();
+  useEffect(() => {
+    if (
+      isInternetReachable === true &&
+      !ordersSuccess &&
+      !ordersError &&
+      !receiptsSuccess &&
+      !receiptsError
+    ) {
+      syncSellFlowWithApi().then(([ordersResult, receiptsResult]) => {
+        if (not(isEmpty(selectedOrderItems))) {
+          if (ordersResult.status === 'fulfilled') {
+            setOrdersSuccess('Rendelések beküldése sikeres.');
+          } else {
+            setOrdersError('Rendelések beküldése sikertelen.');
+          }
+        }
 
-  if (loading) {
+        if (receiptsResult.status === 'fulfilled') {
+          setReceiptsSuccess('Sikeres számlaküldés.');
+        } else {
+          setReceiptsError('Számlák beküldése sikertelen');
+        }
+      });
+    }
+  }, [
+    isInternetReachable,
+    ordersError,
+    ordersSuccess,
+    receiptsError,
+    receiptsSuccess,
+    selectedOrderItems,
+    syncSellFlowWithApi,
+  ]);
+
+  if (isSellFlowContextPending) {
     return <Loading />;
   }
 
   return (
     <View style={styles.container}>
-      {!isInternetReachable && (
+      {isInternetReachable === false && (
         <View style={styles.textCardContainer}>
           <TextCard>Internetkapcsolat hiányában a számla még nem került beküldésre.</TextCard>
         </View>
       )}
-      {!!upsertReceiptSuccess && (
+      {!!ordersSuccess && (
         <View style={styles.textCardContainer}>
-          <TextCard>{upsertReceiptSuccess}</TextCard>
+          <TextCard>{ordersSuccess}</TextCard>
         </View>
       )}
-      {!!upsertReceiptError && (
+      {!!ordersError && (
         <View style={styles.textCardContainer}>
-          <ErrorCard>{upsertReceiptError}</ErrorCard>
+          <ErrorCard>{ordersError}</ErrorCard>
+        </View>
+      )}
+      {!!receiptsSuccess && (
+        <View style={styles.textCardContainer}>
+          <TextCard>{receiptsSuccess}</TextCard>
+        </View>
+      )}
+      {!!receiptsError && (
+        <View style={styles.textCardContainer}>
+          <ErrorCard>{receiptsError}</ErrorCard>
         </View>
       )}
       <Text style={styles.header}>Számla mentése sikeres!</Text>
-      <PrintSection partner={currentPartner} receipt={receiptPayload} />
+      <PrintSection />
       <View style={styles.buttonContainer}>
         <Button
           variant="ok"
-          onPress={() => {
+          onPress={async () => {
+            await resetSellFlowContext();
             navigation.goBack();
           }}
         >

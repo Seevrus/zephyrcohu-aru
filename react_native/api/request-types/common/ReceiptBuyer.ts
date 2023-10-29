@@ -1,4 +1,5 @@
 export type ReceiptBuyer = {
+  id: number;
   name: string;
   country: string;
   postalCode: string;

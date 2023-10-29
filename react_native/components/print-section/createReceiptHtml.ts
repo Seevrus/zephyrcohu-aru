@@ -1,11 +1,11 @@
-import { take, takeLast } from 'ramda';
-import { PartnerDetails } from '../../store/partners-slice/partners-slice-types';
-import {
-  ReceiptPayloadItem,
-  ReceiptPlayloadVatAmount,
-  ReceiptRequestItem,
-  ReceiptTypeEnum,
-} from '../../store/round-slice/round-slice-types';
+import { propOr, repeat, take, takeLast } from 'ramda';
+
+import { ReceiptOtherItem } from '../../api/request-types/common/ReceiptItemsTypes';
+import { ReceiptVatAmount } from '../../api/request-types/common/ReceiptVatAmount';
+import { CheckToken } from '../../api/response-mappers/mapCheckTokenResponse';
+import { Partners } from '../../api/response-mappers/mapPartnersResponse';
+import { ContextReceipt, ContextReceiptItem } from '../../providers/types/receipts-provider-types';
+import createUniqueDiscountedItems from '../../utils/createUniqueDiscountedItems';
 
 const docType = '<!DOCTYPE html>';
 const head = `
@@ -121,40 +121,54 @@ const head = `
       padding-left: 5px;
     }
 
-    .items .item-odd-row,
-    .items .item-even-row {
+    .items .item-first-row,
+    .items .item-second-row {
       display: grid;
       row-gap: 2px;
       column-gap: 3px;
     }
 
-    .items .item-odd-row {
+    .items .item-first-row {
       grid-template-columns: 4fr 7fr 8fr 7fr 40fr;
     }
 
-    .items .item-odd-row.label {
+    .items .item-first-row.label {
       border-bottom: 1px dashed black;
     }
 
-    .items .item-odd-row:not(.label) {
+    .items .item-first-row:not(.label) {
       font-size: 7pt;
     }
 
-    .items .item-odd-row:not(.label) .item-nr {
+    .items .item-first-row:not(.label) .item-nr {
       font-size: 7pt;
     }
 
-    .items .item-even-row {
+    .items .item-second-row {
       grid-template-columns: 8fr 15fr 8fr 10fr 3fr 10fr 10fr;
       border-bottom: 1px solid black;
     }
 
-    .items .item-even-row .amount {
+    .items .item-second-row.is-third-row {
+      border-bottom: 0;
+    }
+
+    .items .item-second-row .amount {
       grid-column-start: 2;
     }
 
-    .items .item-even-row .vat-label {
+    .items .item-second-row .vat-label {
       grid-column: span 2;
+    }
+
+    .items .item-third-row {
+      border-bottom: 1px solid black;
+      padding-left: 10px;
+      text-align: justify;
+    }
+
+    .items .item-third-row .comment-label {
+      font-style: italic;
     }
 
     .total {
@@ -215,7 +229,7 @@ const head = `
     }
 
     footer {
-      margin-top: 40px;
+      padding-top: 40px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       column-gap: 20px;
@@ -273,20 +287,55 @@ const footer = `
     <div class="thank-you">Köszönjük a vásárlást!</div>
   </footer>`;
 
-function getItemsSection(items: ReceiptPayloadItem[]) {
-  const itemRows = items.map((item) => {
+function getItemsSection({
+  items,
+  otherItems,
+}: {
+  items: ContextReceiptItem[];
+  otherItems: ReceiptOtherItem[] | undefined;
+}) {
+  const sorter = (
+    itemA: ContextReceiptItem | ReceiptOtherItem,
+    itemB: ContextReceiptItem | ReceiptOtherItem
+  ) => itemA.name.localeCompare(itemB.name, 'HU-hu');
+
+  const allItems = [
+    ...createUniqueDiscountedItems(items.sort(sorter)),
+    ...(otherItems ?? []).sort(sorter),
+  ];
+
+  const itemRows = allItems.map((item, index) => {
+    const code = index > 99 ? `${index}.` : `${repeat('0', 3 - String(index).length)}${index}.`;
     const displayedVatRate = item.vatAmount === 0 ? `${item.vatRate}` : `${item.vatRate}%`;
     const displayedVatAmount = item.vatAmount === 0 ? '' : item.vatAmount;
 
+    const CNCode = propOr<string, ContextReceiptItem | ReceiptOtherItem, string>(
+      '',
+      'CNCode',
+      item
+    );
+
+    const expiresAt = propOr<string, ContextReceiptItem | ReceiptOtherItem, string>(
+      '',
+      'expiresAt',
+      item
+    );
+
+    const itemComment = propOr<string, ContextReceiptItem | ReceiptOtherItem, string>(
+      propOr<string, ContextReceiptItem | ReceiptOtherItem, string>('', 'comment', item),
+      'discountName',
+      item
+    );
+
     return `
-      <div class="item-odd-row">
-        <div class="item-nr">${item.code}</div>
-        <div>${take(4, item.CNCode)}&nbsp;${takeLast(2, item.CNCode)}</div>
+      <div class="item-first-row">
+        <div class="item-nr">${code}</div>
+        <div>${take(4, CNCode)}&nbsp;${takeLast(2, CNCode)}</div>
         <div>${item.articleNumber}</div>
-        <div>${item.expiresAt}</div>
+        <div>${expiresAt}</div>
         <div>${item.name}</div>
       </div>
-      <div class="item-even-row">
+      <div class="item-second-row ${itemComment ? 'is-third-row' : ''}">
         <div class="amount">${item.quantity} ${item.unitName}</div>
         <div>${item.netPrice}</div>
         <div>${item.netAmount}</div>
@@ -294,6 +343,13 @@ function getItemsSection(items: ReceiptPayloadItem[]) {
         <div>${displayedVatAmount}</div>
         <div>${item.grossAmount}</div>
       </div>
+      ${
+        itemComment &&
+        `<div class="item-third-row">
+          <span class="comment-label">Megjegyzés:</span>
+          <span class="comment">${itemComment}</span>
+        </div>`
+      }
     `;
   });
 
@@ -318,7 +374,7 @@ function getItemsSection(items: ReceiptPayloadItem[]) {
   `;
 }
 
-function getVatSection(vatAmounts: ReceiptPlayloadVatAmount[]) {
+function getVatSection(vatAmounts: ReceiptVatAmount[]) {
   const vatRows = vatAmounts.map((amount) => {
     const displayedVatRate = amount.vatAmount === 0 ? `${amount.vatRate}` : `${amount.vatRate}%`;
     const displayedVatAmount = amount.vatAmount === 0 ? '' : amount.vatAmount;
@@ -340,28 +396,23 @@ function getVatSection(vatAmounts: ReceiptPlayloadVatAmount[]) {
 }
 
 export default function createReceiptHtml({
+  user,
   receipt,
   partner,
 }: {
-  receipt: ReceiptRequestItem;
-  partner: PartnerDetails;
+  user: CheckToken;
+  receipt: ContextReceipt;
+  partner: Partners[number];
 }) {
-  const receiptType = receipt.receiptType === ReceiptTypeEnum.NORMAL ? 'Számla' : 'Storno számla';
   const originalOrCopy =
     receipt.invoiceType === 'E' || receipt.originalCopiesPrinted >= partner.invoiceCopies
       ? 'Másolat'
       : `Eredeti: ${receipt.originalCopiesPrinted + 1}./${partner.invoiceCopies} példány`;
 
   const serialNumberDisplay = `Számlaszám: ${receipt.serialNumber}/${receipt.yearCode}`;
-  const cancelReceiptSerialNumberDisplay =
-    receipt.receiptType === ReceiptTypeEnum.CANCEL
-      ? `${receipt.CISerialNumber}/${receipt.CIYearCode}`
-      : '';
 
   const header = `
     <header>
-      <div class="title"${receiptType}</div>
-      <div class="last-column">${cancelReceiptSerialNumberDisplay}</div>
       <div>${serialNumberDisplay}</div>
       <div class="last-column">${originalOrCopy}</div>
     </header>
@@ -414,8 +465,8 @@ export default function createReceiptHtml({
 
   const agent = `
     <section class="agent">
-      <div class="agent-name">Üzletkötő: ${receipt.agent.name}</div>
-      <div class="agent-phone">${receipt.agent.phoneNumber}</div>
+      <div class="agent-name">Üzletkötő: ${user.name}</div>
+      <div class="agent-phone">${user.phoneNumber ?? ''}</div>
     </section>
   `;
 
@@ -438,10 +489,9 @@ export default function createReceiptHtml({
     </section>
   `;
 
-  const payOrGetBack = receipt.roundedAmount >= 0 ? 'fizetendő' : 'visszajáró';
   const totalAmount = `
     <section class="total-amount">
-      <div class="label">Számla mindösszesen: (${payOrGetBack})</div>
+      <div class="label">Számla mindösszesen: (fizetendő)</div>
       <div class="currency">(HUF)</div>
       <div class="amount">${Math.abs(receipt.roundedAmount)}</div>
     </section>
@@ -460,7 +510,7 @@ export default function createReceiptHtml({
           ${payment}
           ${agent}
           ${software}
-          ${getItemsSection(receipt.items)}
+          ${getItemsSection({ items: receipt.items, otherItems: receipt.otherItems })}
           ${total}
           ${getVatSection(receipt.vatAmounts)}
           ${hasRounding ? rounding : ''}

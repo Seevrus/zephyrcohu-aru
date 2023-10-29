@@ -4,17 +4,17 @@ import { useReceiptsContext } from '../ReceiptsProvider';
 
 export type UseSummary = {
   isPending: boolean;
-  syncSellFlowWithApi: () => Promise<void>;
+  syncSellFlowWithApi: () => Promise<[PromiseSettledResult<void>, PromiseSettledResult<void>]>;
 };
 
 export default function useSummary(): UseSummary {
   const { isPending: isOrdersContextPending, sendInOrders } = useOrdersContext();
   const { isPending: isReceiptsContextPending, sendInReceipts } = useReceiptsContext();
 
-  const syncSellFlowWithApi = useCallback(async () => {
-    await sendInOrders();
-    await sendInReceipts();
-  }, [sendInOrders, sendInReceipts]);
+  const syncSellFlowWithApi = useCallback(
+    () => Promise.allSettled([sendInOrders(), sendInReceipts()]),
+    [sendInOrders, sendInReceipts]
+  );
 
   return useMemo(
     () => ({

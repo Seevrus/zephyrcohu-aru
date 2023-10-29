@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -112,40 +112,54 @@
         padding-left: 5px;
       }
 
-      .items .item-odd-row,
-      .items .item-even-row {
+      .items .item-first-row,
+      .items .item-second-row {
         display: grid;
         row-gap: 2px;
         column-gap: 3px;
       }
 
-      .items .item-odd-row {
+      .items .item-first-row {
         grid-template-columns: 4fr 7fr 8fr 7fr 40fr;
       }
 
-      .items .item-odd-row.label {
+      .items .item-first-row.label {
         border-bottom: 1px dashed black;
       }
 
-      .items .item-odd-row:not(.label) {
+      .items .item-first-row:not(.label) {
         font-size: 7pt;
       }
 
-      .items .item-odd-row:not(.label) .item-nr {
+      .items .item-first-row:not(.label) .item-nr {
         font-size: 7pt;
       }
 
-      .items .item-even-row {
+      .items .item-second-row {
         grid-template-columns: 8fr 15fr 8fr 10fr 3fr 10fr 10fr;
         border-bottom: 1px solid black;
       }
 
-      .items .item-even-row .amount {
+      .items .item-second-row.is-third-row {
+        border-bottom: 0;
+      }
+
+      .items .item-second-row .amount {
         grid-column-start: 2;
       }
 
-      .items .item-even-row .vat-label {
+      .items .item-second-row .vat-label {
         grid-column: span 2;
+      }
+
+      .items .item-third-row {
+        border-bottom: 1px solid black;
+        padding-left: 10px;
+        text-align: justify;
+      }
+
+      .items .item-third-row .comment-label {
+        font-style: italic;
       }
 
       .total {
@@ -240,8 +254,6 @@
   </head>
   <body>
     <header>
-      <div class="title">Storno számla</div>
-      <div class="last-column">(Stornozott számla száma: xxxxxxxx/xx)</div>
       <div>Számlaszám: xxxxxxxx/xx</div>
       <div class="last-column">Eredeti: 1./3 példány</div>
     </header>
@@ -287,28 +299,28 @@
         <div class="software-currency">Pénznem: HUF</div>
       </section>
       <section class="items">
-        <div class="item-odd-row label">
+        <div class="item-first-row label">
           <div class="item-nr">Ssz.</div>
           <div>VTSZ</div>
           <div>Cikkszám</div>
           <div>Lejárat</div>
           <div>Megnevezés</div>
         </div>
-        <div class="item-even-row label">
+        <div class="item-second-row label">
           <div class="amount">Mennyiség<br />és menny.egység</div>
           <div>Nettó<br />egységár</div>
           <div>Összeg</div>
           <div class="vat-label">ÁFA kulcsa<br />és összege</div>
           <div>Bruttó<br />összeg</div>
         </div>
-        <div class="item-odd-row">
+        <div class="item-first-row">
           <div class="item-nr">001.</div>
           <div>****&nbsp;**</div>
           <div>******8*</div>
           <div>****.**</div>
           <div>*************************************40*</div>
         </div>
-        <div class="item-even-row">
+        <div class="item-second-row">
           <div class="amount">xxxxxx8x karton</div>
           <div>xxxxxx8x</div>
           <div>xxxxxxx10x</div>
@@ -316,14 +328,14 @@
           <div>xxxxxxx10x</div>
           <div>xxxxxxx10x</div>
         </div>
-        <div class="item-odd-row">
+        <div class="item-first-row">
           <div class="item-nr">002.</div>
           <div>****&nbsp;**</div>
           <div>******8*</div>
           <div>****.**</div>
           <div>*************************************40*</div>
         </div>
-        <div class="item-even-row">
+        <div class="item-second-row">
           <div class="amount">xxxxxx8x karton</div>
           <div>xxxxxx8x</div>
           <div>xxxxxxx10x</div>
@@ -331,14 +343,14 @@
           <div>xxxxxxx10x</div>
           <div>xxxxxxx10x</div>
         </div>
-        <div class="item-odd-row">
+        <div class="item-first-row">
           <div class="item-nr">003.</div>
           <div>****&nbsp;**</div>
           <div>******8*</div>
           <div>****.**</div>
           <div>*************************************40*</div>
         </div>
-        <div class="item-even-row">
+        <div class="item-second-row is-third-row">
           <div class="amount">xxxxxx8x karton</div>
           <div>xxxxxx8x</div>
           <div>xxxxxxx10x</div>
@@ -346,14 +358,22 @@
           <div>xxxxxxx10x</div>
           <div>xxxxxxx10x</div>
         </div>
-        <div class="item-odd-row">
+        <div class="item-third-row">
+          <span class="comment-label">Megjegyzés:</span>
+          <span class="comment">
+            Etiam porta aliquet convallis. Curabitur sem purus, laoreet quis dictum vel, condimentum
+            ac purus. Fusce eu libero aliquet metus elementum posuere sed vel augue. Proin a nibh
+            eros.
+          </span>
+        </div>
+        <div class="item-first-row">
           <div class="item-nr">004.</div>
           <div>****&nbsp;**</div>
           <div>******8*</div>
           <div>****.**</div>
           <div>*************************************40*</div>
         </div>
-        <div class="item-even-row">
+        <div class="item-second-row">
           <div class="amount">xxxxxx8x karton</div>
           <div>xxxxxx8x</div>
           <div>xxxxxxx10x</div>
@@ -361,14 +381,14 @@
           <div>xxxxxxx10x</div>
           <div>xxxxxxx10x</div>
         </div>
-        <div class="item-odd-row">
+        <div class="item-first-row">
           <div class="item-nr">005.</div>
           <div>****&nbsp;**</div>
           <div>******8*</div>
           <div>****.**</div>
           <div>*************************************40*</div>
         </div>
-        <div class="item-even-row">
+        <div class="item-second-row">
           <div class="amount">xxxxxx8x karton</div>
           <div>xxxxxx8x</div>
           <div>xxxxxxx10x</div>
@@ -376,14 +396,14 @@
           <div>xxxxxxx10x</div>
           <div>xxxxxxx10x</div>
         </div>
-        <div class="item-odd-row">
+        <div class="item-first-row">
           <div class="item-nr">006.</div>
           <div>****&nbsp;**</div>
           <div>******8*</div>
           <div>****.**</div>
           <div>*************************************40*</div>
         </div>
-        <div class="item-even-row">
+        <div class="item-second-row">
           <div class="amount">xxxxxx8x karton</div>
           <div>xxxxxx8x</div>
           <div>xxxxxxx10x</div>
@@ -417,7 +437,7 @@
         <div class="amount">xxxxxxx10x</div>
       </section>
       <section class="total-amount">
-        <div class="label">Számla mindösszesen: (visszajáró)</div>
+        <div class="label">Számla mindösszesen: (fizetendő)</div>
         <div class="currency">(HUF)</div>
         <div class="amount">xxxxxxx10x</div>
       </section>

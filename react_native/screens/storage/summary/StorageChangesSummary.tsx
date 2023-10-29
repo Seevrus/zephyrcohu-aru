@@ -4,19 +4,28 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import useDeselectStore from '../../../api/mutations/useDeselectStore';
 import useCheckToken from '../../../api/queries/useCheckToken';
+import Loading from '../../../components/Loading';
 import Button from '../../../components/ui/Button';
 import colors from '../../../constants/colors';
 import fontSizes from '../../../constants/fontSizes';
+import { StorageChangesSummaryProps } from '../../../navigators/screen-types';
 import { useStorageFlowContext } from '../../../providers/StorageFlowProvider';
 import { useStorageContext } from '../../../providers/StorageProvider';
-import { StorageChangesSummaryProps } from '../../../navigators/screen-types';
 import createPrint from './createPrint';
 
 export default function StorageChangesSummary({ navigation }: StorageChangesSummaryProps) {
-  const { data: user } = useCheckToken();
+  const { data: user, isPending: isUserPending } = useCheckToken();
   const { mutateAsync: deselectStore } = useDeselectStore();
-  const { originalStorage, clearStorageFromContext } = useStorageContext();
-  const { items, resetStorageFlowContext } = useStorageFlowContext();
+  const {
+    isPending: isStorageContextPending,
+    originalStorage,
+    clearStorageFromContext,
+  } = useStorageContext();
+  const {
+    isPending: isStorageFlowContextPending,
+    items,
+    resetStorageFlowContext,
+  } = useStorageFlowContext();
 
   const receiptItems = useMemo(
     () => (items ?? []).filter((item) => !!item.originalQuantity || !!item.currentQuantity),
@@ -38,6 +47,10 @@ export default function StorageChangesSummary({ navigation }: StorageChangesSumm
 
   const isPrintEnabled = !!user && !!originalStorage && !!items;
   const printButtonVariant = isPrintEnabled ? 'ok' : 'disabled';
+
+  if (isUserPending || isStorageContextPending || isStorageFlowContextPending) {
+    return <Loading />;
+  }
 
   return (
     <View style={styles.container}>

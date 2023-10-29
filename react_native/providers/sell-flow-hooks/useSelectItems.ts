@@ -170,6 +170,7 @@ export default function useSelectItems({
 
   const saveSelectedOrderItemsInFlow = useCallback(async () => {
     await saveCurrentOrder({
+      isSent: false,
       partnerId: selectedPartner.id,
       orderedAt: formatISO(new Date()),
       items: items

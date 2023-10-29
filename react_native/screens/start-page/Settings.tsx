@@ -10,7 +10,7 @@ import colors from '../../constants/colors';
 import { SettingsProps } from '../../navigators/screen-types';
 
 export default function Settings({ navigation }: SettingsProps) {
-  const { data: user, isFetching: isUserFetching } = useCheckToken();
+  const { data: user, isPending: isUserPending } = useCheckToken();
   const {
     data: { isTokenExpired },
   } = useToken();
@@ -37,7 +37,7 @@ export default function Settings({ navigation }: SettingsProps) {
     });
   };
 
-  if (isLoading || isUserFetching) {
+  if (isLoading || isUserPending) {
     return <Loading />;
   }
 

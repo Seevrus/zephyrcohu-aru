@@ -12,7 +12,7 @@ import colors from '../../constants/colors';
 import { LoginProps } from '../../navigators/screen-types';
 
 export default function Login({ navigation }: LoginProps) {
-  const { data: user, isFetching: isUserLoading } = useCheckToken();
+  const { data: user, isPending: isUserLoading } = useCheckToken();
   const login = useLogin();
 
   const isRoundStarted = user?.state === 'R';

@@ -34,7 +34,7 @@ export enum EndErrandTileState {
 }
 
 export default function useTileStates() {
-  const { data: user, isFetching: isUserFetching } = useCheckToken();
+  const { data: user, isPending: isUserFetching } = useCheckToken();
   const { isInternetReachable } = useNetInfo();
   const { numberOfOrders } = useOrdersContext();
   const { numberOfReceipts } = useReceiptsContext();
