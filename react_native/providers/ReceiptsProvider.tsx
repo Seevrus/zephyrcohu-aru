@@ -19,6 +19,7 @@ import { ReceiptOtherItem } from '../api/request-types/common/ReceiptItemsTypes'
 import calculateReceiptTotals from '../utils/calculateReceiptTotals';
 import { useStorageContext } from './StorageProvider';
 import { ContextReceipt, ContextReceiptItem } from './types/receipts-provider-types';
+import useUpdateReceipts from '../api/mutations/useUpdateReceipts';
 
 type ReceiptsContextType = {
   isPending: boolean;
@@ -43,6 +44,7 @@ type ReceiptsContextType = {
   setCurrentReceiptOtherItems: (otherItems?: ReceiptOtherItem[]) => Promise<void>;
   finalizeCurrentReceipt: () => Promise<void>;
   sendInReceipts: () => Promise<void>;
+  updateNumberOfPrintedCopies: (receiptId: number) => Promise<void>;
 };
 
 const ReceiptsContext = createContext<ReceiptsContextType>({} as ReceiptsContextType);
@@ -55,6 +57,7 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
   const { isPending: isCreateReceiptsPending, mutateAsync: createReceiptsAPI } =
     useCreateReceipts();
   const { storage, isPending: isStoreDetailsPending } = useStorageContext();
+  const { mutateAsync: updateReceiptsAPI } = useUpdateReceipts();
 
   const [receipts, setReceipts] = useState<ContextReceipt[]>(null);
   const numberOfReceipts = receipts?.length ?? 0;
@@ -263,6 +266,54 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
     }
   }, [createReceiptsAPI, isReceiptsSyncInProgress, persistReceipts, receipts]);
 
+  const updateNumberOfPrintedCopies = useCallback(
+    async (receiptId: number) => {
+      if (receiptId === currentReceipt.id) {
+        const updatedReceipt = assoc(
+          'originalCopiesPrinted',
+          (currentReceipt.originalCopiesPrinted ?? 0) + 1,
+          currentReceipt
+        );
+
+        setCurrentReceipt(updatedReceipt);
+        await persistCurrentReceipt(updatedReceipt);
+      }
+
+      let updatedReceipts = receipts.map((receipt) => {
+        if (receipt.id !== receiptId) {
+          return receipt;
+        }
+
+        return {
+          ...receipt,
+          originalCopiesPrinted: (receipt.originalCopiesPrinted ?? 0) + 1,
+          shouldBeUpdated: true,
+        };
+      });
+
+      setReceipts(updatedReceipts);
+      await persistReceipts(updatedReceipts);
+
+      const updateReceiptsResult = await updateReceiptsAPI(updatedReceipts);
+      updatedReceipts = receipts.map((receipt) => {
+        const updateReceiptResult = updateReceiptsResult.find((result) => result.id === receipt.id);
+
+        if (!updateReceiptResult) {
+          return receipt;
+        }
+
+        return {
+          ...receipt,
+          shouldBeUpdated: false,
+        };
+      });
+
+      setReceipts(updatedReceipts);
+      await persistReceipts(updatedReceipts);
+    },
+    [currentReceipt, persistCurrentReceipt, persistReceipts, receipts, updateReceiptsAPI]
+  );
+
   const receiptsContextValue = useMemo(
     () => ({
       isPending: isActiveRoundPending || isUserPending || isStoreDetailsPending,
@@ -275,6 +326,7 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
       setCurrentReceiptOtherItems,
       finalizeCurrentReceipt,
       sendInReceipts,
+      updateNumberOfPrintedCopies,
     }),
     [
       currentReceipt,
@@ -289,6 +341,7 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
       setCurrentReceiptBuyer,
       setCurrentReceiptItems,
       setCurrentReceiptOtherItems,
+      updateNumberOfPrintedCopies,
     ]
   );
 

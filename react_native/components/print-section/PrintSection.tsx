@@ -1,4 +1,6 @@
 import * as Print from 'expo-print';
+import { isNotNil } from 'ramda';
+import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import useCheckToken from '../../api/queries/useCheckToken';
@@ -14,7 +16,13 @@ import createReceiptHtml from './createReceiptHtml';
 export default function PrintSection() {
   const { data: user, isPending: isUserPending } = useCheckToken();
   const { isPending: isSellFlowContextpending, selectedPartner } = useSellFlowContext();
-  const { isPending: isReceiptsContextPending, currentReceipt } = useReceiptsContext();
+  const {
+    isPending: isReceiptsContextPending,
+    currentReceipt,
+    updateNumberOfPrintedCopies,
+  } = useReceiptsContext();
+
+  const [updateProgressMessage, setUpdateProgressMessage] = useState<string>('');
 
   const canPrintOriginalCopy = selectedPartner.invoiceCopies > currentReceipt.originalCopiesPrinted;
 
@@ -27,13 +35,20 @@ export default function PrintSection() {
       }),
     });
 
-    if (canPrintOriginalCopy) {
-      // dispatch(increaseOriginalCopiesPrinted(receipt.serialNumber));
+    if (canPrintOriginalCopy && isNotNil(currentReceipt.id)) {
+      setUpdateProgressMessage('Számla frissítése folyamatban...');
+      await updateNumberOfPrintedCopies(currentReceipt.id);
+      setUpdateProgressMessage('');
     }
   };
 
-  if (isUserPending || isSellFlowContextpending || isReceiptsContextPending) {
-    return <Loading />;
+  if (
+    isUserPending ||
+    isSellFlowContextpending ||
+    isReceiptsContextPending ||
+    !!updateProgressMessage
+  ) {
+    return <Loading message={updateProgressMessage} />;
   }
 
   return (
