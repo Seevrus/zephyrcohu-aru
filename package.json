@@ -5,6 +5,8 @@
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
+    "build:check": "tsc",
+    "eslint": "eslint --ext .js,.jsx.,ts,.tsx",
     "prettier": "prettier react_native/* --check --ignore-unknown"
   },
   "dependencies": {
