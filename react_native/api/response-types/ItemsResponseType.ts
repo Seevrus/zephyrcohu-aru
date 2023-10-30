@@ -1,5 +1,5 @@
-import { BaseItemType } from './common/BaseItemType';
-import { TimeStamps } from './common/TimeStamps';
+import { type BaseItemType } from './common/BaseItemType';
+import { type TimeStamps } from './common/TimeStamps';
 
 export type Expiration = {
   id: number;

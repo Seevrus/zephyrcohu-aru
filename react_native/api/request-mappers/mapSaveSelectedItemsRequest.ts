@@ -1,7 +1,7 @@
 import { flatten, map, pipe, toPairs, values } from 'ramda';
-import { SaveSelectedItemsRequest } from '../request-types/SaveSelectedItemsRequest';
+import { type SaveSelectedItemsRequest } from '../request-types/SaveSelectedItemsRequest';
 
-export default function mapSaveSelectedItemsRequest(
+export function mapSaveSelectedItemsRequest(
   primaryStoreId: number,
   storageExpirations: Record<number, Record<number, number>>
 ): SaveSelectedItemsRequest {

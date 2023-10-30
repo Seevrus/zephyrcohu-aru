@@ -1,27 +1,32 @@
+/* eslint-disable unicorn/prefer-module */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import NetInfo from '@react-native-community/netinfo';
+import { addEventListener as NetInfoAddEventListener } from '@react-native-community/netinfo';
 import { NavigationContainer } from '@react-navigation/native';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
-import { keepPreviousData, onlineManager, QueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  onlineManager,
+  QueryClient,
+} from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 
-import useToken from './react_native/api/queries/useToken';
-import Loading from './react_native/components/Loading';
-import MainStack from './react_native/navigators/MainStack';
-import OrdersProvider from './react_native/providers/OrdersProvider';
-import ReceiptsProvider from './react_native/providers/ReceiptsProvider';
-import SellFlowProvider from './react_native/providers/SellFlowProvider';
-import StorageFlowProvider from './react_native/providers/StorageFlowProvider';
-import StorageProvider from './react_native/providers/StorageProvider';
+import { useToken } from './react_native/api/queries/useToken';
+import { Loading } from './react_native/components/Loading';
+import { MainStack } from './react_native/navigators/MainStack';
+import { OrdersProvider } from './react_native/providers/OrdersProvider';
+import { ReceiptsProvider } from './react_native/providers/ReceiptsProvider';
+import { SellFlowProvider } from './react_native/providers/SellFlowProvider';
+import { StorageFlowProvider } from './react_native/providers/StorageFlowProvider';
+import { StorageProvider } from './react_native/providers/StorageProvider';
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      gcTime: Infinity,
+      gcTime: Number.POSITIVE_INFINITY,
       placeholderData: keepPreviousData,
-      staleTime: Infinity,
+      staleTime: Number.POSITIVE_INFINITY,
       retry: 3,
     },
   },
@@ -32,7 +37,7 @@ const asyncStoragePersister = createAsyncStoragePersister({
 });
 
 onlineManager.setEventListener((setOnline) =>
-  NetInfo.addEventListener((state) => {
+  NetInfoAddEventListener((state) => {
     setOnline(!!state.isConnected);
   })
 );

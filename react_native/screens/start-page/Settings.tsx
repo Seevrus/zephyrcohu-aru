@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import useLogout from '../../api/mutations/useLogout';
-import useCheckToken from '../../api/queries/useCheckToken';
-import useToken from '../../api/queries/useToken';
-import Loading from '../../components/Loading';
-import Button from '../../components/ui/Button';
-import colors from '../../constants/colors';
-import { SettingsProps } from '../../navigators/screen-types';
+import { useLogout } from '../../api/mutations/useLogout';
+import { useCheckToken } from '../../api/queries/useCheckToken';
+import { useToken } from '../../api/queries/useToken';
+import { Loading } from '../../components/Loading';
+import { Button } from '../../components/ui/Button';
+import { colors } from '../../constants/colors';
+import { type SettingsProps } from '../../navigators/screen-types';
 
-export default function Settings({ navigation }: SettingsProps) {
+export function Settings({ navigation }: SettingsProps) {
   const { data: user, isPending: isUserPending } = useCheckToken();
   const {
     data: { isTokenExpired },
@@ -65,10 +65,10 @@ export default function Settings({ navigation }: SettingsProps) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: colors.background,
-    paddingTop: 30,
+    flex: 1,
     paddingHorizontal: '10%',
+    paddingTop: 30,
     rowGap: 30,
   },
 });

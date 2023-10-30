@@ -1,5 +1,5 @@
-import { TimeStamps } from './TimeStamps';
-import { UserType } from './UserType';
+import { type TimeStamps } from './TimeStamps';
+import { type UserType } from './UserType';
 
 export type StoreType = {
   id: number;

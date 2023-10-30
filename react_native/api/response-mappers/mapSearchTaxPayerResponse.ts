@@ -1,7 +1,7 @@
 import { formatISO } from 'date-fns';
 
-import { SearchTaxNumberResponseData } from '../response-types/SearchTaxNumberResponseType';
-import { PartnerLocation } from '../response-types/common/PartnerType';
+import { type SearchTaxNumberResponseData } from '../response-types/SearchTaxNumberResponseType';
+import { type PartnerLocation } from '../response-types/common/PartnerType';
 
 export type TaxPayer = {
   id: number;
@@ -9,13 +9,15 @@ export type TaxPayer = {
   locations: Record<'C' | 'D', PartnerLocation>;
 };
 
-export default function mapSearchTaxPayerResponse(
+export function mapSearchTaxPayerResponse(
   response: SearchTaxNumberResponseData
 ): TaxPayer[] {
   const now = formatISO(new Date());
 
   if (Array.isArray(response.addressList)) {
-    const hqAddress = response?.addressList.find((address) => address.taxpayerAddressType === 'HQ');
+    const hqAddress = response?.addressList.find(
+      (address) => address.taxpayerAddressType === 'HQ'
+    );
 
     const centralAddress = hqAddress
       ? ({
@@ -49,7 +51,11 @@ export default function mapSearchTaxPayerResponse(
           country: address?.countryCode,
           postalCode: address?.postalCode,
           city: address?.city,
-          address: [address?.streetName, address?.publicPlaceCategory, address?.number].join(' '),
+          address: [
+            address?.streetName,
+            address?.publicPlaceCategory,
+            address?.number,
+          ].join(' '),
           createdAt: now,
           updatedAt: now,
         },
@@ -71,7 +77,11 @@ export default function mapSearchTaxPayerResponse(
           country: address?.countryCode,
           postalCode: address?.postalCode,
           city: address?.city,
-          address: [address?.streetName, address?.publicPlaceCategory, address?.number].join(' '),
+          address: [
+            address?.streetName,
+            address?.publicPlaceCategory,
+            address?.number,
+          ].join(' '),
           createdAt: now,
           updatedAt: now,
         },

@@ -1,13 +1,16 @@
 import { propOr, repeat, take, takeLast } from 'ramda';
 
-import { ReceiptOtherItem } from '../../api/request-types/common/ReceiptItemsTypes';
-import { ReceiptVatAmount } from '../../api/request-types/common/ReceiptVatAmount';
-import { CheckToken } from '../../api/response-mappers/mapCheckTokenResponse';
-import { Partners } from '../../api/response-mappers/mapPartnersResponse';
-import { ContextReceipt, ContextReceiptItem } from '../../providers/types/receipts-provider-types';
-import createUniqueDiscountedItems from '../../utils/createUniqueDiscountedItems';
+import { type ReceiptOtherItem } from '../../api/request-types/common/ReceiptItemsTypes';
+import { type ReceiptVatAmount } from '../../api/request-types/common/ReceiptVatAmount';
+import { type CheckToken } from '../../api/response-mappers/mapCheckTokenResponse';
+import { type Partners } from '../../api/response-mappers/mapPartnersResponse';
+import {
+  type ContextReceipt,
+  type ContextReceiptItem,
+} from '../../providers/types/receipts-provider-types';
+import { createUniqueDiscountedItems } from '../../utils/createUniqueDiscountedItems';
 
-const docType = '<!DOCTYPE html>';
+const documentType = '<!DOCTYPE html>';
 const head = `
 <head>
   <meta charset="UTF-8" />
@@ -305,24 +308,36 @@ function getItemsSection({
   ];
 
   const itemRows = allItems.map((item, index) => {
-    const code = index > 99 ? `${index}.` : `${repeat('0', 3 - String(index).length)}${index}.`;
-    const displayedVatRate = item.vatAmount === 0 ? `${item.vatRate}` : `${item.vatRate}%`;
+    const code =
+      index > 99
+        ? `${index}.`
+        : `${repeat('0', 3 - String(index).length)}${index}.`;
+    const displayedVatRate =
+      item.vatAmount === 0 ? `${item.vatRate}` : `${item.vatRate}%`;
     const displayedVatAmount = item.vatAmount === 0 ? '' : item.vatAmount;
 
-    const CNCode = propOr<string, ContextReceiptItem | ReceiptOtherItem, string>(
-      '',
-      'CNCode',
-      item
-    );
+    const CNCode = propOr<
+      string,
+      ContextReceiptItem | ReceiptOtherItem,
+      string
+    >('', 'CNCode', item);
 
-    const expiresAt = propOr<string, ContextReceiptItem | ReceiptOtherItem, string>(
-      '',
-      'expiresAt',
-      item
-    );
+    const expiresAt = propOr<
+      string,
+      ContextReceiptItem | ReceiptOtherItem,
+      string
+    >('', 'expiresAt', item);
 
-    const itemComment = propOr<string, ContextReceiptItem | ReceiptOtherItem, string>(
-      propOr<string, ContextReceiptItem | ReceiptOtherItem, string>('', 'comment', item),
+    const itemComment = propOr<
+      string,
+      ContextReceiptItem | ReceiptOtherItem,
+      string
+    >(
+      propOr<string, ContextReceiptItem | ReceiptOtherItem, string>(
+        '',
+        'comment',
+        item
+      ),
       'discountName',
       item
     );
@@ -376,7 +391,8 @@ function getItemsSection({
 
 function getVatSection(vatAmounts: ReceiptVatAmount[]) {
   const vatRows = vatAmounts.map((amount) => {
-    const displayedVatRate = amount.vatAmount === 0 ? `${amount.vatRate}` : `${amount.vatRate}%`;
+    const displayedVatRate =
+      amount.vatAmount === 0 ? `${amount.vatRate}` : `${amount.vatRate}%`;
     const displayedVatAmount = amount.vatAmount === 0 ? '' : amount.vatAmount;
 
     return `
@@ -395,7 +411,7 @@ function getVatSection(vatAmounts: ReceiptVatAmount[]) {
   `;
 }
 
-export default function createReceiptHtml({
+export function createReceiptHtml({
   user,
   receipt,
   partner,
@@ -405,9 +421,12 @@ export default function createReceiptHtml({
   partner: Partners[number];
 }) {
   const originalOrCopy =
-    receipt.invoiceType === 'E' || receipt.originalCopiesPrinted >= partner.invoiceCopies
+    receipt.invoiceType === 'E' ||
+    receipt.originalCopiesPrinted >= partner.invoiceCopies
       ? 'Másolat'
-      : `Eredeti: ${receipt.originalCopiesPrinted + 1}./${partner.invoiceCopies} példány`;
+      : `Eredeti: ${receipt.originalCopiesPrinted + 1}./${
+          partner.invoiceCopies
+        } példány`;
 
   const serialNumberDisplay = `Számlaszám: ${receipt.serialNumber}/${receipt.yearCode}`;
 
@@ -454,7 +473,8 @@ export default function createReceiptHtml({
     </section>
   `;
 
-  const paymentMethodDisplay = partner.paymentDays === 0 ? 'Készpénz' : 'Átutalás';
+  const paymentMethodDisplay =
+    partner.paymentDays === 0 ? 'Készpénz' : 'Átutalás';
   const payment = `
     <section class="payment">
       <div>Kelt: ${receipt.invoiceDate}</div>
@@ -498,7 +518,7 @@ export default function createReceiptHtml({
   `;
 
   return `
-    ${docType}
+    ${documentType}
     <html lang="en">
       ${head}
       <body>
@@ -510,7 +530,10 @@ export default function createReceiptHtml({
           ${payment}
           ${agent}
           ${software}
-          ${getItemsSection({ items: receipt.items, otherItems: receipt.otherItems })}
+          ${getItemsSection({
+            items: receipt.items,
+            otherItems: receipt.otherItems,
+          })}
           ${total}
           ${getVatSection(receipt.vatAmounts)}
           ${hasRounding ? rounding : ''}

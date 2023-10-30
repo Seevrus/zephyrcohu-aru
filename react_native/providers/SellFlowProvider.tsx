@@ -1,14 +1,32 @@
-import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  type PropsWithChildren,
+} from 'react';
 
 import { useOrdersContext } from './OrdersProvider';
 import { useReceiptsContext } from './ReceiptsProvider';
-import useReview, { UseReview } from './sell-flow-hooks/useReview';
-import useSelectItems, { UseSelectItems } from './sell-flow-hooks/useSelectItems';
-import useSelectOtherItems, { UseSelectOtherItems } from './sell-flow-hooks/useSelectOtherItems';
-import useSelectPartners, { UseSelectPartners } from './sell-flow-hooks/useSelectPartners';
-import useSummary, { UseSummary } from './sell-flow-hooks/useSummary';
+import { useReview, type UseReview } from './sell-flow-hooks/useReview';
+import {
+  useSelectItems,
+  type UseSelectItems,
+} from './sell-flow-hooks/useSelectItems';
+import {
+  useSelectOtherItems,
+  type UseSelectOtherItems,
+} from './sell-flow-hooks/useSelectOtherItems';
+import {
+  useSelectPartners,
+  type UseSelectPartners,
+} from './sell-flow-hooks/useSelectPartners';
+import { useSummary, type UseSummary } from './sell-flow-hooks/useSummary';
 
-type SellFlowContextType = Omit<UseSelectPartners, 'currentPriceList' | 'resetUseSelectPartners'> &
+type SellFlowContextType = Omit<
+  UseSelectPartners,
+  'currentPriceList' | 'resetUseSelectPartners'
+> &
   Omit<UseSelectItems, 'resetUseSelectItems'> &
   Omit<UseSelectOtherItems, 'resetUseSelectOtherItems'> &
   Omit<UseReview, 'resetUseReview'> &
@@ -17,11 +35,15 @@ type SellFlowContextType = Omit<UseSelectPartners, 'currentPriceList' | 'resetUs
     resetSellFlowContext: () => Promise<void>;
   };
 
-const SellFlowContext = createContext<SellFlowContextType>({} as SellFlowContextType);
+const SellFlowContext = createContext<SellFlowContextType>(
+  {} as SellFlowContextType
+);
 
-export default function SellFlowProvider({ children }: PropsWithChildren) {
-  const { isPending: isOrdersContextPending, resetCurrentOrder } = useOrdersContext();
-  const { isPending: isReceiptsContextPending, resetCurrentReceipt } = useReceiptsContext();
+export function SellFlowProvider({ children }: PropsWithChildren) {
+  const { isPending: isOrdersContextPending, resetCurrentOrder } =
+    useOrdersContext();
+  const { isPending: isReceiptsContextPending, resetCurrentReceipt } =
+    useReceiptsContext();
   const {
     isPending: isUseSelectPartnersDataPending,
     partners,
@@ -162,7 +184,9 @@ export default function SellFlowProvider({ children }: PropsWithChildren) {
   );
 
   return (
-    <SellFlowContext.Provider value={sellFlowContextValue}>{children}</SellFlowContext.Provider>
+    <SellFlowContext.Provider value={sellFlowContextValue}>
+      {children}
+    </SellFlowContext.Provider>
   );
 }
 

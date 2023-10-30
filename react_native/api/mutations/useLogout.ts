@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as SecureStore from 'expo-secure-store';
 
-export default function useLogout() {
+export function useLogout() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -9,7 +9,7 @@ export default function useLogout() {
     mutationFn: async () => {
       try {
         await SecureStore.deleteItemAsync('boreal-token');
-      } catch (e) {
+      } catch {
         throw new Error('Váratlan hiba lépett fel a kijelentkezés során.');
       }
     },

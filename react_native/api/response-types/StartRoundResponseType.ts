@@ -1,6 +1,6 @@
-import { RoundType } from './common/RoundType';
+import { type RoundType } from './common/RoundType';
 
-export type StartRoundResponseData = Omit<
+type StartRoundResponseData = Omit<
   RoundType,
   'lastSerialNumber' | 'yearCode' | 'roundFinished'
 > & {

@@ -1,31 +1,31 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import colors from '../constants/colors';
-import fontSizes from '../constants/fontSizes';
-import StartErrand from '../screens/errand-administration/StartErrand';
-import Login from '../screens/login/Login';
-import AddPartnerForm from '../screens/sell/add-partner/AddPartnerForm';
-import SearchPartnerNavForm from '../screens/sell/add-partner/SearchPartnerNavForm';
-import Discounts from '../screens/sell/review/Discounts';
-import Review from '../screens/sell/review/Review';
-import ScanBarCodeInSell from '../screens/sell/select-items/ScanBarCodeInSell';
-import SelectItemsToSell from '../screens/sell/select-items/SelectItemsToSell';
-import SelectOtherItemsToSell from '../screens/sell/select-other-items/SelectOtherItemsToSell';
-import ChangePassword from '../screens/start-page/ChangePassword';
-import Index from '../screens/start-page/Index';
-import Settings from '../screens/start-page/Settings';
-import SettingsButton from '../screens/start-page/SettingsButton';
-import ReviewStorageChanges from '../screens/storage/review/ReviewStorageChanges';
-import ScanBarCodeInStorage from '../screens/storage/select-items/ScanBarCodeInStorage';
-import SelectItemsFromStore from '../screens/storage/select-items/SelectItemsFromStore';
-import SelectStore from '../screens/storage/select-store/SelectStore';
-import StorageChangesSummary from '../screens/storage/summary/StorageChangesSummary';
-import PartnersBottomTab from './PartnersBottomTab';
-import { StackParams } from './screen-types';
+import { colors } from '../constants/colors';
+import { fontSizes } from '../constants/fontSizes';
+import { StartErrand } from '../screens/errand-administration/StartErrand';
+import { Login } from '../screens/login/Login';
+import { AddPartnerForm } from '../screens/sell/add-partner/AddPartnerForm';
+import { SearchPartnerNavForm } from '../screens/sell/add-partner/SearchPartnerNavForm';
+import { Discounts } from '../screens/sell/review/Discounts';
+import { Review } from '../screens/sell/review/Review';
+import { ScanBarCodeInSell } from '../screens/sell/select-items/ScanBarCodeInSell';
+import { SelectItemsToSell } from '../screens/sell/select-items/SelectItemsToSell';
+import { SelectOtherItemsToSell } from '../screens/sell/select-other-items/SelectOtherItemsToSell';
+import { ChangePassword } from '../screens/start-page/ChangePassword';
+import { Index } from '../screens/start-page/Index';
+import { Settings } from '../screens/start-page/Settings';
+import { SettingsButton } from '../screens/start-page/SettingsButton';
+import { ReviewStorageChanges } from '../screens/storage/review/ReviewStorageChanges';
+import { ScanBarCodeInStorage } from '../screens/storage/select-items/ScanBarCodeInStorage';
+import { SelectItemsFromStore } from '../screens/storage/select-items/SelectItemsFromStore';
+import { SelectStore } from '../screens/storage/select-store/SelectStore';
+import { StorageChangesSummary } from '../screens/storage/summary/StorageChangesSummary';
+import { PartnersBottomTab } from './PartnersBottomTab';
+import { type StackParams } from './screen-types';
 
 const Stack = createNativeStackNavigator<StackParams>();
 
-export default function MainStack() {
+export function MainStack() {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -48,8 +48,16 @@ export default function MainStack() {
           headerRight: SettingsButton,
         }}
       />
-      <Stack.Screen name="Settings" component={Settings} options={{ headerTitle: 'Beállítások' }} />
-      <Stack.Screen name="Login" component={Login} options={{ headerTitle: 'Bejelentkezés' }} />
+      <Stack.Screen
+        name="Settings"
+        component={Settings}
+        options={{ headerTitle: 'Beállítások' }}
+      />
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{ headerTitle: 'Bejelentkezés' }}
+      />
       <Stack.Screen
         name="ChangePassword"
         component={ChangePassword}

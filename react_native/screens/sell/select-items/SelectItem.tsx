@@ -1,11 +1,19 @@
 import { append, eqProps, equals, pipe, values } from 'ramda';
 import { memo, useCallback } from 'react';
-import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  View,
+  type ListRenderItemInfo,
+} from 'react-native';
 
-import AnimatedListItem from '../../../components/ui/AnimatedListItem';
-import colors from '../../../constants/colors';
-import { SellExpiration, SellItem } from '../../../providers/sell-flow-hooks/useSelectItems';
-import Selection from './Selection';
+import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';
+import { colors } from '../../../constants/colors';
+import {
+  type SellExpiration,
+  type SellItem,
+} from '../../../providers/sell-flow-hooks/useSelectItems';
+import { Selection } from './Selection';
 
 export enum ItemAvailability {
   IN_RECEIPT,
@@ -18,11 +26,15 @@ type SelectItemProps = {
   type: ItemAvailability;
   selectedItems: Record<number, Record<number, number>>;
   selectedOrderItems: Record<number, number>;
-  upsertSelectedItem: (id: number, expirationId: number, quantity: number) => void;
+  upsertSelectedItem: (
+    id: number,
+    expirationId: number,
+    quantity: number
+  ) => void;
   upsertOrderItem: (id: number, quantity: number) => void;
 };
 
-function SelectItem({
+function _SelectItem({
   info,
   type,
   selectedItems,
@@ -75,8 +87,9 @@ function SelectItem({
               quantity={
                 expirationInfo.item.expiresAt === 'Rendelés'
                   ? selectedOrderItems[expirationInfo.item.itemId] ?? null
-                  : selectedItems[expirationInfo.item.itemId]?.[expirationInfo.item.expirationId] ??
-                    null
+                  : selectedItems[expirationInfo.item.itemId]?.[
+                      expirationInfo.item.expirationId
+                    ] ?? null
               }
               onQuantityModified={modifyQuantity}
             />
@@ -90,19 +103,6 @@ function SelectItem({
 const styles = StyleSheet.create({
   selectItemContainer: {
     padding: 10,
-  },
-  selectionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    marginVertical: 5,
-  },
-  selectIcon: {
-    marginHorizontal: 30,
-    marginBottom: 5,
-  },
-  quantityContainer: {
-    width: '50%',
   },
 });
 
@@ -119,4 +119,4 @@ function arePropsEqual(oldProps: SelectItemProps, newProps: SelectItemProps) {
   );
 }
 
-export default memo(SelectItem, arePropsEqual);
+export const SelectItem = memo(_SelectItem, arePropsEqual);

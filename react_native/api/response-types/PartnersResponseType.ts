@@ -1,5 +1,5 @@
-import { BasePriceListType } from './common/BasePriceListType';
-import { PartnerType } from './common/PartnerType';
+import { type BasePriceListType } from './common/BasePriceListType';
+import { type PartnerType } from './common/PartnerType';
 
 export type PartnersResponseData = (PartnerType & {
   priceList: BasePriceListType;

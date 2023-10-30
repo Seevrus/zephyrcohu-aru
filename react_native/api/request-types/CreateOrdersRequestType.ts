@@ -1,4 +1,4 @@
-import { OrderItem } from './common/OrderItem';
+import { type OrderItem } from './common/OrderItem';
 
 export type OrderRequest = {
   partnerId: number;
@@ -7,7 +7,3 @@ export type OrderRequest = {
 };
 
 export type OrderRequestData = OrderRequest[];
-
-export type CreateOrdersRequest = {
-  data: OrderRequestData;
-};

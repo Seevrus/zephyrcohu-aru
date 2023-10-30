@@ -1,11 +1,11 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Pressable } from 'react-native';
 
-import { StackParams } from '../../navigators/screen-types';
+import { type StackParams } from '../../navigators/screen-types';
 
-export default function SettingsButton() {
+export function SettingsButton() {
   const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
 
   const handlePress = () => {
@@ -14,7 +14,12 @@ export default function SettingsButton() {
 
   return (
     <Pressable style={({ pressed }) => [pressed && { opacity: 0.75 }]}>
-      <MaterialIcons name="settings" size={36} color="white" onPress={handlePress} />
+      <MaterialIcons
+        name="settings"
+        size={36}
+        color="white"
+        onPress={handlePress}
+      />
     </Pressable>
   );
 }

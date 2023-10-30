@@ -1,22 +1,27 @@
-import { UseQueryResult, useQuery } from '@tanstack/react-query';
+import { type UseQueryResult, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
 import env from '../../env.json';
-import mapSearchTaxPayerResponse, { TaxPayer } from '../response-mappers/mapSearchTaxPayerResponse';
-import { SearchTaxNumberResponseType } from '../response-types/SearchTaxNumberResponseType';
-import useToken from './useToken';
+import {
+  mapSearchTaxPayerResponse,
+  type TaxPayer,
+} from '../response-mappers/mapSearchTaxPayerResponse';
+import { type SearchTaxNumberResponseType } from '../response-types/SearchTaxNumberResponseType';
+import { useToken } from './useToken';
 
 type UseSearhcTaxNumberProps = {
   taxNumber: string;
   enabled?: boolean;
 };
 
-export default function useSearchTaxNumber({
+export function useSearchTaxNumber({
   taxNumber,
   enabled = true,
 }: UseSearhcTaxNumberProps): UseQueryResult<TaxPayer[]> {
-  const { isSuccess: isTokenSuccess, data: { token, isTokenExpired, isPasswordExpired } = {} } =
-    useToken();
+  const {
+    isSuccess: isTokenSuccess,
+    data: { token, isTokenExpired, isPasswordExpired } = {},
+  } = useToken();
 
   return useQuery({
     queryKey: ['search-tax-number', taxNumber],
@@ -26,13 +31,16 @@ export default function useSearchTaxNumber({
           `${env.api_url}/partners/search`,
           { data: { taxNumber } },
           {
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
         return mapSearchTaxPayerResponse(response.data.data);
-      } catch (err) {
-        console.log(err.message);
+      } catch (error) {
+        console.log(error.message);
         throw new Error('Váratlan hiba lépett fel az adószám keresése során.');
       }
     },

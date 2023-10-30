@@ -14,23 +14,29 @@ type SearchStateAction = {
   payload: string;
 };
 
-export default function itemsSearchReducer(_: SearchState, action: SearchStateAction): SearchState {
+export function itemsSearchReducer(
+  _: SearchState,
+  action: SearchStateAction
+): SearchState {
   switch (action.type) {
-    case SearchStateActionKind.SetSearchTerm:
+    case SearchStateActionKind.SetSearchTerm: {
       return {
         searchTerm: action.payload,
         barCode: '',
       };
-    case SearchStateActionKind.SetBarCode:
+    }
+    case SearchStateActionKind.SetBarCode: {
       return {
         searchTerm: '',
         barCode: action.payload,
       };
+    }
     case SearchStateActionKind.ClearSearch:
-    default:
+    default: {
       return {
         searchTerm: '',
         barCode: '',
       };
+    }
   }
 }

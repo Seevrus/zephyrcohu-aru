@@ -1,17 +1,24 @@
 import { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
-import useLogin from '../../api/mutations/useLogin';
-import useCheckToken from '../../api/queries/useCheckToken';
-import Loading from '../../components/Loading';
-import ErrorCard from '../../components/info-cards/ErrorCard';
-import TextCard from '../../components/info-cards/TextCard';
-import Button from '../../components/ui/Button';
-import Input from '../../components/ui/Input';
-import colors from '../../constants/colors';
-import { LoginProps } from '../../navigators/screen-types';
+import { useLogin } from '../../api/mutations/useLogin';
+import { useCheckToken } from '../../api/queries/useCheckToken';
+import { Loading } from '../../components/Loading';
+import { ErrorCard } from '../../components/info-cards/ErrorCard';
+import { TextCard } from '../../components/info-cards/TextCard';
+import { Button } from '../../components/ui/Button';
+import { Input } from '../../components/ui/Input';
+import { colors } from '../../constants/colors';
+import { type LoginProps } from '../../navigators/screen-types';
 
-export default function Login({ navigation }: LoginProps) {
+export function Login({ navigation }: LoginProps) {
   const { data: user, isPending: isUserLoading } = useCheckToken();
   const login = useLogin();
 
@@ -48,14 +55,15 @@ export default function Login({ navigation }: LoginProps) {
         index: 0,
         routes: [{ name: 'Index' }],
       });
-    } catch (err) {
+    } catch (error) {
       setIsLoading(false);
-      setErrorMessage(err.message);
+      setErrorMessage(error.message);
       setPassword('');
     }
   };
 
-  const isLoginButtonDisabled = userName.length === 0 || password.length === 0 || !!errorMessage;
+  const isLoginButtonDisabled =
+    userName.length === 0 || password.length === 0 || !!errorMessage;
 
   if (isLoading || isUserLoading) {
     return <Loading />;
@@ -66,11 +74,13 @@ export default function Login({ navigation }: LoginProps) {
       <View style={styles.welcome}>
         {isRoundStarted ? (
           <TextCard>
-            Számlabeküldéshez és a kör zárásához kérem adja meg újból a jelszavát.
+            Számlabeküldéshez és a kör zárásához kérem adja meg újból a
+            jelszavát.
           </TextCard>
         ) : (
           <TextCard>
-            Üdvözöljük a <Text style={styles.cardEmphasized}>Zephyr Boreal</Text> áruforgalmi
+            Üdvözöljük a{' '}
+            <Text style={styles.cardEmphasized}>Zephyr Boreal</Text> áruforgalmi
             alkalmazás kezdőoldalán! Kérem jelentkezzen be.
           </TextCard>
         )}
@@ -81,7 +91,9 @@ export default function Login({ navigation }: LoginProps) {
         </View>
       )}
       <View style={styles.form}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
           <Input
             label="Felhasználónév"
             value={userName}
@@ -109,7 +121,10 @@ export default function Login({ navigation }: LoginProps) {
             }}
           />
           <View style={styles.buttonContainer}>
-            <Button variant={isLoginButtonDisabled ? 'disabled' : 'ok'} onPress={loginHandler}>
+            <Button
+              variant={isLoginButtonDisabled ? 'disabled' : 'ok'}
+              onPress={loginHandler}
+            >
               Bejelentkezés
             </Button>
           </View>
@@ -120,28 +135,28 @@ export default function Login({ navigation }: LoginProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  welcome: {
-    marginVertical: 30,
-  },
-  error: {
-    marginBottom: 30,
+  buttonContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
   },
   cardEmphasized: {
     fontWeight: 'bold',
   },
+  container: {
+    backgroundColor: colors.background,
+    flex: 1,
+  },
+  error: {
+    marginBottom: 30,
+  },
   form: {
-    marginHorizontal: '5%',
-    padding: 8,
     backgroundColor: colors.neutral,
     borderRadius: 10,
+    marginHorizontal: '5%',
+    padding: 8,
   },
-  buttonContainer: {
-    marginTop: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+  welcome: {
+    marginVertical: 30,
   },
 });

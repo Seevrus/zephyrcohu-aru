@@ -3,11 +3,11 @@ import axios, { isAxiosError } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
 import env from '../../env.json';
-import { LoginRequest } from '../request-types/LoginRequestType';
-import mapLoginResponse from '../response-mappers/mapLoginResponse';
-import { LoginResponse } from '../response-types/LoginResponseType';
+import { type LoginRequest } from '../request-types/LoginRequestType';
+import { mapLoginResponse } from '../response-mappers/mapLoginResponse';
+import { type LoginResponse } from '../response-types/LoginResponseType';
 
-export default function useLogin() {
+export function useLogin() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -34,12 +34,10 @@ export default function useLogin() {
         console.log(response.token.accessToken);
 
         return response;
-      } catch (e) {
-        if (isAxiosError(e) && e.response.status === 401) {
-          throw new Error('Hibás felhasználónév / jelszó!');
-        } else {
-          throw new Error('Váratlan hiba lépett fel a bejelentkezés során.');
-        }
+      } catch (error_) {
+        throw isAxiosError(error_) && error_.response.status === 401
+          ? new Error('Hibás felhasználónév / jelszó!')
+          : new Error('Váratlan hiba lépett fel a bejelentkezés során.');
       }
     },
     onSuccess: () => {

@@ -1,13 +1,13 @@
 import { assoc, complement, filter, map, pipe, prop } from 'ramda';
 
-import { ContextReceipt } from '../../providers/types/receipts-provider-types';
-import createUniqueDiscountedItems from '../../utils/createUniqueDiscountedItems';
+import { type ContextReceipt } from '../../providers/types/receipts-provider-types';
+import { createUniqueDiscountedItems } from '../../utils/createUniqueDiscountedItems';
 import {
-  CreateReceiptRequest,
-  CreateReceiptRequestData,
+  type CreateReceiptRequest,
+  type CreateReceiptRequestData,
 } from '../request-types/CreateReceiptsRequestType';
 
-export default function mapCreateReceiptsRequest(
+export function mapCreateReceiptsRequest(
   receipts: ContextReceipt[]
 ): CreateReceiptRequestData {
   return pipe(

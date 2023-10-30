@@ -1,20 +1,32 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { eqProps, isNil, pipe, replace, trim } from 'ramda';
 import { memo, useState } from 'react';
-import { LayoutChangeEvent, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  type LayoutChangeEvent,
+} from 'react-native';
 
-import AnimatedListItem from '../../../components/ui/AnimatedListItem';
-import Input from '../../../components/ui/Input';
-import colors from '../../../constants/colors';
-import fontSizes from '../../../constants/fontSizes';
-import { ListItem } from '../../../providers/StorageFlowProvider';
+import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';
+import { Input } from '../../../components/ui/Input';
+import { colors } from '../../../constants/colors';
+import { fontSizes } from '../../../constants/fontSizes';
+import { type ListItem } from '../../../providers/StorageFlowProvider';
 
 type ExpirationAccordionDetailsProps = {
   item: ListItem;
-  setCurrentQuantity: (item: ListItem, newCurrentQuantity: number | null) => void;
+  setCurrentQuantity: (
+    item: ListItem,
+    newCurrentQuantity: number | null
+  ) => void;
 };
 
-function ExpirationAccordionDetails({ item, setCurrentQuantity }: ExpirationAccordionDetailsProps) {
+function _ExpirationAccordionDetails({
+  item,
+  setCurrentQuantity,
+}: ExpirationAccordionDetailsProps) {
   const [selectedQuantity, setSelectedQuantity] = useState<number | null>(
     item.currentQuantity ?? 0
   );
@@ -22,10 +34,21 @@ function ExpirationAccordionDetails({ item, setCurrentQuantity }: ExpirationAcco
   const [dropdownHeight, setDropdownHeight] = useState(170);
 
   const quantityHandler = (newQuantity: string) => {
-    const formattedQuantity = pipe(trim, replace(',', '.'), Number, Math.floor)(newQuantity);
-    const nullIshFormattedQuantity = Number.isNaN(formattedQuantity) ? null : formattedQuantity;
+    const formattedQuantity = pipe(
+      trim,
+      replace(',', '.'),
+      Number,
+      Math.floor
+    )(newQuantity);
+    const nullIshFormattedQuantity = Number.isNaN(formattedQuantity)
+      ? null
+      : formattedQuantity;
 
-    if (newQuantity === '' || formattedQuantity < 0 || isNil(nullIshFormattedQuantity)) {
+    if (
+      newQuantity === '' ||
+      formattedQuantity < 0 ||
+      isNil(nullIshFormattedQuantity)
+    ) {
       setSelectedQuantity(null);
       setCurrentQuantity(item, null);
     } else {
@@ -128,51 +151,54 @@ function arePropsEqual(
   return eqProps('item', oldProps, newProps);
 }
 
-export default memo(ExpirationAccordionDetails, arePropsEqual);
+export const ExpirationAccordionDetails = memo(
+  _ExpirationAccordionDetails,
+  arePropsEqual
+);
 
 const styles = StyleSheet.create({
-  selectItemTitle: {
+  detailsRow: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+  },
+  detailsRowText: {
+    color: colors.white,
+    fontFamily: 'Muli',
+    fontSize: fontSizes.body,
+    fontWeight: 'bold',
+  },
+  quantityContainer: {
+    height: 90,
+    width: '50%',
+  },
+  selectIcon: {
+    marginBottom: 5,
+    marginHorizontal: 30,
+  },
+  selectIconContainer: {
+    justifyContent: 'flex-end',
+  },
+  selectItemContainer: {
+    padding: 10,
   },
   selectItemNameContainer: {
     width: '70%',
   },
   selectItemText: {
-    color: 'white',
+    color: colors.white,
     fontFamily: 'Muli',
     fontSize: fontSizes.body,
     fontWeight: 'bold',
   },
-  selectItemContainer: {
-    padding: 10,
-  },
-  detailsRow: {
+  selectItemTitle: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  detailsRowText: {
-    color: 'white',
-    fontFamily: 'Muli',
-    fontSize: fontSizes.body,
-    fontWeight: 'bold',
   },
   selectionContainer: {
-    marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'center',
-  },
-  selectIconContainer: {
-    justifyContent: 'flex-end',
-  },
-  selectIcon: {
-    marginHorizontal: 30,
-    marginBottom: 5,
-  },
-  quantityContainer: {
-    height: 90,
-    width: '50%',
+    marginTop: 10,
   },
 });

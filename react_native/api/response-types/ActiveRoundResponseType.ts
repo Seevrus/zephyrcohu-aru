@@ -1,4 +1,4 @@
-import { RoundType } from './common/RoundType';
+import { type RoundType } from './common/RoundType';
 
 export type ActiveRoundResponseData = RoundType;
 

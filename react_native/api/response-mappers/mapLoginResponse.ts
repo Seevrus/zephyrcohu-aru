@@ -1,15 +1,24 @@
 import { assocPath } from 'ramda';
-import { LoginResponse, Token } from '../response-types/LoginResponseType';
+import {
+  type LoginResponse,
+  type Token,
+} from '../response-types/LoginResponseType';
 
-export type Login = LoginResponse & {
+type Login = LoginResponse & {
   token: Token & {
     isPasswordExpired: boolean;
   };
 };
 
-export default function mapLoginResponse(loginResponse: LoginResponse): Login {
+export function mapLoginResponse(loginResponse: LoginResponse): Login {
   // TS does not have a way to synthetize this union type
-  const isPasswordExpired = loginResponse.token.abilities.includes('password' as never);
+  const isPasswordExpired = loginResponse.token.abilities.includes(
+    'password' as never
+  );
 
-  return assocPath(['token', 'isPasswordExpired'], isPasswordExpired, loginResponse) as Login;
+  return assocPath(
+    ['token', 'isPasswordExpired'],
+    isPasswordExpired,
+    loginResponse
+  ) as Login;
 }

@@ -1,8 +1,8 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useEffect, useState } from 'react';
 
-import useCheckToken from '../api/queries/useCheckToken';
-import useToken from '../api/queries/useToken';
+import { useCheckToken } from '../api/queries/useCheckToken';
+import { useToken } from '../api/queries/useToken';
 import { useOrdersContext } from '../providers/OrdersProvider';
 import { useReceiptsContext } from '../providers/ReceiptsProvider';
 
@@ -33,7 +33,7 @@ export enum EndErrandTileState {
   Disabled = 'disabled',
 }
 
-export default function useTileStates() {
+export function useTileStates() {
   const { data: user, isPending: isUserFetching } = useCheckToken();
   const { isInternetReachable } = useNetInfo();
   const { numberOfOrders } = useOrdersContext();
@@ -54,24 +54,23 @@ export default function useTileStates() {
   );
   const [storageTileMessage, setStorageTileMessage] = useState<string>('');
 
-  const [selectPartnerTileState, setSelectPartnerTileState] = useState<SelectPartnerTileState>(
-    SelectPartnerTileState.Disabled
-  );
-  const [selectPartnerTileMessage, setSelectPartnerTileMessage] = useState<string>('');
+  const [selectPartnerTileState, setSelectPartnerTileState] =
+    useState<SelectPartnerTileState>(SelectPartnerTileState.Disabled);
+  const [selectPartnerTileMessage, setSelectPartnerTileMessage] =
+    useState<string>('');
 
   const [receiptsTileState, setReceiptsTileState] = useState<ReceiptsTileState>(
     ReceiptsTileState.Disabled
   );
   const [receiptsTileMessage, setReceiptsTileMessage] = useState<string>('');
 
-  const [startErrandTileState, setStartErrandTileState] = useState<StartErrandTileState>(
-    StartErrandTileState.Disabled
-  );
-  const [startErrandTileMessage, setStartErrandTileMessage] = useState<string>('');
+  const [startErrandTileState, setStartErrandTileState] =
+    useState<StartErrandTileState>(StartErrandTileState.Disabled);
+  const [startErrandTileMessage, setStartErrandTileMessage] =
+    useState<string>('');
 
-  const [endErrandTileState, setEndErrandTileState] = useState<EndErrandTileState>(
-    EndErrandTileState.Disabled
-  );
+  const [endErrandTileState, setEndErrandTileState] =
+    useState<EndErrandTileState>(EndErrandTileState.Disabled);
   const [endErrandTileMessage, setEndErrandTileMessage] = useState<string>('');
 
   useEffect(() => {
@@ -111,10 +110,20 @@ export default function useTileStates() {
 
   useEffect(() => {
     if (!isTokenPending && !isCheckTokenInProgress) {
-      if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isUserIdle) {
+      if (
+        !isTokenExpired &&
+        !isPasswordExpired &&
+        isInternetReachable &&
+        isUserIdle
+      ) {
         setStorageTileState(StorageTileState.Ok);
         setStorageTileMessage('');
-      } else if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isStorageStarted) {
+      } else if (
+        !isTokenExpired &&
+        !isPasswordExpired &&
+        isInternetReachable &&
+        isStorageStarted
+      ) {
         setStorageTileState(StorageTileState.Neutral);
         setStorageTileMessage('');
       } else {
@@ -122,7 +131,9 @@ export default function useTileStates() {
         if (!isTokenExpired && !isPasswordExpired && isInternetReachable) {
           setStorageTileMessage('Rakodás csak a kör zárása után kezdhető meg.');
         } else if (isRoundStarted) {
-          setStorageTileMessage('Folyamatban lévő kör közben a rakodás nem elérhető.');
+          setStorageTileMessage(
+            'Folyamatban lévő kör közben a rakodás nem elérhető.'
+          );
         }
       }
     }
@@ -139,7 +150,12 @@ export default function useTileStates() {
 
   useEffect(() => {
     if (!isTokenPending && !isCheckTokenInProgress) {
-      if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isUserIdle) {
+      if (
+        !isTokenExpired &&
+        !isPasswordExpired &&
+        isInternetReachable &&
+        isUserIdle
+      ) {
         setStartErrandTileState(StartErrandTileState.Ok);
         setEndErrandTileMessage('');
       } else if (
@@ -154,7 +170,12 @@ export default function useTileStates() {
         setStartErrandTileMessage('Biztosan szeretne új kört indítani?');
       } else {
         setStartErrandTileState(StartErrandTileState.Disabled);
-        if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isStorageStarted) {
+        if (
+          !isTokenExpired &&
+          !isPasswordExpired &&
+          isInternetReachable &&
+          isStorageStarted
+        ) {
           setStartErrandTileMessage('Rakodás közben kör nem indítható.');
         }
       }
@@ -180,7 +201,9 @@ export default function useTileStates() {
       } else {
         setSelectPartnerTileState(SelectPartnerTileState.Disabled);
         if (!isTokenExpired && !isPasswordExpired && isInternetReachable) {
-          setSelectPartnerTileMessage('A funkció csak körindítás után elérhető.');
+          setSelectPartnerTileMessage(
+            'A funkció csak körindítás után elérhető.'
+          );
         }
       }
     }
@@ -214,7 +237,12 @@ export default function useTileStates() {
 
   useEffect(() => {
     if (!isTokenPending && !isCheckTokenInProgress) {
-      if (!isTokenExpired && !isPasswordExpired && isInternetReachable && isRoundStarted) {
+      if (
+        !isTokenExpired &&
+        !isPasswordExpired &&
+        isInternetReachable &&
+        isRoundStarted
+      ) {
         setEndErrandTileState(EndErrandTileState.Warning);
         setEndErrandTileMessage('Biztosan szeretné zárni a kört?');
       } else {

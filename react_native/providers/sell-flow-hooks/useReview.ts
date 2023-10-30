@@ -1,16 +1,16 @@
 import { and, assoc, dissoc, identity, isEmpty } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import useItems from '../../api/queries/useItems';
-import useOtherItems from '../../api/queries/useOtherItems';
-import { Discount } from '../../api/response-types/ItemsResponseType';
-import { PriceListType } from '../../api/response-types/PriceListResponseType';
-import calculateAmounts from '../../utils/calculateAmounts';
-import { useReceiptsContext } from '../ReceiptsProvider';
-import { SelectedOtherItems } from './useSelectOtherItems';
-import { SelectedDiscount } from '../types/receipts-provider-types';
+import { useItems } from '../../api/queries/useItems';
+import { useOtherItems } from '../../api/queries/useOtherItems';
+import { type Discount } from '../../api/response-types/ItemsResponseType';
+import { type PriceListType } from '../../api/response-types/PriceListResponseType';
+import { calculateAmounts } from '../../utils/calculateAmounts';
 import { useOrdersContext } from '../OrdersProvider';
+import { useReceiptsContext } from '../ReceiptsProvider';
 import { useStorageContext } from '../StorageProvider';
+import { type SelectedDiscount } from '../types/receipts-provider-types';
+import { type SelectedOtherItems } from './useSelectOtherItems';
 
 type BaseReviewItem = {
   itemId: number;
@@ -42,12 +42,15 @@ export type ReviewItem = RegularReviewItem | OtherReviewItem;
 export type UseReview = {
   isPending: boolean;
   reviewItems: ReviewItem[];
-  saveDiscountedItemsInFlow: (itemId: number, discounts?: SelectedDiscount[]) => Promise<void>;
+  saveDiscountedItemsInFlow: (
+    itemId: number,
+    discounts?: SelectedDiscount[]
+  ) => Promise<void>;
   resetUseReview: () => void;
   finishReview: () => Promise<void>;
 };
 
-export default function useReview({
+export function useReview({
   currentPriceList,
   selectedItems,
   selectedOtherItems,
@@ -58,32 +61,37 @@ export default function useReview({
 }): UseReview {
   const { data: items, isPending: isItemsPending } = useItems();
   const { data: otherItems, isPending: isOtherItemsPending } = useOtherItems();
-  const { isPending: isOrdersContextPending, finalizeCurrentOrder } = useOrdersContext();
+  const { isPending: isOrdersContextPending, finalizeCurrentOrder } =
+    useOrdersContext();
   const {
     isPending: isReceiptsContextPending,
     currentReceipt,
     setCurrentReceiptItems,
     finalizeCurrentReceipt,
   } = useReceiptsContext();
-  const { isPending: isStorageContextPending, removeSoldItemsFromStorage } = useStorageContext();
+  const { isPending: isStorageContextPending, removeSoldItemsFromStorage } =
+    useStorageContext();
 
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>(null);
 
-  const applyDiscounts = useCallback((itemId: number, discounts?: SelectedDiscount[]) => {
-    setReviewItems((prevItems) =>
-      prevItems.map((item) => {
-        if (item.itemId !== itemId || item.type !== 'item') {
-          return item;
-        }
+  const applyDiscounts = useCallback(
+    (itemId: number, discounts?: SelectedDiscount[]) => {
+      setReviewItems((prevItems) =>
+        prevItems.map((item) => {
+          if (item.itemId !== itemId || item.type !== 'item') {
+            return item;
+          }
 
-        if (discounts) {
-          return assoc('selectedDiscounts', discounts, item);
-        }
+          if (discounts) {
+            return assoc('selectedDiscounts', discounts, item);
+          }
 
-        return dissoc('selectedDiscounts', item);
-      })
-    );
-  }, []);
+          return dissoc('selectedDiscounts', item);
+        })
+      );
+    },
+    []
+  );
 
   const saveDiscountedItemsInFlow = useCallback(
     async (itemId: number, discounts?: SelectedDiscount[]) => {
@@ -108,32 +116,44 @@ export default function useReview({
 
   useEffect(() => {
     setReviewItems((prevItems) => {
-      if (!items || !otherItems || and(isEmpty(selectedItems), isEmpty(selectedOtherItems))) {
+      if (
+        !items ||
+        !otherItems ||
+        and(isEmpty(selectedItems), isEmpty(selectedOtherItems))
+      ) {
         return prevItems;
       }
 
-      const regularReviewItems: RegularReviewItem[] = Object.entries(selectedItems)
+      const regularReviewItems: RegularReviewItem[] = Object.entries(
+        selectedItems
+      )
         .flatMap(([itemId, expirations]) => {
-          const item = items.find((i) => i.id === +itemId);
+          const item = items.find((index) => index.id === +itemId);
 
           if (!item) {
-            return undefined;
+            return;
           }
 
           return Object.entries(expirations)
             .map(([expirationId, quantity]) => {
-              const expiration = item.expirations.find((e) => e.id === +expirationId);
+              const expiration = item.expirations.find(
+                (exp) => exp.id === +expirationId
+              );
               const currentReviewItem = prevItems?.find(
-                (i) => i.itemId === +itemId && i.type === 'item' && i.expirationId === +expirationId
+                (index) =>
+                  index.itemId === +itemId &&
+                  index.type === 'item' &&
+                  index.expirationId === +expirationId
               );
 
               if (!expiration) {
-                return undefined;
+                return;
               }
 
               const netPrice =
-                currentPriceList?.items.find((i) => i.itemId === item.id)?.netPrice ??
-                item.netPrice;
+                currentPriceList?.items.find(
+                  (index) => index.itemId === item.id
+                )?.netPrice ?? item.netPrice;
 
               const { grossAmount } = calculateAmounts({
                 netPrice,
@@ -162,12 +182,16 @@ export default function useReview({
         .filter(identity)
         .sort((item1, item2) => item1.name.localeCompare(item2.name, 'HU-hu'));
 
-      const otherReviewItems: OtherReviewItem[] = Object.entries(selectedOtherItems)
+      const otherReviewItems: OtherReviewItem[] = Object.entries(
+        selectedOtherItems
+      )
         .map(([otherItemId, { netPrice, quantity, comment }]) => {
-          const otherItem = otherItems.find((i) => i.id === +otherItemId);
+          const otherItem = otherItems.find(
+            (index) => index.id === +otherItemId
+          );
 
           if (!otherItem) {
-            return undefined;
+            return;
           }
 
           const { grossAmount } = calculateAmounts({
@@ -193,7 +217,13 @@ export default function useReview({
 
       return [...regularReviewItems, ...otherReviewItems];
     });
-  }, [currentPriceList?.items, items, otherItems, selectedItems, selectedOtherItems]);
+  }, [
+    currentPriceList?.items,
+    items,
+    otherItems,
+    selectedItems,
+    selectedOtherItems,
+  ]);
 
   const resetUseReview = useCallback(() => {
     setReviewItems(null);
@@ -203,7 +233,12 @@ export default function useReview({
     await finalizeCurrentOrder();
     await finalizeCurrentReceipt();
     await removeSoldItemsFromStorage(selectedItems);
-  }, [finalizeCurrentOrder, finalizeCurrentReceipt, removeSoldItemsFromStorage, selectedItems]);
+  }, [
+    finalizeCurrentOrder,
+    finalizeCurrentReceipt,
+    removeSoldItemsFromStorage,
+    selectedItems,
+  ]);
 
   return useMemo(
     () => ({

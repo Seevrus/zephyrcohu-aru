@@ -2,11 +2,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
 import env from '../../env.json';
-import useToken from '../queries/useToken';
-import { SelectStoreRequestType } from '../request-types/SelectStoreRequestType';
-import { SelectStoreResponseType } from '../response-types/SelectStoreResponseType';
+import { useToken } from '../queries/useToken';
+import { type SelectStoreRequestType } from '../request-types/SelectStoreRequestType';
+import { type SelectStoreResponseType } from '../response-types/SelectStoreResponseType';
 
-export default function useSelectStore() {
+export function useSelectStore() {
   const queryClient = useQueryClient();
   const { data: { token } = {} } = useToken();
 
@@ -17,23 +17,32 @@ export default function useSelectStore() {
         const response = await axios.post<SelectStoreResponseType>(
           `${env.api_url}/storage/lock_to_user`,
           { data: { storeId } },
-          { headers: { Accept: 'application/json', Authorization: `Bearer ${token}` } }
+          {
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         if (response.data.storeId !== storeId) {
-          throw new Error();
+          throw new Error('Invalid Store ID');
         }
 
         return response.data;
-      } catch (e) {
-        console.log(e.message);
-        throw new Error('Váratlan hiba lépett fel a raktár kiválasztása során.');
+      } catch (error) {
+        console.log(error.message);
+        throw new Error(
+          'Váratlan hiba lépett fel a raktár kiválasztása során.'
+        );
       }
     },
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ['check-token'] });
       queryClient.invalidateQueries({ queryKey: ['stores'] });
-      queryClient.invalidateQueries({ queryKey: ['store-details', response.storeId] });
+      queryClient.invalidateQueries({
+        queryKey: ['store-details', response.storeId],
+      });
     },
   });
 }

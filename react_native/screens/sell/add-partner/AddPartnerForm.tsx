@@ -1,16 +1,16 @@
-import { EventArg } from '@react-navigation/native';
+import { type EventArg } from '@react-navigation/native';
 import { formatISO } from 'date-fns';
 import { isEmpty } from 'ramda';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import Loading from '../../../components/Loading';
-import TextCard from '../../../components/info-cards/TextCard';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
-import colors from '../../../constants/colors';
-import fontSizes from '../../../constants/fontSizes';
-import { AddPartnerFormProps } from '../../../navigators/screen-types';
+import { Loading } from '../../../components/Loading';
+import { TextCard } from '../../../components/info-cards/TextCard';
+import { Button } from '../../../components/ui/Button';
+import { Input } from '../../../components/ui/Input';
+import { colors } from '../../../constants/colors';
+import { fontSizes } from '../../../constants/fontSizes';
+import { type AddPartnerFormProps } from '../../../navigators/screen-types';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
 
 type FormErrors = {
@@ -24,8 +24,12 @@ type FormErrors = {
   deliveryAddress: string;
 };
 
-export default function AddPartnerForm({ navigation, route: { params } }: AddPartnerFormProps) {
-  const { isPending: isContextPending, saveNewPartnerInFlow } = useSellFlowContext();
+export function AddPartnerForm({
+  navigation,
+  route: { params },
+}: AddPartnerFormProps) {
+  const { isPending: isContextPending, saveNewPartnerInFlow } =
+    useSellFlowContext();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -34,13 +38,21 @@ export default function AddPartnerForm({ navigation, route: { params } }: AddPar
   const [centralPostalCode, setCentralPostalCode] = useState<string>(
     params?.centralPostalCode ?? ''
   );
-  const [centralCity, setCentralCity] = useState<string>(params?.centralCity ?? '');
-  const [centralAddress, setCentralAddress] = useState<string>(params?.centralAddress ?? '');
+  const [centralCity, setCentralCity] = useState<string>(
+    params?.centralCity ?? ''
+  );
+  const [centralAddress, setCentralAddress] = useState<string>(
+    params?.centralAddress ?? ''
+  );
   const [deliveryPostalCode, setDeliveryPostalCode] = useState<string>(
     params?.deliveryPostalCode ?? ''
   );
-  const [deliveryCity, setDeliveryCity] = useState<string>(params?.deliveryCity ?? '');
-  const [deliveryAddress, setDeliveryAddress] = useState<string>(params?.deliveryAddress ?? '');
+  const [deliveryCity, setDeliveryCity] = useState<string>(
+    params?.deliveryCity ?? ''
+  );
+  const [deliveryAddress, setDeliveryAddress] = useState<string>(
+    params?.deliveryAddress ?? ''
+  );
 
   const [formError, setFormError] = useState<Partial<FormErrors>>({});
 
@@ -91,7 +103,7 @@ export default function AddPartnerForm({ navigation, route: { params } }: AddPar
     const formErrors: Partial<FormErrors> = {};
     setFormError(formErrors);
 
-    if (!/^\d{8}-\d{1}-\d{2}$/.test(taxNumber)) {
+    if (!/^\d{8}-\d-\d{2}$/.test(taxNumber)) {
       formErrors.taxNumber = 'Az adószám formátuma nem megfelelő.';
     }
     if (!name) {
@@ -121,9 +133,7 @@ export default function AddPartnerForm({ navigation, route: { params } }: AddPar
       formErrors.deliveryAddress = 'A központi cím megadása kötelező.';
     }
 
-    if (!isEmpty(formErrors)) {
-      setFormError(formErrors);
-    } else {
+    if (isEmpty(formErrors)) {
       setIsLoading(true);
       const now = formatISO(new Date());
       await saveNewPartnerInFlow({
@@ -152,6 +162,8 @@ export default function AddPartnerForm({ navigation, route: { params } }: AddPar
           },
         },
       });
+    } else {
+      setFormError(formErrors);
     }
 
     setIsLoading(false);
@@ -170,12 +182,14 @@ export default function AddPartnerForm({ navigation, route: { params } }: AddPar
     <ScrollView style={styles.container}>
       <View style={styles.textCardContainer}>
         {params?.taxNumber && (
-          <TextCard>Kérem ellenőrizze az adatokat és szükség esetén módosítsa azokat.</TextCard>
+          <TextCard>
+            Kérem ellenőrizze az adatokat és szükség esetén módosítsa azokat.
+          </TextCard>
         )}
         {!params?.taxNumber && (
           <TextCard>
-            Amennyiben nem találja a keresett partnert a listában, ezen az oldalon lehetősége van
-            manuálisan hozzáadni.
+            Amennyiben nem találja a keresett partnert a listában, ezen az
+            oldalon lehetősége van manuálisan hozzáadni.
           </TextCard>
         )}
       </View>
@@ -287,35 +301,35 @@ export default function AddPartnerForm({ navigation, route: { params } }: AddPar
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  textCardContainer: {
-    marginTop: 30,
-  },
-  addressHeaderContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
   addressHeader: {
+    color: colors.white,
     fontFamily: 'Muli',
     fontSize: fontSizes.subtitle,
-    color: 'white',
+  },
+  addressHeaderContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  buttonInnerContainer: {
+    marginTop: 20,
+    width: 300,
+  },
+  buttonOuterContainer: {
+    alignItems: 'center',
+  },
+  container: {
+    backgroundColor: colors.background,
+    flex: 1,
   },
   formContainer: {
-    marginHorizontal: '5%',
     marginBottom: 30,
+    marginHorizontal: '5%',
   },
   inputContainer: {
     height: 90,
     marginTop: 20,
   },
-  buttonOuterContainer: {
-    alignItems: 'center',
-  },
-  buttonInnerContainer: {
-    marginTop: 20,
-    width: 300,
+  textCardContainer: {
+    marginTop: 30,
   },
 });

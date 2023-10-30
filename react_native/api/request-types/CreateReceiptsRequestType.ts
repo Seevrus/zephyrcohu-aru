@@ -1,7 +1,10 @@
-import { ReceiptBuyer } from './common/ReceiptBuyer';
-import { ReceiptItem, ReceiptOtherItem } from './common/ReceiptItemsTypes';
-import { ReceiptVatAmount } from './common/ReceiptVatAmount';
-import { ReceiptVendor } from './common/ReceiptVendor';
+import { type ReceiptBuyer } from './common/ReceiptBuyer';
+import {
+  type ReceiptItem,
+  type ReceiptOtherItem,
+} from './common/ReceiptItemsTypes';
+import { type ReceiptVatAmount } from './common/ReceiptVatAmount';
+import { type ReceiptVendor } from './common/ReceiptVendor';
 
 export type CreateReceiptRequest = {
   partnerCode: string;
@@ -27,7 +30,3 @@ export type CreateReceiptRequest = {
 };
 
 export type CreateReceiptRequestData = CreateReceiptRequest[];
-
-export type CreateReceiptsRequestType = {
-  data: CreateReceiptRequestData;
-};

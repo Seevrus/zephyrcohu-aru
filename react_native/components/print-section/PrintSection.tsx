@@ -3,28 +3,31 @@ import { isNotNil } from 'ramda';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import useCheckToken from '../../api/queries/useCheckToken';
-import colors from '../../constants/colors';
-import fontSizes from '../../constants/fontSizes';
+import { useCheckToken } from '../../api/queries/useCheckToken';
+import { colors } from '../../constants/colors';
+import { fontSizes } from '../../constants/fontSizes';
 import { useReceiptsContext } from '../../providers/ReceiptsProvider';
 import { useSellFlowContext } from '../../providers/SellFlowProvider';
-import { ContextReceipt } from '../../providers/types/receipts-provider-types';
-import Loading from '../Loading';
-import Button from '../ui/Button';
-import createReceiptHtml from './createReceiptHtml';
+import { type ContextReceipt } from '../../providers/types/receipts-provider-types';
+import { Loading } from '../Loading';
+import { Button } from '../ui/Button';
+import { createReceiptHtml } from './createReceiptHtml';
 
-export default function PrintSection() {
+export function PrintSection() {
   const { data: user, isPending: isUserPending } = useCheckToken();
-  const { isPending: isSellFlowContextpending, selectedPartner } = useSellFlowContext();
+  const { isPending: isSellFlowContextpending, selectedPartner } =
+    useSellFlowContext();
   const {
     isPending: isReceiptsContextPending,
     currentReceipt,
     updateNumberOfPrintedCopies,
   } = useReceiptsContext();
 
-  const [updateProgressMessage, setUpdateProgressMessage] = useState<string>('');
+  const [updateProgressMessage, setUpdateProgressMessage] =
+    useState<string>('');
 
-  const canPrintOriginalCopy = selectedPartner.invoiceCopies > currentReceipt.originalCopiesPrinted;
+  const canPrintOriginalCopy =
+    selectedPartner.invoiceCopies > currentReceipt.originalCopiesPrinted;
 
   const printButtonHandler = async () => {
     await Print.printAsync({
@@ -62,17 +65,26 @@ export default function PrintSection() {
       </Text>
       {canPrintOriginalCopy ? (
         <Text style={styles.text}>
-          A számlát <Text style={styles.numberOfReceipts}>{selectedPartner.invoiceCopies}</Text>{' '}
+          A számlát{' '}
+          <Text style={styles.numberOfReceipts}>
+            {selectedPartner.invoiceCopies}
+          </Text>{' '}
           eredeti példányban van lehetőség kinyomtatni. Ebből eddig{' '}
-          <Text style={styles.numberOfReceipts}>{currentReceipt.originalCopiesPrinted}</Text>{' '}
+          <Text style={styles.numberOfReceipts}>
+            {currentReceipt.originalCopiesPrinted}
+          </Text>{' '}
           példány került nyomtatásra.
         </Text>
       ) : (
-        <Text style={styles.text}>Az alábbi gombra kattintva számlamásolat nyomtatható.</Text>
+        <Text style={styles.text}>
+          Az alábbi gombra kattintva számlamásolat nyomtatható.
+        </Text>
       )}
       <View style={styles.buttonContainer}>
         <Button variant="ok" onPress={printButtonHandler}>
-          {canPrintOriginalCopy ? 'Eredeti példány nyomtatása' : 'Másolat nyomtatása'}
+          {canPrintOriginalCopy
+            ? 'Eredeti példány nyomtatása'
+            : 'Másolat nyomtatása'}
         </Button>
       </View>
     </>
@@ -80,18 +92,18 @@ export default function PrintSection() {
 }
 
 const styles = StyleSheet.create({
-  text: {
-    color: 'white',
-    fontFamily: 'Muli',
-    fontSize: fontSizes.body,
+  buttonContainer: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 50,
   },
   numberOfReceipts: {
     color: colors.ok,
     fontWeight: '700',
   },
-  buttonContainer: {
-    marginTop: 50,
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  text: {
+    color: colors.white,
+    fontFamily: 'Muli',
+    fontSize: fontSizes.body,
   },
 });

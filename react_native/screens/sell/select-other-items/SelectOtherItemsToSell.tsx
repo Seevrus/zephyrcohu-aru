@@ -1,22 +1,30 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { assoc, dissoc } from 'ramda';
 import { useCallback, useMemo, useState } from 'react';
-import { Animated, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import {
+  Animated,
+  StyleSheet,
+  View,
+  type ListRenderItemInfo,
+} from 'react-native';
 
-import Loading from '../../../components/Loading';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
-import LabeledItem from '../../../components/ui/LabeledItem';
-import colors from '../../../constants/colors';
+import { Loading } from '../../../components/Loading';
+import { Button } from '../../../components/ui/Button';
+import { Input } from '../../../components/ui/Input';
+import { LabeledItem } from '../../../components/ui/LabeledItem';
+import { colors } from '../../../constants/colors';
+import { type SelectOtherItemsToSellProps } from '../../../navigators/screen-types';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
-import { OtherSellItem } from '../../../providers/sell-flow-hooks/useSelectOtherItems';
-import calculateAmounts from '../../../utils/calculateAmounts';
-import formatPrice from '../../../utils/formatPrice';
-import ExpirationAccordionDetails from './ExpirationAccordionDetails';
+import { type OtherSellItem } from '../../../providers/sell-flow-hooks/useSelectOtherItems';
+import { calculateAmounts } from '../../../utils/calculateAmounts';
+import { formatPrice } from '../../../utils/formatPrice';
+import { ExpirationAccordionDetails } from './ExpirationAccordionDetails';
 
 const NUM_ITEMS_SHOWN = 10;
 
-export default function SelectOtherItemsToSell({ navigation }) {
+export function SelectOtherItemsToSell({
+  navigation,
+}: SelectOtherItemsToSellProps) {
   const {
     isPending: isContextPending,
     otherItems,
@@ -55,7 +63,9 @@ export default function SelectOtherItemsToSell({ navigation }) {
     [otherItems, selectedOtherItems]
   );
 
-  const canConfirmItems = Object.values(selectedOtherItems)?.some((oi) => !!oi?.quantity);
+  const canConfirmItems = Object.values(selectedOtherItems)?.some(
+    (oi) => !!oi?.quantity
+  );
   const confirmButtonVariant = canConfirmItems ? 'ok' : 'disabled';
   const confirmItemsHandler = useCallback(async () => {
     if (canConfirmItems) {
@@ -72,7 +82,11 @@ export default function SelectOtherItemsToSell({ navigation }) {
         const selectedOtherItem = prevItems[item.id];
 
         if (!selectedOtherItem) {
-          return assoc(item.id, { netPrice, quantity: null, comment: null }, prevItems);
+          return assoc(
+            item.id,
+            { netPrice, quantity: null, comment: null },
+            prevItems
+          );
         }
 
         if (
@@ -95,7 +109,11 @@ export default function SelectOtherItemsToSell({ navigation }) {
         const selectedOtherItem = prevItems[item.id];
 
         if (!selectedOtherItem) {
-          return assoc(item.id, { netPrice: null, quantity, comment: null }, prevItems);
+          return assoc(
+            item.id,
+            { netPrice: null, quantity, comment: null },
+            prevItems
+          );
         }
 
         if (
@@ -118,7 +136,11 @@ export default function SelectOtherItemsToSell({ navigation }) {
         const selectedOtherItem = prevItems[item.id];
 
         if (!selectedOtherItem) {
-          return assoc(item.id, { netPrice: null, quantity: null, comment }, prevItems);
+          return assoc(
+            item.id,
+            { netPrice: null, quantity: null, comment },
+            prevItems
+          );
         }
 
         if (
@@ -139,7 +161,11 @@ export default function SelectOtherItemsToSell({ navigation }) {
     (info: ListRenderItemInfo<OtherSellItem>) => (
       <ExpirationAccordionDetails
         item={info.item}
-        netPrice={selectedOtherItems[info.item.id]?.netPrice ?? info.item.netPrice ?? null}
+        netPrice={
+          selectedOtherItems[info.item.id]?.netPrice ??
+          info.item.netPrice ??
+          null
+        }
         setNetPrice={priceChangeHandler}
         quantity={selectedOtherItems[info.item.id]?.quantity ?? null}
         setQuantity={quantityChangeHandler}
@@ -147,7 +173,12 @@ export default function SelectOtherItemsToSell({ navigation }) {
         setComment={commentChangeHandler}
       />
     ),
-    [commentChangeHandler, priceChangeHandler, quantityChangeHandler, selectedOtherItems]
+    [
+      commentChangeHandler,
+      priceChangeHandler,
+      quantityChangeHandler,
+      selectedOtherItems,
+    ]
   );
 
   if (isContextPending || isLoading) {
@@ -192,38 +223,38 @@ export default function SelectOtherItemsToSell({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  buttonContainer: {
+    alignItems: 'center',
     flex: 1,
+    justifyContent: 'space-between',
+  },
+  container: {
     backgroundColor: colors.background,
+    flex: 1,
+  },
+  footerContainer: {
+    backgroundColor: colors.neutral,
+    borderTopColor: colors.white,
+    borderTopWidth: 2,
+    height: 135,
+    paddingVertical: 10,
   },
   headerContainer: {
     height: 65,
     marginVertical: 10,
   },
-  searchInputContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: '7%',
-  },
   listContainer: {
     flex: 1,
   },
-  footerContainer: {
-    height: 135,
-    paddingVertical: 10,
-    borderTopColor: 'white',
-    borderTopWidth: 2,
-    backgroundColor: colors.neutral,
+  searchInputContainer: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    marginHorizontal: '7%',
   },
   summaryContainer: {
-    marginHorizontal: '7%',
-    marginBottom: 10,
     alignItems: 'flex-end',
-  },
-  buttonContainer: {
-    flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    marginBottom: 10,
+    marginHorizontal: '7%',
   },
 });

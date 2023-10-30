@@ -1,7 +1,7 @@
-import BorealBarCodeScanner from '../../../components/bar-code-scanner/BorealBarCodeScanner';
-import { ScanBarCodeInSellProps } from '../../../navigators/screen-types';
+import { BorealBarCodeScanner } from '../../../components/bar-code-scanner/BorealBarCodeScanner';
+import { type ScanBarCodeInSellProps } from '../../../navigators/screen-types';
 
-export default function ScanBarCodeInSell({ navigation }: ScanBarCodeInSellProps) {
+export function ScanBarCodeInSell({ navigation }: ScanBarCodeInSellProps) {
   const handleBarCodeScanned = (code: string) => {
     navigation.replace('SelectItemsToSell', { scannedBarCode: code });
   };

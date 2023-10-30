@@ -1,4 +1,4 @@
-import { BaseItemType } from './common/BaseItemType';
+import { type BaseItemType } from './common/BaseItemType';
 
 export type OtherItemsResponseData = BaseItemType[];
 

@@ -3,14 +3,14 @@ import { isEmpty, not } from 'ramda';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import Loading from '../../../components/Loading';
-import ErrorCard from '../../../components/info-cards/ErrorCard';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
-import LabeledItem from '../../../components/ui/LabeledItem';
-import colors from '../../../constants/colors';
-import fontSizes from '../../../constants/fontSizes';
-import { DiscountsProps } from '../../../navigators/screen-types';
+import { Loading } from '../../../components/Loading';
+import { ErrorCard } from '../../../components/info-cards/ErrorCard';
+import { Button } from '../../../components/ui/Button';
+import { Input } from '../../../components/ui/Input';
+import { LabeledItem } from '../../../components/ui/LabeledItem';
+import { colors } from '../../../constants/colors';
+import { fontSizes } from '../../../constants/fontSizes';
+import { type DiscountsProps } from '../../../navigators/screen-types';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
 
 type FormErrors = {
@@ -20,32 +20,42 @@ type FormErrors = {
   freeFormDiscountedQuantity?: boolean;
 };
 
-export default function Discounts({ navigation, route }: DiscountsProps) {
-  const { isPending: isContextPending, saveDiscountedItemsInFlow } = useSellFlowContext();
+export function Discounts({ navigation, route }: DiscountsProps) {
+  const { isPending: isContextPending, saveDiscountedItemsInFlow } =
+    useSellFlowContext();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const item = route.params?.item;
-  const absoluteDiscount = item.availableDiscounts.find((d) => d.type === 'absolute');
-  const percentageDiscount = item.availableDiscounts.find((d) => d.type === 'percentage');
-  const freeFormDiscount = item.availableDiscounts.find((d) => d.type === 'freeForm');
-
-  const currentAbsoluteDiscount = item.selectedDiscounts?.find((d) => d.type === 'absolute');
-  const currentPercentageDiscount = item.selectedDiscounts?.find((d) => d.type === 'percentage');
-  const currentFreeFormDiscount = item.selectedDiscounts?.find((d) => d.type === 'freeForm');
-
-  const [absoluteDiscountedQuantity, setAboluteDiscountedQuantity] = useState<string>(
-    String(currentAbsoluteDiscount?.quantity ?? '')
+  const absoluteDiscount = item.availableDiscounts.find(
+    (d) => d.type === 'absolute'
   );
-  const [percentageDiscountedQuantity, setPercentageDiscountedQuantity] = useState<string>(
-    String(currentPercentageDiscount?.quantity ?? '')
+  const percentageDiscount = item.availableDiscounts.find(
+    (d) => d.type === 'percentage'
   );
+  const freeFormDiscount = item.availableDiscounts.find(
+    (d) => d.type === 'freeForm'
+  );
+
+  const currentAbsoluteDiscount = item.selectedDiscounts?.find(
+    (d) => d.type === 'absolute'
+  );
+  const currentPercentageDiscount = item.selectedDiscounts?.find(
+    (d) => d.type === 'percentage'
+  );
+  const currentFreeFormDiscount = item.selectedDiscounts?.find(
+    (d) => d.type === 'freeForm'
+  );
+
+  const [absoluteDiscountedQuantity, setAboluteDiscountedQuantity] =
+    useState<string>(String(currentAbsoluteDiscount?.quantity ?? ''));
+  const [percentageDiscountedQuantity, setPercentageDiscountedQuantity] =
+    useState<string>(String(currentPercentageDiscount?.quantity ?? ''));
   const [freeFormPrice, setFreeFormPrice] = useState<string>(
     String(currentFreeFormDiscount?.price ?? item.netPrice)
   );
-  const [freeFormDiscountedQuantity, setFreeFormDiscountedQuantity] = useState<string>(
-    String(currentFreeFormDiscount?.quantity ?? '')
-  );
+  const [freeFormDiscountedQuantity, setFreeFormDiscountedQuantity] =
+    useState<string>(String(currentFreeFormDiscount?.quantity ?? ''));
 
   const [formError, setFormError] = useState<FormErrors>({});
   const [formErrorMessage, setFormErrorMessage] = useState<string>('');
@@ -83,45 +93,43 @@ export default function Discounts({ navigation, route }: DiscountsProps) {
     if (!errorMessage && isEmpty(formErrors)) {
       setIsLoading(true);
 
-      if (absolute + percentage + freeForm === 0) {
-        await saveDiscountedItemsInFlow(item.itemId);
-      } else {
-        await saveDiscountedItemsInFlow(item.itemId, [
-          ...(absolute > 0
-            ? [
-                {
-                  id: absoluteDiscount.id,
-                  name: absoluteDiscount.name,
-                  quantity: absolute,
-                  amount: absoluteDiscount.amount,
-                  type: 'absolute',
-                } as const,
-              ]
-            : []),
-          ...(percentage > 0
-            ? [
-                {
-                  id: percentageDiscount.id,
-                  name: percentageDiscount.name,
-                  quantity: percentage,
-                  amount: percentageDiscount.amount,
-                  type: 'percentage',
-                } as const,
-              ]
-            : []),
-          ...(freeForm > 0
-            ? [
-                {
-                  id: freeFormDiscount.id,
-                  name: freeFormDiscount.name,
-                  quantity: freeForm,
-                  price,
-                  type: 'freeForm',
-                } as const,
-              ]
-            : []),
-        ]);
-      }
+      await (absolute + percentage + freeForm === 0
+        ? saveDiscountedItemsInFlow(item.itemId)
+        : saveDiscountedItemsInFlow(item.itemId, [
+            ...(absolute > 0
+              ? [
+                  {
+                    id: absoluteDiscount.id,
+                    name: absoluteDiscount.name,
+                    quantity: absolute,
+                    amount: absoluteDiscount.amount,
+                    type: 'absolute',
+                  } as const,
+                ]
+              : []),
+            ...(percentage > 0
+              ? [
+                  {
+                    id: percentageDiscount.id,
+                    name: percentageDiscount.name,
+                    quantity: percentage,
+                    amount: percentageDiscount.amount,
+                    type: 'percentage',
+                  } as const,
+                ]
+              : []),
+            ...(freeForm > 0
+              ? [
+                  {
+                    id: freeFormDiscount.id,
+                    name: freeFormDiscount.name,
+                    quantity: freeForm,
+                    price,
+                    type: 'freeForm',
+                  } as const,
+                ]
+              : []),
+          ]));
 
       setIsLoading(false);
       navigation.goBack();
@@ -145,7 +153,10 @@ export default function Discounts({ navigation, route }: DiscountsProps) {
         </View>
       )}
       <View style={styles.firstInfoGroup}>
-        <LabeledItem label="Mennyiség" text={`${item.quantity} ${item.unitName}`} />
+        <LabeledItem
+          label="Mennyiség"
+          text={`${item.quantity} ${item.unitName}`}
+        />
         <Text style={styles.infoLabel}>Elérhető kedvezmények:</Text>
       </View>
       {absoluteDiscount && (
@@ -226,39 +237,45 @@ export default function Discounts({ navigation, route }: DiscountsProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  headerContainer: {
-    marginTop: 20,
+  buttonContainer: {
     alignItems: 'center',
+    alignSelf: 'center',
+    marginVertical: 20,
+    width: '90%',
   },
-  header: {
-    color: 'white',
-    fontFamily: 'Muli',
-    fontSize: fontSizes.body,
-    fontWeight: 'bold',
+  container: {
+    backgroundColor: colors.background,
+    flex: 1,
   },
   errorContainer: {
-    alignSelf: 'center',
     alignItems: 'center',
+    alignSelf: 'center',
     marginTop: 20,
     width: '90%',
   },
   firstInfoGroup: {
-    marginTop: 10,
     marginHorizontal: '7%',
+    marginTop: 10,
+  },
+  header: {
+    color: colors.white,
+    fontFamily: 'Muli',
+    fontSize: fontSizes.body,
+    fontWeight: 'bold',
+  },
+  headerContainer: {
+    alignItems: 'center',
+    marginTop: 20,
   },
   infoGroup: {
-    marginTop: 10,
-    marginHorizontal: '7%',
-    paddingTop: 5,
-    borderTopColor: 'white',
+    borderTopColor: colors.white,
     borderTopWidth: 1,
+    marginHorizontal: '7%',
+    marginTop: 10,
+    paddingTop: 5,
   },
   infoLabel: {
-    color: 'white',
+    color: colors.white,
     fontFamily: 'Muli',
     fontSize: fontSizes.input,
     fontWeight: '700',
@@ -266,11 +283,5 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     height: 90,
-  },
-  buttonContainer: {
-    alignSelf: 'center',
-    alignItems: 'center',
-    marginVertical: 20,
-    width: '90%',
   },
 });

@@ -1,19 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { append, assoc, isNil } from 'ramda';
 import {
-  PropsWithChildren,
   createContext,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
+  type PropsWithChildren,
 } from 'react';
 
-import useCreateOrders from '../api/mutations/useCreateOrders';
-import useCheckToken from '../api/queries/useCheckToken';
-import { OrderRequest } from '../api/request-types/CreateOrdersRequestType';
-import { ContextOrder } from './types/orders-provider-types';
+import { useCreateOrders } from '../api/mutations/useCreateOrders';
+import { useCheckToken } from '../api/queries/useCheckToken';
+import { type OrderRequest } from '../api/request-types/CreateOrdersRequestType';
+import { type ContextOrder } from './types/orders-provider-types';
 
 type OrdersContextType = {
   isPending: boolean;
@@ -29,15 +29,17 @@ const OrdersContext = createContext<OrdersContextType>({} as OrdersContextType);
 const ordersContextStorageKey = 'boreal-orders-context';
 const currentOrderContextStorageKey = 'boreal-current-order-context';
 
-export default function OrdersProvider({ children }: PropsWithChildren) {
+export function OrdersProvider({ children }: PropsWithChildren) {
   const { data: user, isPending: isUserPending } = useCheckToken();
-  const { isPending: isCreateOrdersPending, mutateAsync: createOrdersAPI } = useCreateOrders();
+  const { isPending: isCreateOrdersPending, mutateAsync: createOrdersAPI } =
+    useCreateOrders();
 
   const [orders, setOrders] = useState<ContextOrder[]>([]);
   const numberOfOrders = orders.length;
   const [currentOrder, setCurrentOrder] = useState<ContextOrder>(null);
-  const [isOrdersSyncInProgress, setIsOrdersSyncInProgress] =
-    useState<boolean>(isCreateOrdersPending);
+  const [isOrdersSyncInProgress, setIsOrdersSyncInProgress] = useState<boolean>(
+    isCreateOrdersPending
+  );
 
   const isRoundStarted = user?.state === 'R';
 
@@ -58,7 +60,10 @@ export default function OrdersProvider({ children }: PropsWithChildren) {
    * Persist orders to local storage
    */
   const persistOrders = useCallback(async (ordersToSave: ContextOrder[]) => {
-    await AsyncStorage.setItem(ordersContextStorageKey, JSON.stringify(ordersToSave));
+    await AsyncStorage.setItem(
+      ordersContextStorageKey,
+      JSON.stringify(ordersToSave)
+    );
   }, []);
 
   /**
@@ -66,7 +71,9 @@ export default function OrdersProvider({ children }: PropsWithChildren) {
    */
   useEffect(() => {
     async function setCurrentOrderFromLocalStorage() {
-      const jsonData = await AsyncStorage.getItem(currentOrderContextStorageKey);
+      const jsonData = await AsyncStorage.getItem(
+        currentOrderContextStorageKey
+      );
       const localStorageCurrentReceipt = jsonData ? JSON.parse(jsonData) : {};
       setCurrentOrder(localStorageCurrentReceipt);
     }
@@ -143,7 +150,11 @@ export default function OrdersProvider({ children }: PropsWithChildren) {
     ]
   );
 
-  return <OrdersContext.Provider value={ordersContextValue}>{children}</OrdersContext.Provider>;
+  return (
+    <OrdersContext.Provider value={ordersContextValue}>
+      {children}
+    </OrdersContext.Provider>
+  );
 }
 
 export function useOrdersContext() {

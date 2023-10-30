@@ -1,6 +1,6 @@
-import { CompanyType } from './common/CompanyType';
-import { UserRoleType } from './common/UserRoleType';
-import { UserType } from './common/UserType';
+import { type CompanyType } from './common/CompanyType';
+import { type UserRoleType } from './common/UserRoleType';
+import { type UserType } from './common/UserType';
 
 export type LoginResponse = UserType & {
   company: CompanyType;

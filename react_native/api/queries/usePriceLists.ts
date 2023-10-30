@@ -1,20 +1,22 @@
-import { UseQueryResult, useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import axios from 'axios';
 
 import env from '../../env.json';
 import {
-  PriceListResponseData,
-  PriceListResponseType,
+  type PriceListResponseData,
+  type PriceListResponseType,
 } from '../response-types/PriceListResponseType';
-import useCheckToken from './useCheckToken';
-import useToken from './useToken';
+import { useCheckToken } from './useCheckToken';
+import { useToken } from './useToken';
 
-export default function usePriceLists({
+export function usePriceLists({
   enabled = true,
 } = {}): UseQueryResult<PriceListResponseData> {
   const { data: user } = useCheckToken();
-  const { isSuccess: isTokenSuccess, data: { token, isTokenExpired, isPasswordExpired } = {} } =
-    useToken();
+  const {
+    isSuccess: isTokenSuccess,
+    data: { token, isTokenExpired, isPasswordExpired } = {},
+  } = useToken();
 
   const isRoundStarted = user?.state === 'R';
 
@@ -22,16 +24,26 @@ export default function usePriceLists({
     queryKey: ['price-lists'],
     queryFn: async (): Promise<PriceListResponseData> => {
       try {
-        const response = await axios.get<PriceListResponseType>(`${env.api_url}/price_lists`, {
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get<PriceListResponseType>(
+          `${env.api_url}/price_lists`,
+          {
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         return response.data.data;
-      } catch (err) {
-        console.log(err.message);
+      } catch (error) {
+        console.log(error.message);
         throw new Error('Váratlan hiba lépett fel az árlisták lekérése során.');
       }
     },
-    enabled: enabled && isTokenSuccess && !(isTokenExpired || isPasswordExpired) && isRoundStarted,
+    enabled:
+      enabled &&
+      isTokenSuccess &&
+      !(isTokenExpired || isPasswordExpired) &&
+      isRoundStarted,
   });
 }

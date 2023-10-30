@@ -1,13 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import fontSizes from '../../constants/fontSizes';
+import { fontSizes } from '../../constants/fontSizes';
+import { colors } from '../../constants/colors';
 
 type LabeledItemProps = {
   label: string;
   text: string;
 };
 
-export default function LabeledItem({ label, text }: LabeledItemProps) {
+export function LabeledItem({ label, text }: LabeledItemProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.infoLabel}>{label}:</Text>
@@ -18,19 +19,19 @@ export default function LabeledItem({ label, text }: LabeledItemProps) {
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    alignItems: 'center',
   },
   infoLabel: {
-    color: 'white',
+    color: colors.white,
     fontFamily: 'Muli',
     fontSize: fontSizes.input,
     fontWeight: '700',
     marginRight: 5,
   },
   infoText: {
-    color: 'white',
+    color: colors.white,
     fontFamily: 'Muli',
     fontSize: fontSizes.input,
   },

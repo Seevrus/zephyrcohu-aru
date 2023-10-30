@@ -1,6 +1,7 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import colors from '../constants/colors';
-import fontSizes from '../constants/fontSizes';
+
+import { colors } from '../constants/colors';
+import { fontSizes } from '../constants/fontSizes';
 
 type LoadingProps = {
   message?: string;
@@ -10,7 +11,7 @@ const defaultProps = {
   message: '',
 };
 
-export default function Loading({ message }: LoadingProps) {
+export function Loading({ message }: LoadingProps) {
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" color={colors.blue200} />
@@ -24,19 +25,19 @@ Loading.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
     alignItems: 'center',
-  },
-  messageContainer: {
-    margin: 30,
+    backgroundColor: colors.background,
+    flex: 1,
+    justifyContent: 'center',
   },
   message: {
-    color: 'white',
+    color: colors.white,
     fontFamily: 'Roboto',
     fontSize: fontSizes.body,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  messageContainer: {
+    margin: 30,
   },
 });

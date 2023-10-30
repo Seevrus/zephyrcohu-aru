@@ -1,114 +1,158 @@
 {
-    "env": {
-        "es2021": true,
-        "node": true,
-        "react-native/react-native": true
+  "env": {
+    "es2024": true,
+    "node": true,
+    "react-native/react-native": true
+  },
+  "settings": {
+    "import/extensions": [".js", ".jsx", ".ts", ".tsx"],
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
     },
-    "extends": [
-        "plugin:@tanstack/eslint-plugin-query/recommended",
-        "plugin:react/recommended",
-        "airbnb",
-        "airbnb-typescript",
-        "airbnb/hooks",
-        "plugin:import/typescript",
-        "prettier"
-    ],
-    "overrides": [],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "ecmaVersion": "latest",
-        "project": [
-            "tsconfig.json"
-        ],
-        "sourceType": "module"
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true,
+        "project": "tsconfig.json"
+      }
     },
-    "plugins": [
-        "@tanstack/query",
-        "react",
-        "react-native"
-    ],
-    "rules": {
-        "global-require": "off",
-        "import/no-extraneous-dependencies": [
-            "error",
-            {
-                "devDependencies": true
-            }
-        ],
-        "jsx-a11y/label-has-associated-control": [
-            "error",
-            {
-                "required": {
-                    "some": [
-                        "nesting",
-                        "id"
-                    ]
-                }
-            }
-        ],
-        "jsx-a11y/label-has-for": [
-            "error",
-            {
-                "required": {
-                    "some": [
-                        "nesting",
-                        "id"
-                    ]
-                }
-            }
-        ],
-        "@typescript-eslint/no-use-before-define": [
-            "error",
-            {
-                "variables": false
-            }
-        ],
-        "react/jsx-filename-extension": [
-            1,
-            {
-                "extensions": [
-                    ".jsx",
-                    ".tsx"
-                ]
-            }
-        ],
-        "react-hooks/rules-of-hooks": "error",
-        "react-hooks/exhaustive-deps": "warn",
-        "react/jsx-props-no-spreading": "off",
-        "react/prop-types": [
-            "error",
-            {
-                "ignore": [
-                    "navigation",
-                    "navigation.navigate"
-                ]
-            }
-        ],
-        "react/react-in-jsx-scope": "off",
-        "react/style-prop-object": [
-            "error",
-            {
-                "allow": [
-                    "StatusBar"
-                ]
-            }
-        ]
-    },
-    "settings": {
-        "import/extensions": [
-            ".js",
-            ".jsx",
-            ".ts",
-            ".tsx"
-        ],
-        "import/parsers": {
-            "@typescript-eslint/parser": [
-                ".ts",
-                ".tsx"
-            ]
-        }
+    "react": {
+      "version": "detect"
     }
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@tanstack/eslint-plugin-query/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:prettier/recommended",
+    "plugin:promise/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:react-hooks/recommended",
+    "plugin:react-native/all",
+    "plugin:sonarjs/recommended",
+    "plugin:unicorn/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "project": "tsconfig.json",
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@tanstack/query",
+    "@typescript-eslint",
+    "import",
+    "prettier",
+    "react",
+    "react-hooks",
+    "react-native",
+    "sonarjs",
+    "unicorn"
+  ],
+  "rules": {
+    "@typescript-eslint/consistent-type-exports": [
+      "error",
+      {
+        "fixMixedExportsWithInlineTypeSpecifier": true
+      }
+    ],
+    "@typescript-eslint/consistent-type-imports": [
+      "error",
+      {
+        "fixStyle": "inline-type-imports",
+        "prefer": "type-imports"
+      }
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "arrow-body-style": ["error", "as-needed"],
+    "default-param-last": "error",
+    "max-params": "error",
+    "no-console": "warn",
+    "no-debugger": "error",
+    "no-nested-ternary": "error",
+    "no-restricted-globals": [
+      "error",
+      {
+        "name": "React",
+        "message": "Import from 'react' instead."
+      }
+    ],
+    "no-unneeded-ternary": "error",
+    "prefer-arrow-callback": "error",
+    "promise/always-return": "off",
+    "promise/catch-or-return": "off",
+    "react/jsx-boolean-value": ["warn", "never"],
+    "react/jsx-curly-brace-presence": "warn",
+    "react/self-closing-comp": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "react-native/no-raw-text": "off",
+    "sonarjs/cognitive-complexity": "off",
+    "sonarjs/no-redundant-jump": "off",
+    "unicorn/filename-case": [
+      "error",
+      {
+        "cases": {
+          "camelCase": true,
+          "kebabCase": true,
+          "pascalCase": true
+        }
+      }
+    ],
+    "unicorn/no-array-callback-reference": "off",
+    "unicorn/no-array-for-each": "off",
+    "unicorn/no-array-reduce": "off",
+    "unicorn/no-nested-ternary": "off",
+    "unicorn/no-null": "off",
+    "unicorn/no-useless-switch-case": "off",
+    "unicorn/no-useless-undefined": [
+      "error",
+      {
+        "checkArguments": false
+      }
+    ],
+    "unicorn/prevent-abbreviations": [
+      "error",
+      {
+        "replacements": {
+          "args": false,
+          "curr": false,
+          "env": false,
+          "idx": false,
+          "opts": false,
+          "params": false,
+          "prev": false,
+          "prod": false,
+          "prop": false,
+          "props": false,
+          "ref": false
+        }
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["./react_native/**"],
+      "rules": {
+        "import/no-default-export": "error",
+        "import/no-unused-modules": ["warn", { "unusedExports": true }]
+      }
+    },
+    {
+      "files": ["**/*.json"],
+      "rules": {
+        "sonarjs/no-duplicate-string": "off",
+        "unicorn/numeric-separators-style": "off"
+      }
+    }
+  ]
 }

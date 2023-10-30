@@ -2,33 +2,39 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { assoc, flatten, isNil, map, pipe, toPairs } from 'ramda';
 import {
-  PropsWithChildren,
   createContext,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
+  type PropsWithChildren,
 } from 'react';
 
-import useSellSelectedItems from '../api/mutations/useSellSelectedItems';
-import useCheckToken from '../api/queries/useCheckToken';
-import useStoreDetails from '../api/queries/useStoreDetails';
-import { StoreDetailsResponseData } from '../api/response-types/StoreDetailsResponseType';
+import { useSellSelectedItems } from '../api/mutations/useSellSelectedItems';
+import { useCheckToken } from '../api/queries/useCheckToken';
+import { useStoreDetails } from '../api/queries/useStoreDetails';
+import { type StoreDetailsResponseData } from '../api/response-types/StoreDetailsResponseType';
 
 type StorageContextType = {
   isPending: boolean;
   storage: StoreDetailsResponseData | null;
   originalStorage: StoreDetailsResponseData | null;
-  slowSaveStorageExpirations: (storageExpirations: Record<number, Record<number, number>>) => void;
-  removeSoldItemsFromStorage: (soldItems: Record<number, Record<number, number>>) => Promise<void>;
+  slowSaveStorageExpirations: (
+    storageExpirations: Record<number, Record<number, number>>
+  ) => void;
+  removeSoldItemsFromStorage: (
+    soldItems: Record<number, Record<number, number>>
+  ) => Promise<void>;
   clearStorageFromContext(): void;
 };
 
-const StorageContext = createContext<StorageContextType>({} as StorageContextType);
+const StorageContext = createContext<StorageContextType>(
+  {} as StorageContextType
+);
 const storageContextKey = 'boreal-storage-context';
 
-export default function StorageProvider({ children }: PropsWithChildren) {
+export function StorageProvider({ children }: PropsWithChildren) {
   const { isInternetReachable } = useNetInfo();
 
   const { data: user, isPending: isUserPending } = useCheckToken();
@@ -41,15 +47,22 @@ export default function StorageProvider({ children }: PropsWithChildren) {
     storeId: user?.storeId,
   });
 
-  const [isLocalStorageLoaded, setIsLocalStorageLoaded] = useState<boolean>(false);
+  const [isLocalStorageLoaded, setIsLocalStorageLoaded] =
+    useState<boolean>(false);
   const [storage, setStorage] = useState<StoreDetailsResponseData | null>(null);
 
   /**
    * Callback to set storage from the drive.
    */
-  const persistStorage = useCallback(async (storageToPersist: StoreDetailsResponseData) => {
-    await AsyncStorage.setItem(storageContextKey, JSON.stringify(storageToPersist));
-  }, []);
+  const persistStorage = useCallback(
+    async (storageToPersist: StoreDetailsResponseData) => {
+      await AsyncStorage.setItem(
+        storageContextKey,
+        JSON.stringify(storageToPersist)
+      );
+    },
+    []
+  );
 
   /**
    * Callback to clear storage (drive and memory).
@@ -97,7 +110,8 @@ export default function StorageProvider({ children }: PropsWithChildren) {
       const updatedStorage: StoreDetailsResponseData = {
         ...storage,
         expirations: storage.expirations.map((expiration) => {
-          const soldItemQuantity = soldItems?.[expiration.itemId]?.[expiration.expirationId];
+          const soldItemQuantity =
+            soldItems?.[expiration.itemId]?.[expiration.expirationId];
 
           if (!soldItemQuantity) {
             return expiration;
@@ -125,7 +139,9 @@ export default function StorageProvider({ children }: PropsWithChildren) {
    */
   useEffect(() => {
     AsyncStorage.getItem(storageContextKey).then((storageBackupJson) => {
-      const localStorageValue = storageBackupJson ? JSON.parse(storageBackupJson) : null;
+      const localStorageValue = storageBackupJson
+        ? JSON.parse(storageBackupJson)
+        : null;
       setStorage(localStorageValue);
       setIsLocalStorageLoaded(true);
     });
@@ -135,7 +151,12 @@ export default function StorageProvider({ children }: PropsWithChildren) {
    * Initialize from API response if it has not already been initialized.
    */
   useEffect(() => {
-    if (isLocalStorageLoaded && isNil(storage) && !isStoreDetailsStale && !!storeDetails) {
+    if (
+      isLocalStorageLoaded &&
+      isNil(storage) &&
+      !isStoreDetailsStale &&
+      !!storeDetails
+    ) {
       setStorage(storeDetails);
     }
   }, [isLocalStorageLoaded, isStoreDetailsStale, storage, storeDetails]);
@@ -170,7 +191,11 @@ export default function StorageProvider({ children }: PropsWithChildren) {
     ]
   );
 
-  return <StorageContext.Provider value={storageContextValue}>{children}</StorageContext.Provider>;
+  return (
+    <StorageContext.Provider value={storageContextValue}>
+      {children}
+    </StorageContext.Provider>
+  );
 }
 
 export function useStorageContext() {

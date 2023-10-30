@@ -1,4 +1,4 @@
-import { TimeStamps } from './TimeStamps';
+import { type TimeStamps } from './TimeStamps';
 
 export type RoundType = {
   id: number;

@@ -3,28 +3,27 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   FlatList,
-  ListRenderItem,
-  ListRenderItemInfo,
   StyleSheet,
   View,
+  type ListRenderItem,
+  type ListRenderItemInfo,
 } from 'react-native';
 
-import Loading from '../../../components/Loading';
-import ErrorCard from '../../../components/info-cards/ErrorCard';
-import Button from '../../../components/ui/Button';
-import LabeledItem from '../../../components/ui/LabeledItem';
-import colors from '../../../constants/colors';
-import fontSizes from '../../../constants/fontSizes';
-import { ReviewProps } from '../../../navigators/screen-types';
+import { Loading } from '../../../components/Loading';
+import { ErrorCard } from '../../../components/info-cards/ErrorCard';
+import { Button } from '../../../components/ui/Button';
+import { LabeledItem } from '../../../components/ui/LabeledItem';
+import { colors } from '../../../constants/colors';
+import { type ReviewProps } from '../../../navigators/screen-types';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
-import { ReviewItem } from '../../../providers/sell-flow-hooks/useReview';
-import calculateDiscountedItemAmounts from '../../../utils/calculateDiscountedItemAmounts';
-import formatPrice from '../../../utils/formatPrice';
-import OtherItemSelection from './OtherItemSelection';
-import RegularItemSelection from './RegularItemSelection';
-import getReviewItemId from './getReviewItemId';
+import { type ReviewItem } from '../../../providers/sell-flow-hooks/useReview';
+import { calculateDiscountedItemAmounts } from '../../../utils/calculateDiscountedItemAmounts';
+import { formatPrice } from '../../../utils/formatPrice';
+import { OtherItemSelection } from './OtherItemSelection';
+import { RegularItemSelection } from './RegularItemSelection';
+import { getReviewItemId } from './getReviewItemId';
 
-export default function Review({ navigation }: ReviewProps) {
+export function Review({ navigation }: ReviewProps) {
   const {
     isPending: isContextPending,
     setSelectedItems,
@@ -73,7 +72,8 @@ export default function Review({ navigation }: ReviewProps) {
 
   useEffect(() => {
     const numberOfRegularReviewItems = reviewItems?.reduce(
-      (numberOfItems, item) => (item.type === 'item' ? numberOfItems + 1 : numberOfItems),
+      (numberOfItems, item) =>
+        item.type === 'item' ? numberOfItems + 1 : numberOfItems,
       0
     );
 
@@ -125,8 +125,8 @@ export default function Review({ navigation }: ReviewProps) {
                 index: 1,
                 routes: [{ name: 'Index' }, { name: 'Summary' }],
               });
-            } catch (err) {
-              setSaveReceiptError(err.message);
+            } catch (error) {
+              setSaveReceiptError(error.message);
             }
           },
         },
@@ -144,7 +144,9 @@ export default function Review({ navigation }: ReviewProps) {
           selected={reviewItemId === selectedRowId}
           item={info.item}
           onSelect={(id: string) => {
-            setSelectedRow(reviewItems.find((row) => getReviewItemId(row) === id));
+            setSelectedRow(
+              reviewItems.find((row) => getReviewItemId(row) === id)
+            );
           }}
           onDelete={removeItemHandler}
         />
@@ -153,7 +155,9 @@ export default function Review({ navigation }: ReviewProps) {
           selected={reviewItemId === selectedRowId}
           item={info.item}
           onSelect={(id: string) => {
-            setSelectedRow(reviewItems.find((row) => getReviewItemId(row) === id));
+            setSelectedRow(
+              reviewItems.find((row) => getReviewItemId(row) === id)
+            );
           }}
           onDelete={removeOtherItemHandler}
         />
@@ -186,11 +190,18 @@ export default function Review({ navigation }: ReviewProps) {
         </View>
       </View>
       <View style={styles.receiptContainer}>
-        <FlatList data={reviewItems} renderItem={renderReceiptRow} keyExtractor={getReviewItemId} />
+        <FlatList
+          data={reviewItems}
+          renderItem={renderReceiptRow}
+          keyExtractor={getReviewItemId}
+        />
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.grossAmountContainer}>
-          <LabeledItem label="Mindösszesen" text={formatPrice(discountedGrossAmount)} />
+          <LabeledItem
+            label="Mindösszesen"
+            text={formatPrice(discountedGrossAmount)}
+          />
         </View>
         <View style={styles.buttonsContainer}>
           <Button variant="warning" onPress={removeReceiptHandler}>
@@ -206,65 +217,42 @@ export default function Review({ navigation }: ReviewProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  buttonsContainer: {
+    alignItems: 'center',
     flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginHorizontal: '7%',
+  },
+  container: {
     backgroundColor: colors.background,
+    flex: 1,
   },
   error: {
     marginTop: 30,
   },
-  headerContainer: {
-    height: 70,
-    marginHorizontal: '7%',
-    marginTop: 10,
-    alignItems: 'flex-end',
-  },
-  headerButtonContainer: {
-    width: '40%',
-  },
-  receiptContainer: {
-    flex: 1,
-  },
-  fieldContainer: {
-    marginTop: 5,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  sectionLabel: {
-    fontWeight: '700',
-    textDecorationLine: 'underline',
-    textDecorationColor: 'white',
-  },
-  itemLabel: {
-    fontWeight: '700',
-    marginRight: 5,
-  },
-  receiptText: {
-    color: 'white',
-    fontSize: fontSizes.input,
-  },
-  sectionBorder: {
-    borderColor: 'white',
-    borderWidth: 1,
-    marginVertical: 10,
-  },
   footerContainer: {
+    backgroundColor: colors.neutral,
+    borderTopColor: colors.white,
+    borderTopWidth: 2,
     height: 110,
     marginTop: 5,
-    backgroundColor: colors.neutral,
-    borderTopColor: 'white',
-    borderTopWidth: 2,
   },
   grossAmountContainer: {
     alignItems: 'flex-end',
     marginHorizontal: '7%',
     marginVertical: 10,
   },
-  buttonsContainer: {
-    flex: 1,
-    flexDirection: 'row',
+  headerButtonContainer: {
+    width: '40%',
+  },
+  headerContainer: {
+    alignItems: 'flex-end',
+    height: 70,
     marginHorizontal: '7%',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    marginTop: 10,
+  },
+  receiptContainer: {
+    flex: 1,
   },
 });

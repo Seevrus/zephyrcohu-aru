@@ -1,13 +1,19 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { eqProps, isNil, pipe, replace, trim } from 'ramda';
 import { memo, useState } from 'react';
-import { LayoutChangeEvent, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  type LayoutChangeEvent,
+} from 'react-native';
 
-import AnimatedListItem from '../../../components/ui/AnimatedListItem';
-import Input from '../../../components/ui/Input';
-import colors from '../../../constants/colors';
-import fontSizes from '../../../constants/fontSizes';
-import { OtherSellItem } from '../../../providers/sell-flow-hooks/useSelectOtherItems';
+import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';
+import { Input } from '../../../components/ui/Input';
+import { colors } from '../../../constants/colors';
+import { fontSizes } from '../../../constants/fontSizes';
+import { type OtherSellItem } from '../../../providers/sell-flow-hooks/useSelectOtherItems';
 
 type ExpirationAccordionDetailsProps = {
   item: OtherSellItem;
@@ -19,7 +25,7 @@ type ExpirationAccordionDetailsProps = {
   setComment: (item: OtherSellItem, comment: string | null) => void;
 };
 
-function ExpirationAccordionDetails({
+function _ExpirationAccordionDetails({
   item,
   netPrice,
   setNetPrice,
@@ -33,8 +39,15 @@ function ExpirationAccordionDetails({
   const backgroundColor = quantity > 0 ? colors.ok : colors.neutral;
 
   const priceHandler = (newPrice: string) => {
-    const formattedPrice = pipe(trim, replace(',', '.'), Number, Math.floor)(newPrice);
-    const nullIshFormattedPrice = Number.isNaN(formattedPrice) ? null : formattedPrice;
+    const formattedPrice = pipe(
+      trim,
+      replace(',', '.'),
+      Number,
+      Math.floor
+    )(newPrice);
+    const nullIshFormattedPrice = Number.isNaN(formattedPrice)
+      ? null
+      : formattedPrice;
 
     if (newPrice === '' || isNil(nullIshFormattedPrice)) {
       setNetPrice(item, null);
@@ -44,10 +57,21 @@ function ExpirationAccordionDetails({
   };
 
   const quantityHandler = (newQuantity: string) => {
-    const formattedQuantity = pipe(trim, replace(',', '.'), Number, Math.floor)(newQuantity);
-    const nullIshFormattedQuantity = Number.isNaN(formattedQuantity) ? null : formattedQuantity;
+    const formattedQuantity = pipe(
+      trim,
+      replace(',', '.'),
+      Number,
+      Math.floor
+    )(newQuantity);
+    const nullIshFormattedQuantity = Number.isNaN(formattedQuantity)
+      ? null
+      : formattedQuantity;
 
-    if (newQuantity === '' || formattedQuantity < 0 || isNil(nullIshFormattedQuantity)) {
+    if (
+      newQuantity === '' ||
+      formattedQuantity < 0 ||
+      isNil(nullIshFormattedQuantity)
+    ) {
       setQuantity(item, null);
     } else {
       setQuantity(item, nullIshFormattedQuantity);
@@ -164,42 +188,45 @@ function arePropsEqual(
   );
 }
 
-export default memo(ExpirationAccordionDetails, arePropsEqual);
+export const ExpirationAccordionDetails = memo(
+  _ExpirationAccordionDetails,
+  arePropsEqual
+);
 
 const styles = StyleSheet.create({
-  selectItemContainer: {
-    padding: 10,
-    justifyContent: 'space-between',
+  commentContainer: {
+    height: 200,
   },
-  selectionContainer: {
-    marginTop: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  selectItemTitle: {
-    alignItems: 'flex-start',
-  },
-  selectItemText: {
-    color: 'white',
-    fontFamily: 'Muli',
-    fontSize: fontSizes.body,
-    fontWeight: 'bold',
-  },
-  selectIconContainer: {
-    justifyContent: 'flex-end',
-  },
-  selectIcon: {
-    marginHorizontal: 30,
-    marginBottom: 5,
+  priceContainer: {
+    height: 90,
   },
   quantityContainer: {
     height: 90,
     width: '50%',
   },
-  priceContainer: {
-    height: 90,
+  selectIcon: {
+    marginBottom: 5,
+    marginHorizontal: 30,
   },
-  commentContainer: {
-    height: 200,
+  selectIconContainer: {
+    justifyContent: 'flex-end',
+  },
+  selectItemContainer: {
+    justifyContent: 'space-between',
+    padding: 10,
+  },
+  selectItemText: {
+    color: colors.white,
+    fontFamily: 'Muli',
+    fontSize: fontSizes.body,
+    fontWeight: 'bold',
+  },
+  selectItemTitle: {
+    alignItems: 'flex-start',
+  },
+  selectionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 10,
   },
 });

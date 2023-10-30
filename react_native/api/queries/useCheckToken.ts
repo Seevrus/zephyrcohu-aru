@@ -6,9 +6,12 @@ import { equals } from 'ramda';
 import { useEffect, useState } from 'react';
 
 import env from '../../env.json';
-import mapCheckTokenResponse, { CheckToken } from '../response-mappers/mapCheckTokenResponse';
-import { LoginResponse } from '../response-types/LoginResponseType';
-import useToken from './useToken';
+import {
+  mapCheckTokenResponse,
+  type CheckToken,
+} from '../response-mappers/mapCheckTokenResponse';
+import { type LoginResponse } from '../response-types/LoginResponseType';
+import { useToken } from './useToken';
 
 function useCheckTokenQuery({ enabled = true } = {}) {
   const { isInternetReachable } = useNetInfo();
@@ -18,23 +21,30 @@ function useCheckTokenQuery({ enabled = true } = {}) {
     queryKey: ['check-token'],
     queryFn: async (): Promise<CheckToken> => {
       try {
-        const response = await axios.get<LoginResponse>(`${env.api_url}/users/check-token`, {
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get<LoginResponse>(
+          `${env.api_url}/users/check-token`,
+          {
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         return mapCheckTokenResponse(response.data);
-      } catch (err) {
-        console.log(err.message);
+      } catch (error) {
+        console.log(error.message);
         throw new Error('A megadott token nem érvényes.');
       }
     },
-    enabled: isInternetReachable === true && enabled && isTokenSuccess && !!token,
+    enabled:
+      isInternetReachable === true && enabled && isTokenSuccess && !!token,
     staleTime: 300_000,
     retry: false,
   });
 }
 
-export default function useCheckToken({ enabled = true } = {}) {
+export function useCheckToken({ enabled = true } = {}) {
   const checkTokenResult = useCheckTokenQuery({ enabled });
   const { isInternetReachable } = useNetInfo();
   const queryClient = useQueryClient();
@@ -54,14 +64,23 @@ export default function useCheckToken({ enabled = true } = {}) {
 
   useEffect(() => {
     if (checkTokenResult.isSuccess && !equals(user, checkTokenResult.data)) {
-      AsyncStorage.setItem('boreal-user-backup', JSON.stringify(checkTokenResult.data)).then(() => {
+      AsyncStorage.setItem(
+        'boreal-user-backup',
+        JSON.stringify(checkTokenResult.data)
+      ).then(() => {
         setUser(checkTokenResult.data);
         if (isInternetReachable === true) {
           queryClient.invalidateQueries({ queryKey: ['stores'] });
         }
       });
     }
-  }, [checkTokenResult.data, checkTokenResult.isSuccess, isInternetReachable, queryClient, user]);
+  }, [
+    checkTokenResult.data,
+    checkTokenResult.isSuccess,
+    isInternetReachable,
+    queryClient,
+    user,
+  ]);
 
   return {
     data: user,

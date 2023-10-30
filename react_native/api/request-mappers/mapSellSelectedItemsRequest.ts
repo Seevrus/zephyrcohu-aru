@@ -1,20 +1,23 @@
 import { identity } from 'ramda';
 
-import { SellSelectedItemsRequest } from '../request-types/SellSelectedItemsRequest';
-import { StoreDetailsResponseData } from '../response-types/StoreDetailsResponseType';
+import { type SellSelectedItemsRequest } from '../request-types/SellSelectedItemsRequest';
+import { type StoreDetailsResponseData } from '../response-types/StoreDetailsResponseType';
 
-export default function mapSellSelectedItemsRequest(
+export function mapSellSelectedItemsRequest(
   storeDetails: StoreDetailsResponseData,
   updatedStorage: StoreDetailsResponseData
 ): SellSelectedItemsRequest {
   const changes = storeDetails.expirations
     .map((expiration) => {
       const soldItemExpiration = updatedStorage.expirations.find(
-        (e) => e.expirationId === expiration.expirationId
+        (exp) => exp.expirationId === expiration.expirationId
       );
 
-      if (!soldItemExpiration || expiration.quantity === soldItemExpiration.quantity) {
-        return undefined;
+      if (
+        !soldItemExpiration ||
+        expiration.quantity === soldItemExpiration.quantity
+      ) {
+        return;
       }
 
       return {

@@ -1,15 +1,21 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import {
+  FlatList,
+  type ListRenderItem,
+  type ListRenderItemInfo,
+  StyleSheet,
+  View,
+} from 'react-native';
 
-import useCheckToken from '../../api/queries/useCheckToken';
-import useToken from '../../api/queries/useToken';
-import Loading from '../../components/Loading';
-import Tile, { TileT } from '../../components/Tile';
-import TextCard from '../../components/info-cards/TextCard';
-import colors from '../../constants/colors';
-import useTiles from '../../hooks/useTiles';
+import { useCheckToken } from '../../api/queries/useCheckToken';
+import { useToken } from '../../api/queries/useToken';
+import { Loading } from '../../components/Loading';
+import { Tile, type TileT } from '../../components/Tile';
+import { TextCard } from '../../components/info-cards/TextCard';
+import { colors } from '../../constants/colors';
+import { useTiles } from '../../hooks/useTiles';
 
-export default function Index() {
+export function Index() {
   const { isPending: isUserPending } = useCheckToken();
   const { isInternetReachable } = useNetInfo();
   const {
@@ -19,7 +25,9 @@ export default function Index() {
 
   const tiles = useTiles();
 
-  const renderTile: ListRenderItem<TileT> = (info: ListRenderItemInfo<TileT>) => (
+  const renderTile: ListRenderItem<TileT> = (
+    info: ListRenderItemInfo<TileT>
+  ) => (
     <Tile
       id={info.item.id}
       title={info.item.title}
@@ -37,7 +45,9 @@ export default function Index() {
     <View style={styles.container}>
       {!isInternetReachable && (
         <View style={styles.textCardContainer}>
-          <TextCard>Az alkalmazás jelenleg internetkapcsolat nélkül működik.</TextCard>
+          <TextCard>
+            Az alkalmazás jelenleg internetkapcsolat nélkül működik.
+          </TextCard>
         </View>
       )}
       {isPasswordExpired && (
@@ -50,21 +60,22 @@ export default function Index() {
           <TextCard>Körindításhoz és -záráshoz kérem jelentkezzen be.</TextCard>
         </View>
       )}
-      <FlatList data={tiles} keyExtractor={(tile) => tile.id} renderItem={renderTile} />
+      <FlatList
+        data={tiles}
+        keyExtractor={(tile) => tile.id}
+        renderItem={renderTile}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: colors.background,
+    flex: 1,
     paddingBottom: 30,
   },
   textCardContainer: {
-    marginTop: 30,
-  },
-  error: {
     marginTop: 30,
   },
 });

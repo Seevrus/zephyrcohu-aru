@@ -1,28 +1,38 @@
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { format } from 'date-fns';
 import { equals } from 'ramda';
 import { memo, useState } from 'react';
-import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 
-import AnimatedListItem from '../../../components/ui/AnimatedListItem';
-import Button from '../../../components/ui/Button';
-import LabeledItem from '../../../components/ui/LabeledItem';
-import colors from '../../../constants/colors';
-import fontSizes from '../../../constants/fontSizes';
-import { StackParams } from '../../../navigators/screen-types';
-import { RegularReviewItem } from '../../../providers/sell-flow-hooks/useReview';
-import formatPrice from '../../../utils/formatPrice';
-import getReviewItemId from './getReviewItemId';
+import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';
+import { Button } from '../../../components/ui/Button';
+import { LabeledItem } from '../../../components/ui/LabeledItem';
+import { colors } from '../../../constants/colors';
+import { type StackParams } from '../../../navigators/screen-types';
+import { type RegularReviewItem } from '../../../providers/sell-flow-hooks/useReview';
+import { formatPrice } from '../../../utils/formatPrice';
+import { getReviewItemId } from './getReviewItemId';
 
 type SelectionProps = {
   selected: boolean;
   item: RegularReviewItem;
   onSelect: (id: string) => void;
-  onDelete: ({ itemId, expirationId }: { itemId: number; expirationId: number }) => void;
+  onDelete: ({
+    itemId,
+    expirationId,
+  }: {
+    itemId: number;
+    expirationId: number;
+  }) => void;
 };
 
-function RegularItemSelection({ selected, item, onSelect, onDelete }: SelectionProps) {
+function _RegularItemSelection({
+  selected,
+  item,
+  onSelect,
+  onDelete,
+}: SelectionProps) {
   const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
 
   const backgroundColor = selected ? colors.ok : colors.neutral;
@@ -30,9 +40,15 @@ function RegularItemSelection({ selected, item, onSelect, onDelete }: SelectionP
 
   const [dropdownHeight, setDropdownHeight] = useState(250);
 
-  const absoluteDiscount = item.selectedDiscounts?.find((d) => d.type === 'absolute');
-  const percentageDiscount = item.selectedDiscounts?.find((d) => d.type === 'percentage');
-  const freeFormDiscount = item.selectedDiscounts?.find((d) => d.type === 'freeForm');
+  const absoluteDiscount = item.selectedDiscounts?.find(
+    (d) => d.type === 'absolute'
+  );
+  const percentageDiscount = item.selectedDiscounts?.find(
+    (d) => d.type === 'percentage'
+  );
+  const freeFormDiscount = item.selectedDiscounts?.find(
+    (d) => d.type === 'freeForm'
+  );
 
   return (
     <AnimatedListItem
@@ -54,8 +70,14 @@ function RegularItemSelection({ selected, item, onSelect, onDelete }: SelectionP
           <LabeledItem label="Lejárat" text={expiresAt} />
         </View>
         <View style={styles.infoGroup}>
-          <LabeledItem label="Mennyiség" text={`${item.quantity} ${item.unitName}`} />
-          <LabeledItem label="Bruttó összeg" text={formatPrice(item.grossAmount)} />
+          <LabeledItem
+            label="Mennyiség"
+            text={`${item.quantity} ${item.unitName}`}
+          />
+          <LabeledItem
+            label="Bruttó összeg"
+            text={formatPrice(item.grossAmount)}
+          />
         </View>
         {item.selectedDiscounts && (
           <>
@@ -66,26 +88,44 @@ function RegularItemSelection({ selected, item, onSelect, onDelete }: SelectionP
               <View style={styles.firstInfoGroup}>
                 <LabeledItem label="Típus" text="abszolút" />
                 <LabeledItem label="Név" text={absoluteDiscount.name} />
-                <LabeledItem label="Mennyiség" text={String(absoluteDiscount.quantity)} />
+                <LabeledItem
+                  label="Mennyiség"
+                  text={String(absoluteDiscount.quantity)}
+                />
               </View>
             )}
             {percentageDiscount && (
-              <View style={absoluteDiscount ? styles.infoGroup : styles.firstInfoGroup}>
+              <View
+                style={
+                  absoluteDiscount ? styles.infoGroup : styles.firstInfoGroup
+                }
+              >
                 <LabeledItem label="Típus" text="százalékos" />
                 <LabeledItem label="Név" text={percentageDiscount.name} />
-                <LabeledItem label="Mennyiség" text={String(percentageDiscount.quantity)} />
+                <LabeledItem
+                  label="Mennyiség"
+                  text={String(percentageDiscount.quantity)}
+                />
               </View>
             )}
             {freeFormDiscount && (
               <View
                 style={
-                  absoluteDiscount || percentageDiscount ? styles.infoGroup : styles.firstInfoGroup
+                  absoluteDiscount || percentageDiscount
+                    ? styles.infoGroup
+                    : styles.firstInfoGroup
                 }
               >
                 <LabeledItem label="Típus" text="tetszőleges" />
                 <LabeledItem label="Név" text={freeFormDiscount.name} />
-                <LabeledItem label="Mennyiség" text={String(freeFormDiscount.quantity)} />
-                <LabeledItem label="Ár" text={String(freeFormDiscount.price ?? '')} />
+                <LabeledItem
+                  label="Mennyiség"
+                  text={String(freeFormDiscount.quantity)}
+                />
+                <LabeledItem
+                  label="Ár"
+                  text={String(freeFormDiscount.price ?? '')}
+                />
               </View>
             )}
           </>
@@ -93,7 +133,9 @@ function RegularItemSelection({ selected, item, onSelect, onDelete }: SelectionP
         <View style={styles.buttonContainer}>
           <Button
             variant="warning"
-            onPress={() => onDelete({ itemId: item.itemId, expirationId: item.expirationId })}
+            onPress={() =>
+              onDelete({ itemId: item.itemId, expirationId: item.expirationId })
+            }
           >
             Törlés
           </Button>
@@ -113,34 +155,29 @@ function RegularItemSelection({ selected, item, onSelect, onDelete }: SelectionP
   );
 }
 
-export default memo(RegularItemSelection, equals);
+export const RegularItemSelection = memo(_RegularItemSelection, equals);
 
 const styles = StyleSheet.create({
-  selectPartnerContainer: {
-    padding: 10,
-    paddingTop: 0,
-    justifyContent: 'flex-start',
-    alignContent: 'flex-start',
+  buttonContainer: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    width: '85%',
   },
   firstInfoGroup: {
     marginTop: 10,
   },
   infoGroup: {
+    borderTopColor: colors.white,
+    borderTopWidth: 1,
     marginTop: 10,
     paddingTop: 5,
-    borderTopColor: 'white',
-    borderTopWidth: 1,
   },
-  infoText: {
-    color: 'white',
-    fontFamily: 'Muli',
-    fontSize: fontSizes.input,
-  },
-  buttonContainer: {
-    width: '85%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignSelf: 'center',
-    marginTop: 10,
+  selectPartnerContainer: {
+    alignContent: 'flex-start',
+    justifyContent: 'flex-start',
+    padding: 10,
+    paddingTop: 0,
   },
 });

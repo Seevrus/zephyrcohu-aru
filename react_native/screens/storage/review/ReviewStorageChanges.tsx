@@ -1,24 +1,38 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useMemo, useState } from 'react';
-import { Alert, FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  View,
+  type ListRenderItemInfo,
+} from 'react-native';
 
-import Loading from '../../../components/Loading';
-import ErrorCard from '../../../components/info-cards/ErrorCard';
-import TextCard from '../../../components/info-cards/TextCard';
-import Button from '../../../components/ui/Button';
-import colors from '../../../constants/colors';
-import { ListItem, useStorageFlowContext } from '../../../providers/StorageFlowProvider';
-import { ReviewStorageChangesProps } from '../../../navigators/screen-types';
-import ReviewExpirationItem from './ReviewExpirationItem';
+import { Loading } from '../../../components/Loading';
+import { ErrorCard } from '../../../components/info-cards/ErrorCard';
+import { TextCard } from '../../../components/info-cards/TextCard';
+import { Button } from '../../../components/ui/Button';
+import { colors } from '../../../constants/colors';
+import { type ReviewStorageChangesProps } from '../../../navigators/screen-types';
+import {
+  useStorageFlowContext,
+  type ListItem,
+} from '../../../providers/StorageFlowProvider';
+import { ReviewExpirationItem } from './ReviewExpirationItem';
 
 const keyExtractor = (item: ListItem) => String(item.expirationId);
 
-export default function ReviewStorageChanges({ navigation }: ReviewStorageChangesProps) {
+export function ReviewStorageChanges({
+  navigation,
+}: ReviewStorageChangesProps) {
   const { isInternetReachable } = useNetInfo();
   const { items, handleSendChanges } = useStorageFlowContext();
 
   const changedItems = useMemo(
-    () => (items ?? []).filter((item) => item.currentQuantity !== item.originalQuantity),
+    () =>
+      (items ?? []).filter(
+        (item) => item.currentQuantity !== item.originalQuantity
+      ),
     [items]
   );
 
@@ -68,7 +82,9 @@ export default function ReviewStorageChanges({ navigation }: ReviewStorageChange
     <View style={styles.container}>
       {!isInternetReachable && (
         <View style={styles.cardContainer}>
-          <TextCard>Az alkalmazás jelenleg internetkapcsolat nélkül működik.</TextCard>
+          <TextCard>
+            Az alkalmazás jelenleg internetkapcsolat nélkül működik.
+          </TextCard>
         </View>
       )}
       {!!isError && (
@@ -77,11 +93,18 @@ export default function ReviewStorageChanges({ navigation }: ReviewStorageChange
         </View>
       )}
       <View style={styles.listContainer}>
-        <FlatList data={changedItems} keyExtractor={keyExtractor} renderItem={renderItem} />
+        <FlatList
+          data={changedItems}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+        />
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.buttonContainer}>
-          <Button variant={confirmButtonVariant} onPress={confirmStorageChanges}>
+          <Button
+            variant={confirmButtonVariant}
+            onPress={confirmStorageChanges}
+          >
             Véglegesítés
           </Button>
         </View>
@@ -91,25 +114,25 @@ export default function ReviewStorageChanges({ navigation }: ReviewStorageChange
 }
 
 const styles = StyleSheet.create({
-  container: {
+  buttonContainer: {
+    alignItems: 'center',
     flex: 1,
-    backgroundColor: colors.background,
+    justifyContent: 'space-between',
   },
   cardContainer: {
     marginTop: 30,
   },
-  listContainer: {
+  container: {
+    backgroundColor: colors.background,
     flex: 1,
   },
   footerContainer: {
+    borderTopColor: colors.white,
+    borderTopWidth: 2,
     height: 70,
     paddingVertical: 10,
-    borderTopColor: 'white',
-    borderTopWidth: 2,
   },
-  buttonContainer: {
+  listContainer: {
     flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
 });

@@ -1,8 +1,19 @@
 import { format, formatISO } from 'date-fns';
-import { filter, identity, indexBy, isEmpty, isNil, map, not, pipe, prop, sortBy } from 'ramda';
 import {
-  Dispatch,
-  SetStateAction,
+  filter,
+  identity,
+  indexBy,
+  isEmpty,
+  isNil,
+  map,
+  not,
+  pipe,
+  prop,
+  sortBy,
+} from 'ramda';
+import {
+  type Dispatch,
+  type SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -10,12 +21,19 @@ import {
   useState,
 } from 'react';
 
-import useItems from '../../api/queries/useItems';
-import { Partners } from '../../api/response-mappers/mapPartnersResponse';
-import { Discount, Expiration, ItemType } from '../../api/response-types/ItemsResponseType';
-import { PriceListType } from '../../api/response-types/PriceListResponseType';
-import itemsSearchReducer, { SearchStateActionKind } from '../../hooks/itemsSearchReducer';
-import calculateAmounts from '../../utils/calculateAmounts';
+import { useItems } from '../../api/queries/useItems';
+import { type Partners } from '../../api/response-mappers/mapPartnersResponse';
+import {
+  type Discount,
+  type Expiration,
+  type ItemType,
+} from '../../api/response-types/ItemsResponseType';
+import { type PriceListType } from '../../api/response-types/PriceListResponseType';
+import {
+  itemsSearchReducer,
+  SearchStateActionKind,
+} from '../../hooks/itemsSearchReducer';
+import { calculateAmounts } from '../../utils/calculateAmounts';
 import { useOrdersContext } from '../OrdersProvider';
 import { useReceiptsContext } from '../ReceiptsProvider';
 import { useStorageContext } from '../StorageProvider';
@@ -27,7 +45,7 @@ export type SellExpiration = {
   quantity: number | undefined;
 };
 
-export type SellExpirations = Record<number, SellExpiration>;
+type SellExpirations = Record<number, SellExpiration>;
 
 export type SellItem = {
   id: number;
@@ -41,13 +59,15 @@ export type SellItem = {
   availableDiscounts: Discount[] | null;
 };
 
-export type SellItems = SellItem[];
+type SellItems = SellItem[];
 
 export type UseSelectItems = {
   isPending: boolean;
   items: SellItems;
   selectedItems: Record<number, Record<number, number>>;
-  setSelectedItems: Dispatch<SetStateAction<Record<number, Record<number, number>>>>;
+  setSelectedItems: Dispatch<
+    SetStateAction<Record<number, Record<number, number>>>
+  >;
   selectedOrderItems: Record<number, number>;
   setSelectedOrderItems: Dispatch<SetStateAction<Record<number, number>>>;
   searchTerm: string;
@@ -59,7 +79,7 @@ export type UseSelectItems = {
   resetUseSelectItems: () => void;
 };
 
-export default function useSelectItems({
+export function useSelectItems({
   selectedPartner,
   currentPriceList,
 }: {
@@ -72,15 +92,20 @@ export default function useSelectItems({
     currentReceipt,
     setCurrentReceiptItems,
   } = useReceiptsContext();
-  const { isPending: isOrdersContextPending, saveCurrentOrder } = useOrdersContext();
+  const { isPending: isOrdersContextPending, saveCurrentOrder } =
+    useOrdersContext();
   const { storage, isPending: isStoragePending } = useStorageContext();
 
   const [storageExpirations, setStorageExpirations] = useState<
     Record<number, Record<number, number>>
   >({});
 
-  const [selectedItems, setSelectedItems] = useState<Record<number, Record<number, number>>>({});
-  const [selectedOrderItems, setSelectedOrderItems] = useState<Record<number, number>>({});
+  const [selectedItems, setSelectedItems] = useState<
+    Record<number, Record<number, number>>
+  >({});
+  const [selectedOrderItems, setSelectedOrderItems] = useState<
+    Record<number, number>
+  >({});
 
   const [searchState, dispatchSearchState] = useReducer(itemsSearchReducer, {
     searchTerm: '',
@@ -91,11 +116,15 @@ export default function useSelectItems({
 
   const setSearchTerm = useCallback(
     (payload: string) =>
-      dispatchSearchState({ type: SearchStateActionKind.SetSearchTerm, payload }),
+      dispatchSearchState({
+        type: SearchStateActionKind.SetSearchTerm,
+        payload,
+      }),
     []
   );
   const setBarCode = useCallback(
-    (payload: string) => dispatchSearchState({ type: SearchStateActionKind.SetBarCode, payload }),
+    (payload: string) =>
+      dispatchSearchState({ type: SearchStateActionKind.SetBarCode, payload }),
     []
   );
 
@@ -107,9 +136,12 @@ export default function useSelectItems({
           name: item.name,
           articleNumber: item.articleNumber,
           unitName: item.unitName,
-          barcodes: item.expirations.map((expiration) => `${item.barcode}${expiration.barcode}`),
+          barcodes: item.expirations.map(
+            (expiration) => `${item.barcode}${expiration.barcode}`
+          ),
           netPrice:
-            currentPriceList?.items.find((i) => i.itemId === item.id)?.netPrice ?? item.netPrice,
+            currentPriceList?.items.find((index) => index.itemId === item.id)
+              ?.netPrice ?? item.netPrice,
           vatRate: item.vatRate,
           expirations: pipe(
             map<Expiration, SellExpiration>((expiration) => ({
@@ -139,7 +171,7 @@ export default function useSelectItems({
           item.expirations.map((expiration) => {
             const quantity = selectedItems[item.id]?.[expiration.id];
 
-            if (quantity === undefined) return undefined;
+            if (quantity === undefined) return;
 
             const { netAmount, vatAmount, grossAmount } = calculateAmounts({
               netPrice: item.netPrice,
@@ -177,7 +209,7 @@ export default function useSelectItems({
         .map((item) => {
           const quantity = selectedOrderItems[item.id];
 
-          if (quantity === undefined) return undefined;
+          if (quantity === undefined) return;
 
           return {
             articleNumber: item.articleNumber,
@@ -193,7 +225,10 @@ export default function useSelectItems({
     setStorageExpirations({});
     setSelectedItems({});
     setSelectedOrderItems({});
-    dispatchSearchState({ type: SearchStateActionKind.ClearSearch, payload: '' });
+    dispatchSearchState({
+      type: SearchStateActionKind.ClearSearch,
+      payload: '',
+    });
   }, []);
 
   useEffect(() => {
@@ -206,7 +241,8 @@ export default function useSelectItems({
         if (!expirations[expiration.itemId]) {
           expirations[expiration.itemId] = {};
         }
-        expirations[expiration.itemId][expiration.expirationId] = expiration.quantity;
+        expirations[expiration.itemId][expiration.expirationId] =
+          expiration.quantity;
       });
 
       return expirations;
@@ -236,7 +272,8 @@ export default function useSelectItems({
 
   return useMemo(
     () => ({
-      isPending: isReceiptsContextPending || isOrdersContextPending || isStoragePending,
+      isPending:
+        isReceiptsContextPending || isOrdersContextPending || isStoragePending,
       items: sellItems,
       selectedItems,
       setSelectedItems,

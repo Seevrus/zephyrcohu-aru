@@ -1,6 +1,6 @@
 import { defaultTo } from 'ramda';
 
-export default function calculateAmounts({
+export function calculateAmounts({
   netPrice,
   quantity,
   vatRate,

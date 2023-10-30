@@ -1,4 +1,4 @@
-import { BasePriceListType } from './common/BasePriceListType';
+import { type BasePriceListType } from './common/BasePriceListType';
 
 type PriceListItemType = {
   itemId: number;

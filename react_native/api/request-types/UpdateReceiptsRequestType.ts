@@ -4,7 +4,3 @@ export type UpdateReceiptRequest = {
 };
 
 export type UpdateReceiptsRequestData = UpdateReceiptRequest[];
-
-export type UpdateReceiptsRequestType = {
-  data: UpdateReceiptsRequestData;
-};

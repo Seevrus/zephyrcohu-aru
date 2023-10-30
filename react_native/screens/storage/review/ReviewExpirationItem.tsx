@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import colors from '../../../constants/colors';
-import fontSizes from '../../../constants/fontSizes';
-import { ListItem } from '../../../providers/StorageFlowProvider';
+import { colors } from '../../../constants/colors';
+import { fontSizes } from '../../../constants/fontSizes';
+import { type ListItem } from '../../../providers/StorageFlowProvider';
 
 type ReviewExpirationItemProps = {
   item: ListItem;
 };
 
-export default function ReviewExpirationItem({ item }: ReviewExpirationItemProps) {
+export function ReviewExpirationItem({ item }: ReviewExpirationItemProps) {
   return (
     <View style={styles.container}>
       <View style={styles.selectItemTitle}>
@@ -35,38 +35,38 @@ export default function ReviewExpirationItem({ item }: ReviewExpirationItemProps
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: colors.neutral,
+    borderRadius: 10,
+    flex: 1,
     marginHorizontal: '7%',
     marginVertical: 10,
-    borderRadius: 10,
   },
-  selectItemTitle: {
+  detailsRow: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+  },
+  detailsRowText: {
+    color: colors.white,
+    fontFamily: 'Muli',
+    fontSize: fontSizes.body,
+  },
+  selectItemContainer: {
     padding: 10,
   },
   selectItemNameContainer: {
     width: '70%',
   },
   selectItemText: {
-    color: 'white',
+    color: colors.white,
     fontFamily: 'Muli',
     fontSize: fontSizes.body,
     fontWeight: 'bold',
   },
-  selectItemContainer: {
-    padding: 10,
-  },
-  detailsRow: {
+  selectItemTitle: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  detailsRowText: {
-    color: 'white',
-    fontFamily: 'Muli',
-    fontSize: fontSizes.body,
+    padding: 10,
   },
 });

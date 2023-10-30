@@ -1,5 +1,5 @@
-import { TimeStamps } from './TimeStamps';
-import { UserRoleType } from './UserRoleType';
+import { type TimeStamps } from './TimeStamps';
+import { type UserRoleType } from './UserRoleType';
 
 export type UserType = {
   id: number;

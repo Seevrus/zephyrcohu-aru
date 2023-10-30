@@ -1,5 +1,5 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   allPass,
   complement,
@@ -13,18 +13,27 @@ import {
   when,
 } from 'ramda';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  View,
+  type ListRenderItem,
+  type ListRenderItemInfo,
+} from 'react-native';
 
-import useSearchTaxNumber from '../../../api/queries/useSearchTaxNumber';
-import useToken from '../../../api/queries/useToken';
-import { TaxPayer } from '../../../api/response-mappers/mapSearchTaxPayerResponse';
-import Loading from '../../../components/Loading';
-import TextCard from '../../../components/info-cards/TextCard';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
-import colors from '../../../constants/colors';
-import { SearchPartnerNavFormProps, StackParams } from '../../../navigators/screen-types';
-import Selection from '../select-partner/Selection';
+import { useSearchTaxNumber } from '../../../api/queries/useSearchTaxNumber';
+import { useToken } from '../../../api/queries/useToken';
+import { type TaxPayer } from '../../../api/response-mappers/mapSearchTaxPayerResponse';
+import { Loading } from '../../../components/Loading';
+import { TextCard } from '../../../components/info-cards/TextCard';
+import { Button } from '../../../components/ui/Button';
+import { Input } from '../../../components/ui/Input';
+import { colors } from '../../../constants/colors';
+import {
+  type SearchPartnerNavFormProps,
+  type StackParams,
+} from '../../../navigators/screen-types';
+import { Selection } from '../select-partner/Selection';
 
 function Header({
   taxNumber,
@@ -33,15 +42,19 @@ function Header({
 }: {
   taxNumber: string;
   onTaxNumberChange: (taxNumber: string) => void;
-  navigation: NativeStackNavigationProp<StackParams, 'SearchPartnerNavForm', undefined>;
+  navigation: NativeStackNavigationProp<
+    StackParams,
+    'SearchPartnerNavForm',
+    undefined
+  >;
 }) {
   return (
     <>
       {!taxNumber && (
         <View style={styles.textCardContainer}>
           <TextCard>
-            Amennyiben nem találja a keresett partnert a listában, ezen az oldalon lehetősége van
-            keresésre a NAV adatbázisában.
+            Amennyiben nem találja a keresett partnert a listában, ezen az
+            oldalon lehetősége van keresésre a NAV adatbázisában.
           </TextCard>
         </View>
       )}
@@ -79,7 +92,7 @@ function Header({
 
 const NUM_PARTNERS_SHOWN = 10;
 
-export default function SearchPartnerNavForm({
+export function SearchPartnerNavForm({
   navigation,
   route: { params },
 }: SearchPartnerNavFormProps) {
@@ -93,7 +106,11 @@ export default function SearchPartnerNavForm({
   const [searchValue, setSearchValue] = useState<string>('');
   const [selectedResult, setSelectedResult] = useState<TaxPayer>(null);
 
-  const { data: taxPayerData, isPending, isSuccess } = useSearchTaxNumber({ taxNumber });
+  const {
+    data: taxPayerData,
+    isPending,
+    isSuccess,
+  } = useSearchTaxNumber({ taxNumber });
 
   const [taxPayersShown, setTaxPayersShown] = useState<TaxPayer[]>(null);
 
@@ -118,7 +135,10 @@ export default function SearchPartnerNavForm({
       return pipe(
         take(NUM_PARTNERS_SHOWN),
         when<TaxPayer[], TaxPayer[]>(
-          allPass([() => not(isNil(selectedResult)), complement(includes(selectedResult))]),
+          allPass([
+            () => not(isNil(selectedResult)),
+            complement(includes(selectedResult)),
+          ]),
           prepend(selectedResult)
         )
       )(taxPayerData);
@@ -137,14 +157,20 @@ export default function SearchPartnerNavForm({
           const needle = inputValue.toLocaleLowerCase();
           const haystack = Object.values(taxPayer.locations)
             .filter((location) => !!location)
-            .map((location) => `${location.name}${location.city}${location.address}`)
+            .map(
+              (location) =>
+                `${location.name}${location.city}${location.address}`
+            )
             .join('');
 
           return haystack.toLocaleLowerCase().includes(needle);
         }),
         take(NUM_PARTNERS_SHOWN),
         when<TaxPayer[], TaxPayer[]>(
-          allPass([() => not(isNil(selectedResult)), complement(includes(selectedResult))]),
+          allPass([
+            () => not(isNil(selectedResult)),
+            complement(includes(selectedResult)),
+          ]),
           prepend(selectedResult)
         )
       )(taxPayerData)
@@ -161,7 +187,9 @@ export default function SearchPartnerNavForm({
     if (selectedTaxPayer) {
       navigation.navigate('AddPartnerForm', {
         taxNumber: selectedTaxPayer.vatNumber,
-        name: selectedTaxPayer.locations.C.name ?? selectedTaxPayer.locations.D.name,
+        name:
+          selectedTaxPayer.locations.C.name ??
+          selectedTaxPayer.locations.D.name,
         centralPostalCode: selectedTaxPayer.locations.C?.postalCode,
         centralCity: selectedTaxPayer.locations.C?.city,
         centralAddress: selectedTaxPayer.locations.C?.address,
@@ -172,12 +200,15 @@ export default function SearchPartnerNavForm({
     }
   };
 
-  const renderPartner: ListRenderItem<TaxPayer> = (info: ListRenderItemInfo<TaxPayer>) => (
+  const renderPartner: ListRenderItem<TaxPayer> = (
+    info: ListRenderItemInfo<TaxPayer>
+  ) => (
     <Selection
       item={
         {
           id: info.item.id,
           locations: info.item.locations,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any
       }
       selected={info.item.id === selectedResult?.id}
@@ -225,30 +256,30 @@ export default function SearchPartnerNavForm({
 }
 
 const styles = StyleSheet.create({
+  bottomFormContainer: {
+    borderColor: colors.white,
+    borderTopWidth: 1,
+    marginTop: 20,
+  },
+  buttonContainer: {
+    marginHorizontal: '20%',
+    marginTop: 20,
+  },
   container: {
-    flex: 1,
     backgroundColor: colors.background,
-  },
-  textCardContainer: {
-    marginTop: 30,
-    marginBottom: 20,
-  },
-  listContainer: {
-    maxHeight: '83%',
+    flex: 1,
   },
   formContainer: {
     marginHorizontal: '5%',
   },
-  bottomFormContainer: {
-    marginTop: 20,
-    borderColor: 'white',
-    borderTopWidth: 1,
-  },
   inputContainer: {
     height: 90,
   },
-  buttonContainer: {
-    marginTop: 20,
-    marginHorizontal: '20%',
+  listContainer: {
+    maxHeight: '83%',
+  },
+  textCardContainer: {
+    marginBottom: 20,
+    marginTop: 30,
   },
 });

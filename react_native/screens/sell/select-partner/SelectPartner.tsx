@@ -16,24 +16,27 @@ import {
 import { useEffect, useState } from 'react';
 import {
   FlatList,
-  ListRenderItem,
-  ListRenderItemInfo,
   Pressable,
   StyleSheet,
   View,
+  type ListRenderItem,
+  type ListRenderItemInfo,
 } from 'react-native';
 
-import { Partners } from '../../../api/response-mappers/mapPartnersResponse';
-import Loading from '../../../components/Loading';
-import Input from '../../../components/ui/Input';
-import colors from '../../../constants/colors';
-import { PartnerList, SelectPartnerProps } from '../../../navigators/screen-types';
+import { type Partners } from '../../../api/response-mappers/mapPartnersResponse';
+import { Loading } from '../../../components/Loading';
+import { Input } from '../../../components/ui/Input';
+import { colors } from '../../../constants/colors';
+import {
+  type PartnerList,
+  type SelectPartnerProps,
+} from '../../../navigators/screen-types';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
-import Selection from './Selection';
+import { Selection } from './Selection';
 
 const NUM_PARTNERS_SHOWN = 10;
 
-export default function SelectPartner({ route, navigation }: SelectPartnerProps) {
+export function SelectPartner({ route, navigation }: SelectPartnerProps) {
   const { isInternetReachable } = useNetInfo();
   const {
     isPending: isContextPending,
@@ -58,7 +61,10 @@ export default function SelectPartner({ route, navigation }: SelectPartnerProps)
         prop(partnerListType),
         take(NUM_PARTNERS_SHOWN),
         when<Partners, Partners>(
-          allPass([() => not(isNil(selectedPartner)), complement(includes(selectedPartner))]),
+          allPass([
+            () => not(isNil(selectedPartner)),
+            complement(includes(selectedPartner)),
+          ]),
           prepend(selectedPartner)
         )
       )(partners);
@@ -67,19 +73,31 @@ export default function SelectPartner({ route, navigation }: SelectPartnerProps)
 
   const searchInputHandler = (inputValue: string) => {
     setPartnersShown(
-      pipe<[Record<PartnerList, Partners>], Partners, Partners, Partners, Partners>(
+      pipe<
+        [Record<PartnerList, Partners>],
+        Partners,
+        Partners,
+        Partners,
+        Partners
+      >(
         prop(partnerListType),
         filter<Partners[number]>((partner) => {
           const needle = inputValue.toLocaleLowerCase();
           const haystack = Object.values(partner.locations)
-            .map((location) => `${location.name}${location.city}${location.address}`)
+            .map(
+              (location) =>
+                `${location.name}${location.city}${location.address}`
+            )
             .join('');
 
           return haystack.toLocaleLowerCase().includes(needle);
         }),
         take(NUM_PARTNERS_SHOWN),
         when<Partners, Partners>(
-          allPass([() => not(isNil(selectedPartner)), complement(includes(selectedPartner))]),
+          allPass([
+            () => not(isNil(selectedPartner)),
+            complement(includes(selectedPartner)),
+          ]),
           prepend(selectedPartner)
         )
       )(partners)
@@ -146,25 +164,20 @@ export default function SelectPartner({ route, navigation }: SelectPartnerProps)
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: colors.background,
+    flex: 1,
   },
   headerContainer: {
     height: 65,
     marginVertical: 10,
   },
-  buttonContainer: {
-    flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  searchInputContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: '7%',
-  },
   listContainer: {
     flex: 1,
+  },
+  searchInputContainer: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    marginHorizontal: '7%',
   },
 });

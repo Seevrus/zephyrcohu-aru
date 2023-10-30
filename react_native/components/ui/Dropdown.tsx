@@ -2,8 +2,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 
-import colors from '../../constants/colors';
-import fontSizes from '../../constants/fontSizes';
+import { colors } from '../../constants/colors';
+import { fontSizes } from '../../constants/fontSizes';
 
 type DropdownItem = {
   key: string;
@@ -23,7 +23,7 @@ const defaultProps = {
   defaultOption: {},
 };
 
-export default function Dropdown({
+export function Dropdown({
   label,
   labelPosition,
   data,
@@ -31,15 +31,9 @@ export default function Dropdown({
   onSelect,
 }: DropdownProps) {
   const dynamicStyles = StyleSheet.create({
-    container: {
-      flexDirection: labelPosition === 'left' ? 'row' : 'column',
-    },
     label: {
       ...(labelPosition === 'left' && { marginRight: 10 }),
       ...(labelPosition === 'top' && { marginBottom: 4 }),
-    },
-    input: {
-      ...(labelPosition === 'top' && { width: '100%' }),
     },
   });
 
@@ -56,8 +50,12 @@ export default function Dropdown({
         searchPlaceholder=" "
         notFoundText="Nem található."
         searchicon={<MaterialIcons name="search" size={24} color="white" />}
-        arrowicon={<MaterialIcons name="arrow-drop-down" size={24} color="white" />}
-        closeicon={<MaterialIcons name="arrow-drop-up" size={24} color="white" />}
+        arrowicon={
+          <MaterialIcons name="arrow-drop-down" size={24} color="white" />
+        }
+        closeicon={
+          <MaterialIcons name="arrow-drop-up" size={24} color="white" />
+        }
         boxStyles={styles.box}
         inputStyles={styles.input}
         dropdownStyles={styles.dropdown}
@@ -72,21 +70,19 @@ export default function Dropdown({
 Dropdown.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
+  box: {
+    backgroundColor: colors.input,
+    borderRadius: 8,
+    borderWidth: 0,
+  },
   container: {
     marginHorizontal: '7%',
   },
-  label: {
-    fontSize: fontSizes.body,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  box: {
+  disabledItem: {
     backgroundColor: colors.input,
-    borderWidth: 0,
-    borderRadius: 8,
   },
-  input: {
-    color: 'white',
+  disabledText: {
+    color: colors.gray400,
     fontSize: fontSizes.input,
     fontWeight: 'bold',
   },
@@ -100,16 +96,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.input,
   },
   dropdownText: {
-    color: 'white',
+    color: colors.white,
     fontSize: fontSizes.input,
     fontWeight: 'bold',
   },
-  disabledItem: {
-    backgroundColor: colors.input,
-  },
-  disabledText: {
-    color: colors.gray400,
+  input: {
+    color: colors.white,
     fontSize: fontSizes.input,
+    fontWeight: 'bold',
+  },
+  label: {
+    color: colors.white,
+    fontSize: fontSizes.body,
     fontWeight: 'bold',
   },
 });

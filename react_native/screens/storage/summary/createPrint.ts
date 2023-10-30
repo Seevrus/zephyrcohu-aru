@@ -1,9 +1,10 @@
+/* eslint-disable import/no-duplicates */
 import { format } from 'date-fns';
 import { hu } from 'date-fns/locale';
 
-import { CheckToken } from '../../../api/response-mappers/mapCheckTokenResponse';
-import { ListItem } from '../../../providers/StorageFlowProvider';
-import { StoreDetailsResponseData } from '../../../api/response-types/StoreDetailsResponseType';
+import { type CheckToken } from '../../../api/response-mappers/mapCheckTokenResponse';
+import { type ListItem } from '../../../providers/StorageFlowProvider';
+import { type StoreDetailsResponseData } from '../../../api/response-types/StoreDetailsResponseType';
 
 function mapToNr(index: number) {
   const stringIndex = String(index);
@@ -15,7 +16,7 @@ function mapToNr(index: number) {
   return '0'.repeat(3 - stringIndex.length) + stringIndex;
 }
 
-const docType = '<!DOCTYPE html>';
+const documentType = '<!DOCTYPE html>';
 const head = `
   <head>
     <meta charset="UTF-8" />
@@ -206,7 +207,7 @@ const head = `
   </head>
 `;
 
-export default function createPrint({
+export function createPrint({
   receiptItems,
   storeDetails,
   user,
@@ -249,7 +250,8 @@ export default function createPrint({
         <div class="ok">Ok?</div>
       </div>
       ${receiptItems.map((item, index) => {
-        const quantityChange = (item.currentQuantity || 0) - (item.originalQuantity || 0);
+        const quantityChange =
+          (item.currentQuantity || 0) - (item.originalQuantity || 0);
 
         return `
           <div class="item">
@@ -259,7 +261,9 @@ export default function createPrint({
             <div class="item-name">${item.name}</div>
             <div class="unit">${item.unitName}</div>
             <div class="starting-quantity">${item.originalQuantity || 0}</div>
-            <div class="quantity-change">${quantityChange > 0 ? '+' : ''}${quantityChange}</div>
+            <div class="quantity-change">${
+              quantityChange > 0 ? '+' : ''
+            }${quantityChange}</div>
             <div class="final-quantity">${item.currentQuantity}</div>
             <div class="ok">[]</div>
           </div>
@@ -271,7 +275,8 @@ export default function createPrint({
   const createItemsSummarySection = () => {
     const itemsSummary = receiptItems.reduce(
       (prev, item) => {
-        const quantityChange = (item.currentQuantity || 0) - (item.originalQuantity || 0);
+        const quantityChange =
+          (item.currentQuantity || 0) - (item.originalQuantity || 0);
 
         return {
           originalQuantity: prev.originalQuantity + item.originalQuantity,
@@ -311,14 +316,14 @@ export default function createPrint({
           <div>Ellenőrizte</div>
         </div>
       </div>
-      <div class="end-delimiter">|> ${format(new Date(), 'yyyy.MM.dd.')} | ${user.code} | ${
-        user.name
-      } <|</div>
+      <div class="end-delimiter">|> ${format(new Date(), 'yyyy.MM.dd.')} | ${
+        user.code
+      } | ${user.name} <|</div>
     </footer>
   `;
 
   return `
-    ${docType}
+    ${documentType}
     <html lang="en">
       ${head}
       <body>

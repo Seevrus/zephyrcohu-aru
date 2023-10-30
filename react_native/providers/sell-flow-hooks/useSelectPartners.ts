@@ -1,13 +1,13 @@
 import { sort } from 'ramda';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import useActiveRound from '../../api/queries/useActiveRound';
-import usePartnerLists from '../../api/queries/usePartnerLists';
-import usePartners from '../../api/queries/usePartners';
-import usePriceLists from '../../api/queries/usePriceLists';
-import { Partners } from '../../api/response-mappers/mapPartnersResponse';
-import { TaxPayer } from '../../api/response-mappers/mapSearchTaxPayerResponse';
-import { PriceListType } from '../../api/response-types/PriceListResponseType';
+import { useActiveRound } from '../../api/queries/useActiveRound';
+import { usePartnerLists } from '../../api/queries/usePartnerLists';
+import { usePartners } from '../../api/queries/usePartners';
+import { usePriceLists } from '../../api/queries/usePriceLists';
+import { type Partners } from '../../api/response-mappers/mapPartnersResponse';
+import { type TaxPayer } from '../../api/response-mappers/mapSearchTaxPayerResponse';
+import { type PriceListType } from '../../api/response-types/PriceListResponseType';
 import { PartnerList } from '../../navigators/screen-types';
 import { useReceiptsContext } from '../ReceiptsProvider';
 
@@ -24,9 +24,11 @@ export type UseSelectPartners = {
   resetUseSelectPartners: () => void;
 };
 
-export default function useSelectPartners(): UseSelectPartners {
-  const { data: activeRound, isPending: isActiveRoundPending } = useActiveRound();
-  const { data: partnerLists, isPending: isPartnersListsPending } = usePartnerLists();
+export function useSelectPartners(): UseSelectPartners {
+  const { data: activeRound, isPending: isActiveRoundPending } =
+    useActiveRound();
+  const { data: partnerLists, isPending: isPartnersListsPending } =
+    usePartnerLists();
   const { data: partners, isPending: isPartnersPending } = usePartners();
   const { data: priceLists, isPending: isPriceListsPending } = usePriceLists();
   const {
@@ -37,15 +39,23 @@ export default function useSelectPartners(): UseSelectPartners {
 
   const isPartnerChosenForCurrentReceipt = !!currentReceipt?.buyer;
 
-  const [selectedPartner, setSelectedPartner] = useState<Partners[number] | null>(null);
+  const [selectedPartner, setSelectedPartner] = useState<
+    Partners[number] | null
+  >(null);
 
   const currentPartnerList = useMemo(
-    () => partnerLists?.find((partnerList) => partnerList.id === activeRound?.partnerListId),
+    () =>
+      partnerLists?.find(
+        (partnerList) => partnerList.id === activeRound?.partnerListId
+      ),
     [activeRound?.partnerListId, partnerLists]
   );
 
   const currentPriceList = useMemo(
-    () => priceLists?.find((priceList) => priceList.id === selectedPartner?.priceList?.id),
+    () =>
+      priceLists?.find(
+        (priceList) => priceList.id === selectedPartner?.priceList?.id
+      ),
     [priceLists, selectedPartner?.priceList?.id]
   );
 
@@ -58,7 +68,9 @@ export default function useSelectPartners(): UseSelectPartners {
 
   const selectPartner = useCallback(
     (id: number) => {
-      setSelectedPartner(partners?.find((partner) => partner.id === id) ?? null);
+      setSelectedPartner(
+        partners?.find((partner) => partner.id === id) ?? null
+      );
     },
     [partners]
   );
@@ -66,7 +78,10 @@ export default function useSelectPartners(): UseSelectPartners {
   const partnersToShow: Record<PartnerList, Partners> = useMemo(() => {
     const sortedPartners = sort(
       (partner1, partner2) =>
-        partner1.locations?.D?.name.localeCompare(partner2.locations?.D?.name, 'HU-hu'),
+        partner1.locations?.D?.name.localeCompare(
+          partner2.locations?.D?.name,
+          'HU-hu'
+        ),
       partners ?? []
     );
 
@@ -86,12 +101,21 @@ export default function useSelectPartners(): UseSelectPartners {
       partnerSiteCode: selectedPartner.siteCode,
       buyer: {
         id: selectedPartner.id,
-        name: selectedPartner.locations.C?.name ?? selectedPartner.locations.D?.name,
-        country: selectedPartner.locations.C?.country ?? selectedPartner.locations.D?.country,
+        name:
+          selectedPartner.locations.C?.name ??
+          selectedPartner.locations.D?.name,
+        country:
+          selectedPartner.locations.C?.country ??
+          selectedPartner.locations.D?.country,
         postalCode:
-          selectedPartner.locations.C?.postalCode ?? selectedPartner.locations.D?.postalCode,
-        city: selectedPartner.locations.C?.city ?? selectedPartner.locations.D?.city,
-        address: selectedPartner.locations.C?.address ?? selectedPartner.locations.D?.address,
+          selectedPartner.locations.C?.postalCode ??
+          selectedPartner.locations.D?.postalCode,
+        city:
+          selectedPartner.locations.C?.city ??
+          selectedPartner.locations.D?.city,
+        address:
+          selectedPartner.locations.C?.address ??
+          selectedPartner.locations.D?.address,
         deliveryName: selectedPartner.locations.D?.name,
         deliveryCountry: selectedPartner.locations.D?.country,
         deliveryPostalCode: selectedPartner.locations.D?.postalCode,
@@ -137,10 +161,14 @@ export default function useSelectPartners(): UseSelectPartners {
         buyer: {
           id: newPartnerId,
           name: newPartner.locations.C?.name ?? newPartner.locations.D.name,
-          country: newPartner.locations.C?.country ?? newPartner.locations.D?.country,
-          postalCode: newPartner.locations.C?.postalCode ?? newPartner.locations.D?.postalCode,
+          country:
+            newPartner.locations.C?.country ?? newPartner.locations.D?.country,
+          postalCode:
+            newPartner.locations.C?.postalCode ??
+            newPartner.locations.D?.postalCode,
           city: newPartner.locations.C?.city ?? newPartner.locations.D?.city,
-          address: newPartner.locations.C?.address ?? newPartner.locations.D?.address,
+          address:
+            newPartner.locations.C?.address ?? newPartner.locations.D?.address,
           deliveryName: newPartner.locations.D?.name,
           deliveryCountry: newPartner.locations.D?.country,
           deliveryPostalCode: newPartner.locations.D?.postalCode,
@@ -165,7 +193,8 @@ export default function useSelectPartners(): UseSelectPartners {
   useEffect(() => {
     if (!!partners && maxPartnerIdInUse.current === -1) {
       maxPartnerIdInUse.current = partners.reduce(
-        (currentMaxId, partner) => (partner.id > currentMaxId ? partner.id : currentMaxId),
+        (currentMaxId, partner) =>
+          partner.id > currentMaxId ? partner.id : currentMaxId,
         -1
       );
     }
@@ -174,7 +203,9 @@ export default function useSelectPartners(): UseSelectPartners {
   useEffect(() => {
     if (currentReceipt?.buyer) {
       const buyerId = currentReceipt.buyer?.id;
-      setSelectedPartner(partners?.find((partner) => partner.id === buyerId) ?? null);
+      setSelectedPartner(
+        partners?.find((partner) => partner.id === buyerId) ?? null
+      );
     }
   }, [currentReceipt?.buyer, partners]);
 

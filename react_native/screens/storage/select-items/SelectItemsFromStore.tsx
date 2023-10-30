@@ -1,23 +1,42 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { isNil } from 'ramda';
 import { useEffect, useMemo } from 'react';
-import { Animated, ListRenderItemInfo, Pressable, StyleSheet, View } from 'react-native';
+import {
+  Animated,
+  Pressable,
+  StyleSheet,
+  View,
+  type ListRenderItemInfo,
+} from 'react-native';
 
-import Loading from '../../../components/Loading';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
-import colors from '../../../constants/colors';
-import { ListItem, useStorageFlowContext } from '../../../providers/StorageFlowProvider';
-import { SelectItemsFromStoreProps } from '../../../navigators/screen-types';
-import ExpirationAccordionDetails from './ExpirationAccordionDetails';
+import { Loading } from '../../../components/Loading';
+import { Button } from '../../../components/ui/Button';
+import { Input } from '../../../components/ui/Input';
+import { colors } from '../../../constants/colors';
+import { type SelectItemsFromStoreProps } from '../../../navigators/screen-types';
+import {
+  useStorageFlowContext,
+  type ListItem,
+} from '../../../providers/StorageFlowProvider';
+import { ExpirationAccordionDetails } from './ExpirationAccordionDetails';
 
 const keyExtractor = (item: ListItem) => String(item.expirationId);
 
-export default function SelectItemsFromStore({ navigation, route }: SelectItemsFromStoreProps) {
+export function SelectItemsFromStore({
+  navigation,
+  route,
+}: SelectItemsFromStoreProps) {
   const scannedBarCode = route.params?.scannedBarCode;
 
-  const { isPending, items, setCurrentQuantity, searchTerm, setSearchTerm, barCode, setBarCode } =
-    useStorageFlowContext();
+  const {
+    isPending,
+    items,
+    setCurrentQuantity,
+    searchTerm,
+    setSearchTerm,
+    barCode,
+    setBarCode,
+  } = useStorageFlowContext();
 
   const isAnyItemChanged = useMemo(
     () => items?.some((item) => item.currentQuantity !== item.originalQuantity),
@@ -36,7 +55,10 @@ export default function SelectItemsFromStore({ navigation, route }: SelectItemsF
   }
 
   const renderItem = (info: ListRenderItemInfo<ListItem>) => (
-    <ExpirationAccordionDetails item={info.item} setCurrentQuantity={setCurrentQuantity} />
+    <ExpirationAccordionDetails
+      item={info.item}
+      setCurrentQuantity={setCurrentQuantity}
+    />
   );
 
   const sendButtonVariant = isAnyItemChanged ? 'ok' : 'disabled';
@@ -62,7 +84,11 @@ export default function SelectItemsFromStore({ navigation, route }: SelectItemsF
                 setBarCode('');
               }}
             >
-              <MaterialCommunityIcons name="barcode-off" size={40} color="white" />
+              <MaterialCommunityIcons
+                name="barcode-off"
+                size={40}
+                color="white"
+              />
             </Pressable>
           ) : (
             <Pressable
@@ -94,32 +120,32 @@ export default function SelectItemsFromStore({ navigation, route }: SelectItemsF
 }
 
 const styles = StyleSheet.create({
-  container: {
+  buttonContainer: {
+    alignItems: 'center',
     flex: 1,
+    justifyContent: 'space-between',
+  },
+  container: {
     backgroundColor: colors.background,
+    flex: 1,
+  },
+  footerContainer: {
+    borderTopColor: colors.white,
+    borderTopWidth: 2,
+    height: 70,
+    paddingVertical: 10,
   },
   headerContainer: {
     height: 65,
     marginVertical: 10,
   },
-  searchInputContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: '7%',
-  },
   listContainer: {
     flex: 1,
   },
-  footerContainer: {
-    height: 70,
-    paddingVertical: 10,
-    borderTopColor: 'white',
-    borderTopWidth: 2,
-  },
-  buttonContainer: {
-    flex: 1,
-    justifyContent: 'space-between',
+  searchInputContainer: {
     alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    marginHorizontal: '7%',
   },
 });

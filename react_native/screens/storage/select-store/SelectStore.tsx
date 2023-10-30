@@ -13,20 +13,26 @@ import {
   toLower,
 } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  View,
+  type ListRenderItem,
+  type ListRenderItemInfo,
+} from 'react-native';
 
-import useSelectStore from '../../../api/mutations/useSelectStore';
-import useStores from '../../../api/queries/useStores';
-import { StoresResponseData } from '../../../api/response-types/StoresResponseType';
-import { StoreType } from '../../../api/response-types/common/StoreType';
-import Loading from '../../../components/Loading';
-import Tile, { TileT } from '../../../components/Tile';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
-import colors from '../../../constants/colors';
-import { SelectStoreProps } from '../../../navigators/screen-types';
+import { useSelectStore } from '../../../api/mutations/useSelectStore';
+import { useStores } from '../../../api/queries/useStores';
+import { type StoresResponseData } from '../../../api/response-types/StoresResponseType';
+import { type StoreType } from '../../../api/response-types/common/StoreType';
+import { Loading } from '../../../components/Loading';
+import { Tile, type TileT } from '../../../components/Tile';
+import { Button } from '../../../components/ui/Button';
+import { Input } from '../../../components/ui/Input';
+import { colors } from '../../../constants/colors';
+import { type SelectStoreProps } from '../../../navigators/screen-types';
 
-export default function SelectStore({ navigation }: SelectStoreProps) {
+export function SelectStore({ navigation }: SelectStoreProps) {
   const { isInternetReachable } = useNetInfo();
   const { mutateAsync: selectStore } = useSelectStore();
   const { isPending: isStoresPending, data: stores } = useStores();
@@ -43,7 +49,9 @@ export default function SelectStore({ navigation }: SelectStoreProps) {
   }, [isInternetReachable, navigation]);
 
   useEffect(() => {
-    setStoresShown((stores ?? []).filter((store) => store.name.includes(storeSearchValue)));
+    setStoresShown(
+      (stores ?? []).filter((store) => store.name.includes(storeSearchValue))
+    );
   }, [storeSearchValue, stores]);
 
   const searchInputHandler = useCallback((inputValue: string) => {
@@ -79,7 +87,13 @@ export default function SelectStore({ navigation }: SelectStoreProps) {
             id: String(store.id),
             title: store.name,
             Icon: isStoreOccupied
-              ? () => <FontAwesome5 name="store-alt-slash" size={35} color="white" />
+              ? () => (
+                  <FontAwesome5
+                    name="store-alt-slash"
+                    size={35}
+                    color="white"
+                  />
+                )
               : () => <FontAwesome5 name="store-alt" size={35} color="white" />,
             variant: buttonVariant,
             onPress: () => handleStoreSelect(store.id),
@@ -120,11 +134,18 @@ export default function SelectStore({ navigation }: SelectStoreProps) {
         </View>
       </View>
       <View style={styles.listContainer}>
-        <FlatList data={storeTiles} keyExtractor={(tile) => tile.id} renderItem={renderTile} />
+        <FlatList
+          data={storeTiles}
+          keyExtractor={(tile) => tile.id}
+          renderItem={renderTile}
+        />
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.buttonContainer}>
-          <Button variant={confirmButtonVariant} onPress={handleSubmitSelectedStore}>
+          <Button
+            variant={confirmButtonVariant}
+            onPress={handleSubmitSelectedStore}
+          >
             Raktár kiválasztása
           </Button>
         </View>
@@ -134,31 +155,31 @@ export default function SelectStore({ navigation }: SelectStoreProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  buttonContainer: {
+    alignItems: 'center',
     flex: 1,
+    justifyContent: 'space-between',
+  },
+  container: {
     backgroundColor: colors.background,
+    flex: 1,
     paddingBottom: 30,
+  },
+  footerContainer: {
+    borderTopColor: colors.white,
+    borderTopWidth: 2,
+    height: 70,
+    paddingVertical: 10,
   },
   headerContainer: {
     height: 65,
     marginVertical: 10,
   },
-  searchInputContainer: {
-    flex: 1,
-    marginHorizontal: '7%',
-  },
   listContainer: {
     flex: 1,
   },
-  footerContainer: {
-    height: 70,
-    paddingVertical: 10,
-    borderTopColor: 'white',
-    borderTopWidth: 2,
-  },
-  buttonContainer: {
+  searchInputContainer: {
     flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    marginHorizontal: '7%',
   },
 });

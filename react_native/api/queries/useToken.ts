@@ -1,4 +1,4 @@
-import { UseQueryResult, useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { isPast, parseISO } from 'date-fns';
 import * as SecureStore from 'expo-secure-store';
 
@@ -14,7 +14,7 @@ type Token = {
   isTokenExpired: boolean;
 };
 
-export default function useToken(): UseQueryResult<Token> {
+export function useToken(): UseQueryResult<Token> {
   return useQuery({
     queryKey: ['token'],
     queryFn: async (): Promise<Token> => {
@@ -47,6 +47,6 @@ export default function useToken(): UseQueryResult<Token> {
       }
     },
     staleTime: 0,
-    gcTime: 300000,
+    gcTime: 300_000,
   });
 }

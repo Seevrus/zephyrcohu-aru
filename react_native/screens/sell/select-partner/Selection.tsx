@@ -1,13 +1,13 @@
 import { equals } from 'ramda';
 import { memo, useState } from 'react';
-import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
+import { type LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
 
-import { Partners } from '../../../api/response-mappers/mapPartnersResponse';
-import AnimatedListItem from '../../../components/ui/AnimatedListItem';
-import Button from '../../../components/ui/Button';
-import LabeledItem from '../../../components/ui/LabeledItem';
-import colors from '../../../constants/colors';
-import fontSizes from '../../../constants/fontSizes';
+import { type Partners } from '../../../api/response-mappers/mapPartnersResponse';
+import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';
+import { Button } from '../../../components/ui/Button';
+import { LabeledItem } from '../../../components/ui/LabeledItem';
+import { colors } from '../../../constants/colors';
+import { fontSizes } from '../../../constants/fontSizes';
 
 type SelectionProps = {
   selected: boolean;
@@ -16,7 +16,12 @@ type SelectionProps = {
   onConfirmSelection: (id: number) => void;
 };
 
-function Selection({ selected, item, onSelect, onConfirmSelection }: SelectionProps) {
+function _Selection({
+  selected,
+  item,
+  onSelect,
+  onConfirmSelection,
+}: SelectionProps) {
   const backgroundColor = selected ? colors.ok : colors.neutral;
   const { id, locations, phoneNumber } = item;
 
@@ -67,32 +72,32 @@ function Selection({ selected, item, onSelect, onConfirmSelection }: SelectionPr
   );
 }
 
-export default memo(Selection, equals);
+export const Selection = memo(_Selection, equals);
 
 const styles = StyleSheet.create({
-  selectPartnerContainer: {
-    padding: 10,
-    paddingTop: 0,
-    justifyContent: 'flex-start',
-    alignContent: 'flex-start',
+  buttonContainer: {
+    alignSelf: 'center',
+    marginTop: 10,
+    width: '50%',
   },
   firstInfoGroup: {
     marginTop: 10,
   },
   infoGroup: {
+    borderTopColor: colors.white,
+    borderTopWidth: 1,
     marginTop: 10,
     paddingTop: 5,
-    borderTopColor: 'white',
-    borderTopWidth: 1,
   },
   infoText: {
-    color: 'white',
+    color: colors.white,
     fontFamily: 'Muli',
     fontSize: fontSizes.input,
   },
-  buttonContainer: {
-    alignSelf: 'center',
-    width: '50%',
-    marginTop: 10,
+  selectPartnerContainer: {
+    alignContent: 'flex-start',
+    justifyContent: 'flex-start',
+    padding: 10,
+    paddingTop: 0,
   },
 });

@@ -1,30 +1,35 @@
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { isNil } from 'ramda';
 import { Alert } from 'react-native';
 
 import { useMemo } from 'react';
-import useCheckToken from '../api/queries/useCheckToken';
-import { TileT } from '../components/Tile';
-import { StackParams } from '../navigators/screen-types';
+import { useCheckToken } from '../api/queries/useCheckToken';
+import { type TileT } from '../components/Tile';
+import { type StackParams } from '../navigators/screen-types';
 import { useReceiptsContext } from '../providers/ReceiptsProvider';
 import { useSellFlowContext } from '../providers/SellFlowProvider';
 import { useStorageFlowContext } from '../providers/StorageFlowProvider';
-import useTileStates, {
+import {
   EndErrandTileState,
   ReceiptsTileState,
   SelectPartnerTileState,
   StartErrandTileState,
   StorageTileState,
+  useTileStates,
 } from './useTileStates';
 
-export default function useTiles(): TileT[] {
+const FEATURE_NOT_AVAILABLE = 'Funkció nem elérhető';
+
+export function useTiles(): TileT[] {
   const { data: user } = useCheckToken();
   const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
   const { numberOfReceipts } = useReceiptsContext();
-  const { isSelectedPartnerOnCurrentPartnerList, isPartnerChosenForCurrentReceipt } =
-    useSellFlowContext();
+  const {
+    isSelectedPartnerOnCurrentPartnerList,
+    isPartnerChosenForCurrentReceipt,
+  } = useSellFlowContext();
   const { areModificationsSaved } = useStorageFlowContext();
 
   const {
@@ -49,13 +54,15 @@ export default function useTiles(): TileT[] {
         variant: storageTileState,
         onPress: () => {
           if (storageTileState === StorageTileState.Disabled) {
-            Alert.alert('Funkció nem elérhető', storageTileMessage, [{ text: 'Értem' }]);
+            Alert.alert(FEATURE_NOT_AVAILABLE, storageTileMessage, [
+              { text: 'Értem' },
+            ]);
           } else if (isNil(user?.storeId)) {
             navigation.navigate('SelectStore');
-          } else if (!areModificationsSaved) {
-            navigation.navigate('SelectItemsFromStore');
-          } else {
+          } else if (areModificationsSaved) {
             navigation.navigate('StorageChangesSummary');
+          } else {
+            navigation.navigate('SelectItemsFromStore');
           }
         },
       },
@@ -66,7 +73,9 @@ export default function useTiles(): TileT[] {
         variant: startErrandTileState,
         onPress: () => {
           if (startErrandTileState === StartErrandTileState.Disabled) {
-            Alert.alert('Funkció nem elérhető', startErrandTileMessage, [{ text: 'Értem' }]);
+            Alert.alert(FEATURE_NOT_AVAILABLE, startErrandTileMessage, [
+              { text: 'Értem' },
+            ]);
           } else if (startErrandTileState === StartErrandTileState.Warning) {
             Alert.alert('Megerősítés szükséges', selectPartnerTileMessage, [
               { text: 'Mégsem' },
@@ -85,11 +94,19 @@ export default function useTiles(): TileT[] {
       {
         id: 't2',
         title: 'Árulevétel',
-        Icon: () => <MaterialCommunityIcons name="cart-arrow-right" size={45} color="white" />,
+        Icon: () => (
+          <MaterialCommunityIcons
+            name="cart-arrow-right"
+            size={45}
+            color="white"
+          />
+        ),
         variant: selectPartnerTileState,
         onPress: () => {
           if (selectPartnerTileState === SelectPartnerTileState.Disabled) {
-            Alert.alert('Funkció nem elérhető', selectPartnerTileMessage, [{ text: 'Értem' }]);
+            Alert.alert(FEATURE_NOT_AVAILABLE, selectPartnerTileMessage, [
+              { text: 'Értem' },
+            ]);
           } else if (isPartnerChosenForCurrentReceipt) {
             navigation.navigate('SelectItemsToSell');
           } else {
@@ -109,7 +126,9 @@ export default function useTiles(): TileT[] {
         variant: receiptsTileState,
         onPress: () => {
           if (receiptsTileState === ReceiptsTileState.Disabled) {
-            Alert.alert('Funkció nem elérhető', receiptsTileMessage, [{ text: 'Értem' }]);
+            Alert.alert(FEATURE_NOT_AVAILABLE, receiptsTileMessage, [
+              { text: 'Értem' },
+            ]);
           } else {
             navigation.navigate('ReceiptList');
           }
@@ -122,7 +141,9 @@ export default function useTiles(): TileT[] {
         variant: endErrandTileState,
         onPress: () => {
           if (endErrandTileState === EndErrandTileState.Disabled) {
-            Alert.alert('Funkció nem elérhető', endErrandTileMessage, [{ text: 'Értem' }]);
+            Alert.alert(FEATURE_NOT_AVAILABLE, endErrandTileMessage, [
+              { text: 'Értem' },
+            ]);
           } else {
             navigation.navigate('EndErrand');
           }

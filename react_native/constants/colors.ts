@@ -1,4 +1,4 @@
-const colors = {
+export const colors = {
   blue200: '#47D4E7',
   blue400: '#2E93EF',
   gray200: '#DADEED',
@@ -19,6 +19,5 @@ const colors = {
   yellow600: '#ffc107',
   warning: '#ffb000',
   warningRipple: 'ff8a00',
+  white: 'ffffff',
 };
-
-export default colors;

@@ -1,8 +1,8 @@
-import { FunctionComponent } from 'react';
+import { type FunctionComponent } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import colors from '../constants/colors';
-import fontSizes from '../constants/fontSizes';
+import { colors } from '../constants/colors';
+import { fontSizes } from '../constants/fontSizes';
 
 export type TileT = {
   id: string;
@@ -12,7 +12,7 @@ export type TileT = {
   onPress: () => void;
 };
 
-export default function Tile({ id, title, Icon, variant, onPress }: TileT) {
+export function Tile({ id, title, Icon, variant, onPress }: TileT) {
   const tileColors = {
     ok: colors.ok,
     warning: colors.warning,
@@ -53,34 +53,34 @@ export default function Tile({ id, title, Icon, variant, onPress }: TileT) {
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
+    borderRadius: 10,
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     marginTop: 20,
-    borderRadius: 10,
-  },
-  tile: {
-    flex: 1,
-    flexDirection: 'row',
-    width: '90%',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 10,
   },
   iconContainer: {
+    alignItems: 'flex-start',
+    justifyContent: 'center',
     width: '20%',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
   },
-  titleContainer: {
+  tile: {
+    borderRadius: 10,
     flex: 1,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    width: '90%',
   },
   title: {
-    color: 'white',
+    color: colors.white,
     fontFamily: 'Muli',
     fontSize: fontSizes.body,
     fontWeight: 'bold',
+  },
+  titleContainer: {
+    alignItems: 'flex-start',
+    flex: 1,
+    justifyContent: 'center',
   },
 });

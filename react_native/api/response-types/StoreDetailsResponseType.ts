@@ -1,4 +1,4 @@
-import { StoreType } from './common/StoreType';
+import { type StoreType } from './common/StoreType';
 
 export type StoreDetailsResponseData = StoreType & {
   expirations: StoreDetailsResponseExpiration[];

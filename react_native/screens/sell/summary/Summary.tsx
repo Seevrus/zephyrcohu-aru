@@ -3,17 +3,17 @@ import { isEmpty, not } from 'ramda';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import ErrorCard from '../../../components/info-cards/ErrorCard';
-import TextCard from '../../../components/info-cards/TextCard';
-import Loading from '../../../components/Loading';
-import PrintSection from '../../../components/print-section/PrintSection';
-import Button from '../../../components/ui/Button';
-import colors from '../../../constants/colors';
-import fontSizes from '../../../constants/fontSizes';
-import { SummaryProps } from '../../../navigators/screen-types';
+import { ErrorCard } from '../../../components/info-cards/ErrorCard';
+import { TextCard } from '../../../components/info-cards/TextCard';
+import { Loading } from '../../../components/Loading';
+import { PrintSection } from '../../../components/print-section/PrintSection';
+import { Button } from '../../../components/ui/Button';
+import { colors } from '../../../constants/colors';
+import { fontSizes } from '../../../constants/fontSizes';
+import { type SummaryProps } from '../../../navigators/screen-types';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
 
-export default function Summary({ navigation }: SummaryProps) {
+export function Summary({ navigation }: SummaryProps) {
   const { isInternetReachable } = useNetInfo();
   const {
     isPending: isSellFlowContextPending,
@@ -69,7 +69,9 @@ export default function Summary({ navigation }: SummaryProps) {
     <View style={styles.container}>
       {isInternetReachable === false && (
         <View style={styles.textCardContainer}>
-          <TextCard>Internetkapcsolat hiányában a számla még nem került beküldésre.</TextCard>
+          <TextCard>
+            Internetkapcsolat hiányában a számla még nem került beküldésre.
+          </TextCard>
         </View>
       )}
       {!!ordersSuccess && (
@@ -110,25 +112,25 @@ export default function Summary({ navigation }: SummaryProps) {
 }
 
 const styles = StyleSheet.create({
+  buttonContainer: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 50,
+  },
   container: {
-    flex: 1,
     backgroundColor: colors.background,
+    flex: 1,
     paddingHorizontal: '7%',
     paddingTop: 20,
   },
-  textCardContainer: {
-    marginBottom: 30,
-  },
   header: {
-    marginBottom: 20,
     alignSelf: 'center',
-    color: 'white',
+    color: colors.white,
     fontFamily: 'Muli',
     fontSize: fontSizes.subtitle,
+    marginBottom: 20,
   },
-  buttonContainer: {
-    marginTop: 50,
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  textCardContainer: {
+    marginBottom: 30,
   },
 });

@@ -2,16 +2,16 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
 import env from '../../env.json';
-import useCheckToken from '../queries/useCheckToken';
-import useStoreDetails from '../queries/useStoreDetails';
-import useToken from '../queries/useToken';
-import mapSellSelectedItemsRequest from '../request-mappers/mapSellSelectedItemsRequest';
+import { useCheckToken } from '../queries/useCheckToken';
+import { useStoreDetails } from '../queries/useStoreDetails';
+import { useToken } from '../queries/useToken';
+import { mapSellSelectedItemsRequest } from '../request-mappers/mapSellSelectedItemsRequest';
 import {
-  StoreDetailsResponseData,
-  StoreDetailsResponseType,
+  type StoreDetailsResponseData,
+  type StoreDetailsResponseType,
 } from '../response-types/StoreDetailsResponseType';
 
-export default function useSellSelectedItems() {
+export function useSellSelectedItems() {
   const queryClient = useQueryClient();
   const { data: user } = useCheckToken();
   const { data: { token } = {} } = useToken();
@@ -27,19 +27,25 @@ export default function useSellSelectedItems() {
           throw new Error('Raktár adatai nem elérhetőek');
         }
 
-        const request = mapSellSelectedItemsRequest(storeDetails, updatedStorage);
+        const request = mapSellSelectedItemsRequest(
+          storeDetails,
+          updatedStorage
+        );
 
         const response = await axios.post<StoreDetailsResponseType>(
           `${env.api_url}/storage/sell`,
           request,
           {
-            headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
         return response.data.data;
-      } catch (err) {
-        console.log(err.message);
+      } catch (error) {
+        console.log(error.message);
         throw new Error('Váratlan hiba lépett fel a raktár frissítése során.');
       }
     },

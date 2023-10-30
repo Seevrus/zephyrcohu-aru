@@ -1,4 +1,4 @@
-import { OrderItem } from '../request-types/common/OrderItem';
+import { type OrderItem } from '../request-types/common/OrderItem';
 
 type CreatedOrder = {
   id: number;

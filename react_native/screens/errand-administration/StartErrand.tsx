@@ -1,51 +1,65 @@
-import { DateTimePickerAndroid, DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import {
+  DateTimePickerAndroid,
+  type DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
 import { useNetInfo } from '@react-native-community/netinfo';
 import {
-  EventListenerCallback,
-  EventMapCore,
-  StackNavigationState,
+  type EventListenerCallback,
+  type EventMapCore,
+  type StackNavigationState,
 } from '@react-navigation/native';
-import { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
+import { type NativeStackNavigationEventMap } from '@react-navigation/native-stack';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import useStartRound from '../../api/mutations/useStartRound';
-import useActiveRound from '../../api/queries/useActiveRound';
-import useItems from '../../api/queries/useItems';
-import useOtherItems from '../../api/queries/useOtherItems';
-import usePartnerLists from '../../api/queries/usePartnerLists';
-import usePartners from '../../api/queries/usePartners';
-import usePriceLists from '../../api/queries/usePriceLists';
-import useStores from '../../api/queries/useStores';
-import Loading from '../../components/Loading';
-import ErrorCard from '../../components/info-cards/ErrorCard';
-import Button from '../../components/ui/Button';
-import Dropdown from '../../components/ui/Dropdown';
-import Input from '../../components/ui/Input';
-import colors from '../../constants/colors';
-import { StackParams, StartErrandProps } from '../../navigators/screen-types';
+import { useStartRound } from '../../api/mutations/useStartRound';
+import { useActiveRound } from '../../api/queries/useActiveRound';
+import { useItems } from '../../api/queries/useItems';
+import { useOtherItems } from '../../api/queries/useOtherItems';
+import { usePartnerLists } from '../../api/queries/usePartnerLists';
+import { usePartners } from '../../api/queries/usePartners';
+import { usePriceLists } from '../../api/queries/usePriceLists';
+import { useStores } from '../../api/queries/useStores';
+import { Loading } from '../../components/Loading';
+import { ErrorCard } from '../../components/info-cards/ErrorCard';
+import { Button } from '../../components/ui/Button';
+import { Dropdown } from '../../components/ui/Dropdown';
+import { Input } from '../../components/ui/Input';
+import { colors } from '../../constants/colors';
+import {
+  type StackParams,
+  type StartErrandProps,
+} from '../../navigators/screen-types';
 
-export default function StartErrand({ navigation }: StartErrandProps) {
-  const { isFetched: isActiveRoundFetched, isFetching: isActiveRoundFetching } = useActiveRound();
+export function StartErrand({ navigation }: StartErrandProps) {
+  const { isFetched: isActiveRoundFetched, isFetching: isActiveRoundFetching } =
+    useActiveRound();
   const { isFetched: isItemsFetched, isFetching: isItemsFetching } = useItems();
   const { isInternetReachable } = useNetInfo();
-  const { isFetched: isOtherItemsFetched, isFetching: isOtherItemsFetching } = useOtherItems();
-  const { isFetched: isPartnersFetched, isFetching: isPartnersFetching } = usePartners();
+  const { isFetched: isOtherItemsFetched, isFetching: isOtherItemsFetching } =
+    useOtherItems();
+  const { isFetched: isPartnersFetched, isFetching: isPartnersFetching } =
+    usePartners();
   const {
     data: partnerLists,
     isFetching: isPartnersListsFetching,
     isPending: isPartnerListsPending,
   } = usePartnerLists();
-  const { isFetched: isPriceListsFetched, isFetching: isPriceListsFetching } = usePriceLists();
+  const { isFetched: isPriceListsFetched, isFetching: isPriceListsFetching } =
+    usePriceLists();
   const queryClient = useQueryClient();
   const {
     mutateAsync: startRound,
     isPending: isStartRoundPending,
     isSuccess: isStartRoundSuccess,
   } = useStartRound();
-  const { data: stores, isFetching: isStoresFetching, isPending: isStoresPending } = useStores();
+  const {
+    data: stores,
+    isFetching: isStoresFetching,
+    isPending: isStoresPending,
+  } = useStores();
 
   const [storeId, setStoreId] = useState<number>(-1);
   const [partnerListId, setPartnerListId] = useState<number>(-1);
@@ -56,7 +70,8 @@ export default function StartErrand({ navigation }: StartErrandProps) {
 
   useEffect(() => {
     const preventGoBackWhileLoading: EventListenerCallback<
-      NativeStackNavigationEventMap & EventMapCore<StackNavigationState<StackParams>>,
+      NativeStackNavigationEventMap &
+        EventMapCore<StackNavigationState<StackParams>>,
       'beforeRemove'
     > = (event) => {
       if (
@@ -122,9 +137,9 @@ export default function StartErrand({ navigation }: StartErrandProps) {
         partnerListId,
         roundStarted: format(date, 'yyyy-MM-dd'),
       });
-    } catch (err) {
+    } catch (error_) {
       setLoadingMessage('');
-      setError(err.message);
+      setError(error_.message);
     }
   };
 
@@ -182,7 +197,8 @@ export default function StartErrand({ navigation }: StartErrandProps) {
     });
   };
 
-  const confirmButtonVariant = storeId > -1 && partnerListId > -1 ? 'ok' : 'disabled';
+  const confirmButtonVariant =
+    storeId > -1 && partnerListId > -1 ? 'ok' : 'disabled';
 
   return (
     <View style={styles.container}>
@@ -192,14 +208,25 @@ export default function StartErrand({ navigation }: StartErrandProps) {
         </View>
       )}
       <View style={styles.inputContainer}>
-        <Dropdown label="Raktár" data={displayStores} onSelect={selectStoreHandler} />
+        <Dropdown
+          label="Raktár"
+          data={displayStores}
+          onSelect={selectStoreHandler}
+        />
       </View>
       <View style={styles.inputContainer}>
-        <Dropdown label="Partnerlista" data={displayPartners} onSelect={selectPartnerListHandler} />
+        <Dropdown
+          label="Partnerlista"
+          data={displayPartners}
+          onSelect={selectPartnerListHandler}
+        />
       </View>
       <View style={styles.dateContainer}>
         <Pressable onPress={showDatePicker} style={styles.dateInnerContainer}>
-          <Input label="Dátum" config={{ editable: false, value: format(date, 'yyyy-MM-dd') }} />
+          <Input
+            label="Dátum"
+            config={{ editable: false, value: format(date, 'yyyy-MM-dd') }}
+          />
         </Pressable>
       </View>
       <View style={styles.buttonContainer}>
@@ -215,27 +242,27 @@ export default function StartErrand({ navigation }: StartErrandProps) {
 }
 
 const styles = StyleSheet.create({
+  buttonContainer: {
+    alignItems: 'center',
+    height: 150,
+    justifyContent: 'space-between',
+    marginTop: 30,
+  },
   container: {
-    flex: 1,
     backgroundColor: colors.background,
+    flex: 1,
+  },
+  dateContainer: {
+    marginHorizontal: '7%',
+    marginTop: 20,
+  },
+  dateInnerContainer: {
+    height: 90,
   },
   error: {
     marginTop: 30,
   },
   inputContainer: {
     marginTop: 20,
-  },
-  dateContainer: {
-    marginTop: 20,
-    marginHorizontal: '7%',
-  },
-  dateInnerContainer: {
-    height: 90,
-  },
-  buttonContainer: {
-    marginTop: 30,
-    height: 150,
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
 });

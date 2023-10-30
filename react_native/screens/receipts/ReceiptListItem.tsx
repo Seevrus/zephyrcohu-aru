@@ -1,8 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import colors from '../../constants/colors';
-import fontSizes from '../../constants/fontSizes';
-import formatPrice from '../../utils/formatPrice';
+import { colors } from '../../constants/colors';
+import { fontSizes } from '../../constants/fontSizes';
+import { formatPrice } from '../../utils/formatPrice';
 
 type ReceiptListItemProps = {
   partnerName: string;
@@ -12,7 +12,7 @@ type ReceiptListItemProps = {
   onPress: (serialNumber: number) => void;
 };
 
-export default function ReceiptListItem({
+export function ReceiptListItem({
   partnerName,
   serialNumber,
   yearCode,
@@ -38,9 +38,9 @@ export default function ReceiptListItem({
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
     backgroundColor: colors.neutral,
     borderRadius: 8,
+    marginTop: 20,
     overflow: 'hidden',
   },
   listItem: {
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   text: {
-    color: 'white',
+    color: colors.white,
     fontFamily: 'Muli',
     fontSize: fontSizes.input,
   },

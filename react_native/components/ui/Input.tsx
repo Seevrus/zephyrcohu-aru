@@ -1,6 +1,12 @@
-import { StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
-import colors from '../../constants/colors';
-import fontSizes from '../../constants/fontSizes';
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  type TextInputProps,
+} from 'react-native';
+import { colors } from '../../constants/colors';
+import { fontSizes } from '../../constants/fontSizes';
 
 type InputProps = {
   label: string;
@@ -19,7 +25,7 @@ const defaultProps = {
   config: {},
 };
 
-export default function Input({
+export function Input({
   label,
   labelPosition,
   value,
@@ -29,27 +35,38 @@ export default function Input({
 }: InputProps) {
   const dynamicStyles = StyleSheet.create({
     container: {
-      flexDirection: labelPosition === 'left' ? 'row' : 'column',
       alignItems: labelPosition === 'left' ? 'center' : 'flex-start',
+      flexDirection: labelPosition === 'left' ? 'row' : 'column',
+    },
+    input: {
+      backgroundColor:
+        config.editable === false ? colors.disabled : colors.input,
+      textAlign,
+      ...(labelPosition === 'top' && { width: '100%' }),
     },
     label: {
       ...(labelPosition === 'left' && { marginRight: 10 }),
       ...(labelPosition === 'top' && { marginBottom: 4 }),
     },
-    input: {
-      backgroundColor: config.editable === false ? colors.disabled : colors.input,
-      textAlign,
-      ...(labelPosition === 'top' && { width: '100%' }),
-    },
   });
 
   return (
     <View style={[styles.container, dynamicStyles.container]}>
-      <Text style={[dynamicStyles.label, styles.label, invalid && styles.invalidLabel]}>
+      <Text
+        style={[
+          dynamicStyles.label,
+          styles.label,
+          invalid && styles.invalidLabel,
+        ]}
+      >
         {label}
       </Text>
       <TextInput
-        style={[styles.input, config?.multiline && styles.multiline, dynamicStyles.input]}
+        style={[
+          styles.input,
+          config?.multiline && styles.multiline,
+          dynamicStyles.input,
+        ]}
         {...config}
         {...(value && { value })}
       />
@@ -61,24 +78,24 @@ Input.defaultProps = defaultProps;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 4,
     justifyContent: 'center',
+    padding: 4,
   },
-  label: {
-    fontSize: fontSizes.body,
-    fontWeight: 'bold',
-    color: 'white',
+  input: {
+    borderRadius: 8,
+    color: colors.white,
+    flex: 1,
+    fontFamily: 'Roboto',
+    fontSize: fontSizes.input,
+    padding: 8,
   },
   invalidLabel: {
     color: colors.red300,
   },
-  input: {
-    flex: 1,
-    padding: 8,
-    borderRadius: 8,
-    color: 'white',
-    fontSize: fontSizes.input,
-    fontFamily: 'Roboto',
+  label: {
+    color: colors.white,
+    fontSize: fontSizes.body,
+    fontWeight: 'bold',
   },
   multiline: {
     minHeight: 150,

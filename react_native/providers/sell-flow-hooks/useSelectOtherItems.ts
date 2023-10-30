@@ -1,10 +1,16 @@
-import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
 import { identity, isEmpty, map, pipe, prop, sortBy } from 'ramda';
+import {
+  useCallback,
+  useMemo,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 
-import useOtherItems from '../../api/queries/useOtherItems';
-import { BaseItemType } from '../../api/response-types/common/BaseItemType';
+import { useOtherItems } from '../../api/queries/useOtherItems';
+import { type BaseItemType } from '../../api/response-types/common/BaseItemType';
+import { calculateAmounts } from '../../utils/calculateAmounts';
 import { useReceiptsContext } from '../ReceiptsProvider';
-import calculateAmounts from '../../utils/calculateAmounts';
 
 export type OtherSellItem = {
   id: number;
@@ -33,11 +39,13 @@ export type UseSelectOtherItems = {
   resetUseSelectOtherItems: () => void;
 };
 
-export default function useSelectOtherItems(): UseSelectOtherItems {
+export function useSelectOtherItems(): UseSelectOtherItems {
   const { data: otherItems, isPending: isOtherItemsPending } = useOtherItems();
-  const { isPending: isReceiptsContextPending, setCurrentReceiptOtherItems } = useReceiptsContext();
+  const { isPending: isReceiptsContextPending, setCurrentReceiptOtherItems } =
+    useReceiptsContext();
 
-  const [selectedOtherItems, setSelectedOtherItems] = useState<SelectedOtherItems>({});
+  const [selectedOtherItems, setSelectedOtherItems] =
+    useState<SelectedOtherItems>({});
 
   const otherSellItems = useMemo(
     () =>
@@ -59,7 +67,7 @@ export default function useSelectOtherItems(): UseSelectOtherItems {
         const selectedOtherItem = selectedOtherItems[otherItem.id];
 
         if (!selectedOtherItem) {
-          return undefined;
+          return;
         }
 
         const { netPrice, quantity, comment } = selectedOtherItem;
@@ -86,11 +94,9 @@ export default function useSelectOtherItems(): UseSelectOtherItems {
       })
       .filter(identity);
 
-    if (isEmpty(currentReceiptOtherItems)) {
-      await setCurrentReceiptOtherItems();
-    } else {
-      await setCurrentReceiptOtherItems(currentReceiptOtherItems);
-    }
+    await (isEmpty(currentReceiptOtherItems)
+      ? setCurrentReceiptOtherItems()
+      : setCurrentReceiptOtherItems(currentReceiptOtherItems));
   }, [otherItems, selectedOtherItems, setCurrentReceiptOtherItems]);
 
   const resetUseSelectOtherItems = useCallback(() => {

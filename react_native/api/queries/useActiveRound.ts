@@ -1,21 +1,23 @@
-import { UseQueryResult, useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import axios from 'axios';
 
 import env from '../../env.json';
-import mapRoundsResponse from '../response-mappers/mapRoundsResponse';
+import { mapRoundsResponse } from '../response-mappers/mapRoundsResponse';
 import {
-  ActiveRoundResponseData,
-  RoundsResponseType,
+  type ActiveRoundResponseData,
+  type RoundsResponseType,
 } from '../response-types/ActiveRoundResponseType';
-import useCheckToken from './useCheckToken';
-import useToken from './useToken';
+import { useCheckToken } from './useCheckToken';
+import { useToken } from './useToken';
 
-export default function useActiveRound({
+export function useActiveRound({
   enabled = true,
 } = {}): UseQueryResult<ActiveRoundResponseData> {
   const { data: user } = useCheckToken();
-  const { isSuccess: isTokenSuccess, data: { token, isTokenExpired, isPasswordExpired } = {} } =
-    useToken();
+  const {
+    isSuccess: isTokenSuccess,
+    data: { token, isTokenExpired, isPasswordExpired } = {},
+  } = useToken();
 
   const isRoundStarted = user?.state === 'R';
 
@@ -23,15 +25,27 @@ export default function useActiveRound({
     queryKey: ['active-round'],
     queryFn: async () => {
       try {
-        const response = await axios.get<RoundsResponseType>(`${env.api_url}/rounds`, {
-          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get<RoundsResponseType>(
+          `${env.api_url}/rounds`,
+          {
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         return mapRoundsResponse(response.data);
-      } catch (_) {
-        throw new Error('Váratlan hiba lépett fel a kör adatainak lekérése során.');
+      } catch {
+        throw new Error(
+          'Váratlan hiba lépett fel a kör adatainak lekérése során.'
+        );
       }
     },
-    enabled: enabled && isTokenSuccess && !(isTokenExpired || isPasswordExpired) && isRoundStarted,
+    enabled:
+      enabled &&
+      isTokenSuccess &&
+      !(isTokenExpired || isPasswordExpired) &&
+      isRoundStarted,
   });
 }

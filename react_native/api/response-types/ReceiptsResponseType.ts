@@ -1,8 +1,11 @@
-import { ReceiptBuyer } from '../request-types/common/ReceiptBuyer';
-import { ReceiptItem, ReceiptOtherItem } from '../request-types/common/ReceiptItemsTypes';
-import { ReceiptVatAmount } from '../request-types/common/ReceiptVatAmount';
-import { ReceiptVendor } from '../request-types/common/ReceiptVendor';
-import { TimeStamps } from './common/TimeStamps';
+import { type ReceiptBuyer } from '../request-types/common/ReceiptBuyer';
+import {
+  type ReceiptItem,
+  type ReceiptOtherItem,
+} from '../request-types/common/ReceiptItemsTypes';
+import { type ReceiptVatAmount } from '../request-types/common/ReceiptVatAmount';
+import { type ReceiptVendor } from '../request-types/common/ReceiptVendor';
+import { type TimeStamps } from './common/TimeStamps';
 
 type ReceiptUser = {
   id: number;

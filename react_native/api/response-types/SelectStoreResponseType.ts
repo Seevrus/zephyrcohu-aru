@@ -1,5 +1,5 @@
-import { CompanyType } from './common/CompanyType';
-import { UserType } from './common/UserType';
+import { type CompanyType } from './common/CompanyType';
+import { type UserType } from './common/UserType';
 
 export type SelectStoreResponseType = UserType & {
   company: CompanyType;

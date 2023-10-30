@@ -2,24 +2,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { add, format, parseISO } from 'date-fns';
 import { append, assoc, dissoc, isEmpty, isNil } from 'ramda';
 import {
-  PropsWithChildren,
   createContext,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
+  type PropsWithChildren,
 } from 'react';
 
-import useCreateReceipts from '../api/mutations/useCreateReceipts';
-import useActiveRound from '../api/queries/useActiveRound';
-import useCheckToken from '../api/queries/useCheckToken';
-import { ReceiptBuyer } from '../api/request-types/common/ReceiptBuyer';
-import { ReceiptOtherItem } from '../api/request-types/common/ReceiptItemsTypes';
-import calculateReceiptTotals from '../utils/calculateReceiptTotals';
+import { useCreateReceipts } from '../api/mutations/useCreateReceipts';
+import { useUpdateReceipts } from '../api/mutations/useUpdateReceipts';
+import { useActiveRound } from '../api/queries/useActiveRound';
+import { useCheckToken } from '../api/queries/useCheckToken';
+import { type ReceiptBuyer } from '../api/request-types/common/ReceiptBuyer';
+import { type ReceiptOtherItem } from '../api/request-types/common/ReceiptItemsTypes';
+import { calculateReceiptTotals } from '../utils/calculateReceiptTotals';
 import { useStorageContext } from './StorageProvider';
-import { ContextReceipt, ContextReceiptItem } from './types/receipts-provider-types';
-import useUpdateReceipts from '../api/mutations/useUpdateReceipts';
+import {
+  type ContextReceipt,
+  type ContextReceiptItem,
+} from './types/receipts-provider-types';
 
 type ReceiptsContextType = {
   isPending: boolean;
@@ -41,18 +44,23 @@ type ReceiptsContextType = {
     invoiceType: 'P' | 'E';
   }) => Promise<void>;
   setCurrentReceiptItems: (items: ContextReceiptItem[]) => Promise<void>;
-  setCurrentReceiptOtherItems: (otherItems?: ReceiptOtherItem[]) => Promise<void>;
+  setCurrentReceiptOtherItems: (
+    otherItems?: ReceiptOtherItem[]
+  ) => Promise<void>;
   finalizeCurrentReceipt: () => Promise<void>;
   sendInReceipts: () => Promise<void>;
   updateNumberOfPrintedCopies: (receiptId: number) => Promise<void>;
 };
 
-const ReceiptsContext = createContext<ReceiptsContextType>({} as ReceiptsContextType);
+const ReceiptsContext = createContext<ReceiptsContextType>(
+  {} as ReceiptsContextType
+);
 const receiptsContextStorageKey = 'boreal-receipts-context';
 const currentReceiptContextStorageKey = 'boreal-current-receipt-context';
 
-export default function ReceiptsProvider({ children }: PropsWithChildren) {
-  const { data: activeRound, isPending: isActiveRoundPending } = useActiveRound();
+export function ReceiptsProvider({ children }: PropsWithChildren) {
+  const { data: activeRound, isPending: isActiveRoundPending } =
+    useActiveRound();
   const { data: user, isPending: isUserPending } = useCheckToken();
   const { isPending: isCreateReceiptsPending, mutateAsync: createReceiptsAPI } =
     useCreateReceipts();
@@ -61,7 +69,8 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
 
   const [receipts, setReceipts] = useState<ContextReceipt[]>(null);
   const numberOfReceipts = receipts?.length ?? 0;
-  const [currentReceipt, setCurrentReceipt] = useState<Partial<ContextReceipt>>(null);
+  const [currentReceipt, setCurrentReceipt] =
+    useState<Partial<ContextReceipt>>(null);
   const [isReceiptsSyncInProgress, setIsReceiptsSyncInProgress] =
     useState<boolean>(isCreateReceiptsPending);
 
@@ -85,9 +94,15 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
   /**
    * Persist receipts to local storage
    */
-  const persistReceipts = useCallback(async (receiptsToSave: ContextReceipt[]) => {
-    await AsyncStorage.setItem(receiptsContextStorageKey, JSON.stringify(receiptsToSave));
-  }, []);
+  const persistReceipts = useCallback(
+    async (receiptsToSave: ContextReceipt[]) => {
+      await AsyncStorage.setItem(
+        receiptsContextStorageKey,
+        JSON.stringify(receiptsToSave)
+      );
+    },
+    []
+  );
 
   /**
    * Initialize current receipt from local storage
@@ -137,18 +152,25 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
       const fulfillmentDate = add(invoiceDate, { days: paymentDays });
       const paidDate = fulfillmentDate;
 
+      const dateFormat = 'yyyy-MM-dd';
+
       setCurrentReceipt((prevState) => ({
         ...prevState,
         partnerCode,
         partnerSiteCode,
         buyer,
-        invoiceDate: format(invoiceDate, 'yyyy-MM-dd'),
-        fulfillmentDate: format(fulfillmentDate, 'yyyy-MM-dd'),
+        invoiceDate: format(invoiceDate, dateFormat),
+        fulfillmentDate: format(fulfillmentDate, dateFormat),
         invoiceType,
-        paidDate: format(paidDate, 'yyyy-MM-dd'),
+        paidDate: format(paidDate, dateFormat),
       }));
 
-      const updatedReceipt = { ...currentReceipt, partnerCode, partnerSiteCode, buyer };
+      const updatedReceipt = {
+        ...currentReceipt,
+        partnerCode,
+        partnerSiteCode,
+        buyer,
+      };
       await persistCurrentReceipt(updatedReceipt);
     },
     [activeRound?.roundStarted, currentReceipt, persistCurrentReceipt]
@@ -181,8 +203,11 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
   const finalizeCurrentReceipt = useCallback(async () => {
     const serialNumber = isEmpty(receipts)
       ? storage.firstAvailableSerialNumber
-      : receipts.reduce((sn, { serialNumber: receiptSn }) => (receiptSn > sn ? receiptSn : sn), 0) +
-        1;
+      : receipts.reduce(
+          (sn, { serialNumber: receiptSn }) =>
+            receiptSn > sn ? receiptSn : sn,
+          0
+        ) + 1;
 
     const receiptTotals = calculateReceiptTotals({
       items: currentReceipt.items,
@@ -296,7 +321,9 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
 
       const updateReceiptsResult = await updateReceiptsAPI(updatedReceipts);
       updatedReceipts = receipts.map((receipt) => {
-        const updateReceiptResult = updateReceiptsResult.find((result) => result.id === receipt.id);
+        const updateReceiptResult = updateReceiptsResult.find(
+          (result) => result.id === receipt.id
+        );
 
         if (!updateReceiptResult) {
           return receipt;
@@ -311,7 +338,13 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
       setReceipts(updatedReceipts);
       await persistReceipts(updatedReceipts);
     },
-    [currentReceipt, persistCurrentReceipt, persistReceipts, receipts, updateReceiptsAPI]
+    [
+      currentReceipt,
+      persistCurrentReceipt,
+      persistReceipts,
+      receipts,
+      updateReceiptsAPI,
+    ]
   );
 
   const receiptsContextValue = useMemo(
@@ -346,7 +379,9 @@ export default function ReceiptsProvider({ children }: PropsWithChildren) {
   );
 
   return (
-    <ReceiptsContext.Provider value={receiptsContextValue}>{children}</ReceiptsContext.Provider>
+    <ReceiptsContext.Provider value={receiptsContextValue}>
+      {children}
+    </ReceiptsContext.Provider>
   );
 }
 

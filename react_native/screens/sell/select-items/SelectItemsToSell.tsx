@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { EventArg, useFocusEffect } from '@react-navigation/native';
+import { type EventArg, useFocusEffect } from '@react-navigation/native';
 import {
   __,
   all,
@@ -16,23 +16,33 @@ import {
   values,
 } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Animated, ListRenderItemInfo, Pressable, StyleSheet, View } from 'react-native';
+import {
+  Alert,
+  Animated,
+  type ListRenderItemInfo,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 
-import Loading from '../../../components/Loading';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
-import LabeledItem from '../../../components/ui/LabeledItem';
-import colors from '../../../constants/colors';
-import { SelectItemsToSellProps } from '../../../navigators/screen-types';
+import { Loading } from '../../../components/Loading';
+import { Button } from '../../../components/ui/Button';
+import { Input } from '../../../components/ui/Input';
+import { LabeledItem } from '../../../components/ui/LabeledItem';
+import { colors } from '../../../constants/colors';
+import { type SelectItemsToSellProps } from '../../../navigators/screen-types';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
-import { SellItem } from '../../../providers/sell-flow-hooks/useSelectItems';
-import calculateAmounts from '../../../utils/calculateAmounts';
-import formatPrice from '../../../utils/formatPrice';
-import SelectItem, { ItemAvailability } from './SelectItem';
+import { type SellItem } from '../../../providers/sell-flow-hooks/useSelectItems';
+import { calculateAmounts } from '../../../utils/calculateAmounts';
+import { formatPrice } from '../../../utils/formatPrice';
+import { SelectItem, ItemAvailability } from './SelectItem';
 
 const NUM_ITEMS_SHOWN = 10;
 
-export default function SelectItemsToSell({ navigation, route }: SelectItemsToSellProps) {
+export function SelectItemsToSell({
+  navigation,
+  route,
+}: SelectItemsToSellProps) {
   const scannedBarCode = route.params?.scannedBarCode;
 
   const {
@@ -68,7 +78,9 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
 
           const { netPrice, vatRate } = currentItem;
 
-          const [expirationsNetAmount, expirationsGrossAmount] = Object.values(expirations)
+          const [expirationsNetAmount, expirationsGrossAmount] = Object.values(
+            expirations
+          )
             .map((expirationQuantity) => {
               const { netAmount, grossAmount } = calculateAmounts({
                 netPrice,
@@ -80,7 +92,10 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
             })
             .reduce(([pn, pg], [cn, cg]) => [pn + cn, pg + cg], [0, 0]);
 
-          return [prevNetAmount + expirationsNetAmount, prevGrossAmount + expirationsGrossAmount];
+          return [
+            prevNetAmount + expirationsNetAmount,
+            prevGrossAmount + expirationsGrossAmount,
+          ];
         },
         [0, 0]
       ),
@@ -107,7 +122,10 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
             vatRate,
           });
 
-          return [prevNetOrderAmount + netAmount, prevGrossOrderAmount + grossAmount];
+          return [
+            prevNetOrderAmount + netAmount,
+            prevGrossOrderAmount + grossAmount,
+          ];
         },
         [0, 0]
       ),
@@ -122,7 +140,7 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
         const itemsWithNewQuantity = {
           ...currentItems,
           [id]: {
-            ...(currentItems[id] ?? {}),
+            ...currentItems[id],
             [expirationId]: newQuantity,
           },
         };
@@ -144,10 +162,13 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
 
   const upsertOrderItem = useCallback(
     (id: number, quantity: number) => {
-      if (!quantity) {
-        setSelectedOrderItems(dissoc(String(id)));
+      if (quantity) {
+        setSelectedOrderItems((prevItems) => ({
+          ...prevItems,
+          [id]: quantity,
+        }));
       } else {
-        setSelectedOrderItems((prevItems) => ({ ...prevItems, [id]: quantity }));
+        setSelectedOrderItems(dissoc(String(id)));
       }
     },
     [setSelectedOrderItems]
@@ -214,7 +235,10 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
     if (canConfirmItems) {
       setIsLoading(true);
 
-      Promise.all([saveSelectedItemsInFlow(), saveSelectedOrderItemsInFlow()]).then(() => {
+      Promise.all([
+        saveSelectedItemsInFlow(),
+        saveSelectedOrderItemsInFlow(),
+      ]).then(() => {
         setIsLoading(false);
         navigation.removeListener('beforeRemove', exitConfimationHandler);
         navigation.navigate('Review');
@@ -234,7 +258,10 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
       if (!!selectedItems[info.item.id] || !!selectedOrderItems[info.item.id]) {
         type = ItemAvailability.IN_RECEIPT;
       } else if (
-        any(pipe(prop('quantity'), gte(__, 0)), pipe(prop('expirations'), values)(info.item))
+        any(
+          pipe(prop('quantity'), gte(__, 0)),
+          pipe(prop('expirations'), values)(info.item)
+        )
       ) {
         type = ItemAvailability.AVAILABLE;
       } else {
@@ -276,7 +303,11 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
                 setBarCode('');
               }}
             >
-              <MaterialCommunityIcons name="barcode-off" size={40} color="white" />
+              <MaterialCommunityIcons
+                name="barcode-off"
+                size={40}
+                color="white"
+              />
             </Pressable>
           ) : (
             <Pressable
@@ -304,7 +335,9 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
           />
           <LabeledItem
             label="Rendelés"
-            text={`${formatPrice(netOrderTotal)} / ${formatPrice(grossOrderTotal)}`}
+            text={`${formatPrice(netOrderTotal)} / ${formatPrice(
+              grossOrderTotal
+            )}`}
           />
         </View>
         <View style={styles.buttonContainer}>
@@ -318,38 +351,38 @@ export default function SelectItemsToSell({ navigation, route }: SelectItemsToSe
 }
 
 const styles = StyleSheet.create({
-  container: {
+  buttonContainer: {
+    alignItems: 'center',
     flex: 1,
+    justifyContent: 'space-between',
+  },
+  container: {
     backgroundColor: colors.background,
+    flex: 1,
+  },
+  footerContainer: {
+    backgroundColor: colors.neutral,
+    borderTopColor: colors.white,
+    borderTopWidth: 2,
+    height: 135,
+    paddingVertical: 10,
   },
   headerContainer: {
     height: 65,
     marginVertical: 10,
   },
-  searchInputContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: '7%',
-  },
   listContainer: {
     flex: 1,
   },
-  footerContainer: {
-    height: 135,
-    paddingVertical: 10,
-    borderTopColor: 'white',
-    borderTopWidth: 2,
-    backgroundColor: colors.neutral,
-  },
-  buttonContainer: {
-    flex: 1,
-    justifyContent: 'space-between',
+  searchInputContainer: {
     alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    marginHorizontal: '7%',
   },
   summaryContainer: {
-    marginHorizontal: '7%',
-    marginBottom: 10,
     alignItems: 'flex-end',
+    marginBottom: 10,
+    marginHorizontal: '7%',
   },
 });

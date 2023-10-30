@@ -1,4 +1,4 @@
-import { TimeStamps } from './common/TimeStamps';
+import { type TimeStamps } from './common/TimeStamps';
 
 export type PartnersListResponseData = ({
   id: number;

@@ -1,5 +1,5 @@
-import { CreateReceiptRequest } from '../../api/request-types/CreateReceiptsRequestType';
-import { ReceiptItem } from '../../api/request-types/common/ReceiptItemsTypes';
+import { type CreateReceiptRequest } from '../../api/request-types/CreateReceiptsRequestType';
+import { type ReceiptItem } from '../../api/request-types/common/ReceiptItemsTypes';
 
 export type SelectedDiscount = {
   id: number;

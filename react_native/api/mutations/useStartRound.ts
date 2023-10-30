@@ -2,11 +2,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
 import env from '../../env.json';
-import useToken from '../queries/useToken';
-import { StartRoundRequestType } from '../request-types/StartRoundRequestType';
-import { StartRoundResponseType } from '../response-types/StartRoundResponseType';
+import { useToken } from '../queries/useToken';
+import { type StartRoundRequestType } from '../request-types/StartRoundRequestType';
+import { type StartRoundResponseType } from '../response-types/StartRoundResponseType';
 
-export default function useStartRound() {
+export function useStartRound() {
   const queryClient = useQueryClient();
   const { data: { token } = {} } = useToken();
 
@@ -17,23 +17,30 @@ export default function useStartRound() {
         const response = await axios.post<StartRoundResponseType>(
           `${env.api_url}/rounds/start`,
           { data: request },
-          { headers: { Accept: 'application/json', Authorization: `Bearer ${token}` } }
+          {
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         if (response.data.data.storeId !== request.storeId) {
-          throw new Error();
+          throw new Error('Invalid Store ID');
         }
 
         return response.data.data;
-      } catch (e) {
-        console.log(e.message);
+      } catch (error) {
+        console.log(error.message);
         throw new Error('Váratlan hiba lépett fel a kör indítása során.');
       }
     },
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ['check-token'] });
       queryClient.invalidateQueries({ queryKey: ['stores'] });
-      queryClient.invalidateQueries({ queryKey: ['store-details', response.storeId] });
+      queryClient.invalidateQueries({
+        queryKey: ['store-details', response.storeId],
+      });
     },
   });
 }
