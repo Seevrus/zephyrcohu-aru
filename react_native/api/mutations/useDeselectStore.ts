@@ -25,7 +25,9 @@ export function useDeselectStore() {
         );
 
         return response.data;
-      } catch {
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('useDeselectStore:', error.message);
         throw new Error(
           'Váratlan hiba lépett fel a raktár leválasztása során.'
         );

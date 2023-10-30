@@ -31,7 +31,8 @@ export function useSelectStore() {
 
         return response.data;
       } catch (error) {
-        console.log(error.message);
+        // eslint-disable-next-line no-console
+        console.log('useSelectStore:', error.message);
         throw new Error(
           'Váratlan hiba lépett fel a raktár kiválasztása során.'
         );

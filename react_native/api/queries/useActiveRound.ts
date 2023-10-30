@@ -36,7 +36,9 @@ export function useActiveRound({
         );
 
         return mapRoundsResponse(response.data);
-      } catch {
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('useActiveRound:', error.message);
         throw new Error(
           'Váratlan hiba lépett fel a kör adatainak lekérése során.'
         );

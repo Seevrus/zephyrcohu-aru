@@ -18,6 +18,6 @@ export const colors = {
   errorRipple: '#ff0000',
   yellow600: '#ffc107',
   warning: '#ffb000',
-  warningRipple: 'ff8a00',
-  white: 'ffffff',
+  warningRipple: '#ff8a00',
+  white: '#ffffff',
 };

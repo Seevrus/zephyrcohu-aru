@@ -32,7 +32,8 @@ export function useStores({
 
         return response.data.data;
       } catch (error) {
-        console.log(error.message);
+        // eslint-disable-next-line no-console
+        console.log('useStores:', error.message);
         throw new Error(
           'Váratlan hiba lépett fel a raktárak adatainak lekérése során.'
         );

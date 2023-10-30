@@ -35,7 +35,8 @@ export function usePartners({ enabled = true } = {}): UseQueryResult<Partners> {
 
         return mapPartnersResponse(response.data.data);
       } catch (error) {
-        console.log(error.message);
+        // eslint-disable-next-line no-console
+        console.log('usePartners:', error.message);
         throw new Error(
           'Váratlan hiba lépett fel a partnerek adatainak lekérése során.'
         );

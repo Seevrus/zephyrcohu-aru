@@ -43,7 +43,8 @@ export function useSaveSelectedItems() {
 
         return response.data.data;
       } catch (error) {
-        console.log(error.message);
+        // eslint-disable-next-line no-console
+        console.log('useSaveSelectedItems:', error.message);
         throw new Error('Váratlan hiba lépett fel a raktár frissítése során.');
       }
     },

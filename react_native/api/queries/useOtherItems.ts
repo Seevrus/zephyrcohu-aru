@@ -35,7 +35,9 @@ export function useOtherItems({
         );
 
         return response.data.data;
-      } catch {
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('useOtherItems:', error.message);
         throw new Error(
           'Váratlan hiba lépett fel az egyéb tételek adatainak lekérése során.'
         );

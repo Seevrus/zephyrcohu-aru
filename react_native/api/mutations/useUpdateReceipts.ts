@@ -34,7 +34,8 @@ export function useUpdateReceipts() {
 
         return response.data.data;
       } catch (error) {
-        console.log(error.message);
+        // eslint-disable-next-line no-console
+        console.log('useUpdateReceipts:', error.message);
         throw new Error('Váratlan hiba lépett fel a számlák frissítése során.');
       }
     },

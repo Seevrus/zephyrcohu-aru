@@ -36,7 +36,8 @@ export function usePriceLists({
 
         return response.data.data;
       } catch (error) {
-        console.log(error.message);
+        // eslint-disable-next-line no-console
+        console.log('usePriceLists:', error.message);
         throw new Error('Váratlan hiba lépett fel az árlisták lekérése során.');
       }
     },

@@ -41,7 +41,8 @@ export function useToken(): UseQueryResult<Token> {
           isTokenExpired: isPast(parseISO(expiresAt)),
         };
       } catch (error) {
-        console.log(error.message);
+        // eslint-disable-next-line no-console
+        console.log('useToken:', error.message);
         await SecureStore.deleteItemAsync('boreal-token');
         throw new Error('Váratlan hiba lépett fel a token olvasása során.');
       }

@@ -40,7 +40,8 @@ export function useSearchTaxNumber({
 
         return mapSearchTaxPayerResponse(response.data.data);
       } catch (error) {
-        console.log(error.message);
+        // eslint-disable-next-line no-console
+        console.log('useSearchTaxNumber', error.message);
         throw new Error('Váratlan hiba lépett fel az adószám keresése során.');
       }
     },

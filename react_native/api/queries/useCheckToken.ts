@@ -33,7 +33,8 @@ function useCheckTokenQuery({ enabled = true } = {}) {
 
         return mapCheckTokenResponse(response.data);
       } catch (error) {
-        console.log(error.message);
+        // eslint-disable-next-line no-console
+        console.log('useCheckTokenQuery:', error.message);
         throw new Error('A megadott token nem érvényes.');
       }
     },
