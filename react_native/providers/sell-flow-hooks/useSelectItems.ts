@@ -1,4 +1,4 @@
-import { format, formatISO } from 'date-fns';
+import { format } from 'date-fns';
 import {
   filter,
   identity,
@@ -12,13 +12,13 @@ import {
   sortBy,
 } from 'ramda';
 import {
-  type Dispatch,
-  type SetStateAction,
   useCallback,
   useEffect,
   useMemo,
   useReducer,
   useState,
+  type Dispatch,
+  type SetStateAction,
 } from 'react';
 
 import { useItems } from '../../api/queries/useItems';
@@ -30,8 +30,8 @@ import {
 } from '../../api/response-types/ItemsResponseType';
 import { type PriceListType } from '../../api/response-types/PriceListResponseType';
 import {
-  itemsSearchReducer,
   SearchStateActionKind,
+  itemsSearchReducer,
 } from '../../hooks/itemsSearchReducer';
 import { calculateAmounts } from '../../utils/calculateAmounts';
 import { useOrdersContext } from '../OrdersProvider';
@@ -204,7 +204,7 @@ export function useSelectItems({
     await saveCurrentOrder({
       isSent: false,
       partnerId: selectedPartner.id,
-      orderedAt: formatISO(new Date()),
+      orderedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
       items: items
         .map((item) => {
           const quantity = selectedOrderItems[item.id];

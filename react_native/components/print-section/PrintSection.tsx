@@ -27,7 +27,7 @@ export function PrintSection() {
     useState<string>('');
 
   const canPrintOriginalCopy =
-    selectedPartner.invoiceCopies > currentReceipt.originalCopiesPrinted;
+    selectedPartner?.invoiceCopies > currentReceipt?.originalCopiesPrinted;
 
   const printButtonHandler = async () => {
     await Print.printAsync({
@@ -59,7 +59,9 @@ export function PrintSection() {
       <Text style={styles.text}>
         Az eredeti számla formátuma:{' '}
         <Text style={styles.numberOfReceipts}>
-          {selectedPartner.invoiceType === 'E' ? 'elektronikus' : 'papír alapú'}
+          {selectedPartner?.invoiceType === 'E'
+            ? 'elektronikus'
+            : 'papír alapú'}
         </Text>
         .
       </Text>
@@ -67,11 +69,11 @@ export function PrintSection() {
         <Text style={styles.text}>
           A számlát{' '}
           <Text style={styles.numberOfReceipts}>
-            {selectedPartner.invoiceCopies}
+            {selectedPartner?.invoiceCopies}
           </Text>{' '}
           eredeti példányban van lehetőség kinyomtatni. Ebből eddig{' '}
           <Text style={styles.numberOfReceipts}>
-            {currentReceipt.originalCopiesPrinted}
+            {currentReceipt?.originalCopiesPrinted}
           </Text>{' '}
           példány került nyomtatásra.
         </Text>

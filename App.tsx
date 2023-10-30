@@ -12,7 +12,6 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 
-import { useToken } from './react_native/api/queries/useToken';
 import { Loading } from './react_native/components/Loading';
 import { MainStack } from './react_native/navigators/MainStack';
 import { OrdersProvider } from './react_native/providers/OrdersProvider';
@@ -49,9 +48,7 @@ function Main() {
     'Roboto-Bold': require('./react_native/assets/fonts/Roboto-Bold.ttf'),
   });
 
-  const { data: tokenData } = useToken();
-
-  if (!fontsLoaded || !tokenData) {
+  if (!fontsLoaded) {
     return <Loading />;
   }
 

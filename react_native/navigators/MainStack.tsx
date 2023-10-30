@@ -11,6 +11,7 @@ import { Review } from '../screens/sell/review/Review';
 import { ScanBarCodeInSell } from '../screens/sell/select-items/ScanBarCodeInSell';
 import { SelectItemsToSell } from '../screens/sell/select-items/SelectItemsToSell';
 import { SelectOtherItemsToSell } from '../screens/sell/select-other-items/SelectOtherItemsToSell';
+import { Summary } from '../screens/sell/summary/Summary';
 import { ChangePassword } from '../screens/start-page/ChangePassword';
 import { Index } from '../screens/start-page/Index';
 import { Settings } from '../screens/start-page/Settings';
@@ -149,14 +150,14 @@ export function MainStack() {
           headerTitle: 'Egyéb Tételek',
         }}
       />
+      <Stack.Screen
+        name="Summary"
+        component={Summary}
+        options={{
+          headerTitle: 'Összegzés',
+        }}
+      />
       {/*  <Stack.Screen
-            name="Summary"
-            component={Summary}
-            options={{
-              headerTitle: 'Összegzés',
-            }}
-          />
-          <Stack.Screen
             name="ReceiptList"
             component={ReceiptList}
             options={{

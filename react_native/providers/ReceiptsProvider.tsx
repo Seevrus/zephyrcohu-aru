@@ -170,6 +170,10 @@ export function ReceiptsProvider({ children }: PropsWithChildren) {
         partnerCode,
         partnerSiteCode,
         buyer,
+        invoiceDate: format(invoiceDate, dateFormat),
+        fulfillmentDate: format(fulfillmentDate, dateFormat),
+        invoiceType,
+        paidDate: format(paidDate, dateFormat),
       };
       await persistCurrentReceipt(updatedReceipt);
     },

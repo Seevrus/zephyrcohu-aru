@@ -12,13 +12,13 @@ type Login = LoginResponse & {
 
 export function mapLoginResponse(loginResponse: LoginResponse): Login {
   // TS does not have a way to synthetize this union type
-  const isPasswordExpired = loginResponse.token.abilities.includes(
+  const isPasswordExpired = loginResponse?.token?.abilities.includes(
     'password' as never
   );
 
   return assocPath(
     ['token', 'isPasswordExpired'],
     isPasswordExpired,
-    loginResponse
+    loginResponse ?? {}
   ) as Login;
 }

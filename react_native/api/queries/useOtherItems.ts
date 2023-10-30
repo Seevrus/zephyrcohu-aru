@@ -12,11 +12,8 @@ import { useToken } from './useToken';
 export function useOtherItems({
   enabled = true,
 } = {}): UseQueryResult<OtherItemsResponseData> {
-  const { data: user } = useCheckToken();
-  const {
-    isSuccess: isTokenSuccess,
-    data: { token, isTokenExpired, isPasswordExpired } = {},
-  } = useToken();
+  const { data: user, isSuccess: isCheckTokenSuccess } = useCheckToken();
+  const { data: { isPasswordExpired, token } = {} } = useToken();
 
   const isRoundStarted = user?.state === 'R';
 
@@ -44,9 +41,6 @@ export function useOtherItems({
       }
     },
     enabled:
-      enabled &&
-      isTokenSuccess &&
-      !(isTokenExpired || isPasswordExpired) &&
-      isRoundStarted,
+      enabled && isCheckTokenSuccess && !isPasswordExpired && isRoundStarted,
   });
 }

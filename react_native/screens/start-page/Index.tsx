@@ -20,7 +20,7 @@ export function Index() {
   const { isInternetReachable } = useNetInfo();
   const {
     isPending: isTokenPending,
-    data: { isPasswordExpired, isTokenExpired },
+    data: { isPasswordExpired, isTokenExpired } = {},
   } = useToken();
 
   const tiles = useTiles();

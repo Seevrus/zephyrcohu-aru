@@ -1,4 +1,4 @@
-import { type UseQueryResult, useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import axios from 'axios';
 
 import env from '../../env.json';
@@ -6,15 +6,14 @@ import {
   type PartnersListResponseData,
   type PartnersListResponseType,
 } from '../response-types/PartnersListResponseType';
+import { useCheckToken } from './useCheckToken';
 import { useToken } from './useToken';
 
 export function usePartnerLists({
   enabled = true,
 } = {}): UseQueryResult<PartnersListResponseData> {
-  const {
-    isSuccess: isTokenSuccess,
-    data: { token, isTokenExpired, isPasswordExpired } = {},
-  } = useToken();
+  const { isSuccess: isCheckTokenSuccess } = useCheckToken();
+  const { data: { isPasswordExpired, token } = {} } = useToken();
 
   return useQuery({
     queryKey: ['partner-lists'],
@@ -39,7 +38,6 @@ export function usePartnerLists({
         );
       }
     },
-    enabled:
-      enabled && isTokenSuccess && !(isTokenExpired || isPasswordExpired),
+    enabled: enabled && isCheckTokenSuccess && !isPasswordExpired,
   });
 }

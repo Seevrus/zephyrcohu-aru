@@ -6,15 +6,14 @@ import {
   type ItemsResponseData,
   type ItemsResponseType,
 } from '../response-types/ItemsResponseType';
+import { useCheckToken } from './useCheckToken';
 import { useToken } from './useToken';
 
 export function useItems({
   enabled = true,
 } = {}): UseQueryResult<ItemsResponseData> {
-  const {
-    isSuccess: isTokenSuccess,
-    data: { token, isTokenExpired, isPasswordExpired } = {},
-  } = useToken();
+  const { isSuccess: isCheckTokenSuccess } = useCheckToken();
+  const { data: { isPasswordExpired, token } = {} } = useToken();
 
   return useQuery({
     queryKey: ['items'],
@@ -39,7 +38,6 @@ export function useItems({
         );
       }
     },
-    enabled:
-      enabled && isTokenSuccess && !(isTokenExpired || isPasswordExpired),
+    enabled: enabled && isCheckTokenSuccess && !isPasswordExpired,
   });
 }

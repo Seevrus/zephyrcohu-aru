@@ -7,6 +7,7 @@ import {
   type StoreDetailsResponseData,
   type StoreDetailsResponseType,
 } from '../response-types/StoreDetailsResponseType';
+import { useCheckToken } from './useCheckToken';
 import { useToken } from './useToken';
 
 type UseStoreDetails = {
@@ -18,10 +19,8 @@ export function useStoreDetails({
   storeId,
   enabled = true,
 }: UseStoreDetails): UseQueryResult<StoreDetailsResponseData> {
-  const {
-    isSuccess: isTokenSuccess,
-    data: { token, isTokenExpired, isPasswordExpired } = {},
-  } = useToken();
+  const { isSuccess: isCheckTokenSuccess } = useCheckToken();
+  const { data: { token, isPasswordExpired } = {} } = useToken();
 
   return useQuery({
     queryKey: ['store-details', storeId],
@@ -49,9 +48,6 @@ export function useStoreDetails({
       }
     },
     enabled:
-      enabled &&
-      !isNil(storeId) &&
-      isTokenSuccess &&
-      !(isTokenExpired || isPasswordExpired),
+      enabled && !isNil(storeId) && isCheckTokenSuccess && !isPasswordExpired,
   });
 }

@@ -12,9 +12,9 @@ export function mapPartnersResponse(partners: PartnersResponseData): Partners {
     map((partner: PartnersResponseData[number]) =>
       assoc(
         'locations',
-        indexBy(prop('locationType'), partner.locations),
+        indexBy(prop('locationType'), partner?.locations),
         partner
       )
     )
-  )(partners);
+  )(partners ?? []);
 }

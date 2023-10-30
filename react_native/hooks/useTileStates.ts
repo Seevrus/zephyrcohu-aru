@@ -40,7 +40,7 @@ export function useTileStates() {
   const { numberOfReceipts } = useReceiptsContext();
   const {
     isPending: isTokenPending,
-    data: { isPasswordExpired, isTokenExpired },
+    data: { isPasswordExpired, isTokenExpired } = {},
   } = useToken();
 
   const isCheckTokenInProgress = !user && isUserFetching;

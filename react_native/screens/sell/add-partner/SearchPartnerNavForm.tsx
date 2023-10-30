@@ -97,10 +97,8 @@ export function SearchPartnerNavForm({
   route: { params },
 }: SearchPartnerNavFormProps) {
   const { isInternetReachable } = useNetInfo();
-  const {
-    isPending: isTokenPending,
-    data: { isTokenExpired },
-  } = useToken();
+  const { isPending: isTokenPending, data: { isTokenExpired } = {} } =
+    useToken();
 
   const [taxNumber, setTaxNumber] = useState<string>(params?.taxNumber ?? '');
   const [searchValue, setSearchValue] = useState<string>('');

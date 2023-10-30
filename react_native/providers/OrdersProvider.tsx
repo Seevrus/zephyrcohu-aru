@@ -74,8 +74,8 @@ export function OrdersProvider({ children }: PropsWithChildren) {
       const jsonData = await AsyncStorage.getItem(
         currentOrderContextStorageKey
       );
-      const localStorageCurrentReceipt = jsonData ? JSON.parse(jsonData) : {};
-      setCurrentOrder(localStorageCurrentReceipt);
+      const localStorageCurrentOrder = jsonData ? JSON.parse(jsonData) : {};
+      setCurrentOrder(localStorageCurrentOrder);
     }
 
     if (isRoundStarted && isNil(currentOrder)) {
@@ -112,8 +112,10 @@ export function OrdersProvider({ children }: PropsWithChildren) {
   );
 
   const finalizeCurrentOrder = useCallback(async () => {
-    await persistOrders(append(currentOrder, orders));
-    setOrders(append(currentOrder));
+    if (currentOrder.items.length > 0) {
+      await persistOrders(append(currentOrder, orders));
+      setOrders(append(currentOrder));
+    }
   }, [currentOrder, orders, persistOrders]);
 
   const sendInOrders = useCallback(async () => {

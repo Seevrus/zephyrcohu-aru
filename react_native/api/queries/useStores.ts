@@ -6,15 +6,14 @@ import {
   type StoresResponseData,
   type StoresResponseType,
 } from '../response-types/StoresResponseType';
+import { useCheckToken } from './useCheckToken';
 import { useToken } from './useToken';
 
 export function useStores({
   enabled = true,
 } = {}): UseQueryResult<StoresResponseData> {
-  const {
-    isSuccess: isTokenSuccess,
-    data: { token, isTokenExpired, isPasswordExpired } = {},
-  } = useToken();
+  const { isSuccess: isCheckTokenSuccess } = useCheckToken();
+  const { data: { token, isPasswordExpired } = {} } = useToken();
 
   return useQuery({
     queryKey: ['stores'],
@@ -39,10 +38,6 @@ export function useStores({
         );
       }
     },
-    enabled:
-      enabled &&
-      isTokenSuccess &&
-      !!token &&
-      !(isTokenExpired || isPasswordExpired),
+    enabled: enabled && isCheckTokenSuccess && !isPasswordExpired,
   });
 }

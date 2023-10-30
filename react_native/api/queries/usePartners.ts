@@ -11,11 +11,8 @@ import { useCheckToken } from './useCheckToken';
 import { useToken } from './useToken';
 
 export function usePartners({ enabled = true } = {}): UseQueryResult<Partners> {
-  const { data: user } = useCheckToken();
-  const {
-    isSuccess: isTokenSuccess,
-    data: { token, isTokenExpired, isPasswordExpired } = {},
-  } = useToken();
+  const { data: user, isSuccess: isCheckTokenSuccess } = useCheckToken();
+  const { data: { isPasswordExpired, token } = {} } = useToken();
 
   const isRoundStarted = user?.state === 'R';
 
@@ -43,9 +40,6 @@ export function usePartners({ enabled = true } = {}): UseQueryResult<Partners> {
       }
     },
     enabled:
-      enabled &&
-      isTokenSuccess &&
-      !(isTokenExpired || isPasswordExpired) &&
-      isRoundStarted,
+      enabled && isCheckTokenSuccess && !isPasswordExpired && isRoundStarted,
   });
 }

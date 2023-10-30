@@ -1,4 +1,4 @@
-import { type UseQueryResult, useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import axios from 'axios';
 
 import env from '../../env.json';
@@ -7,6 +7,7 @@ import {
   type TaxPayer,
 } from '../response-mappers/mapSearchTaxPayerResponse';
 import { type SearchTaxNumberResponseType } from '../response-types/SearchTaxNumberResponseType';
+import { useCheckToken } from './useCheckToken';
 import { useToken } from './useToken';
 
 type UseSearhcTaxNumberProps = {
@@ -18,10 +19,8 @@ export function useSearchTaxNumber({
   taxNumber,
   enabled = true,
 }: UseSearhcTaxNumberProps): UseQueryResult<TaxPayer[]> {
-  const {
-    isSuccess: isTokenSuccess,
-    data: { token, isTokenExpired, isPasswordExpired } = {},
-  } = useToken();
+  const { isSuccess: isCheckTokenSuccess } = useCheckToken();
+  const { data: { isPasswordExpired, token } = {} } = useToken();
 
   return useQuery({
     queryKey: ['search-tax-number', taxNumber],
@@ -48,9 +47,7 @@ export function useSearchTaxNumber({
     enabled:
       enabled &&
       /^(\d{8})$/.test(taxNumber) &&
-      isTokenSuccess &&
-      !!token &&
-      !(isTokenExpired || isPasswordExpired),
-    staleTime: 0, // for testing purposes only
+      isCheckTokenSuccess &&
+      !isPasswordExpired,
   });
 }
