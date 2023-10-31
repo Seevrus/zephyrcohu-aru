@@ -25,6 +25,7 @@ class CreateReceiptsRequest extends FormRequest
     {
         return [
             'data' => 'required|array|bail',
+            'data.*.partnerId' => 'required|integer|min:1',
             'data.*.partnerCode' => 'required|string|size:6',
             'data.*.partnerSiteCode' => 'required|string|size:4',
             'data.*.serialNumber' => 'required|integer|min:0|max:16777215|distinct',

@@ -10,7 +10,7 @@ class ReceiptOtherItem extends Model
     use HasFactory;
 
     protected $fillable = [
-        'code',
+        'item_id',
         'article_number',
         'name',
         'quantity',
@@ -20,6 +20,7 @@ class ReceiptOtherItem extends Model
         'vat_rate',
         'vat_amount',
         'gross_amount',
+        'comment',
     ];
 
     public function receipt()

@@ -40,7 +40,7 @@ class ReceiptController extends Controller
                 $receipt = Receipt::create([
                     'company_id' => $company->id,
                     'company_code' => $company->code,
-                    'partner_id' => $receiptRequest['partnerCode'],
+                    'partner_id' => $receiptRequest['partnerId'],
                     'partner_code' => $receiptRequest['partnerCode'],
                     'partner_site_code' => $receiptRequest['partnerSiteCode'],
                     'serial_number' => $receiptRequest['serialNumber'],

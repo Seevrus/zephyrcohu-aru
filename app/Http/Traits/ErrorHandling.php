@@ -70,6 +70,17 @@ trait ErrorHandling
         return response($response, 415);
     }
 
+    public function too_many_requests()
+    {
+        $response = [
+            'status' => 429,
+            'codeName' => 'Too Many Requests',
+            'message' => 'The user has sent too many requests in a given amount of time.',
+        ];
+
+        return response($response, 429);
+    }
+
     public function internal_Server_error()
     {
         $response = [
