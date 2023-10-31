@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import { equals } from 'ramda';
 import { useEffect, useState } from 'react';
 
@@ -33,8 +33,10 @@ function useCheckTokenQuery({ enabled = true } = {}) {
 
         return mapCheckTokenResponse(response.data);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('useCheckTokenQuery:', error.message);
+        if (isAxiosError(error)) {
+          // eslint-disable-next-line no-console
+          console.log('useCheckToken', error.response.data);
+        }
         throw new Error('A megadott token nem érvényes.');
       }
     },

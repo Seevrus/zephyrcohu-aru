@@ -5,7 +5,7 @@
     "allowUnreachableCode": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   },
   "extends": "expo/tsconfig.base"
 }
