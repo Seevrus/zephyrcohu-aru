@@ -1,6 +1,6 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { isEmpty, not } from 'ramda';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { usePartners } from '../../../api/queries/usePartners';
@@ -15,6 +15,7 @@ import { type SummaryProps } from '../../../navigators/screen-types';
 import { useReceiptsContext } from '../../../providers/ReceiptsProvider';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
 import { type ContextReceipt } from '../../../providers/types/receipts-provider-types';
+import { type EventArg, useFocusEffect } from '@react-navigation/native';
 
 export function Summary({ navigation }: SummaryProps) {
   const { isInternetReachable } = useNetInfo();
@@ -72,6 +73,38 @@ export function Summary({ navigation }: SummaryProps) {
     syncSellFlowWithApi,
   ]);
 
+  const exitSummaryHandler = useCallback(
+    async (
+      event: EventArg<
+        'beforeRemove',
+        true,
+        {
+          action: Readonly<{
+            type: string;
+            payload?: object;
+            source?: string;
+            target?: string;
+          }>;
+        }
+      >
+    ) => {
+      event.preventDefault();
+      await resetSellFlowContext();
+      navigation.goBack();
+    },
+    [navigation, resetSellFlowContext]
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      navigation.addListener('beforeRemove', exitSummaryHandler);
+
+      return () => {
+        navigation.removeListener('beforeRemove', exitSummaryHandler);
+      };
+    }, [exitSummaryHandler, navigation])
+  );
+
   if (
     isPartnersPending ||
     isReceiptsContextPending ||
@@ -118,6 +151,7 @@ export function Summary({ navigation }: SummaryProps) {
         <Button
           variant="ok"
           onPress={async () => {
+            navigation.removeListener('beforeRemove', exitSummaryHandler);
             await resetSellFlowContext();
             navigation.goBack();
           }}
