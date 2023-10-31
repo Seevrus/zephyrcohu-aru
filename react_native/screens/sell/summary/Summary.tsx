@@ -1,26 +1,37 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { isEmpty, not } from 'ramda';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { usePartners } from '../../../api/queries/usePartners';
+import { Loading } from '../../../components/Loading';
 import { ErrorCard } from '../../../components/info-cards/ErrorCard';
 import { TextCard } from '../../../components/info-cards/TextCard';
-import { Loading } from '../../../components/Loading';
 import { PrintSection } from '../../../components/print-section/PrintSection';
 import { Button } from '../../../components/ui/Button';
 import { colors } from '../../../constants/colors';
 import { fontSizes } from '../../../constants/fontSizes';
 import { type SummaryProps } from '../../../navigators/screen-types';
+import { useReceiptsContext } from '../../../providers/ReceiptsProvider';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
+import { type ContextReceipt } from '../../../providers/types/receipts-provider-types';
 
 export function Summary({ navigation }: SummaryProps) {
   const { isInternetReachable } = useNetInfo();
+  const { isPending: isPartnersPending, data: partners } = usePartners();
+  const { isPending: isReceiptsContextPending, currentReceipt } =
+    useReceiptsContext();
   const {
     isPending: isSellFlowContextPending,
     selectedOrderItems,
     resetSellFlowContext,
     syncSellFlowWithApi,
   } = useSellFlowContext();
+
+  const currentPartner = useMemo(
+    () => partners?.find((partner) => partner.id === currentReceipt.buyer.id),
+    [currentReceipt.buyer.id, partners]
+  );
 
   const [ordersSuccess, setOrdersSuccess] = useState<string>('');
   const [ordersError, setOrdersError] = useState<string>('');
@@ -61,7 +72,11 @@ export function Summary({ navigation }: SummaryProps) {
     syncSellFlowWithApi,
   ]);
 
-  if (isSellFlowContextPending) {
+  if (
+    isPartnersPending ||
+    isReceiptsContextPending ||
+    isSellFlowContextPending
+  ) {
     return <Loading />;
   }
 
@@ -95,7 +110,10 @@ export function Summary({ navigation }: SummaryProps) {
         </View>
       )}
       <Text style={styles.header}>Számla mentése sikeres!</Text>
-      <PrintSection />
+      <PrintSection
+        partner={currentPartner}
+        receipt={currentReceipt as ContextReceipt}
+      />
       <View style={styles.buttonContainer}>
         <Button
           variant="ok"

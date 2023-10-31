@@ -1,76 +1,52 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { cancelReceipt } from '../../store/round-slice/round-api-actions';
-import { getReceiptPayloadBySn } from '../../store/round-slice/round-api-mappers';
+import { usePartners } from '../../api/queries/usePartners';
+import { Loading } from '../../components/Loading';
+import { PrintSection } from '../../components/print-section/PrintSection';
+import { colors } from '../../constants/colors';
+import { type ReceiptDetailsProps } from '../../navigators/screen-types';
+import { useReceiptsContext } from '../../providers/ReceiptsProvider';
 
-import PrintSection from '../../components/print-section/PrintSection';
-import Button from '../../components/ui/Button';
-import colors from '../../constants/colors';
-import fontSizes from '../../constants/fontSizes';
-import { ReceiptDetailsProps } from '../../navigators/screen-types';
-import useUpsertReceipts from '../../hooks/useUpsertReceipts';
-import Loading from '../../components/Loading';
-
-export default function ReceiptDetails({ navigation, route }: ReceiptDetailsProps) {
-  const dispatch = useAppDispatch();
+export function ReceiptDetails({ navigation, route }: ReceiptDetailsProps) {
   const { serialNumber } = route.params;
 
-  const { loading } = useUpsertReceipts();
+  const { isPending: isPartnersPending, data: partners } = usePartners();
+  const { isPending: isReceiptsContextPending, receipts } =
+    useReceiptsContext();
 
-  const currentReceipt = useAppSelector((state) =>
-    state.round.receipts.find((r) => r.serialNumber === serialNumber)
+  const currentReceipt = useMemo(
+    () => receipts?.find((receipt) => receipt.serialNumber === serialNumber),
+    [receipts, serialNumber]
   );
-  const currentPartner = useAppSelector((state) =>
-    state.partners.partners.find((p) => p.id === currentReceipt.partnerId)
+
+  const currentPartner = useMemo(
+    () => partners?.find((partner) => partner.id === currentReceipt.buyer.id),
+    [currentReceipt.buyer.id, partners]
   );
-  const receiptPayload = useAppSelector((state) => getReceiptPayloadBySn(state, serialNumber));
 
-  const canCancelReceipt = !currentReceipt.connectedSerialNumber;
+  const title = `${currentReceipt.serialNumber}/${currentReceipt.yearCode}`;
 
-  const cancelReceiptHandler = async () => {
-    const { cancelSerialNumber } = await dispatch(cancelReceipt(serialNumber)).unwrap();
-    navigation.replace('ReceiptDetails', { serialNumber: cancelSerialNumber });
-  };
+  useEffect(() => {
+    navigation.setOptions({ headerTitle: title });
+  }, [navigation, title]);
 
-  if (loading) {
+  if (isPartnersPending || isReceiptsContextPending) {
     return <Loading />;
   }
 
   return (
     <View style={styles.container}>
-      <Text
-        style={styles.header}
-      >{`${receiptPayload.serialNumber}/${receiptPayload.yearCode}`}</Text>
-      <PrintSection partner={currentPartner} receipt={receiptPayload} />
-      {canCancelReceipt && (
-        <View style={styles.buttonContainer}>
-          <Button variant="warning" onPress={cancelReceiptHandler}>
-            Számla sztornózása
-          </Button>
-        </View>
-      )}
+      <PrintSection partner={currentPartner} receipt={currentReceipt} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: colors.background,
+    flex: 1,
     paddingHorizontal: '7%',
     paddingTop: 20,
-  },
-  header: {
-    marginBottom: 20,
-    alignSelf: 'center',
-    color: 'white',
-    fontFamily: 'Muli',
-    fontSize: fontSizes.subtitle,
-  },
-  buttonContainer: {
-    marginTop: 50,
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
 });

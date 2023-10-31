@@ -4,6 +4,8 @@ import { colors } from '../constants/colors';
 import { fontSizes } from '../constants/fontSizes';
 import { StartErrand } from '../screens/errand-administration/StartErrand';
 import { Login } from '../screens/login/Login';
+import { ReceiptDetails } from '../screens/receipts/ReceiptDetails';
+import { ReceiptList } from '../screens/receipts/ReceiptList';
 import { AddPartnerForm } from '../screens/sell/add-partner/AddPartnerForm';
 import { SearchPartnerNavForm } from '../screens/sell/add-partner/SearchPartnerNavForm';
 import { Discounts } from '../screens/sell/review/Discounts';
@@ -157,21 +159,21 @@ export function MainStack() {
           headerTitle: 'Összegzés',
         }}
       />
+      <Stack.Screen
+        name="ReceiptList"
+        component={ReceiptList}
+        options={{
+          headerTitle: 'Bizonylatok',
+        }}
+      />
+      <Stack.Screen
+        name="ReceiptDetails"
+        component={ReceiptDetails}
+        options={{
+          headerTitle: '',
+        }}
+      />
       {/*  <Stack.Screen
-            name="ReceiptList"
-            component={ReceiptList}
-            options={{
-              headerTitle: 'Bizonylatok',
-            }}
-          />
-          <Stack.Screen
-            name="ReceiptDetails"
-            component={ReceiptDetails}
-            options={{
-              headerTitle: '',
-            }}
-          />
-          <Stack.Screen
             name="EndErrand"
             component={EndErrand}
             options={{

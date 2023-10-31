@@ -19,7 +19,7 @@ import { colors } from '../../constants/colors';
 import { type LoginProps } from '../../navigators/screen-types';
 
 export function Login({ navigation }: LoginProps) {
-  const { data: user, isPending: isUserLoading } = useCheckToken();
+  const { data: user, isFetching: isUserFetching } = useCheckToken();
   const login = useLogin();
 
   const isRoundStarted = user?.state === 'R';
@@ -65,7 +65,7 @@ export function Login({ navigation }: LoginProps) {
   const isLoginButtonDisabled =
     userName.length === 0 || password.length === 0 || !!errorMessage;
 
-  if (isLoading || isUserLoading) {
+  if (isLoading || isUserFetching) {
     return <Loading />;
   }
 

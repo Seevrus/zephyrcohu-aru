@@ -4,53 +4,48 @@ import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useCheckToken } from '../../api/queries/useCheckToken';
+import { type Partners } from '../../api/response-mappers/mapPartnersResponse';
 import { colors } from '../../constants/colors';
 import { fontSizes } from '../../constants/fontSizes';
 import { useReceiptsContext } from '../../providers/ReceiptsProvider';
-import { useSellFlowContext } from '../../providers/SellFlowProvider';
 import { type ContextReceipt } from '../../providers/types/receipts-provider-types';
 import { Loading } from '../Loading';
 import { Button } from '../ui/Button';
 import { createReceiptHtml } from './createReceiptHtml';
 
-export function PrintSection() {
+type PrintSectionProps = {
+  partner: Partners[number];
+  receipt: ContextReceipt;
+};
+
+export function PrintSection({ partner, receipt }: PrintSectionProps) {
   const { data: user, isPending: isUserPending } = useCheckToken();
-  const { isPending: isSellFlowContextpending, selectedPartner } =
-    useSellFlowContext();
-  const {
-    isPending: isReceiptsContextPending,
-    currentReceipt,
-    updateNumberOfPrintedCopies,
-  } = useReceiptsContext();
+  const { isPending: isReceiptsContextPending, updateNumberOfPrintedCopies } =
+    useReceiptsContext();
 
   const [updateProgressMessage, setUpdateProgressMessage] =
     useState<string>('');
 
   const canPrintOriginalCopy =
-    selectedPartner?.invoiceCopies > currentReceipt?.originalCopiesPrinted;
+    partner?.invoiceCopies > receipt?.originalCopiesPrinted;
 
   const printButtonHandler = async () => {
     await Print.printAsync({
       html: createReceiptHtml({
         user,
-        receipt: currentReceipt as ContextReceipt,
-        partner: selectedPartner,
+        receipt,
+        partner,
       }),
     });
 
-    if (canPrintOriginalCopy && isNotNil(currentReceipt.id)) {
+    if (canPrintOriginalCopy && isNotNil(receipt.id)) {
       setUpdateProgressMessage('Számla frissítése folyamatban...');
-      await updateNumberOfPrintedCopies(currentReceipt.id);
+      await updateNumberOfPrintedCopies(receipt.id);
       setUpdateProgressMessage('');
     }
   };
 
-  if (
-    isUserPending ||
-    isSellFlowContextpending ||
-    isReceiptsContextPending ||
-    !!updateProgressMessage
-  ) {
+  if (isUserPending || isReceiptsContextPending || !!updateProgressMessage) {
     return <Loading message={updateProgressMessage} />;
   }
 
@@ -59,21 +54,17 @@ export function PrintSection() {
       <Text style={styles.text}>
         Az eredeti számla formátuma:{' '}
         <Text style={styles.numberOfReceipts}>
-          {selectedPartner?.invoiceType === 'E'
-            ? 'elektronikus'
-            : 'papír alapú'}
+          {partner?.invoiceType === 'E' ? 'elektronikus' : 'papír alapú'}
         </Text>
         .
       </Text>
       {canPrintOriginalCopy ? (
         <Text style={styles.text}>
           A számlát{' '}
-          <Text style={styles.numberOfReceipts}>
-            {selectedPartner?.invoiceCopies}
-          </Text>{' '}
+          <Text style={styles.numberOfReceipts}>{partner?.invoiceCopies}</Text>{' '}
           eredeti példányban van lehetőség kinyomtatni. Ebből eddig{' '}
           <Text style={styles.numberOfReceipts}>
-            {currentReceipt?.originalCopiesPrinted}
+            {receipt?.originalCopiesPrinted}
           </Text>{' '}
           példány került nyomtatásra.
         </Text>
