@@ -1,4 +1,4 @@
-import { complement, filter, map, pick, pipe, prop } from 'ramda';
+import { map, pick } from 'ramda';
 
 import { type ContextReceipt } from '../../providers/types/receipts-provider-types';
 import {
@@ -9,10 +9,8 @@ import {
 export function mapUpdateReceiptsRequest(
   receipts: ContextReceipt[]
 ): UpdateReceiptsRequestData {
-  return pipe(
-    filter<ContextReceipt>(complement(prop('shouldBeUpdated'))),
-    map<ContextReceipt, UpdateReceiptRequest>(
-      pick(['id', 'originalCopiesPrinted'])
-    )
-  )(receipts);
+  return map<ContextReceipt, UpdateReceiptRequest>(
+    pick(['id', 'originalCopiesPrinted']),
+    receipts
+  );
 }

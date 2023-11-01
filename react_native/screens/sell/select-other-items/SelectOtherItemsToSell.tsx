@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { assoc, dissoc } from 'ramda';
+import { assoc, dissoc, isNil, isNotNil } from 'ramda';
 import { useCallback, useMemo, useState } from 'react';
 import {
   Animated,
@@ -79,25 +79,26 @@ export function SelectOtherItemsToSell({
   const priceChangeHandler = useCallback(
     (item: OtherSellItem, netPrice: number | null) => {
       setSelectedOtherItems((prevItems) => {
+        const netPriceOrUndefined = isNotNil(netPrice) ? netPrice : undefined;
         const selectedOtherItem = prevItems[item.id];
 
         if (!selectedOtherItem) {
-          return assoc(
-            item.id,
-            { netPrice, quantity: null, comment: null },
-            prevItems
-          );
+          return assoc(item.id, { netPrice: netPriceOrUndefined }, prevItems);
         }
 
         if (
-          netPrice === null &&
-          selectedOtherItem.quantity === null &&
-          selectedOtherItem.comment === null
+          isNil(netPrice) &&
+          isNil(selectedOtherItem.quantity) &&
+          isNil(selectedOtherItem.comment)
         ) {
           return dissoc(item.id, prevItems);
         }
 
-        return assoc(item.id, { ...selectedOtherItem, netPrice }, prevItems);
+        return assoc(
+          item.id,
+          { ...selectedOtherItem, netPrice: netPriceOrUndefined },
+          prevItems
+        );
       });
     },
     [setSelectedOtherItems]
@@ -106,25 +107,26 @@ export function SelectOtherItemsToSell({
   const quantityChangeHandler = useCallback(
     (item: OtherSellItem, quantity: number | null) => {
       setSelectedOtherItems((prevItems) => {
+        const quantityOrUndefined = isNotNil(quantity) ? quantity : undefined;
         const selectedOtherItem = prevItems[item.id];
 
         if (!selectedOtherItem) {
-          return assoc(
-            item.id,
-            { netPrice: null, quantity, comment: null },
-            prevItems
-          );
+          return assoc(item.id, { quantity: quantityOrUndefined }, prevItems);
         }
 
         if (
-          selectedOtherItem.netPrice === null &&
-          quantity === null &&
-          selectedOtherItem.comment === null
+          isNil(selectedOtherItem.netPrice) &&
+          isNil(quantity) &&
+          isNil(selectedOtherItem.comment)
         ) {
           return dissoc(item.id, prevItems);
         }
 
-        return assoc(item.id, { ...selectedOtherItem, quantity }, prevItems);
+        return assoc(
+          item.id,
+          { ...selectedOtherItem, quantity: quantityOrUndefined },
+          prevItems
+        );
       });
     },
     [setSelectedOtherItems]
@@ -133,25 +135,26 @@ export function SelectOtherItemsToSell({
   const commentChangeHandler = useCallback(
     (item: OtherSellItem, comment: string | null) => {
       setSelectedOtherItems((prevItems) => {
+        const commentOrUndefined = isNotNil(comment) ? comment : undefined;
         const selectedOtherItem = prevItems[item.id];
 
         if (!selectedOtherItem) {
-          return assoc(
-            item.id,
-            { netPrice: null, quantity: null, comment },
-            prevItems
-          );
+          return assoc(item.id, { comment: commentOrUndefined }, prevItems);
         }
 
         if (
-          selectedOtherItem.netPrice === null &&
-          selectedOtherItem.quantity === null &&
-          comment === null
+          isNil(selectedOtherItem.netPrice) &&
+          isNil(selectedOtherItem.quantity) &&
+          isNil(comment)
         ) {
           return dissoc(item.id, prevItems);
         }
 
-        return assoc(item.id, { ...selectedOtherItem, comment }, prevItems);
+        return assoc(
+          item.id,
+          { ...selectedOtherItem, comment: commentOrUndefined },
+          prevItems
+        );
       });
     },
     [setSelectedOtherItems]

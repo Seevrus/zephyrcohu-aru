@@ -97,6 +97,7 @@ export function useSelectPartners(): UseSelectPartners {
 
   const saveSelectedPartnerInFlow = useCallback(async () => {
     await setCurrentReceiptBuyer({
+      partnerId: selectedPartner.id,
       partnerCode: selectedPartner.code,
       partnerSiteCode: selectedPartner.siteCode,
       buyer: {
@@ -156,6 +157,7 @@ export function useSelectPartners(): UseSelectPartners {
       maxPartnerIdInUse.current = newPartnerId;
 
       await setCurrentReceiptBuyer({
+        partnerId: newPartnerId,
         partnerCode: '',
         partnerSiteCode: '',
         buyer: {

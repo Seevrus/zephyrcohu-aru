@@ -13,7 +13,8 @@ export function useStores({
   enabled = true,
 } = {}): UseQueryResult<StoresResponseData> {
   const { isSuccess: isCheckTokenSuccess } = useCheckToken();
-  const { data: { token, isPasswordExpired } = {} } = useToken();
+  const { data: { token, isPasswordExpired, isTokenExpired } = {} } =
+    useToken();
 
   return useQuery({
     queryKey: ['stores'],
@@ -40,6 +41,7 @@ export function useStores({
         );
       }
     },
-    enabled: enabled && isCheckTokenSuccess && !isPasswordExpired,
+    enabled:
+      enabled && !isTokenExpired && isCheckTokenSuccess && !isPasswordExpired,
   });
 }

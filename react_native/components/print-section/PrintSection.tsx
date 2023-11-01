@@ -30,6 +30,12 @@ export function PrintSection({ partner, receipt }: PrintSectionProps) {
     partner?.invoiceCopies > receipt?.originalCopiesPrinted;
 
   const printButtonHandler = async () => {
+    if (canPrintOriginalCopy && isNotNil(receipt.id)) {
+      setUpdateProgressMessage('Számla frissítése folyamatban...');
+      await updateNumberOfPrintedCopies(receipt.id);
+      setUpdateProgressMessage('');
+    }
+
     await Print.printAsync({
       html: createReceiptHtml({
         user,
@@ -37,12 +43,6 @@ export function PrintSection({ partner, receipt }: PrintSectionProps) {
         partner,
       }),
     });
-
-    if (canPrintOriginalCopy && isNotNil(receipt.id)) {
-      setUpdateProgressMessage('Számla frissítése folyamatban...');
-      await updateNumberOfPrintedCopies(receipt.id);
-      setUpdateProgressMessage('');
-    }
   };
 
   if (isUserPending || isReceiptsContextPending || !!updateProgressMessage) {

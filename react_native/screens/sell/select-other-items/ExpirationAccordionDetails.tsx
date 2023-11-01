@@ -184,6 +184,7 @@ function arePropsEqual(
   return (
     eqProps('item', oldProps, newProps) &&
     oldProps.quantity === newProps.quantity &&
+    oldProps.netPrice === newProps.netPrice &&
     oldProps.comment === newProps.comment
   );
 }

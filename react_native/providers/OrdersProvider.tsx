@@ -23,6 +23,7 @@ type OrdersContextType = {
   resetCurrentOrder: () => Promise<void>;
   finalizeCurrentOrder: () => Promise<void>;
   sendInOrders: () => Promise<void>;
+  resetOrdersContext: () => Promise<void>;
 };
 
 const OrdersContext = createContext<OrdersContextType>({} as OrdersContextType);
@@ -64,6 +65,11 @@ export function OrdersProvider({ children }: PropsWithChildren) {
       ordersContextStorageKey,
       JSON.stringify(ordersToSave)
     );
+  }, []);
+
+  const resetOrders = useCallback(async () => {
+    await AsyncStorage.removeItem(ordersContextStorageKey);
+    setOrders([]);
   }, []);
 
   /**
@@ -131,6 +137,11 @@ export function OrdersProvider({ children }: PropsWithChildren) {
     }
   }, [createOrdersAPI, isOrdersSyncInProgress, orders, persistOrders]);
 
+  const resetOrdersContext = useCallback(async () => {
+    await resetCurrentOrder();
+    await resetOrders();
+  }, [resetCurrentOrder, resetOrders]);
+
   const ordersContextValue = useMemo(
     () => ({
       isPending: isUserPending,
@@ -140,6 +151,7 @@ export function OrdersProvider({ children }: PropsWithChildren) {
       resetCurrentOrder,
       finalizeCurrentOrder,
       sendInOrders,
+      resetOrdersContext,
     }),
     [
       finalizeCurrentOrder,
@@ -147,6 +159,7 @@ export function OrdersProvider({ children }: PropsWithChildren) {
       numberOfOrders,
       orders,
       resetCurrentOrder,
+      resetOrdersContext,
       saveCurrentOrder,
       sendInOrders,
     ]

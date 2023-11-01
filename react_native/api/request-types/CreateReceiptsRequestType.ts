@@ -7,6 +7,7 @@ import { type ReceiptVatAmount } from './common/ReceiptVatAmount';
 import { type ReceiptVendor } from './common/ReceiptVendor';
 
 export type CreateReceiptRequest = {
+  partnerId: number;
   partnerCode: string;
   partnerSiteCode: string;
   serialNumber: number;

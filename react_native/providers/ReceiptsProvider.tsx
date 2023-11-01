@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { add, format, parseISO } from 'date-fns';
-import { append, assoc, dissoc, isEmpty, isNil } from 'ramda';
+import { append, assoc, dissoc, isEmpty, isNil, prop } from 'ramda';
 import {
   createContext,
   useCallback,
@@ -31,12 +31,14 @@ type ReceiptsContextType = {
   currentReceipt: Partial<ContextReceipt>;
   resetCurrentReceipt: () => Promise<void>;
   setCurrentReceiptBuyer: ({
+    partnerId,
     partnerCode,
     partnerSiteCode,
     buyer,
     paymentDays,
     invoiceType,
   }: {
+    partnerId: number;
     partnerCode: string;
     partnerSiteCode: string;
     buyer: ReceiptBuyer;
@@ -50,6 +52,7 @@ type ReceiptsContextType = {
   finalizeCurrentReceipt: () => Promise<void>;
   sendInReceipts: () => Promise<void>;
   updateNumberOfPrintedCopies: (receiptId: number) => Promise<void>;
+  resetReceiptsContext: () => Promise<void>;
 };
 
 const ReceiptsContext = createContext<ReceiptsContextType>(
@@ -104,6 +107,11 @@ export function ReceiptsProvider({ children }: PropsWithChildren) {
     []
   );
 
+  const resetReceipts = useCallback(async () => {
+    await AsyncStorage.removeItem(receiptsContextStorageKey);
+    setReceipts(null);
+  }, []);
+
   /**
    * Initialize current receipt from local storage
    */
@@ -136,12 +144,14 @@ export function ReceiptsProvider({ children }: PropsWithChildren) {
 
   const setCurrentReceiptBuyer = useCallback(
     async ({
+      partnerId,
       partnerCode,
       partnerSiteCode,
       buyer,
       paymentDays,
       invoiceType,
     }: {
+      partnerId: number;
       partnerCode: string;
       partnerSiteCode: string;
       buyer: ReceiptBuyer;
@@ -156,6 +166,7 @@ export function ReceiptsProvider({ children }: PropsWithChildren) {
 
       setCurrentReceipt((prevState) => ({
         ...prevState,
+        partnerId,
         partnerCode,
         partnerSiteCode,
         buyer,
@@ -167,6 +178,7 @@ export function ReceiptsProvider({ children }: PropsWithChildren) {
 
       const updatedReceipt = {
         ...currentReceipt,
+        partnerId,
         partnerCode,
         partnerSiteCode,
         buyer,
@@ -323,7 +335,10 @@ export function ReceiptsProvider({ children }: PropsWithChildren) {
       setReceipts(updatedReceipts);
       await persistReceipts(updatedReceipts);
 
-      const updateReceiptsResult = await updateReceiptsAPI(updatedReceipts);
+      const updateReceiptsResult = await updateReceiptsAPI(
+        updatedReceipts.filter(prop('shouldBeUpdated'))
+      );
+
       updatedReceipts = receipts.map((receipt) => {
         const updateReceiptResult = updateReceiptsResult.find(
           (result) => result.id === receipt.id
@@ -335,6 +350,7 @@ export function ReceiptsProvider({ children }: PropsWithChildren) {
 
         return {
           ...receipt,
+          originalCopiesPrinted: updateReceiptResult.originalCopiesPrinted,
           shouldBeUpdated: false,
         };
       });
@@ -351,6 +367,11 @@ export function ReceiptsProvider({ children }: PropsWithChildren) {
     ]
   );
 
+  const resetReceiptsContext = useCallback(async () => {
+    await resetCurrentReceipt();
+    await resetReceipts();
+  }, [resetCurrentReceipt, resetReceipts]);
+
   const receiptsContextValue = useMemo(
     () => ({
       isPending: isActiveRoundPending || isUserPending || isStoreDetailsPending,
@@ -364,6 +385,7 @@ export function ReceiptsProvider({ children }: PropsWithChildren) {
       finalizeCurrentReceipt,
       sendInReceipts,
       updateNumberOfPrintedCopies,
+      resetReceiptsContext,
     }),
     [
       currentReceipt,
@@ -374,6 +396,7 @@ export function ReceiptsProvider({ children }: PropsWithChildren) {
       numberOfReceipts,
       receipts,
       resetCurrentReceipt,
+      resetReceiptsContext,
       sendInReceipts,
       setCurrentReceiptBuyer,
       setCurrentReceiptItems,

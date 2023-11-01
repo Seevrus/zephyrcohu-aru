@@ -26,7 +26,7 @@ type StorageContextType = {
   removeSoldItemsFromStorage: (
     soldItems: Record<number, Record<number, number>>
   ) => Promise<void>;
-  clearStorageFromContext(): void;
+  clearStorageFromContext(): Promise<void>;
 };
 
 const StorageContext = createContext<StorageContextType>(
