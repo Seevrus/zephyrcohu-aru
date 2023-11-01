@@ -42,5 +42,6 @@ export function usePriceLists({
     },
     enabled:
       enabled && isCheckTokenSuccess && !isPasswordExpired && isRoundStarted,
+    initialData: [],
   });
 }

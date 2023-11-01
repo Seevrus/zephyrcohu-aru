@@ -17,7 +17,7 @@ export function useItems({
 
   return useQuery({
     queryKey: ['items'],
-    queryFn: async () => {
+    queryFn: async (): Promise<ItemsResponseData> => {
       try {
         const response = await axios.get<ItemsResponseType>(
           `${env.api_url}/items`,
@@ -41,5 +41,6 @@ export function useItems({
       }
     },
     enabled: enabled && isCheckTokenSuccess && !isPasswordExpired,
+    initialData: [],
   });
 }

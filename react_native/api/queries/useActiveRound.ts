@@ -45,5 +45,6 @@ export function useActiveRound({
     },
     enabled:
       enabled && isCheckTokenSuccess && !isPasswordExpired && isRoundStarted,
+    initialData: {} as ActiveRoundResponseData,
   });
 }

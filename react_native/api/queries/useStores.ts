@@ -43,5 +43,6 @@ export function useStores({
     },
     enabled:
       enabled && !isTokenExpired && isCheckTokenSuccess && !isPasswordExpired,
+    initialData: [],
   });
 }

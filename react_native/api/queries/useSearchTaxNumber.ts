@@ -51,5 +51,6 @@ export function useSearchTaxNumber({
       /^(\d{8})$/.test(taxNumber) &&
       isCheckTokenSuccess &&
       !isPasswordExpired,
+    initialData: [],
   });
 }

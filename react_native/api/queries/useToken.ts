@@ -14,6 +14,12 @@ type Token = {
   isTokenExpired: boolean;
 };
 
+const initialData = {
+  token: null,
+  isPasswordExpired: false,
+  isTokenExpired: true,
+};
+
 export function useToken(): UseQueryResult<Token> {
   return useQuery({
     queryKey: ['token'],
@@ -22,11 +28,7 @@ export function useToken(): UseQueryResult<Token> {
         const rawToken = await SecureStore.getItemAsync('boreal-token');
 
         if (!rawToken) {
-          return {
-            token: null,
-            isPasswordExpired: false,
-            isTokenExpired: true,
-          };
+          return initialData;
         }
 
         const {
@@ -49,5 +51,6 @@ export function useToken(): UseQueryResult<Token> {
     },
     staleTime: 0,
     gcTime: 300_000,
+    initialData,
   });
 }

@@ -44,5 +44,6 @@ export function useOtherItems({
     },
     enabled:
       enabled && isCheckTokenSuccess && !isPasswordExpired && isRoundStarted,
+    initialData: [],
   });
 }

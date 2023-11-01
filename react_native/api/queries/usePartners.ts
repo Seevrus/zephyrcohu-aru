@@ -43,5 +43,6 @@ export function usePartners({ enabled = true } = {}): UseQueryResult<Partners> {
     },
     enabled:
       enabled && isCheckTokenSuccess && !isPasswordExpired && isRoundStarted,
+    initialData: [],
   });
 }

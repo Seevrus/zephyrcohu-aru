@@ -24,7 +24,7 @@ export function useStoreDetails({
 
   return useQuery({
     queryKey: ['store-details', storeId],
-    queryFn: async () => {
+    queryFn: async (): Promise<StoreDetailsResponseData> => {
       try {
         const response = await axios.get<StoreDetailsResponseType>(
           `${env.api_url}/stores/${storeId}`,
@@ -51,5 +51,6 @@ export function useStoreDetails({
     },
     enabled:
       enabled && !isNil(storeId) && isCheckTokenSuccess && !isPasswordExpired,
+    initialData: {} as StoreDetailsResponseData,
   });
 }
