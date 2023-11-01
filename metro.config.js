@@ -1,3 +1,5 @@
+/* eslint-disable unicorn/prefer-module */
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { getDefaultConfig } = require('expo/metro-config');
 
 module.exports = (() => {
@@ -11,7 +13,7 @@ module.exports = (() => {
   };
   config.resolver = {
     ...resolver,
-    assetExts: resolver.assetExts.filter((ext) => ext !== 'svg'),
+    assetExts: resolver.assetExts.filter((extension) => extension !== 'svg'),
     sourceExts: [...resolver.sourceExts, 'svg'],
   };
 

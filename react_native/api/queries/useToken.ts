@@ -14,12 +14,6 @@ type Token = {
   isTokenExpired: boolean;
 };
 
-const initialData = {
-  token: null,
-  isPasswordExpired: false,
-  isTokenExpired: true,
-};
-
 export function useToken(): UseQueryResult<Token> {
   return useQuery({
     queryKey: ['token'],
@@ -28,7 +22,11 @@ export function useToken(): UseQueryResult<Token> {
         const rawToken = await SecureStore.getItemAsync('boreal-token');
 
         if (!rawToken) {
-          return initialData;
+          return {
+            token: null,
+            isPasswordExpired: false,
+            isTokenExpired: true,
+          };
         }
 
         const {
@@ -49,8 +47,5 @@ export function useToken(): UseQueryResult<Token> {
         throw new Error('Váratlan hiba lépett fel a token olvasása során.');
       }
     },
-    staleTime: 0,
-    gcTime: 300_000,
-    initialData,
   });
 }

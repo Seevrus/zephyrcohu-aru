@@ -24,17 +24,13 @@ export function useFinishRound() {
           }
         );
 
-        if (response.data.data.storeId !== request.roundId) {
-          throw new Error('Invalid Round ID');
-        }
-
         return response.data.data;
       } catch (error) {
         if (isAxiosError(error)) {
           // eslint-disable-next-line no-console
           console.log('useFinishRound:', error.response?.data);
         }
-        throw new Error('Váratlan hiba lépett fel a kör indítása során.');
+        throw new Error('Váratlan hiba lépett fel a kör zárása során.');
       }
     },
   });

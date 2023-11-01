@@ -3,63 +3,48 @@ import {
   type DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import { useNetInfo } from '@react-native-community/netinfo';
-import {
-  type EventListenerCallback,
-  type EventMapCore,
-  type StackNavigationState,
-} from '@react-navigation/native';
-import { type NativeStackNavigationEventMap } from '@react-navigation/native-stack';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useStartRound } from '../../api/mutations/useStartRound';
-import { useActiveRound } from '../../api/queries/useActiveRound';
-import { useItems } from '../../api/queries/useItems';
-import { useOtherItems } from '../../api/queries/useOtherItems';
-import { usePartnerLists } from '../../api/queries/usePartnerLists';
-import { usePartners } from '../../api/queries/usePartners';
-import { usePriceLists } from '../../api/queries/usePriceLists';
-import { useStores } from '../../api/queries/useStores';
+import { fetchActiveRound } from '../../api/queries/useActiveRound';
+import { fetchItems } from '../../api/queries/useItems';
+import { fetchOtherItems } from '../../api/queries/useOtherItems';
+import {
+  fetchPartnerLists,
+  usePartnerLists,
+} from '../../api/queries/usePartnerLists';
+import { fetchPartners } from '../../api/queries/usePartners';
+import { fetchPriceLists } from '../../api/queries/usePriceLists';
+import { fetchStoreDetails } from '../../api/queries/useStoreDetails';
+import { fetchStores, useStores } from '../../api/queries/useStores';
+import { useToken } from '../../api/queries/useToken';
 import { Loading } from '../../components/Loading';
 import { ErrorCard } from '../../components/info-cards/ErrorCard';
 import { Button } from '../../components/ui/Button';
 import { Dropdown } from '../../components/ui/Dropdown';
 import { Input } from '../../components/ui/Input';
 import { colors } from '../../constants/colors';
-import {
-  type StackParams,
-  type StartErrandProps,
-} from '../../navigators/screen-types';
+import { type StartErrandProps } from '../../navigators/screen-types';
 
 export function StartErrand({ navigation }: StartErrandProps) {
-  const { isFetched: isActiveRoundFetched, isFetching: isActiveRoundFetching } =
-    useActiveRound();
-  const { isFetched: isItemsFetched, isFetching: isItemsFetching } = useItems();
   const { isInternetReachable } = useNetInfo();
-  const { isFetched: isOtherItemsFetched, isFetching: isOtherItemsFetching } =
-    useOtherItems();
-  const { isFetched: isPartnersFetched, isFetching: isPartnersFetching } =
-    usePartners();
   const {
     data: partnerLists,
     isFetching: isPartnersListsFetching,
     isPending: isPartnerListsPending,
   } = usePartnerLists();
-  const { isFetched: isPriceListsFetched, isFetching: isPriceListsFetching } =
-    usePriceLists();
   const queryClient = useQueryClient();
-  const {
-    mutateAsync: startRound,
-    isPending: isStartRoundPending,
-    isSuccess: isStartRoundSuccess,
-  } = useStartRound();
+  const { mutateAsync: startRound, isPending: isStartRoundPending } =
+    useStartRound();
   const {
     data: stores,
     isFetching: isStoresFetching,
     isPending: isStoresPending,
   } = useStores();
+  const { data: { token } = {} } = useToken();
 
   const [storeId, setStoreId] = useState<number>(-1);
   const [partnerListId, setPartnerListId] = useState<number>(-1);
@@ -69,64 +54,10 @@ export function StartErrand({ navigation }: StartErrandProps) {
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    const preventGoBackWhileLoading: EventListenerCallback<
-      NativeStackNavigationEventMap &
-        EventMapCore<StackNavigationState<StackParams>>,
-      'beforeRemove'
-    > = (event) => {
-      if (
-        isStartRoundPending ||
-        isActiveRoundFetching ||
-        isItemsFetching ||
-        isOtherItemsFetching ||
-        isPartnersFetching ||
-        isPriceListsFetching
-      ) {
-        event.preventDefault();
-      }
-    };
-
-    navigation.addListener('beforeRemove', preventGoBackWhileLoading);
-
-    return () => {
-      navigation.removeListener('beforeRemove', preventGoBackWhileLoading);
-    };
-  }, [
-    isActiveRoundFetching,
-    isItemsFetching,
-    isOtherItemsFetching,
-    isPartnersFetching,
-    isPriceListsFetching,
-    isStartRoundPending,
-    navigation,
-  ]);
-
-  useEffect(() => {
     if (isInternetReachable === false) {
       navigation.pop();
     }
   }, [isInternetReachable, navigation]);
-
-  useEffect(() => {
-    if (
-      isStartRoundSuccess &&
-      isActiveRoundFetched &&
-      isItemsFetched &&
-      isOtherItemsFetched &&
-      isPartnersFetched &&
-      isPriceListsFetched
-    ) {
-      navigation.pop();
-    }
-  }, [
-    isActiveRoundFetched,
-    isItemsFetched,
-    isOtherItemsFetched,
-    isPartnersFetched,
-    isPriceListsFetched,
-    isStartRoundSuccess,
-    navigation,
-  ]);
 
   const confirmRoundHandler = async () => {
     setLoadingMessage('Körindítás folyamatban...');
@@ -137,6 +68,45 @@ export function StartErrand({ navigation }: StartErrandProps) {
         partnerListId,
         roundStarted: format(date, 'yyyy-MM-dd'),
       });
+
+      await queryClient.fetchQuery({
+        queryKey: ['active-round', token],
+        queryFn: () => fetchActiveRound(token),
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['check-token', token],
+        refetchType: 'all',
+      });
+      await queryClient.fetchQuery({
+        queryKey: ['items', token],
+        queryFn: () => fetchItems(token),
+      });
+      await queryClient.fetchQuery({
+        queryKey: ['other-items', token],
+        queryFn: () => fetchOtherItems(token),
+      });
+      await queryClient.fetchQuery({
+        queryKey: ['partner-lists', token],
+        queryFn: () => fetchPartnerLists(token),
+      });
+      await queryClient.fetchQuery({
+        queryKey: ['partners', token],
+        queryFn: () => fetchPartners(token),
+      });
+      await queryClient.fetchQuery({
+        queryKey: ['price-lists', token],
+        queryFn: () => fetchPriceLists(token),
+      });
+      await queryClient.fetchQuery({
+        queryKey: ['store-details', storeId, token],
+        queryFn: () => fetchStoreDetails(token, storeId),
+      });
+      await queryClient.fetchQuery({
+        queryKey: ['stores', token],
+        queryFn: () => fetchStores(token),
+      });
+
+      navigation.pop();
     } catch (error_) {
       setLoadingMessage('');
       setError(error_.message);
@@ -149,22 +119,18 @@ export function StartErrand({ navigation }: StartErrandProps) {
   };
 
   if (
-    isActiveRoundFetching ||
-    isItemsFetching ||
-    isOtherItemsFetching ||
-    isPartnersFetching ||
     isPartnersListsFetching ||
     isPartnerListsPending ||
-    isPriceListsFetching ||
     isStartRoundPending ||
     isStoresFetching ||
-    isStoresPending
+    isStoresPending ||
+    !!loadingMessage
   ) {
     return <Loading message={loadingMessage} />;
   }
 
   const displayStores = (stores ?? [])
-    .filter((store) => store.type !== 'P')
+    .filter((store) => store.type !== 'P' && store.state === 'I')
     .map((store) => ({
       key: String(store.id),
       value: store.name,
@@ -225,6 +191,7 @@ export function StartErrand({ navigation }: StartErrandProps) {
         <Pressable onPress={showDatePicker} style={styles.dateInnerContainer}>
           <Input
             label="Dátum"
+            variant="input"
             config={{ editable: false, value: format(date, 'yyyy-MM-dd') }}
           />
         </Pressable>

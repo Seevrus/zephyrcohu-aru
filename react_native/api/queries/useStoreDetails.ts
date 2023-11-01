@@ -24,32 +24,8 @@ export function useStoreDetails({
     useToken();
 
   return useQuery({
-    queryKey: ['store-details', storeId],
-    queryFn: async (): Promise<StoreDetailsResponseData> => {
-      try {
-        const response = await axios.get<StoreDetailsResponseType>(
-          `${env.api_url}/stores/${storeId}`,
-          {
-            headers: {
-              Accept: 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        return response.data.data;
-      } catch (error) {
-        if (isAxiosError(error)) {
-          // eslint-disable-next-line no-console
-          console.log('useStoreDetails:', error.response?.data);
-        }
-        throw isAxiosError(error) && error.code === '404'
-          ? new Error('A keresett raktár nem található.')
-          : new Error(
-              'Váratlan hiba lépett fel a raktár adatainak lekérése során.'
-            );
-      }
-    },
+    queryKey: ['store-details', storeId, token],
+    queryFn: () => fetchStoreDetails(token, storeId),
     enabled:
       enabled &&
       !isNil(storeId) &&
@@ -58,4 +34,33 @@ export function useStoreDetails({
       isCheckTokenSuccess &&
       !isPasswordExpired,
   });
+}
+
+export async function fetchStoreDetails(
+  token: string,
+  storeId: number
+): Promise<StoreDetailsResponseData> {
+  try {
+    const response = await axios.get<StoreDetailsResponseType>(
+      `${env.api_url}/stores/${storeId}`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      // eslint-disable-next-line no-console
+      console.log('useStoreDetails:', error.response?.data);
+    }
+    throw isAxiosError(error) && error.code === '404'
+      ? new Error('A keresett raktár nem található.')
+      : new Error(
+          'Váratlan hiba lépett fel a raktár adatainak lekérése során.'
+        );
+  }
 }

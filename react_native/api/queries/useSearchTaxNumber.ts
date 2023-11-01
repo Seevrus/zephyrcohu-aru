@@ -24,7 +24,7 @@ export function useSearchTaxNumber({
     useToken();
 
   return useQuery({
-    queryKey: ['search-tax-number', taxNumber],
+    queryKey: ['search-tax-number', taxNumber, token],
     queryFn: async (): Promise<TaxPayer[]> => {
       try {
         const response = await axios.post<SearchTaxNumberResponseType>(

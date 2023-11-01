@@ -13,34 +13,35 @@ type InputProps = {
   labelPosition?: 'left' | 'top';
   value?: string;
   invalid?: boolean;
+  variant?: 'input' | 'disabled';
   textAlign?: 'left' | 'auto' | 'center' | 'right' | 'justify';
   config?: TextInputProps;
 };
 
-const defaultProps = {
-  labelPosition: 'top',
-  value: '',
-  invalid: false,
-  textAlign: 'left',
-  config: {},
-};
-
 export function Input({
   label,
-  labelPosition,
-  value,
-  invalid,
-  textAlign,
-  config,
+  labelPosition = 'top',
+  value = '',
+  invalid = false,
+  variant,
+  textAlign = 'left',
+  config = {},
 }: InputProps) {
+  const inputVariants = {
+    input: colors.input,
+    disabled: colors.disabled,
+  };
+
   const dynamicStyles = StyleSheet.create({
     container: {
       alignItems: labelPosition === 'left' ? 'center' : 'flex-start',
       flexDirection: labelPosition === 'left' ? 'row' : 'column',
     },
     input: {
-      backgroundColor:
-        config.editable === false ? colors.disabled : colors.input,
+      backgroundColor: (() => {
+        if (variant) return inputVariants[variant];
+        return config.editable === false ? colors.disabled : colors.input;
+      })(),
       textAlign,
       ...(labelPosition === 'top' && { width: '100%' }),
     },
@@ -73,7 +74,6 @@ export function Input({
     </View>
   );
 }
-Input.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
   container: {

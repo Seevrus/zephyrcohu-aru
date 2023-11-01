@@ -17,30 +17,8 @@ export function useItems({
     useToken();
 
   return useQuery({
-    queryKey: ['items'],
-    queryFn: async (): Promise<ItemsResponseData> => {
-      try {
-        const response = await axios.get<ItemsResponseType>(
-          `${env.api_url}/items`,
-          {
-            headers: {
-              Accept: 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        return response.data.data;
-      } catch (error) {
-        if (isAxiosError(error)) {
-          // eslint-disable-next-line no-console
-          console.log('useItems:', error.response?.data);
-        }
-        throw new Error(
-          'Váratlan hiba lépett fel a tételek adatainak lekérése során.'
-        );
-      }
-    },
+    queryKey: ['items', token],
+    queryFn: () => fetchItems(token),
     enabled:
       enabled &&
       !isTokenExpired &&
@@ -48,4 +26,28 @@ export function useItems({
       isCheckTokenSuccess &&
       !isPasswordExpired,
   });
+}
+
+export async function fetchItems(token: string): Promise<ItemsResponseData> {
+  try {
+    const response = await axios.get<ItemsResponseType>(
+      `${env.api_url}/items`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      // eslint-disable-next-line no-console
+      console.log('useItems:', error.response?.data);
+    }
+    throw new Error(
+      'Váratlan hiba lépett fel a tételek adatainak lekérése során.'
+    );
+  }
 }

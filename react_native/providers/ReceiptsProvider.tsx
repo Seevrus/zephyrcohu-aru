@@ -68,7 +68,7 @@ export function ReceiptsProvider({ children }: PropsWithChildren) {
   const { data: user, isPending: isUserPending } = useCheckToken();
   const { isPending: isCreateReceiptsPending, mutateAsync: createReceiptsAPI } =
     useCreateReceipts();
-  const { storage, isPending: isStoreDetailsPending } = useStorageContext();
+  const { storage, isPending: isStoragePending } = useStorageContext();
   const { mutateAsync: updateReceiptsAPI } = useUpdateReceipts();
 
   const [receipts, setReceipts] = useState<ContextReceipt[]>(null);
@@ -376,7 +376,7 @@ export function ReceiptsProvider({ children }: PropsWithChildren) {
 
   const receiptsContextValue = useMemo(
     () => ({
-      isPending: isActiveRoundPending || isUserPending || isStoreDetailsPending,
+      isPending: isActiveRoundPending || isUserPending || isStoragePending,
       receipts,
       numberOfReceipts,
       currentReceipt,
@@ -393,7 +393,7 @@ export function ReceiptsProvider({ children }: PropsWithChildren) {
       currentReceipt,
       finalizeCurrentReceipt,
       isActiveRoundPending,
-      isStoreDetailsPending,
+      isStoragePending,
       isUserPending,
       numberOfReceipts,
       receipts,

@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
 
 import env from '../../env.json';
+import { type ListItem } from '../../providers/StorageFlowProvider';
 import { useStores } from '../queries/useStores';
 import { useToken } from '../queries/useToken';
 import { mapSaveSelectedItemsRequest } from '../request-mappers/mapSaveSelectedItemsRequest';
@@ -17,9 +18,7 @@ export function useSaveSelectedItems() {
 
   return useMutation({
     mutationKey: ['save-selected-items'],
-    mutationFn: async (
-      storageExpirations: Record<number, Record<number, number>>
-    ) => {
+    mutationFn: async (changedItems: ListItem[]) => {
       try {
         if (!primaryStoreId) {
           throw new Error('Elsődleges raktár nem található!');
@@ -27,7 +26,7 @@ export function useSaveSelectedItems() {
 
         const request = mapSaveSelectedItemsRequest(
           primaryStoreId,
-          storageExpirations
+          changedItems
         );
 
         const response = await axios.post<StoreDetailsResponseType>(

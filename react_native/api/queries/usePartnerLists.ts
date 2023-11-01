@@ -17,30 +17,8 @@ export function usePartnerLists({
     useToken();
 
   return useQuery({
-    queryKey: ['partner-lists'],
-    queryFn: async (): Promise<PartnersListResponseData> => {
-      try {
-        const response = await axios.get<PartnersListResponseType>(
-          `${env.api_url}/partner_lists`,
-          {
-            headers: {
-              Accept: 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        return response.data.data;
-      } catch (error) {
-        if (isAxiosError(error)) {
-          // eslint-disable-next-line no-console
-          console.log('usePartnerLists:', error.response?.data);
-        }
-        throw new Error(
-          'Váratlan hiba lépett fel a partnerlisták lekérése során.'
-        );
-      }
-    },
+    queryKey: ['partner-lists', token],
+    queryFn: () => fetchPartnerLists(token),
     enabled:
       enabled &&
       !isTokenExpired &&
@@ -48,4 +26,28 @@ export function usePartnerLists({
       isCheckTokenSuccess &&
       !isPasswordExpired,
   });
+}
+
+export async function fetchPartnerLists(
+  token: string
+): Promise<PartnersListResponseData> {
+  try {
+    const response = await axios.get<PartnersListResponseType>(
+      `${env.api_url}/partner_lists`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      // eslint-disable-next-line no-console
+      console.log('usePartnerLists:', error.response?.data);
+    }
+    throw new Error('Váratlan hiba lépett fel a partnerlisták lekérése során.');
+  }
 }

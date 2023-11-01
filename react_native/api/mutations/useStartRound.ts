@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
 
 import env from '../../env.json';
@@ -7,7 +7,6 @@ import { type StartRoundRequestType } from '../request-types/StartRoundRequestTy
 import { type StartRoundResponseType } from '../response-types/StartRoundResponseType';
 
 export function useStartRound() {
-  const queryClient = useQueryClient();
   const { data: { token } = {} } = useToken();
 
   return useMutation({
@@ -37,13 +36,6 @@ export function useStartRound() {
         }
         throw new Error('Váratlan hiba lépett fel a kör indítása során.');
       }
-    },
-    onSuccess: (response) => {
-      queryClient.invalidateQueries({ queryKey: ['check-token'] });
-      queryClient.invalidateQueries({ queryKey: ['stores'] });
-      queryClient.invalidateQueries({
-        queryKey: ['store-details', response.storeId],
-      });
     },
   });
 }

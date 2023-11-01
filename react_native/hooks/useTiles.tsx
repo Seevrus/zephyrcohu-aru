@@ -76,16 +76,6 @@ export function useTiles(): TileT[] {
             Alert.alert(FEATURE_NOT_AVAILABLE, startErrandTileMessage, [
               { text: 'Értem' },
             ]);
-          } else if (startErrandTileState === StartErrandTileState.Warning) {
-            Alert.alert('Megerősítés szükséges', selectPartnerTileMessage, [
-              { text: 'Mégsem' },
-              {
-                text: 'Igen',
-                onPress: () => {
-                  navigation.navigate('StartErrand');
-                },
-              },
-            ]);
           } else {
             navigation.navigate('StartErrand');
           }

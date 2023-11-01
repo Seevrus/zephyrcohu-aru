@@ -6,6 +6,7 @@ export type StoreType = {
   code: string;
   name: string;
   type: 'P' | 'S';
+  state: 'I' | 'L' | 'R';
   firstAvailableSerialNumber: number;
   lastAvailableSerialNumber: number;
   yearCode: number;

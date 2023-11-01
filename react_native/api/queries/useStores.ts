@@ -17,30 +17,8 @@ export function useStores({
     useToken();
 
   return useQuery({
-    queryKey: ['stores'],
-    queryFn: async () => {
-      try {
-        const response = await axios.get<StoresResponseType>(
-          `${env.api_url}/stores`,
-          {
-            headers: {
-              Accept: 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        return response.data.data;
-      } catch (error) {
-        if (isAxiosError(error)) {
-          // eslint-disable-next-line no-console
-          console.log('useStores', error.response?.data);
-        }
-        throw new Error(
-          'Váratlan hiba lépett fel a raktárak adatainak lekérése során.'
-        );
-      }
-    },
+    queryKey: ['stores', token],
+    queryFn: () => fetchStores(token),
     enabled:
       enabled &&
       !isTokenExpired &&
@@ -48,4 +26,28 @@ export function useStores({
       isCheckTokenSuccess &&
       !isPasswordExpired,
   });
+}
+
+export async function fetchStores(token: string): Promise<StoresResponseData> {
+  try {
+    const response = await axios.get<StoresResponseType>(
+      `${env.api_url}/stores`,
+      {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      // eslint-disable-next-line no-console
+      console.log('useStores', error.response?.data);
+    }
+    throw new Error(
+      'Váratlan hiba lépett fel a raktárak adatainak lekérése során.'
+    );
+  }
 }

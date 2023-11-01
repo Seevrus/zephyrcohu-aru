@@ -234,9 +234,22 @@ export function StorageFlowProvider({ children }: PropsWithChildren) {
       type: SearchStateActionKind.ClearSearch,
       payload: '',
     });
-    await saveSelectedItems(storageExpirations);
+
+    const changedItems = (items ?? []).filter(
+      (item) => item.currentQuantity !== item.originalQuantity
+    );
+
+    if (changedItems.length > 0) {
+      await saveSelectedItems(changedItems);
+    }
+
     setAreModificationsSaved(true);
-  }, [saveSelectedItems, slowSaveStorageExpirations, storageExpirations]);
+  }, [
+    items,
+    saveSelectedItems,
+    slowSaveStorageExpirations,
+    storageExpirations,
+  ]);
 
   const resetStorageFlowContext = useCallback(() => {
     setPrimaryStoreExpirations({});

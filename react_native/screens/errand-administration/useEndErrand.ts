@@ -1,7 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 
-import { last } from 'ramda';
 import { useFinishRound } from '../../api/mutations/useFinishRound';
 import { useActiveRound } from '../../api/queries/useActiveRound';
 import { useOrdersContext } from '../../providers/OrdersProvider';
@@ -13,26 +12,27 @@ export function useEndErrand() {
   const { isPending: isActiveRoundPending, data: activeRound } =
     useActiveRound();
   const { mutateAsync: finishRoundAPI } = useFinishRound();
-  const { isPending: isOrdersContextPending, resetOrdersContext } =
-    useOrdersContext();
-  const {
-    isPending: isReceiptsContextPending,
-    receipts,
-    resetReceiptsContext,
-  } = useReceiptsContext();
-  const { isPending: isSellFlowContextPending, resetSellFlowContext } =
-    useSellFlowContext();
-  const { isPending: isStorageContextPending, clearStorageFromContext } =
-    useStorageContext();
+  const { resetOrdersContext } = useOrdersContext();
+  const { receipts, numberOfReceipts, resetReceiptsContext } =
+    useReceiptsContext();
+  const { resetSellFlowContext } = useSellFlowContext();
+  const { storage, clearStorageFromContext } = useStorageContext();
   const queryClient = useQueryClient();
 
-  const { serialNumber: lastSerialNumber, yearCode } = last(receipts);
-
   const finishRound = useCallback(async () => {
+    const lastSerialNumber =
+      numberOfReceipts === 0
+        ? storage.firstAvailableSerialNumber
+        : receipts.reduce(
+            (sn, { serialNumber: receiptSn }) =>
+              receiptSn > sn ? receiptSn : sn,
+            0
+          ) + 1;
+
     await finishRoundAPI({
       roundId: activeRound?.id,
       lastSerialNumber,
-      yearCode,
+      yearCode: storage?.yearCode,
     });
 
     await Promise.all([
@@ -42,44 +42,35 @@ export function useEndErrand() {
       resetSellFlowContext(),
     ]);
 
-    queryClient.invalidateQueries({ queryKey: ['active-round'] });
-    queryClient.invalidateQueries({ queryKey: ['items'] });
-    queryClient.invalidateQueries({ queryKey: ['other-items'] });
-    queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
-    queryClient.invalidateQueries({ queryKey: ['partners'] });
-    queryClient.invalidateQueries({ queryKey: ['price-lists'] });
-    queryClient.invalidateQueries({ queryKey: ['search-tax-number'] });
-    queryClient.invalidateQueries({ queryKey: ['store-details'] });
-    queryClient.invalidateQueries({ queryKey: ['stores'] });
+    await queryClient.invalidateQueries({ queryKey: ['active-round'] });
+    await queryClient.invalidateQueries({ queryKey: ['check-token'] });
+    await queryClient.invalidateQueries({ queryKey: ['items'] });
+    await queryClient.invalidateQueries({ queryKey: ['other-items'] });
+    await queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
+    await queryClient.invalidateQueries({ queryKey: ['partners'] });
+    await queryClient.invalidateQueries({ queryKey: ['price-lists'] });
+    await queryClient.invalidateQueries({ queryKey: ['search-tax-number'] });
+    await queryClient.invalidateQueries({ queryKey: ['store-details'] });
+    await queryClient.invalidateQueries({ queryKey: ['stores'] });
   }, [
     activeRound?.id,
     clearStorageFromContext,
     finishRoundAPI,
-    lastSerialNumber,
+    numberOfReceipts,
     queryClient,
+    receipts,
     resetOrdersContext,
     resetReceiptsContext,
     resetSellFlowContext,
-    yearCode,
+    storage?.firstAvailableSerialNumber,
+    storage?.yearCode,
   ]);
 
   return useMemo(
     () => ({
-      isPending:
-        isActiveRoundPending ||
-        isOrdersContextPending ||
-        isReceiptsContextPending ||
-        isSellFlowContextPending ||
-        isStorageContextPending,
+      isPending: isActiveRoundPending,
       finishRound,
     }),
-    [
-      finishRound,
-      isActiveRoundPending,
-      isOrdersContextPending,
-      isReceiptsContextPending,
-      isSellFlowContextPending,
-      isStorageContextPending,
-    ]
+    [finishRound, isActiveRoundPending]
   );
 }

@@ -7,13 +7,11 @@ import { ErrorCard } from '../../components/info-cards/ErrorCard';
 import { Button } from '../../components/ui/Button';
 import { colors } from '../../constants/colors';
 import { fontSizes } from '../../constants/fontSizes';
-import { useSyncSellWithApi } from '../../hooks/useSyncSellWithApi';
 import { type EndErrandProps } from '../../navigators/screen-types';
 import { useEndErrand } from './useEndErrand';
 
 export function EndErrand({ navigation }: EndErrandProps) {
   const { isInternetReachable } = useNetInfo();
-  const { isPending: isSyncSellPending } = useSyncSellWithApi();
   const { isPending: isEndErrandPending, finishRound } = useEndErrand();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -43,7 +41,7 @@ export function EndErrand({ navigation }: EndErrandProps) {
     }
   };
 
-  if (isLoading || isEndErrandPending || isSyncSellPending) {
+  if (isLoading || isEndErrandPending) {
     return <Loading />;
   }
 

@@ -59,6 +59,7 @@ export function Settings({ navigation }: SettingsProps) {
     await resetSellFlowContext();
 
     queryClient.invalidateQueries({ queryKey: ['active-round'] });
+    queryClient.invalidateQueries({ queryKey: ['check-token'] });
     queryClient.invalidateQueries({ queryKey: ['items'] });
     queryClient.invalidateQueries({ queryKey: ['other-items'] });
     queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
