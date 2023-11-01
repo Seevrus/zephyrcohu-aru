@@ -115,7 +115,7 @@ export function StorageFlowProvider({ children }: PropsWithChildren) {
 
       const originalExpirations: Record<number, Record<number, number>> = {};
 
-      originalStorage.expirations.forEach((expiration) => {
+      originalStorage.expirations?.forEach((expiration) => {
         if (!originalExpirations[expiration.itemId]) {
           originalExpirations[expiration.itemId] = {};
         }
@@ -133,7 +133,7 @@ export function StorageFlowProvider({ children }: PropsWithChildren) {
 
       const expirations: Record<number, Record<number, number>> = {};
 
-      storage.expirations.forEach((expiration) => {
+      storage.expirations?.forEach((expiration) => {
         if (!expirations[expiration.itemId]) {
           expirations[expiration.itemId] = {};
         }
@@ -152,7 +152,7 @@ export function StorageFlowProvider({ children }: PropsWithChildren) {
 
       const expirations: Record<number, Record<number, number>> = {};
 
-      primaryStore.expirations.forEach((expiration) => {
+      primaryStore.expirations?.forEach((expiration) => {
         if (!expirations[expiration.itemId]) {
           expirations[expiration.itemId] = {};
         }

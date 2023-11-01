@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { equals, omit } from 'ramda';
-import { useEffect, useState } from 'react';
+import { equals, isEmpty, not } from 'ramda';
+import { useEffect, useRef } from 'react';
 
 import env from '../../env.json';
 import {
@@ -44,58 +44,43 @@ function useCheckTokenQuery({ enabled = true } = {}) {
       isInternetReachable === true && enabled && isTokenSuccess && !!token,
     staleTime: 300_000,
     retry: false,
-    initialData: {} as CheckToken,
   });
 }
 
 export function useCheckToken({ enabled = true } = {}) {
   const checkTokenResult = useCheckTokenQuery({ enabled });
   const { isInternetReachable } = useNetInfo();
-  const queryClient = useQueryClient();
 
-  const [user, setUser] = useState<CheckToken>(null);
+  const user = useRef<CheckToken>(null);
 
   useEffect(() => {
     if (checkTokenResult.isError) {
       AsyncStorage.getItem('boreal-user-backup').then((backup) => {
         if (backup) {
           const backupUser = JSON.parse(backup);
-          setUser(backupUser);
+          user.current = backupUser;
         }
       });
     }
   }, [checkTokenResult.isError]);
 
   useEffect(() => {
-    const notRelatedCheckTokenKeys = ['createdAt', 'updatedAt', 'lastActive'];
-
     if (
       checkTokenResult.isSuccess &&
-      !equals(
-        omit(notRelatedCheckTokenKeys, user),
-        omit(notRelatedCheckTokenKeys, checkTokenResult.data)
-      )
+      not(isEmpty(checkTokenResult.data)) &&
+      !equals(user.current, checkTokenResult.data)
     ) {
       AsyncStorage.setItem(
         'boreal-user-backup',
         JSON.stringify(checkTokenResult.data)
       ).then(() => {
-        setUser(checkTokenResult.data);
-        if (isInternetReachable === true) {
-          queryClient.invalidateQueries({ queryKey: ['stores'] });
-        }
+        user.current = checkTokenResult.data;
       });
     }
-  }, [
-    checkTokenResult.data,
-    checkTokenResult.isSuccess,
-    isInternetReachable,
-    queryClient,
-    user,
-  ]);
+  }, [checkTokenResult.data, checkTokenResult.isSuccess, isInternetReachable]);
 
   return {
-    data: user,
+    data: user.current,
     isFetching: checkTokenResult.isFetching,
     isPending: checkTokenResult.isPending,
     isSuccess: checkTokenResult.isSuccess,

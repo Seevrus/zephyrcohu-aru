@@ -13,7 +13,8 @@ export function usePartnerLists({
   enabled = true,
 } = {}): UseQueryResult<PartnersListResponseData> {
   const { isSuccess: isCheckTokenSuccess } = useCheckToken();
-  const { data: { isPasswordExpired, token } = {} } = useToken();
+  const { data: { isPasswordExpired, isTokenExpired, token } = {} } =
+    useToken();
 
   return useQuery({
     queryKey: ['partner-lists'],
@@ -40,7 +41,12 @@ export function usePartnerLists({
         );
       }
     },
-    enabled: enabled && isCheckTokenSuccess && !isPasswordExpired,
+    enabled:
+      enabled &&
+      !isTokenExpired &&
+      !!token &&
+      isCheckTokenSuccess &&
+      !isPasswordExpired,
     initialData: [],
   });
 }

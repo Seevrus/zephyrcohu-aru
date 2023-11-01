@@ -20,7 +20,8 @@ export function useStoreDetails({
   enabled = true,
 }: UseStoreDetails): UseQueryResult<StoreDetailsResponseData> {
   const { isSuccess: isCheckTokenSuccess } = useCheckToken();
-  const { data: { token, isPasswordExpired } = {} } = useToken();
+  const { data: { token, isPasswordExpired, isTokenExpired } = {} } =
+    useToken();
 
   return useQuery({
     queryKey: ['store-details', storeId],
@@ -50,7 +51,12 @@ export function useStoreDetails({
       }
     },
     enabled:
-      enabled && !isNil(storeId) && isCheckTokenSuccess && !isPasswordExpired,
+      enabled &&
+      !isNil(storeId) &&
+      !isTokenExpired &&
+      !!token &&
+      isCheckTokenSuccess &&
+      !isPasswordExpired,
     initialData: {} as StoreDetailsResponseData,
   });
 }

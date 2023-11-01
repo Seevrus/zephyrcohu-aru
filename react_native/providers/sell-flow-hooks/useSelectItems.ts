@@ -237,7 +237,7 @@ export function useSelectItems({
 
       const expirations: Record<number, Record<number, number>> = {};
 
-      storage.expirations.forEach((expiration) => {
+      storage.expirations?.forEach((expiration) => {
         if (!expirations[expiration.itemId]) {
           expirations[expiration.itemId] = {};
         }
@@ -256,7 +256,7 @@ export function useSelectItems({
       }
 
       const newItems = {};
-      currentReceipt.items.forEach((item) => {
+      currentReceipt?.items?.forEach((item) => {
         if (newItems[item.id]) {
           newItems[item.id][item.expirationId] = item.quantity;
         } else {

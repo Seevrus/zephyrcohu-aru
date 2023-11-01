@@ -14,7 +14,8 @@ export function useActiveRound({
   enabled = true,
 } = {}): UseQueryResult<ActiveRoundResponseData> {
   const { data: user, isSuccess: isCheckTokenSuccess } = useCheckToken();
-  const { data: { isPasswordExpired, token } = {} } = useToken();
+  const { data: { isPasswordExpired, isTokenExpired, token } = {} } =
+    useToken();
 
   const isRoundStarted = user?.state === 'R';
 
@@ -44,7 +45,12 @@ export function useActiveRound({
       }
     },
     enabled:
-      enabled && isCheckTokenSuccess && !isPasswordExpired && isRoundStarted,
+      enabled &&
+      !isTokenExpired &&
+      !!token &&
+      isCheckTokenSuccess &&
+      !isPasswordExpired &&
+      isRoundStarted,
     initialData: {} as ActiveRoundResponseData,
   });
 }

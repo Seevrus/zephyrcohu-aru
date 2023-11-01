@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { assoc, flatten, isNil, map, pipe, toPairs } from 'ramda';
+import { assoc, flatten, isEmpty, isNil, map, not, pipe, toPairs } from 'ramda';
 import {
   createContext,
   useCallback,
@@ -155,7 +155,7 @@ export function StorageProvider({ children }: PropsWithChildren) {
       isLocalStorageLoaded &&
       isNil(storage) &&
       !isStoreDetailsStale &&
-      !!storeDetails
+      not(isEmpty(storeDetails))
     ) {
       setStorage(storeDetails);
     }

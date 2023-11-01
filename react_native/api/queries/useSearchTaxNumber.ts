@@ -20,7 +20,8 @@ export function useSearchTaxNumber({
   enabled = true,
 }: UseSearhcTaxNumberProps): UseQueryResult<TaxPayer[]> {
   const { isSuccess: isCheckTokenSuccess } = useCheckToken();
-  const { data: { isPasswordExpired, token } = {} } = useToken();
+  const { data: { isPasswordExpired, isTokenExpired, token } = {} } =
+    useToken();
 
   return useQuery({
     queryKey: ['search-tax-number', taxNumber],
@@ -49,6 +50,8 @@ export function useSearchTaxNumber({
     enabled:
       enabled &&
       /^(\d{8})$/.test(taxNumber) &&
+      !isTokenExpired &&
+      !!token &&
       isCheckTokenSuccess &&
       !isPasswordExpired,
     initialData: [],

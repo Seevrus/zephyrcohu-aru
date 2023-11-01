@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -58,7 +59,6 @@ export function Settings({ navigation }: SettingsProps) {
     await resetSellFlowContext();
 
     queryClient.invalidateQueries({ queryKey: ['active-round'] });
-    queryClient.invalidateQueries({ queryKey: ['check-token'] });
     queryClient.invalidateQueries({ queryKey: ['items'] });
     queryClient.invalidateQueries({ queryKey: ['other-items'] });
     queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
@@ -67,6 +67,8 @@ export function Settings({ navigation }: SettingsProps) {
     queryClient.invalidateQueries({ queryKey: ['search-tax-number'] });
     queryClient.invalidateQueries({ queryKey: ['store-details'] });
     queryClient.invalidateQueries({ queryKey: ['stores'] });
+
+    await AsyncStorage.removeItem('boreal-user-backup');
 
     navigation.reset({
       index: 0,
