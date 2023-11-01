@@ -56,9 +56,22 @@ export function Settings({ navigation }: SettingsProps) {
     await resetOrdersContext();
     resetStorageFlowContext();
     await resetSellFlowContext();
-    queryClient.resetQueries();
 
-    setIsLoading(false);
+    queryClient.invalidateQueries({ queryKey: ['active-round'] });
+    queryClient.invalidateQueries({ queryKey: ['check-token'] });
+    queryClient.invalidateQueries({ queryKey: ['items'] });
+    queryClient.invalidateQueries({ queryKey: ['other-items'] });
+    queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
+    queryClient.invalidateQueries({ queryKey: ['partners'] });
+    queryClient.invalidateQueries({ queryKey: ['price-lists'] });
+    queryClient.invalidateQueries({ queryKey: ['search-tax-number'] });
+    queryClient.invalidateQueries({ queryKey: ['store-details'] });
+    queryClient.invalidateQueries({ queryKey: ['stores'] });
+
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Index' }],
+    });
   };
 
   if (isLoading || isUserFetching) {
