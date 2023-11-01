@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -8,13 +9,23 @@ import { Loading } from '../../components/Loading';
 import { Button } from '../../components/ui/Button';
 import { colors } from '../../constants/colors';
 import { type SettingsProps } from '../../navigators/screen-types';
+import { useOrdersContext } from '../../providers/OrdersProvider';
+import { useReceiptsContext } from '../../providers/ReceiptsProvider';
+import { useSellFlowContext } from '../../providers/SellFlowProvider';
+import { useStorageFlowContext } from '../../providers/StorageFlowProvider';
+import { useStorageContext } from '../../providers/StorageProvider';
 
 export function Settings({ navigation }: SettingsProps) {
-  const { data: user, isPending: isUserPending } = useCheckToken();
-  const {
-    data: { isTokenExpired },
-  } = useToken();
+  const { data: user, isFetching: isUserFetching } = useCheckToken();
+  const { data: { isTokenExpired } = {} } = useToken();
   const { mutateAsync: logout } = useLogout();
+
+  const { resetOrdersContext } = useOrdersContext();
+  const { resetReceiptsContext } = useReceiptsContext();
+  const { clearStorageFromContext } = useStorageContext();
+  const { resetStorageFlowContext } = useStorageFlowContext();
+  const { resetSellFlowContext } = useSellFlowContext();
+  const queryClient = useQueryClient();
 
   const isRoundStarted = user?.state === 'R';
 
@@ -37,7 +48,20 @@ export function Settings({ navigation }: SettingsProps) {
     });
   };
 
-  if (isLoading || isUserPending) {
+  const resetHandler = async () => {
+    setIsLoading(true);
+
+    await clearStorageFromContext();
+    await resetReceiptsContext();
+    await resetOrdersContext();
+    resetStorageFlowContext();
+    await resetSellFlowContext();
+    queryClient.resetQueries();
+
+    setIsLoading(false);
+  };
+
+  if (isLoading || isUserFetching) {
     return <Loading />;
   }
 
@@ -59,6 +83,9 @@ export function Settings({ navigation }: SettingsProps) {
           Kijelentkezés
         </Button>
       )}
+      <Button variant="warning" onPress={resetHandler}>
+        Reset (béta teszthez)
+      </Button>
     </View>
   );
 }

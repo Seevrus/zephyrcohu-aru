@@ -13,6 +13,7 @@ import {
 import { useCreateOrders } from '../api/mutations/useCreateOrders';
 import { useCheckToken } from '../api/queries/useCheckToken';
 import { type OrderRequest } from '../api/request-types/CreateOrdersRequestType';
+import { type CreateOrdersResponseData } from '../api/response-types/CreateOrdersResponseType';
 import { type ContextOrder } from './types/orders-provider-types';
 
 type OrdersContextType = {
@@ -22,7 +23,7 @@ type OrdersContextType = {
   saveCurrentOrder: (order: ContextOrder) => Promise<void>;
   resetCurrentOrder: () => Promise<void>;
   finalizeCurrentOrder: () => Promise<void>;
-  sendInOrders: () => Promise<void>;
+  sendInOrders: () => Promise<CreateOrdersResponseData>;
   resetOrdersContext: () => Promise<void>;
 };
 
@@ -128,12 +129,13 @@ export function OrdersProvider({ children }: PropsWithChildren) {
     if (!isOrdersSyncInProgress && orders.some((o) => !o.isSent)) {
       setIsOrdersSyncInProgress(true);
 
-      await createOrdersAPI(orders);
+      const ordersApiResult = await createOrdersAPI(orders);
       const updatedOrders = orders.map<ContextOrder>(assoc('isSent', true));
       await persistOrders(updatedOrders);
       setOrders(updatedOrders);
 
       setIsOrdersSyncInProgress(false);
+      return ordersApiResult;
     }
   }, [createOrdersAPI, isOrdersSyncInProgress, orders, persistOrders]);
 

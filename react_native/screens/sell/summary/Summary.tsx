@@ -1,7 +1,7 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useFocusEffect, type EventArg } from '@react-navigation/native';
-import { isEmpty, last, not } from 'ramda';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { last } from 'ramda';
+import { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { usePartners } from '../../../api/queries/usePartners';
@@ -12,6 +12,7 @@ import { PrintSection } from '../../../components/print-section/PrintSection';
 import { Button } from '../../../components/ui/Button';
 import { colors } from '../../../constants/colors';
 import { fontSizes } from '../../../constants/fontSizes';
+import { useSyncSellWithApi } from '../../../hooks/useSyncSellWithApi';
 import { type SummaryProps } from '../../../navigators/screen-types';
 import { useReceiptsContext } from '../../../providers/ReceiptsProvider';
 import { useSellFlowContext } from '../../../providers/SellFlowProvider';
@@ -21,12 +22,8 @@ export function Summary({ navigation }: SummaryProps) {
   const { isPending: isPartnersPending, data: partners } = usePartners();
   const { isPending: isReceiptsContextPending, receipts } =
     useReceiptsContext();
-  const {
-    isPending: isSellFlowContextPending,
-    selectedOrderItems,
-    resetSellFlowContext,
-    syncSellFlowWithApi,
-  } = useSellFlowContext();
+  const { isPending: isSellFlowContextPending, resetSellFlowContext } =
+    useSellFlowContext();
 
   const currentReceipt = last(receipts);
 
@@ -37,44 +34,13 @@ export function Summary({ navigation }: SummaryProps) {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const [ordersSuccess, setOrdersSuccess] = useState<string>('');
-  const [ordersError, setOrdersError] = useState<string>('');
-  const [receiptsSuccess, setReceiptsSuccess] = useState<string>('');
-  const [receiptsError, setReceiptsError] = useState<string>('');
-
-  useEffect(() => {
-    if (
-      isInternetReachable === true &&
-      !ordersSuccess &&
-      !ordersError &&
-      !receiptsSuccess &&
-      !receiptsError
-    ) {
-      syncSellFlowWithApi().then(([ordersResult, receiptsResult]) => {
-        if (not(isEmpty(selectedOrderItems))) {
-          if (ordersResult.status === 'fulfilled') {
-            setOrdersSuccess('Rendelések beküldése sikeres.');
-          } else {
-            setOrdersError('Rendelések beküldése sikertelen.');
-          }
-        }
-
-        if (receiptsResult.status === 'fulfilled') {
-          setReceiptsSuccess('Sikeres számlaküldés.');
-        } else {
-          setReceiptsError('Számlák beküldése sikertelen');
-        }
-      });
-    }
-  }, [
-    isInternetReachable,
+  const {
+    isPending: isSyncSellPending,
     ordersError,
     ordersSuccess,
     receiptsError,
     receiptsSuccess,
-    selectedOrderItems,
-    syncSellFlowWithApi,
-  ]);
+  } = useSyncSellWithApi();
 
   const exitSummaryHandler = useCallback(
     async (
@@ -113,7 +79,8 @@ export function Summary({ navigation }: SummaryProps) {
     isLoading ||
     isPartnersPending ||
     isReceiptsContextPending ||
-    isSellFlowContextPending
+    isSellFlowContextPending ||
+    isSyncSellPending
   ) {
     return <Loading />;
   }

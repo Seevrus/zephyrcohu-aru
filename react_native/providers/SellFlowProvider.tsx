@@ -21,7 +21,6 @@ import {
   useSelectPartners,
   type UseSelectPartners,
 } from './sell-flow-hooks/useSelectPartners';
-import { useSummary, type UseSummary } from './sell-flow-hooks/useSummary';
 
 type SellFlowContextType = Omit<
   UseSelectPartners,
@@ -29,8 +28,7 @@ type SellFlowContextType = Omit<
 > &
   Omit<UseSelectItems, 'resetUseSelectItems'> &
   Omit<UseSelectOtherItems, 'resetUseSelectOtherItems'> &
-  Omit<UseReview, 'resetUseReview'> &
-  UseSummary & {
+  Omit<UseReview, 'resetUseReview'> & {
     isPending: boolean;
     resetSellFlowContext: () => Promise<void>;
   };
@@ -89,7 +87,6 @@ export function SellFlowProvider({ children }: PropsWithChildren) {
     resetUseReview,
     finishReview,
   } = useReview({ currentPriceList, selectedItems, selectedOtherItems });
-  const { isPending: isSummarydataPending, syncSellFlowWithApi } = useSummary();
 
   const resetSellFlowContext = useCallback(async () => {
     resetUseSelectPartners();
@@ -115,8 +112,7 @@ export function SellFlowProvider({ children }: PropsWithChildren) {
         isUseSelectPartnersDataPending ||
         isUseSelectItemsDataPending ||
         isUseSelectOtherItemsDataPending ||
-        isReviewDataPending ||
-        isSummarydataPending,
+        isReviewDataPending,
       partners,
       selectedPartner,
       isSelectedPartnerOnCurrentPartnerList,
@@ -143,7 +139,6 @@ export function SellFlowProvider({ children }: PropsWithChildren) {
       saveDiscountedItemsInFlow,
       finishReview,
       resetSellFlowContext,
-      syncSellFlowWithApi,
     }),
     [
       barCode,
@@ -153,7 +148,6 @@ export function SellFlowProvider({ children }: PropsWithChildren) {
       isReceiptsContextPending,
       isReviewDataPending,
       isSelectedPartnerOnCurrentPartnerList,
-      isSummarydataPending,
       isUseSelectItemsDataPending,
       isUseSelectOtherItemsDataPending,
       isUseSelectPartnersDataPending,
@@ -179,7 +173,6 @@ export function SellFlowProvider({ children }: PropsWithChildren) {
       setSelectedItems,
       setSelectedOrderItems,
       setSelectedOtherItems,
-      syncSellFlowWithApi,
     ]
   );
 

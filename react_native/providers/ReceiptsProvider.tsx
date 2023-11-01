@@ -17,6 +17,7 @@ import { useActiveRound } from '../api/queries/useActiveRound';
 import { useCheckToken } from '../api/queries/useCheckToken';
 import { type ReceiptBuyer } from '../api/request-types/common/ReceiptBuyer';
 import { type ReceiptOtherItem } from '../api/request-types/common/ReceiptItemsTypes';
+import { type ReceiptResponseData } from '../api/response-types/ReceiptsResponseType';
 import { calculateReceiptTotals } from '../utils/calculateReceiptTotals';
 import { useStorageContext } from './StorageProvider';
 import {
@@ -50,7 +51,7 @@ type ReceiptsContextType = {
     otherItems?: ReceiptOtherItem[]
   ) => Promise<void>;
   finalizeCurrentReceipt: () => Promise<void>;
-  sendInReceipts: () => Promise<void>;
+  sendInReceipts: () => Promise<ReceiptResponseData>;
   updateNumberOfPrintedCopies: (receiptId: number) => Promise<void>;
   resetReceiptsContext: () => Promise<void>;
 };
@@ -304,6 +305,7 @@ export function ReceiptsProvider({ children }: PropsWithChildren) {
       setReceipts(updatedReceipts);
 
       setIsReceiptsSyncInProgress(false);
+      return updateReceiptsResponse;
     }
   }, [createReceiptsAPI, isReceiptsSyncInProgress, persistReceipts, receipts]);
 
