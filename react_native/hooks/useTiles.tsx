@@ -4,7 +4,6 @@ import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { isNil } from 'ramda';
 import { Alert } from 'react-native';
 
-import { useMemo } from 'react';
 import { useCheckToken } from '../api/queries/useCheckToken';
 import { type TileT } from '../components/Tile';
 import { type StackParams } from '../navigators/screen-types';
@@ -45,118 +44,98 @@ export function useTiles(): TileT[] {
     endErrandTileMessage,
   } = useTileStates();
 
-  return useMemo(
-    () => [
-      {
-        id: 't0',
-        title: 'Rakodás',
-        Icon: () => <FontAwesome5 name="truck" size={40} color="white" />,
-        variant: storageTileState,
-        onPress: () => {
-          if (storageTileState === StorageTileState.Disabled) {
-            Alert.alert(FEATURE_NOT_AVAILABLE, storageTileMessage, [
-              { text: 'Értem' },
-            ]);
-          } else if (isNil(user?.storeId)) {
-            navigation.navigate('SelectStore');
-          } else if (areModificationsSaved) {
-            navigation.navigate('StorageChangesSummary');
-          } else {
-            navigation.navigate('SelectItemsFromStore');
-          }
-        },
+  return [
+    {
+      id: 't0',
+      title: 'Rakodás',
+      Icon: () => <FontAwesome5 name="truck" size={40} color="white" />,
+      variant: storageTileState,
+      onPress: () => {
+        if (storageTileState === StorageTileState.Disabled) {
+          Alert.alert(FEATURE_NOT_AVAILABLE, storageTileMessage, [
+            { text: 'Értem' },
+          ]);
+        } else if (isNil(user?.storeId)) {
+          navigation.navigate('SelectStore');
+        } else if (areModificationsSaved) {
+          navigation.navigate('StorageChangesSummary');
+        } else {
+          navigation.navigate('SelectItemsFromStore');
+        }
       },
-      {
-        id: 't1',
-        title: 'Kör indítása',
-        Icon: () => <FontAwesome5 name="play" size={40} color="white" />,
-        variant: startErrandTileState,
-        onPress: () => {
-          if (startErrandTileState === StartErrandTileState.Disabled) {
-            Alert.alert(FEATURE_NOT_AVAILABLE, startErrandTileMessage, [
-              { text: 'Értem' },
-            ]);
-          } else {
-            navigation.navigate('StartErrand');
-          }
-        },
+    },
+    {
+      id: 't1',
+      title: 'Kör indítása',
+      Icon: () => <FontAwesome5 name="play" size={40} color="white" />,
+      variant: startErrandTileState,
+      onPress: () => {
+        if (startErrandTileState === StartErrandTileState.Disabled) {
+          Alert.alert(FEATURE_NOT_AVAILABLE, startErrandTileMessage, [
+            { text: 'Értem' },
+          ]);
+        } else {
+          navigation.navigate('StartErrand');
+        }
       },
-      {
-        id: 't2',
-        title: 'Árulevétel',
-        Icon: () => (
-          <MaterialCommunityIcons
-            name="cart-arrow-right"
-            size={45}
-            color="white"
-          />
-        ),
-        variant: selectPartnerTileState,
-        onPress: () => {
-          if (selectPartnerTileState === SelectPartnerTileState.Disabled) {
-            Alert.alert(FEATURE_NOT_AVAILABLE, selectPartnerTileMessage, [
-              { text: 'Értem' },
-            ]);
-          } else if (isPartnerChosenForCurrentReceipt) {
-            navigation.navigate('SelectItemsToSell');
-          } else {
-            const partnerScreen =
-              isSelectedPartnerOnCurrentPartnerList === undefined ||
-              isSelectedPartnerOnCurrentPartnerList === true
-                ? 'SelectPartnerFromStore'
-                : 'SelectPartnerFromAll';
-            navigation.navigate('SelectPartner', { screen: partnerScreen });
-          }
-        },
+    },
+    {
+      id: 't2',
+      title: 'Árulevétel',
+      Icon: () => (
+        <MaterialCommunityIcons
+          name="cart-arrow-right"
+          size={45}
+          color="white"
+        />
+      ),
+      variant: selectPartnerTileState,
+      onPress: () => {
+        if (selectPartnerTileState === SelectPartnerTileState.Disabled) {
+          Alert.alert(FEATURE_NOT_AVAILABLE, selectPartnerTileMessage, [
+            { text: 'Értem' },
+          ]);
+        } else if (isPartnerChosenForCurrentReceipt) {
+          navigation.navigate('SelectItemsToSell');
+        } else {
+          const partnerScreen =
+            isSelectedPartnerOnCurrentPartnerList === undefined ||
+            isSelectedPartnerOnCurrentPartnerList === true
+              ? 'SelectPartnerFromStore'
+              : 'SelectPartnerFromAll';
+          navigation.navigate('SelectPartner', { screen: partnerScreen });
+        }
       },
-      {
-        id: 't3',
-        title: `Bizonylatok (${numberOfReceipts})`,
-        Icon: () => <FontAwesome5 name="receipt" size={40} color="white" />,
-        variant: receiptsTileState,
-        onPress: () => {
-          if (receiptsTileState === ReceiptsTileState.Disabled) {
-            Alert.alert(FEATURE_NOT_AVAILABLE, receiptsTileMessage, [
-              { text: 'Értem' },
-            ]);
-          } else {
-            navigation.navigate('ReceiptList');
-          }
-        },
+    },
+    {
+      id: 't3',
+      title: `Bizonylatok (${numberOfReceipts})`,
+      Icon: () => <FontAwesome5 name="receipt" size={40} color="white" />,
+      variant: receiptsTileState,
+      onPress: () => {
+        if (receiptsTileState === ReceiptsTileState.Disabled) {
+          Alert.alert(FEATURE_NOT_AVAILABLE, receiptsTileMessage, [
+            { text: 'Értem' },
+          ]);
+        } else {
+          navigation.navigate('ReceiptList');
+        }
       },
-      {
-        id: 't4',
-        title: 'Kör zárása',
-        Icon: () => <FontAwesome5 name="stop-circle" size={40} color="white" />,
-        variant: endErrandTileState,
-        onPress: () => {
-          if (endErrandTileState === EndErrandTileState.Disabled) {
-            Alert.alert(FEATURE_NOT_AVAILABLE, endErrandTileMessage, [
-              { text: 'Értem' },
-            ]);
-          } else {
-            navigation.navigate('EndErrand');
-          }
-        },
+    },
+    {
+      id: 't4',
+      title: 'Kör zárása',
+      Icon: () => <FontAwesome5 name="stop-circle" size={40} color="white" />,
+      variant: endErrandTileState,
+      onPress: () => {
+        if (endErrandTileState === EndErrandTileState.Disabled) {
+          Alert.alert(FEATURE_NOT_AVAILABLE, endErrandTileMessage, [
+            { text: 'Értem' },
+          ]);
+        } else {
+          navigation.navigate('EndErrand');
+        }
       },
-    ],
-    [
-      areModificationsSaved,
-      endErrandTileMessage,
-      endErrandTileState,
-      isPartnerChosenForCurrentReceipt,
-      isSelectedPartnerOnCurrentPartnerList,
-      navigation,
-      numberOfReceipts,
-      receiptsTileMessage,
-      receiptsTileState,
-      selectPartnerTileMessage,
-      selectPartnerTileState,
-      startErrandTileMessage,
-      startErrandTileState,
-      storageTileMessage,
-      storageTileState,
-      user?.storeId,
-    ]
-  );
+    },
+  ];
 }
