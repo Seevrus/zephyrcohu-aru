@@ -1,5 +1,5 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 
 import env from '../../env.json';
 import {
@@ -32,8 +32,10 @@ export function usePartners({ enabled = true } = {}): UseQueryResult<Partners> {
 
         return mapPartnersResponse(response.data.data);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('usePartners:', error.message);
+        if (isAxiosError(error)) {
+          // eslint-disable-next-line no-console
+          console.log('usePartners:', error.response?.data);
+        }
         throw new Error(
           'Váratlan hiba lépett fel a partnerek adatainak lekérése során.'
         );

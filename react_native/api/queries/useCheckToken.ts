@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { equals } from 'ramda';
+import { equals, omit } from 'ramda';
 import { useEffect, useState } from 'react';
 
 import env from '../../env.json';
@@ -35,7 +35,7 @@ function useCheckTokenQuery({ enabled = true } = {}) {
       } catch (error) {
         if (isAxiosError(error)) {
           // eslint-disable-next-line no-console
-          console.log('useCheckToken', error.response.data);
+          console.log('useCheckToken', error.response?.data);
         }
         throw new Error('A megadott token nem érvényes.');
       }
@@ -66,7 +66,15 @@ export function useCheckToken({ enabled = true } = {}) {
   }, [checkTokenResult.isError]);
 
   useEffect(() => {
-    if (checkTokenResult.isSuccess && !equals(user, checkTokenResult.data)) {
+    const notRelatedCheckTokenKeys = ['createdAt', 'updatedAt', 'lastActive'];
+
+    if (
+      checkTokenResult.isSuccess &&
+      !equals(
+        omit(notRelatedCheckTokenKeys, user),
+        omit(notRelatedCheckTokenKeys, checkTokenResult.data)
+      )
+    ) {
       AsyncStorage.setItem(
         'boreal-user-backup',
         JSON.stringify(checkTokenResult.data)

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 
 import env from '../../env.json';
 import { useToken } from '../queries/useToken';
@@ -31,8 +31,10 @@ export function useSelectStore() {
 
         return response.data;
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('useSelectStore:', error.message);
+        if (isAxiosError(error)) {
+          // eslint-disable-next-line no-console
+          console.log('useSelectStore:', error.response?.data);
+        }
         throw new Error(
           'Váratlan hiba lépett fel a raktár kiválasztása során.'
         );

@@ -43,6 +43,10 @@ export function usePasswordChange() {
           })
         );
       } catch (error) {
+        if (isAxiosError(error)) {
+          // eslint-disable-next-line no-console
+          console.log('usePasswordChange:', error.response?.data);
+        }
         if (isAxiosError(error) && error.response.status === 400) {
           throw new Error('A jelszó nem egyezhet meg a korábbi 10 jelszóval.');
         } else if (isAxiosError(error) && error.response.status === 401) {

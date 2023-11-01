@@ -1,5 +1,5 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 
 import env from '../../env.json';
 import {
@@ -39,8 +39,10 @@ export function useSearchTaxNumber({
 
         return mapSearchTaxPayerResponse(response.data.data);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('useSearchTaxNumber', error.message);
+        if (isAxiosError(error)) {
+          // eslint-disable-next-line no-console
+          console.log('useSearchTaxNumber:', error.response?.data);
+        }
         throw new Error('Váratlan hiba lépett fel az adószám keresése során.');
       }
     },

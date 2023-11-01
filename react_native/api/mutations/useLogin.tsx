@@ -34,10 +34,12 @@ export function useLogin() {
         console.log(response.token.accessToken);
 
         return response;
-      } catch (error_) {
-        // eslint-disable-next-line no-console
-        console.log('useLogin:', error_.message);
-        throw isAxiosError(error_) && error_.response.status === 401
+      } catch (error) {
+        if (isAxiosError(error)) {
+          // eslint-disable-next-line no-console
+          console.log('useLogin:', error.response?.data);
+        }
+        throw isAxiosError(error) && error.response.status === 401
           ? new Error('Hibás felhasználónév / jelszó!')
           : new Error('Váratlan hiba lépett fel a bejelentkezés során.');
       }

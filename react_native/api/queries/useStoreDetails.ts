@@ -37,10 +37,12 @@ export function useStoreDetails({
         );
 
         return response.data.data;
-      } catch (error_) {
-        // eslint-disable-next-line no-console
-        console.log('useStoreDetails:', error_.message);
-        throw isAxiosError(error_) && error_.code === '404'
+      } catch (error) {
+        if (isAxiosError(error)) {
+          // eslint-disable-next-line no-console
+          console.log('useStoreDetails:', error.response?.data);
+        }
+        throw isAxiosError(error) && error.code === '404'
           ? new Error('A keresett raktár nem található.')
           : new Error(
               'Váratlan hiba lépett fel a raktár adatainak lekérése során.'
