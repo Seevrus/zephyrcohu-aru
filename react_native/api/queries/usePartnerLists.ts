@@ -47,6 +47,5 @@ export function usePartnerLists({
       !!token &&
       isCheckTokenSuccess &&
       !isPasswordExpired,
-    initialData: [],
   });
 }

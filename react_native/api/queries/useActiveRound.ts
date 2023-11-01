@@ -51,6 +51,5 @@ export function useActiveRound({
       isCheckTokenSuccess &&
       !isPasswordExpired &&
       isRoundStarted,
-    initialData: {} as ActiveRoundResponseData,
   });
 }

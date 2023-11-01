@@ -50,6 +50,5 @@ export function useOtherItems({
       isCheckTokenSuccess &&
       !isPasswordExpired &&
       isRoundStarted,
-    initialData: [],
   });
 }

@@ -54,6 +54,5 @@ export function useSearchTaxNumber({
       !!token &&
       isCheckTokenSuccess &&
       !isPasswordExpired,
-    initialData: [],
   });
 }

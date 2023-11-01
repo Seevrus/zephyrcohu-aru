@@ -47,6 +47,5 @@ export function useItems({
       !!token &&
       isCheckTokenSuccess &&
       !isPasswordExpired,
-    initialData: [],
   });
 }

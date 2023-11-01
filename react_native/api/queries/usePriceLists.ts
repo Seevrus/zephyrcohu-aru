@@ -48,6 +48,5 @@ export function usePriceLists({
       isCheckTokenSuccess &&
       !isPasswordExpired &&
       isRoundStarted,
-    initialData: [],
   });
 }

@@ -155,7 +155,7 @@ export function StorageProvider({ children }: PropsWithChildren) {
       isLocalStorageLoaded &&
       isNil(storage) &&
       !isStoreDetailsStale &&
-      not(isEmpty(storeDetails))
+      not(isEmpty(storeDetails ?? {}))
     ) {
       setStorage(storeDetails);
     }

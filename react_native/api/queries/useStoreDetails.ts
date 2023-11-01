@@ -57,6 +57,5 @@ export function useStoreDetails({
       !!token &&
       isCheckTokenSuccess &&
       !isPasswordExpired,
-    initialData: {} as StoreDetailsResponseData,
   });
 }
