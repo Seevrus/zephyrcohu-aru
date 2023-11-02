@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2023. Aug 29. 20:40
+-- Létrehozás ideje: 2023. Nov 02. 07:30
 -- Kiszolgáló verziója: 10.4.27-MariaDB
 -- PHP verzió: 8.0.25
 
@@ -381,6 +381,7 @@ CREATE TABLE `receipt_items` (
   `name` varchar(60) NOT NULL,
   `quantity` int(11) NOT NULL,
   `unit_name` varchar(6) NOT NULL,
+  `discount_name` varchar(255) DEFAULT NULL,
   `net_price` int(11) NOT NULL,
   `net_amount` int(11) NOT NULL,
   `vat_rate` varchar(2) NOT NULL,
@@ -400,7 +401,6 @@ CREATE TABLE `receipt_other_items` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `receipt_id` bigint(20) UNSIGNED NOT NULL,
   `item_id` bigint(20) UNSIGNED NOT NULL,
-  `code` varchar(3) NOT NULL,
   `article_number` varchar(16) NOT NULL,
   `name` varchar(60) NOT NULL,
   `quantity` int(11) NOT NULL,
@@ -410,6 +410,7 @@ CREATE TABLE `receipt_other_items` (
   `vat_rate` varchar(2) NOT NULL,
   `vat_amount` int(11) DEFAULT NULL,
   `gross_amount` int(11) NOT NULL,
+  `comment` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -466,6 +467,7 @@ CREATE TABLE `users` (
   `company_id` bigint(20) UNSIGNED NOT NULL,
   `code` varchar(255) NOT NULL,
   `user_name` varchar(255) NOT NULL,
+  `state` varchar(1) NOT NULL DEFAULT 'I',
   `name` varchar(255) NOT NULL,
   `phone_number` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,

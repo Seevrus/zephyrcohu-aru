@@ -1224,7 +1224,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"partnerCode\": \"000002\",\r\n            \"partnerSiteCode\": \"0001\",\r\n            \"serialNumber\": 20001,\r\n            \"yearCode\": 23,\r\n            \"originalCopiesPrinted\": 0,\r\n            \"vendor\": {\r\n                \"name\": \"Szlartibartfaszt és Társa\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"8445\",\r\n                \"city\": \"Városlőd\",\r\n                \"address\": \"Rózsa u. 42.\",\r\n                \"felir\": \"XY1234567\",\r\n                \"iban\": \"HU88\",\r\n                \"bankAccount\": \"12345678-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-23\"\r\n            },\r\n            \"buyer\": {\r\n                \"name\": \"Test Name C2\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"1234\",\r\n                \"city\": \"Test City\",\r\n                \"address\": \"Test Address 42. 1. 789B\",\r\n                \"deliveryName\": \"Test Name D2\",\r\n                \"deliveryCountry\": \"HU\",\r\n                \"deliveryPostalCode\": \"4321\",\r\n                \"deliveryCity\": \"Test Town\",\r\n                \"deliveryAddress\": \"Test Address 25C\",\r\n                \"iban\": \"AB12\",\r\n                \"bankAccount\": \"11111111-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-12\"\r\n            },\r\n            \"invoiceDate\": \"2023-08-29\",\r\n            \"fulfillmentDate\": \"2023-09-01\",\r\n            \"invoiceType\": \"E\",\r\n            \"paidDate\": \"2023-09-01\",\r\n            \"items\": [\r\n                {\r\n                    \"id\": 31,\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"expiresAt\": \"2023-12\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 10,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 9990,\r\n                    \"vatRate\": \"AM\",\r\n                    \"vatAmount\": 0,\r\n                    \"grossAmount\": 9990\r\n                }\r\n            ],\r\n            \"quantity\": 10,\r\n            \"netAmount\": 9990,\r\n            \"vatAmount\": 0,\r\n            \"grossAmount\": 9990,\r\n            \"vatAmounts\": [\r\n                {\r\n                    \"vatRate\": \"AM\",\r\n                    \"netAmount\": 9990,\r\n                    \"vatAmount\": 0,\r\n                    \"grossAmount\": 9990\r\n                }\r\n            ],\r\n            \"roundAmount\": 0,\r\n            \"roundedAmount\": 9990\r\n        },\r\n        {\r\n            \"partnerCode\": \"000002\",\r\n            \"partnerSiteCode\": \"0001\",\r\n            \"serialNumber\": 20002,\r\n            \"yearCode\": 23,\r\n            \"originalCopiesPrinted\": 0,\r\n            \"vendor\": {\r\n                \"name\": \"Szlartibartfaszt és Társa\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"8445\",\r\n                \"city\": \"Városlőd\",\r\n                \"address\": \"Rózsa u. 42.\",\r\n                \"felir\": \"XY1234567\",\r\n                \"iban\": \"HU88\",\r\n                \"bankAccount\": \"12345678-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-23\"\r\n            },\r\n            \"buyer\": {\r\n                \"name\": \"Test Name C2\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"1234\",\r\n                \"city\": \"Test City\",\r\n                \"address\": \"Test Address 42. 1. 789B\",\r\n                \"deliveryName\": \"Test Name D2\",\r\n                \"deliveryCountry\": \"HU\",\r\n                \"deliveryPostalCode\": \"4321\",\r\n                \"deliveryCity\": \"Test Town\",\r\n                \"deliveryAddress\": \"Test Address 25C\",\r\n                \"iban\": \"AB12\",\r\n                \"bankAccount\": \"11111111-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-12\"\r\n            },\r\n            \"invoiceDate\": \"2023-08-29\",\r\n            \"fulfillmentDate\": \"2023-09-01\",\r\n            \"invoiceType\": \"E\",\r\n            \"paidDate\": \"2023-09-01\",\r\n            \"items\": [\r\n                {\r\n                    \"id\": 31,\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"expiresAt\": \"2023-12\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 10,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 9990,\r\n                    \"vatRate\": \"AM\",\r\n                    \"vatAmount\": 0,\r\n                    \"grossAmount\": 9990\r\n                }\r\n            ],\r\n            \"quantity\": 10,\r\n            \"netAmount\": 9990,\r\n            \"vatAmount\": 0,\r\n            \"grossAmount\": 9990,\r\n            \"vatAmounts\": [\r\n                {\r\n                    \"vatRate\": \"AM\",\r\n                    \"netAmount\": 9990,\r\n                    \"vatAmount\": 0,\r\n                    \"grossAmount\": 9990\r\n                }\r\n            ],\r\n            \"roundAmount\": 0,\r\n            \"roundedAmount\": 9990\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"partnerId\": 15,\r\n            \"partnerCode\": \"000002\",\r\n            \"partnerSiteCode\": \"0001\",\r\n            \"serialNumber\": 20001,\r\n            \"yearCode\": 23,\r\n            \"originalCopiesPrinted\": 0,\r\n            \"vendor\": {\r\n                \"name\": \"Szlartibartfaszt és Társa\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"8445\",\r\n                \"city\": \"Városlőd\",\r\n                \"address\": \"Rózsa u. 42.\",\r\n                \"felir\": \"XY1234567\",\r\n                \"iban\": \"HU88\",\r\n                \"bankAccount\": \"12345678-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-23\"\r\n            },\r\n            \"buyer\": {\r\n                \"name\": \"Test Name C2\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"1234\",\r\n                \"city\": \"Test City\",\r\n                \"address\": \"Test Address 42. 1. 789B\",\r\n                \"deliveryName\": \"Test Name D2\",\r\n                \"deliveryCountry\": \"HU\",\r\n                \"deliveryPostalCode\": \"4321\",\r\n                \"deliveryCity\": \"Test Town\",\r\n                \"deliveryAddress\": \"Test Address 25C\",\r\n                \"iban\": \"AB12\",\r\n                \"bankAccount\": \"11111111-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-12\"\r\n            },\r\n            \"invoiceDate\": \"2023-08-29\",\r\n            \"fulfillmentDate\": \"2023-09-01\",\r\n            \"invoiceType\": \"E\",\r\n            \"paidDate\": \"2023-09-01\",\r\n            \"items\": [\r\n                {\r\n                    \"id\": 31,\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"expiresAt\": \"2023-12\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 10,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 9990,\r\n                    \"vatRate\": \"AM\",\r\n                    \"vatAmount\": 0,\r\n                    \"grossAmount\": 9990\r\n                }\r\n            ],\r\n            \"otherItems\": [\r\n                {\r\n                    \"id\": 1,\r\n                    \"articleNumber\": \"9999_01\",\r\n                    \"name\": \"Utólag adott visszatérítés\",\r\n                    \"quantity\": 1,\r\n                    \"unitName\": \"db.\",\r\n                    \"netPrice\": -100,\r\n                    \"netAmount\": -100,\r\n                    \"vatRate\": \"27\",\r\n                    \"vatAmount\": -27,\r\n                    \"grossAmount\": -127\r\n                }\r\n            ],\r\n            \"quantity\": 10,\r\n            \"netAmount\": 9990,\r\n            \"vatAmount\": 0,\r\n            \"grossAmount\": 9990,\r\n            \"vatAmounts\": [\r\n                {\r\n                    \"vatRate\": \"AM\",\r\n                    \"netAmount\": 9990,\r\n                    \"vatAmount\": 0,\r\n                    \"grossAmount\": 9990\r\n                }\r\n            ],\r\n            \"roundAmount\": 0,\r\n            \"roundedAmount\": 9990\r\n        },\r\n        {\r\n            \"partnerId\": 15,\r\n            \"partnerCode\": \"000002\",\r\n            \"partnerSiteCode\": \"0001\",\r\n            \"serialNumber\": 20002,\r\n            \"yearCode\": 23,\r\n            \"originalCopiesPrinted\": 0,\r\n            \"vendor\": {\r\n                \"name\": \"Szlartibartfaszt és Társa\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"8445\",\r\n                \"city\": \"Városlőd\",\r\n                \"address\": \"Rózsa u. 42.\",\r\n                \"felir\": \"XY1234567\",\r\n                \"iban\": \"HU88\",\r\n                \"bankAccount\": \"12345678-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-23\"\r\n            },\r\n            \"buyer\": {\r\n                \"name\": \"Test Name C2\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"1234\",\r\n                \"city\": \"Test City\",\r\n                \"address\": \"Test Address 42. 1. 789B\",\r\n                \"deliveryName\": \"Test Name D2\",\r\n                \"deliveryCountry\": \"HU\",\r\n                \"deliveryPostalCode\": \"4321\",\r\n                \"deliveryCity\": \"Test Town\",\r\n                \"deliveryAddress\": \"Test Address 25C\",\r\n                \"iban\": \"AB12\",\r\n                \"bankAccount\": \"11111111-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-12\"\r\n            },\r\n            \"invoiceDate\": \"2023-08-29\",\r\n            \"fulfillmentDate\": \"2023-09-01\",\r\n            \"invoiceType\": \"E\",\r\n            \"paidDate\": \"2023-09-01\",\r\n            \"items\": [\r\n                {\r\n                    \"id\": 31,\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"expiresAt\": \"2023-12\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 10,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 9990,\r\n                    \"vatRate\": \"AM\",\r\n                    \"vatAmount\": 0,\r\n                    \"grossAmount\": 9990\r\n                }\r\n            ],\r\n            \"quantity\": 10,\r\n            \"netAmount\": 9990,\r\n            \"vatAmount\": 0,\r\n            \"grossAmount\": 9990,\r\n            \"vatAmounts\": [\r\n                {\r\n                    \"vatRate\": \"AM\",\r\n                    \"netAmount\": 9990,\r\n                    \"vatAmount\": 0,\r\n                    \"grossAmount\": 9990\r\n                }\r\n            ],\r\n            \"roundAmount\": 0,\r\n            \"roundedAmount\": 9990\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1271,7 +1271,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"originalCopiesPrinted\": 1\r\n    }\r\n}",
+							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"id\": 2,\r\n            \"originalCopiesPrinted\": 1\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1279,13 +1279,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{zephyr_aru_url}}/receipts/2",
+							"raw": "{{zephyr_aru_url}}/receipts/update_printed_copies",
 							"host": [
 								"{{zephyr_aru_url}}"
 							],
 							"path": [
 								"receipts",
-								"2"
+								"update_printed_copies"
 							]
 						}
 					},
@@ -1437,7 +1437,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"storeId\": 2,\r\n        \"partnerListId\": 2\r\n    }\r\n}",
+							"raw": "{\r\n    \"data\": {\r\n        \"storeId\": 2,\r\n        \"partnerListId\": 2,\r\n        \"roundStarted\": \"2023-10-25\"\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1480,7 +1480,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"roundId\": 3,\r\n        \"lastSerialNumber\": 10187,\r\n        \"yearCode\": 23\r\n    }\r\n}",
+							"raw": "{\r\n    \"data\": {\r\n        \"roundId\": 8,\r\n        \"lastSerialNumber\": 10187,\r\n        \"yearCode\": 23\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1629,6 +1629,49 @@
 							"path": [
 								"storage",
 								"load"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sell Items From Store",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"changes\": [\r\n            {\r\n                \"expirationId\": 24,\r\n                \"quantityChange\": -5\r\n            }\r\n        ]\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{zephyr_aru_url}}/storage/sell",
+							"host": [
+								"{{zephyr_aru_url}}"
+							],
+							"path": [
+								"storage",
+								"sell"
 							]
 						}
 					},
@@ -1889,7 +1932,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userName\": \"ztill\",\r\n    \"password\": \"W4y4l4a4j4b+boreal\"\r\n}",
+							"raw": "{\r\n    \"userName\": \"ztill\",\r\n    \"password\": \"jelszo\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1910,7 +1953,7 @@
 					"response": []
 				},
 				{
-					"name": "Refresh Token (OFF)",
+					"name": "Check Token",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1931,13 +1974,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{zephyr_aru_url}}/users/refresh-token",
+							"raw": "{{zephyr_aru_url}}/users/check-token",
 							"host": [
 								"{{zephyr_aru_url}}"
 							],
 							"path": [
 								"users",
-								"refresh-token"
+								"check-token"
 							]
 						}
 					},
