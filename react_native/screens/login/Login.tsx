@@ -57,7 +57,7 @@ export function Login({ navigation }: LoginProps) {
       });
     } catch (error) {
       setIsLoading(false);
-      setErrorMessage(error.message);
+      setErrorMessage(error?.message);
       setPassword('');
     }
   };

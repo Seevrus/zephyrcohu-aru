@@ -1,26 +1,29 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { atom } from 'jotai';
 
 import env from '../../env.json';
+import { queryClient } from '../queryClient';
 import { mapRoundsResponse } from '../response-mappers/mapRoundsResponse';
 import {
   type ActiveRoundResponseData,
   type RoundsResponseType,
 } from '../response-types/ActiveRoundResponseType';
 import { useCheckToken } from './useCheckToken';
-import { useToken } from './useToken';
+import { tokenAtom, useToken } from './useToken';
 
 export function useActiveRound({
   enabled = true,
 } = {}): UseQueryResult<ActiveRoundResponseData> {
   const { data: user, isSuccess: isCheckTokenSuccess } = useCheckToken();
-  const { data: { isPasswordExpired, isTokenExpired, token } = {} } =
-    useToken();
+  const {
+    data: { isPasswordExpired = true, isTokenExpired = true, token = '' } = {},
+  } = useToken();
 
   const isRoundStarted = user?.state === 'R';
 
   return useQuery({
-    queryKey: ['active-round', token],
+    queryKey: activeRoundQueryKey,
     queryFn: () => fetchActiveRound(token),
     enabled:
       enabled &&
@@ -31,6 +34,25 @@ export function useActiveRound({
       isRoundStarted,
   });
 }
+
+export const activeRoundAtom = atom(async (get) => {
+  const { token, isPasswordExpired, isTokenExpired } = await get(tokenAtom);
+
+  if (!!token && !isPasswordExpired && !isTokenExpired) {
+    try {
+      return await queryClient.fetchQuery({
+        queryKey: activeRoundQueryKey,
+        queryFn: () => fetchActiveRound(token),
+      });
+    } catch {
+      return;
+    }
+  }
+
+  return;
+});
+
+const activeRoundQueryKey = ['active-round'];
 
 export async function fetchActiveRound(token: string) {
   try {

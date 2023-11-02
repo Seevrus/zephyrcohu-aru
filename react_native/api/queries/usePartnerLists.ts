@@ -1,5 +1,6 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { atom } from 'jotai';
 
 import env from '../../env.json';
 import {
@@ -7,17 +8,19 @@ import {
   type PartnersListResponseType,
 } from '../response-types/PartnersListResponseType';
 import { useCheckToken } from './useCheckToken';
-import { useToken } from './useToken';
+import { tokenAtom, useToken } from './useToken';
+import { queryClient } from '../queryClient';
 
 export function usePartnerLists({
   enabled = true,
 } = {}): UseQueryResult<PartnersListResponseData> {
   const { isSuccess: isCheckTokenSuccess } = useCheckToken();
-  const { data: { isPasswordExpired, isTokenExpired, token } = {} } =
-    useToken();
+  const {
+    data: { isPasswordExpired = true, isTokenExpired = true, token = '' } = {},
+  } = useToken();
 
   return useQuery({
-    queryKey: ['partner-lists', token],
+    queryKey: partnerListsQueryKey,
     queryFn: () => fetchPartnerLists(token),
     enabled:
       enabled &&
@@ -27,6 +30,25 @@ export function usePartnerLists({
       !isPasswordExpired,
   });
 }
+
+export const partnerListsAtom = atom(async (get) => {
+  const { token, isPasswordExpired, isTokenExpired } = await get(tokenAtom);
+
+  if (!!token && !isPasswordExpired && !isTokenExpired) {
+    try {
+      return await queryClient.fetchQuery({
+        queryKey: partnerListsQueryKey,
+        queryFn: () => fetchPartnerLists(token),
+      });
+    } catch {
+      return;
+    }
+  }
+
+  return;
+});
+
+const partnerListsQueryKey = ['partner-lists'];
 
 export async function fetchPartnerLists(
   token: string

@@ -62,6 +62,7 @@ const ReceiptsContext = createContext<ReceiptsContextType>(
 const receiptsContextStorageKey = 'boreal-receipts-context';
 const currentReceiptContextStorageKey = 'boreal-current-receipt-context';
 
+// eslint-disable-next-line import/no-unused-modules
 export function ReceiptsProvider({ children }: PropsWithChildren) {
   const { data: activeRound, isPending: isActiveRoundPending } =
     useActiveRound();

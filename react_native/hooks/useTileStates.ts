@@ -1,10 +1,10 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useIsFocused } from '@react-navigation/native';
-import { useMemo } from 'react';
+import { useAtomValue } from 'jotai';
 
 import { useCheckToken } from '../api/queries/useCheckToken';
 import { useToken } from '../api/queries/useToken';
-import { useReceiptsContext } from '../providers/ReceiptsProvider';
+import { numberOfReceiptsAtom } from '../atoms/receipts';
 
 export enum StorageTileState {
   Ok = 'ok',
@@ -36,7 +36,7 @@ export function useTileStates() {
   const { data: user, isPending: isUserFetching } = useCheckToken();
   const isFocused = useIsFocused();
   const { isInternetReachable } = useNetInfo();
-  const { numberOfReceipts } = useReceiptsContext();
+  const numberOfReceipts = useAtomValue(numberOfReceiptsAtom);
   const {
     isPending: isTokenPending,
     data: { isPasswordExpired, isTokenExpired } = {},
@@ -54,7 +54,7 @@ export function useTileStates() {
     Offline = 'A funkció csak online érhető el.',
   }
 
-  const [storageTileState, storageTileMessage] = useMemo(() => {
+  const [storageTileState, storageTileMessage] = (() => {
     let state = StorageTileState.Disabled;
     let message = '';
 
@@ -75,22 +75,9 @@ export function useTileStates() {
     }
 
     return [state, message];
-  }, [
-    DisabledTileMessage.LoggedOut,
-    DisabledTileMessage.Offline,
-    DisabledTileMessage.PasswordExpired,
-    isCheckTokenInProgress,
-    isFocused,
-    isInternetReachable,
-    isPasswordExpired,
-    isRoundStarted,
-    isStorageStarted,
-    isTokenExpired,
-    isTokenPending,
-    isUserIdle,
-  ]);
+  })();
 
-  const [startErrandTileState, startErrandTileMessage] = useMemo(() => {
+  const [startErrandTileState, startErrandTileMessage] = (() => {
     let state = StartErrandTileState.Disabled;
     let message = '';
 
@@ -111,22 +98,9 @@ export function useTileStates() {
     }
 
     return [state, message];
-  }, [
-    DisabledTileMessage.LoggedOut,
-    DisabledTileMessage.Offline,
-    DisabledTileMessage.PasswordExpired,
-    isCheckTokenInProgress,
-    isFocused,
-    isInternetReachable,
-    isPasswordExpired,
-    isRoundStarted,
-    isStorageStarted,
-    isTokenExpired,
-    isTokenPending,
-    isUserIdle,
-  ]);
+  })();
 
-  const [selectPartnerTileState, selectPartnerTileMessage] = useMemo(() => {
+  const [selectPartnerTileState, selectPartnerTileMessage] = (() => {
     let state = SelectPartnerTileState.Disabled;
     let message = '';
 
@@ -139,9 +113,9 @@ export function useTileStates() {
     }
 
     return [state, message];
-  }, [isCheckTokenInProgress, isFocused, isRoundStarted, isTokenPending]);
+  })();
 
-  const [receiptsTileState, receiptsTileMessage] = useMemo(() => {
+  const [receiptsTileState, receiptsTileMessage] = (() => {
     let state = ReceiptsTileState.Disabled;
     let message = '';
 
@@ -154,9 +128,9 @@ export function useTileStates() {
     }
 
     return [state, message];
-  }, [isCheckTokenInProgress, isFocused, isTokenPending, numberOfReceipts]);
+  })();
 
-  const [endErrandTileState, endErrandTileMessage] = useMemo(() => {
+  const [endErrandTileState, endErrandTileMessage] = (() => {
     let state = EndErrandTileState.Disabled;
     let message = '';
 
@@ -176,18 +150,7 @@ export function useTileStates() {
     }
 
     return [state, message];
-  }, [
-    DisabledTileMessage.LoggedOut,
-    DisabledTileMessage.Offline,
-    DisabledTileMessage.PasswordExpired,
-    isCheckTokenInProgress,
-    isFocused,
-    isInternetReachable,
-    isPasswordExpired,
-    isRoundStarted,
-    isTokenExpired,
-    isTokenPending,
-  ]);
+  })();
 
   return {
     storageTileState,

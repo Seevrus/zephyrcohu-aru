@@ -1,15 +1,18 @@
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useAtomValue } from 'jotai';
 import { isNil } from 'ramda';
 import { Alert } from 'react-native';
 
 import { useCheckToken } from '../api/queries/useCheckToken';
+import {
+  isPartnerChosenForCurrentReceiptAtom,
+  numberOfReceiptsAtom,
+} from '../atoms/receipts';
+import { isStorageSavedToApiAtom } from '../atoms/storageFlow';
 import { type TileT } from '../components/Tile';
 import { type StackParams } from '../navigators/screen-types';
-import { useReceiptsContext } from '../providers/ReceiptsProvider';
-import { useSellFlowContext } from '../providers/SellFlowProvider';
-import { useStorageFlowContext } from '../providers/StorageFlowProvider';
 import {
   EndErrandTileState,
   ReceiptsTileState,
@@ -24,12 +27,15 @@ const FEATURE_NOT_AVAILABLE = 'Funkció nem elérhető';
 export function useTiles(): TileT[] {
   const { data: user } = useCheckToken();
   const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
-  const { numberOfReceipts } = useReceiptsContext();
-  const {
-    isSelectedPartnerOnCurrentPartnerList,
-    isPartnerChosenForCurrentReceipt,
-  } = useSellFlowContext();
-  const { areModificationsSaved } = useStorageFlowContext();
+  const numberOfReceipts = useAtomValue(numberOfReceiptsAtom);
+
+  const isPartnerChosenForCurrentReceipt = useAtomValue(
+    isPartnerChosenForCurrentReceiptAtom
+  );
+  // const isSelectedPartnerOnCurrentPartnerList = useAtomValue(
+  //   isSelectedPartnerOnCurrentPartnerListAtom
+  // );
+  const isStorageSavedToApi = useAtomValue(isStorageSavedToApiAtom);
 
   const {
     storageTileState,
@@ -57,10 +63,10 @@ export function useTiles(): TileT[] {
           ]);
         } else if (isNil(user?.storeId)) {
           navigation.navigate('SelectStore');
-        } else if (areModificationsSaved) {
+        } else if (isStorageSavedToApi) {
           navigation.navigate('StorageChangesSummary');
         } else {
-          navigation.navigate('SelectItemsFromStore');
+          // navigation.navigate('SelectItemsFromStore');
         }
       },
     },
@@ -96,14 +102,14 @@ export function useTiles(): TileT[] {
             { text: 'Értem' },
           ]);
         } else if (isPartnerChosenForCurrentReceipt) {
-          navigation.navigate('SelectItemsToSell');
+          // navigation.navigate('SelectItemsToSell');
         } else {
-          const partnerScreen =
-            isSelectedPartnerOnCurrentPartnerList === undefined ||
-            isSelectedPartnerOnCurrentPartnerList === true
-              ? 'SelectPartnerFromStore'
-              : 'SelectPartnerFromAll';
-          navigation.navigate('SelectPartner', { screen: partnerScreen });
+          // const partnerScreen =
+          //   isSelectedPartnerOnCurrentPartnerList === undefined ||
+          //   isSelectedPartnerOnCurrentPartnerList === true
+          //     ? 'SelectPartnerFromStore'
+          //     : 'SelectPartnerFromAll';
+          // navigation.navigate('SelectPartner', { screen: partnerScreen });
         }
       },
     },

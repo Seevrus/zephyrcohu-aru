@@ -54,6 +54,7 @@
     "unicorn"
   ],
   "rules": {
+    "@tanstack/query/exhaustive-deps": "off",
     "@typescript-eslint/consistent-type-exports": [
       "error",
       {

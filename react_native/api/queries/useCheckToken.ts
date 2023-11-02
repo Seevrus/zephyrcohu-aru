@@ -51,7 +51,7 @@ export function useCheckToken({ enabled = true } = {}) {
   const checkTokenResult = useCheckTokenQuery({ enabled });
   const { isInternetReachable } = useNetInfo();
 
-  const user = useRef<CheckToken>(null);
+  const user = useRef<CheckToken | null>(null);
 
   useEffect(() => {
     if (checkTokenResult.isError) {

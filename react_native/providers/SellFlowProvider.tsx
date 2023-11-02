@@ -37,6 +37,7 @@ const SellFlowContext = createContext<SellFlowContextType>(
   {} as SellFlowContextType
 );
 
+// eslint-disable-next-line import/no-unused-modules
 export function SellFlowProvider({ children }: PropsWithChildren) {
   const { isPending: isOrdersContextPending, resetCurrentOrder } =
     useOrdersContext();
