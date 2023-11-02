@@ -41,7 +41,7 @@ onlineManager.setEventListener((setOnline) =>
   })
 );
 
-function Main() {
+export default function App() {
   const [fontsLoaded] = useFonts({
     Muli: require('./react_native/assets/fonts/Muli.ttf'),
     'Roboto-Regular': require('./react_native/assets/fonts/Roboto-Regular.ttf'),
@@ -53,17 +53,6 @@ function Main() {
   }
 
   return (
-    <>
-      <StatusBar style="auto" />
-      <NavigationContainer>
-        <MainStack />
-      </NavigationContainer>
-    </>
-  );
-}
-
-export default function App() {
-  return (
     <PersistQueryClientProvider
       client={queryClient}
       persistOptions={{ persister: asyncStoragePersister }}
@@ -73,7 +62,10 @@ export default function App() {
           <OrdersProvider>
             <ReceiptsProvider>
               <SellFlowProvider>
-                <Main />
+                <StatusBar style="auto" />
+                <NavigationContainer>
+                  <MainStack />
+                </NavigationContainer>
               </SellFlowProvider>
             </ReceiptsProvider>
           </OrdersProvider>

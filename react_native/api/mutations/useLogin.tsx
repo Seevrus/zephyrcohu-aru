@@ -39,7 +39,7 @@ export function useLogin() {
           // eslint-disable-next-line no-console
           console.log('useLogin:', error.response?.data);
         }
-        throw isAxiosError(error) && error.response.status === 401
+        throw isAxiosError(error) && error?.response?.status === 401
           ? new Error('Hibás felhasználónév / jelszó!')
           : new Error('Váratlan hiba lépett fel a bejelentkezés során.');
       }
