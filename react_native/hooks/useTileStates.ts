@@ -1,6 +1,7 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useIsFocused } from '@react-navigation/native';
 import { useAtomValue } from 'jotai';
+import { loadable } from 'jotai/utils';
 
 import { useCheckToken } from '../api/queries/useCheckToken';
 import { useToken } from '../api/queries/useToken';
@@ -36,13 +37,17 @@ export function useTileStates() {
   const { data: user, isPending: isUserFetching } = useCheckToken();
   const isFocused = useIsFocused();
   const { isInternetReachable } = useNetInfo();
-  const numberOfReceipts = useAtomValue(numberOfReceiptsAtom);
+  const loadableNumberOfReceipts = useAtomValue(loadable(numberOfReceiptsAtom));
   const {
     isPending: isTokenPending,
     data: { isPasswordExpired, isTokenExpired } = {},
   } = useToken();
 
   const isCheckTokenInProgress = !user && isUserFetching;
+  const numberOfReceipts =
+    loadableNumberOfReceipts.state === 'hasData'
+      ? loadableNumberOfReceipts.data
+      : 0;
 
   const isUserIdle = user?.state === 'I';
   const isStorageStarted = user?.state === 'L';

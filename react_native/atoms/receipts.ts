@@ -1,14 +1,23 @@
 import { atom } from 'jotai';
 import { type ContextReceipt } from '../providers/types/receipts-provider-types';
+import { atomWithAsyncStorage } from './helpers';
 
-const receiptsAtom = atom<ContextReceipt[]>([]);
-
-const currentReceiptAtom = atom<Partial<ContextReceipt> | null>(null);
-
-export const numberOfReceiptsAtom = atom(
-  async (get) => await get(receiptsAtom).length
+const receiptsAtom = atomWithAsyncStorage<ContextReceipt[]>(
+  'boreal-receipts-context',
+  []
 );
 
-export const isPartnerChosenForCurrentReceiptAtom = atom(
-  (get) => !!get(currentReceiptAtom)?.buyer
+const currentReceiptAtom = atomWithAsyncStorage<Partial<ContextReceipt> | null>(
+  'boreal-current-receipt-context',
+  null
 );
+
+export const numberOfReceiptsAtom = atom(async (get) => {
+  const receipts = await get(receiptsAtom);
+  return receipts.length;
+});
+
+export const isPartnerChosenForCurrentReceiptAtom = atom(async (get) => {
+  const currentReceipt = await get(currentReceiptAtom);
+  return !!currentReceipt?.buyer;
+});

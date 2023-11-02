@@ -3,7 +3,7 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
 import { equals, isEmpty, not } from 'ramda';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 import env from '../../env.json';
 import {
@@ -49,16 +49,15 @@ function useCheckTokenQuery({ enabled = true } = {}) {
 
 export function useCheckToken({ enabled = true } = {}) {
   const checkTokenResult = useCheckTokenQuery({ enabled });
-  const { isInternetReachable } = useNetInfo();
 
-  const user = useRef<CheckToken | null>(null);
+  const [user, setUser] = useState<CheckToken | null>(null);
 
   useEffect(() => {
     if (checkTokenResult.isError) {
       AsyncStorage.getItem('boreal-user-backup').then((backup) => {
         if (backup) {
           const backupUser = JSON.parse(backup);
-          user.current = backupUser;
+          setUser(backupUser);
         }
       });
     }
@@ -68,19 +67,19 @@ export function useCheckToken({ enabled = true } = {}) {
     if (
       checkTokenResult.isSuccess &&
       not(isEmpty(checkTokenResult.data)) &&
-      !equals(user.current, checkTokenResult.data)
+      !equals(user, checkTokenResult.data)
     ) {
       AsyncStorage.setItem(
         'boreal-user-backup',
         JSON.stringify(checkTokenResult.data)
       ).then(() => {
-        user.current = checkTokenResult.data;
+        setUser(checkTokenResult.data);
       });
     }
-  }, [checkTokenResult.data, checkTokenResult.isSuccess, isInternetReachable]);
+  }, [checkTokenResult.data, checkTokenResult.isSuccess, user]);
 
   return {
-    data: user.current,
+    data: user,
     isFetching: checkTokenResult.isFetching,
     isPending: checkTokenResult.isPending,
     isSuccess: checkTokenResult.isSuccess,

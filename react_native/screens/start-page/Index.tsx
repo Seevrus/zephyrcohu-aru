@@ -1,10 +1,10 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import {
   FlatList,
-  type ListRenderItem,
-  type ListRenderItemInfo,
   StyleSheet,
   View,
+  type ListRenderItem,
+  type ListRenderItemInfo,
 } from 'react-native';
 
 import { useCheckToken } from '../../api/queries/useCheckToken';
@@ -37,7 +37,7 @@ export function Index() {
     />
   );
 
-  if (isTokenPending || isUserFetching) {
+  if (isTokenPending || isUserFetching || !tiles) {
     return <Loading />;
   }
 

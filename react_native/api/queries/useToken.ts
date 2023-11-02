@@ -21,6 +21,7 @@ export function useToken(): UseQueryResult<Token> {
   return useQuery({
     queryKey: tokenQueryKey,
     queryFn: fetchToken,
+    staleTime: 300_000,
   });
 }
 
@@ -29,15 +30,16 @@ export const tokenAtom = atom(
     await queryClient.fetchQuery({
       queryKey: tokenQueryKey,
       queryFn: fetchToken,
+      staleTime: 300_000,
     })
 );
 
-export const tokenQueryKey = ['token'];
+const tokenQueryKey = ['token'];
 
-export async function fetchToken(): Promise<Token> {
+async function fetchToken(): Promise<Token> {
   const defaultToken = {
     token: '',
-    isPasswordExpired: false,
+    isPasswordExpired: true,
     isTokenExpired: true,
   };
 
@@ -53,6 +55,8 @@ export async function fetchToken(): Promise<Token> {
       isPasswordExpired = true,
       expiresAt = '1970-01-01 00:00:00',
     }: StoredToken = JSON.parse(rawToken);
+
+    console.log(expiresAt);
 
     return {
       token,
