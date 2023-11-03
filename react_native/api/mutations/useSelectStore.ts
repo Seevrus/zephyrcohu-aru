@@ -1,14 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { useAtomValue } from 'jotai';
 
 import env from '../../env.json';
-import { useToken } from '../queries/useToken';
+import { tokenAtom } from '../queries/tokenAtom';
 import { type SelectStoreRequestType } from '../request-types/SelectStoreRequestType';
 import { type SelectStoreResponseType } from '../response-types/SelectStoreResponseType';
 
 export function useSelectStore() {
   const queryClient = useQueryClient();
-  const { data: { token } = {} } = useToken();
+  const { data: tokenData } = useAtomValue(tokenAtom);
 
   return useMutation({
     mutationKey: ['select-store'],
@@ -20,7 +21,7 @@ export function useSelectStore() {
           {
             headers: {
               Accept: 'application/json',
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${tokenData?.token}`,
             },
           }
         );

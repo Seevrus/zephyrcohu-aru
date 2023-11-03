@@ -21,7 +21,7 @@ import {
   type SetStateAction,
 } from 'react';
 
-import { useItems } from '../../api/queries/useItems';
+import { useItems } from '../../api/queries/itemsAtom';
 import { type Partners } from '../../api/response-mappers/mapPartnersResponse';
 import {
   type Discount,

@@ -6,7 +6,7 @@ import { loadable } from 'jotai/utils';
 import { isNil } from 'ramda';
 import { Alert } from 'react-native';
 
-import { checkTokenAtom } from '../api/queries/useCheckToken';
+import { checkTokenAtom } from '../api/queries/checkTokenAtom';
 import {
   isPartnerChosenForCurrentReceiptAtom,
   numberOfReceiptsAtom,

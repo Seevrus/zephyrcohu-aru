@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 import { useLogin } from '../../api/mutations/useLogin';
-import { checkTokenAtom } from '../../api/queries/useCheckToken';
+import { checkTokenAtom } from '../../api/queries/checkTokenAtom';
 import { Loading } from '../../components/Loading';
 import { ErrorCard } from '../../components/info-cards/ErrorCard';
 import { TextCard } from '../../components/info-cards/TextCard';

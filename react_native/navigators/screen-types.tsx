@@ -14,9 +14,11 @@ export type StackParams = {
   Settings: undefined;
 
   SelectStore: undefined;
-  SelectItemsFromStore: {
-    scannedBarCode?: string;
-  };
+  SelectItemsFromStore:
+    | {
+        scannedBarCode?: string;
+      }
+    | undefined;
   ScanBarCodeInStorage: undefined;
   ReviewStorageChanges: undefined;
   StorageChangesSummary: undefined;

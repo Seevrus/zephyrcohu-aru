@@ -12,8 +12,8 @@ import {
 } from 'react';
 
 import { useSellSelectedItems } from '../api/mutations/useSellSelectedItems';
-import { useCheckToken } from '../api/queries/useCheckToken';
-import { useStoreDetails } from '../api/queries/useStoreDetails';
+import { useCheckToken } from '../api/queries/checkTokenAtom';
+import { useStoreDetails } from '../api/queries/storeDetailsAtom';
 import { type StoreDetailsResponseData } from '../api/response-types/StoreDetailsResponseType';
 
 type StorageContextType = {

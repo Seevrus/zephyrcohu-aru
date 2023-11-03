@@ -9,16 +9,16 @@ import {
   type LayoutChangeEvent,
 } from 'react-native';
 
+import { type StorageListItem } from '../../../atoms/storageFlow';
 import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';
 import { Input } from '../../../components/ui/Input';
 import { colors } from '../../../constants/colors';
 import { fontSizes } from '../../../constants/fontSizes';
-import { type ListItem } from '../../../providers/StorageFlowProvider';
 
 type ExpirationAccordionDetailsProps = {
-  item: ListItem;
+  item: StorageListItem;
   setCurrentQuantity: (
-    item: ListItem,
+    item: StorageListItem,
     newCurrentQuantity: number | null
   ) => void;
 };
@@ -58,10 +58,10 @@ function _ExpirationAccordionDetails({
   };
 
   const listItemColor = (() => {
-    if (item.primaryStoreQuantity < 0) {
+    if ((item.primaryStoreQuantity ?? 0) < 0) {
       return colors.error;
     }
-    if ((item.currentQuantity || 0) !== (item.originalQuantity || 0)) {
+    if ((item.currentQuantity ?? 0) !== (item.originalQuantity ?? 0)) {
       return colors.warning;
     }
 

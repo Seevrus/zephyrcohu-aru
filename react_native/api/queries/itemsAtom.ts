@@ -4,25 +4,23 @@ import { atomsWithQueryAsync } from 'jotai-tanstack-query';
 import { netInfoAtom } from '../../atoms/helpers';
 import env from '../../env.json';
 import {
-  type PartnersListResponseData,
-  type PartnersListResponseType,
-} from '../response-types/PartnersListResponseType';
-import { tokenAtom } from './useToken';
-import { checkTokenAtom } from './useCheckToken';
+  type ItemsResponseData,
+  type ItemsResponseType,
+} from '../response-types/ItemsResponseType';
+import { checkTokenAtom } from './checkTokenAtom';
+import { tokenAtom } from './tokenAtom';
 
-export const [, partnerListsAtom] = atomsWithQueryAsync(async (get) => {
+const [, itemsAtom] = atomsWithQueryAsync(async (get) => {
   const isInternetReachable = await get(netInfoAtom);
-  const { data: user } = await get(checkTokenAtom);
+  const { isSuccess: isCheckTokenSuccess } = await get(checkTokenAtom);
   const { isSuccess: isTokenSuccess, data: tokenData } = get(tokenAtom);
 
-  const isRoundStarted = user?.state === 'R';
-
   return {
-    queryKey: ['partner-lists'],
-    queryFn: async (): Promise<PartnersListResponseData> => {
+    queryKey: ['items'],
+    queryFn: async (): Promise<ItemsResponseData> => {
       try {
-        const response = await axios.get<PartnersListResponseType>(
-          `${env.api_url}/partner_lists`,
+        const response = await axios.get<ItemsResponseType>(
+          `${env.api_url}/items`,
           {
             headers: {
               Accept: 'application/json',
@@ -35,10 +33,10 @@ export const [, partnerListsAtom] = atomsWithQueryAsync(async (get) => {
       } catch (error) {
         if (isAxiosError(error)) {
           // eslint-disable-next-line no-console
-          console.log('usePartnerLists:', error.response?.data);
+          console.log('useItems:', error.response?.data);
         }
         throw new Error(
-          'Váratlan hiba lépett fel a partnerlisták lekérése során.'
+          'Váratlan hiba lépett fel a tételek adatainak lekérése során.'
         );
       }
     },
@@ -47,7 +45,9 @@ export const [, partnerListsAtom] = atomsWithQueryAsync(async (get) => {
       isTokenSuccess &&
       !tokenData.isTokenExpired &&
       !tokenData.isPasswordExpired &&
-      !!tokenData.token &&
-      isRoundStarted,
+      isCheckTokenSuccess &&
+      !!tokenData.token,
   };
 });
+
+export { itemsAtom };

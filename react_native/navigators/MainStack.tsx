@@ -3,9 +3,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { colors } from '../constants/colors';
 import { fontSizes } from '../constants/fontSizes';
 import { Login } from '../screens/login/Login';
+import { ChangePassword } from '../screens/start-page/ChangePassword';
 import { Index } from '../screens/start-page/Index';
 import { Settings } from '../screens/start-page/Settings';
 import { SettingsButton } from '../screens/start-page/SettingsButton';
+import { ReviewStorageChanges } from '../screens/storage/review/ReviewStorageChanges';
+import { ScanBarCodeInStorage } from '../screens/storage/select-items/ScanBarCodeInStorage';
+import { SelectItemsFromStore } from '../screens/storage/select-items/SelectItemsFromStore';
+import { SelectStore } from '../screens/storage/select-store/SelectStore';
 import { type StackParams } from './screen-types';
 
 const Stack = createNativeStackNavigator<StackParams>();
@@ -43,7 +48,7 @@ export function MainStack() {
         component={Login}
         options={{ headerTitle: 'Bejelentkezés' }}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="ChangePassword"
         component={ChangePassword}
         options={{ headerTitle: 'Új jelszó' }}
@@ -68,7 +73,7 @@ export function MainStack() {
         component={ReviewStorageChanges}
         options={{ headerTitle: 'Áttekintés' }}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="StorageChangesSummary"
         component={StorageChangesSummary}
         options={{ headerLeft: null, headerTitle: 'Összegzés' }}

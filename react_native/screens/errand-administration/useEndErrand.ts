@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 
 import { useFinishRound } from '../../api/mutations/useFinishRound';
-import { useActiveRound } from '../../api/queries/useActiveRound';
+import { useActiveRound } from '../../api/queries/activeRoundAtom';
 import { useOrdersContext } from '../../providers/OrdersProvider';
 import { useReceiptsContext } from '../../providers/ReceiptsProvider';
 import { useSellFlowContext } from '../../providers/SellFlowProvider';

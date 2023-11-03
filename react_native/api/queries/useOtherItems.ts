@@ -6,8 +6,8 @@ import {
   type OtherItemsResponseData,
   type OtherItemsResponseType,
 } from '../response-types/OtherItemsResponseType';
-import { useCheckToken } from './useCheckToken';
-import { useToken } from './useToken';
+import { useCheckToken } from './checkTokenAtom';
+import { useToken } from './tokenAtom';
 
 export function useOtherItems({
   enabled = true,

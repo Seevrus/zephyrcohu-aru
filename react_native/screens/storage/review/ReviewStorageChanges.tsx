@@ -1,4 +1,5 @@
 import { useNetInfo } from '@react-native-community/netinfo';
+import { useAtomValue } from 'jotai';
 import { useMemo, useState } from 'react';
 import {
   Alert,
@@ -8,32 +9,32 @@ import {
   type ListRenderItemInfo,
 } from 'react-native';
 
+import {
+  storageListItemsAtom,
+  type StorageListItem,
+} from '../../../atoms/storageFlow';
 import { Loading } from '../../../components/Loading';
 import { ErrorCard } from '../../../components/info-cards/ErrorCard';
 import { TextCard } from '../../../components/info-cards/TextCard';
 import { Button } from '../../../components/ui/Button';
 import { colors } from '../../../constants/colors';
 import { type ReviewStorageChangesProps } from '../../../navigators/screen-types';
-import {
-  useStorageFlowContext,
-  type ListItem,
-} from '../../../providers/StorageFlowProvider';
 import { ReviewExpirationItem } from './ReviewExpirationItem';
 
-const keyExtractor = (item: ListItem) => String(item.expirationId);
+const keyExtractor = (item: StorageListItem) => String(item.expirationId);
 
 export function ReviewStorageChanges({
   navigation,
 }: ReviewStorageChangesProps) {
   const { isInternetReachable } = useNetInfo();
-  const { items, handleSendChanges } = useStorageFlowContext();
+  const storageListItems = useAtomValue(storageListItemsAtom);
 
   const changedItems = useMemo(
     () =>
-      (items ?? []).filter(
+      (storageListItems ?? []).filter(
         (item) => item.currentQuantity !== item.originalQuantity
       ),
-    [items]
+    [storageListItems]
   );
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -43,7 +44,7 @@ export function ReviewStorageChanges({
     return <Loading />;
   }
 
-  const renderItem = (info: ListRenderItemInfo<ListItem>) => (
+  const renderItem = (info: ListRenderItemInfo<StorageListItem>) => (
     <ReviewExpirationItem item={info.item} />
   );
 

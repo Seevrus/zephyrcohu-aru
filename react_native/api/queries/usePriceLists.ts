@@ -6,8 +6,8 @@ import {
   type PriceListResponseData,
   type PriceListResponseType,
 } from '../response-types/PriceListResponseType';
-import { useCheckToken } from './useCheckToken';
-import { useToken } from './useToken';
+import { useCheckToken } from './checkTokenAtom';
+import { useToken } from './tokenAtom';
 
 export function usePriceLists({
   enabled = true,

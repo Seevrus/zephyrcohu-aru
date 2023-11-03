@@ -9,18 +9,18 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useStartRound } from '../../api/mutations/useStartRound';
-import { fetchActiveRound } from '../../api/queries/useActiveRound';
-import { fetchItems } from '../../api/queries/useItems';
+import { fetchActiveRound } from '../../api/queries/activeRoundAtom';
+import { fetchItems } from '../../api/queries/itemsAtom';
 import { fetchOtherItems } from '../../api/queries/useOtherItems';
 import {
   fetchPartnerLists,
   usePartnerLists,
-} from '../../api/queries/usePartnerLists';
+} from '../../api/queries/partnerListstAtom';
 import { fetchPartners } from '../../api/queries/usePartners';
 import { fetchPriceLists } from '../../api/queries/usePriceLists';
-import { fetchStoreDetails } from '../../api/queries/useStoreDetails';
-import { fetchStores, useStores } from '../../api/queries/useStores';
-import { useToken } from '../../api/queries/useToken';
+import { fetchStoreDetails } from '../../api/queries/storeDetailsAtom';
+import { fetchStores, useStores } from '../../api/queries/storesAtom';
+import { useToken } from '../../api/queries/tokenAtom';
 import { Loading } from '../../components/Loading';
 import { ErrorCard } from '../../components/info-cards/ErrorCard';
 import { Button } from '../../components/ui/Button';

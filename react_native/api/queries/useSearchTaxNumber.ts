@@ -7,8 +7,8 @@ import {
   type TaxPayer,
 } from '../response-mappers/mapSearchTaxPayerResponse';
 import { type SearchTaxNumberResponseType } from '../response-types/SearchTaxNumberResponseType';
-import { useCheckToken } from './useCheckToken';
-import { useToken } from './useToken';
+import { useCheckToken } from './checkTokenAtom';
+import { useToken } from './tokenAtom';
 
 type UseSearhcTaxNumberProps = {
   taxNumber: string;

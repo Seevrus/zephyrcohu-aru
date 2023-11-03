@@ -3,7 +3,7 @@ import axios, { isAxiosError } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
 import env from '../../env.json';
-import { useToken } from '../queries/useToken';
+import { useToken } from '../queries/tokenAtom';
 import { type ChangePasswordRequest } from '../request-types/ChangePasswordRequestType';
 import { mapLoginResponse } from '../response-mappers/mapLoginResponse';
 import { type LoginResponse } from '../response-types/LoginResponseType';

@@ -1,10 +1,12 @@
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useNetInfo } from '@react-native-community/netinfo';
+import { useAtom, useAtomValue } from 'jotai';
 import {
   complement,
   compose,
   filter,
   isNil,
+  isNotNil,
   map,
   pipe,
   prop,
@@ -12,7 +14,7 @@ import {
   sortBy,
   toLower,
 } from 'ramda';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -22,9 +24,16 @@ import {
 } from 'react-native';
 
 import { useSelectStore } from '../../../api/mutations/useSelectStore';
-import { useStores } from '../../../api/queries/useStores';
+import { storesAtom } from '../../../api/queries/storesAtom';
+import { queryClient } from '../../../api/queryClient';
+import { type StoreDetailsResponseData } from '../../../api/response-types/StoreDetailsResponseType';
 import { type StoresResponseData } from '../../../api/response-types/StoresResponseType';
 import { type StoreType } from '../../../api/response-types/common/StoreType';
+import {
+  primaryStoreAtom,
+  selectedStoreAtom,
+  selectedStoreInitialStateAtom,
+} from '../../../atoms/storage';
 import { Loading } from '../../../components/Loading';
 import { Tile, type TileT } from '../../../components/Tile';
 import { Button } from '../../../components/ui/Button';
@@ -32,15 +41,23 @@ import { Input } from '../../../components/ui/Input';
 import { colors } from '../../../constants/colors';
 import { type SelectStoreProps } from '../../../navigators/screen-types';
 
-export function SelectStore({ navigation }: SelectStoreProps) {
+function SuspendedSelectStore({ navigation }: SelectStoreProps) {
   const { isInternetReachable } = useNetInfo();
   const { mutateAsync: selectStore } = useSelectStore();
-  const { isPending: isStoresPending, data: stores } = useStores();
+  const { isPending: isStoresPending, data: stores } = useAtomValue(storesAtom);
+
+  const [, setPrimaryStore] = useAtom(primaryStoreAtom);
+  const [, setSelectedStoreInitialState] = useAtom(
+    selectedStoreInitialStateAtom
+  );
+  const [, setSelectedStore] = useAtom(selectedStoreAtom);
 
   const [isSubmitInProgress, setIsSubmitInProgress] = useState<boolean>(false);
   const [selectedStoreId, setSelectedStoreId] = useState<number | null>(null);
   const [storeSearchValue, setStoreSearchValue] = useState<string>('');
   const [storesShown, setStoresShown] = useState<StoresResponseData>([]);
+
+  const primaryStoreId = stores?.find((store) => store.type === 'P')?.id;
 
   useEffect(() => {
     if (isInternetReachable === false) {
@@ -63,11 +80,35 @@ export function SelectStore({ navigation }: SelectStoreProps) {
   }, []);
 
   const handleSubmitSelectedStore = useCallback(async () => {
-    setIsSubmitInProgress(true);
-    await selectStore({ storeId: selectedStoreId });
-    setIsSubmitInProgress(false);
-    navigation.replace('SelectItemsFromStore');
-  }, [navigation, selectStore, selectedStoreId]);
+    if (isNotNil(selectedStoreId)) {
+      setIsSubmitInProgress(true);
+      await selectStore({ storeId: selectedStoreId });
+
+      Promise.all([
+        queryClient.fetchQuery<StoreDetailsResponseData>({
+          queryKey: ['store-details', primaryStoreId],
+        }),
+        queryClient.fetchQuery<StoreDetailsResponseData>({
+          queryKey: ['store-details', selectedStoreId],
+        }),
+      ]).then(([primaryStoreDetails, selectedStoreDetails]) => {
+        setPrimaryStore(primaryStoreDetails);
+        setSelectedStoreInitialState(selectedStoreDetails);
+        setSelectedStore(selectedStoreDetails);
+      });
+
+      setIsSubmitInProgress(false);
+      navigation.replace('SelectItemsFromStore');
+    }
+  }, [
+    navigation,
+    primaryStoreId,
+    selectStore,
+    selectedStoreId,
+    setPrimaryStore,
+    setSelectedStore,
+    setSelectedStoreInitialState,
+  ]);
 
   const storeTiles = useMemo(
     () =>
@@ -151,6 +192,14 @@ export function SelectStore({ navigation }: SelectStoreProps) {
         </View>
       </View>
     </View>
+  );
+}
+
+export function SelectStore(props: SelectStoreProps) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <SuspendedSelectStore {...props} />
+    </Suspense>
   );
 }
 

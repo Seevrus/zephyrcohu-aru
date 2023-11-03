@@ -5,8 +5,8 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useLogout } from '../../api/mutations/useLogout';
-import { checkTokenAtom } from '../../api/queries/useCheckToken';
-import { tokenAtom } from '../../api/queries/useToken';
+import { checkTokenAtom } from '../../api/queries/checkTokenAtom';
+import { tokenAtom } from '../../api/queries/tokenAtom';
 import { Loading } from '../../components/Loading';
 import { Button } from '../../components/ui/Button';
 import { colors } from '../../constants/colors';

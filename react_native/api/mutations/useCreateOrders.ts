@@ -3,7 +3,7 @@ import axios, { isAxiosError } from 'axios';
 
 import env from '../../env.json';
 import { type ContextOrder } from '../../providers/types/orders-provider-types';
-import { useToken } from '../queries/useToken';
+import { useToken } from '../queries/tokenAtom';
 import { mapCreateOrdersRequest } from '../request-mappers/mapCreateOrdersRequest';
 import {
   type CreateOrdersResponseData,

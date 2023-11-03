@@ -1,7 +1,7 @@
 import { and, assoc, dissoc, identity, isEmpty } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useItems } from '../../api/queries/useItems';
+import { useItems } from '../../api/queries/itemsAtom';
 import { useOtherItems } from '../../api/queries/useOtherItems';
 import { type Discount } from '../../api/response-types/ItemsResponseType';
 import { type PriceListType } from '../../api/response-types/PriceListResponseType';

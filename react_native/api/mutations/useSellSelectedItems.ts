@@ -2,9 +2,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
 
 import env from '../../env.json';
-import { useCheckToken } from '../queries/useCheckToken';
-import { useStoreDetails } from '../queries/useStoreDetails';
-import { useToken } from '../queries/useToken';
+import { useCheckToken } from '../queries/checkTokenAtom';
+import { useStoreDetails } from '../queries/storeDetailsAtom';
+import { useToken } from '../queries/tokenAtom';
 import { mapSellSelectedItemsRequest } from '../request-mappers/mapSellSelectedItemsRequest';
 import {
   type StoreDetailsResponseData,

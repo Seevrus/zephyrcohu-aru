@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useDeselectStore } from '../../../api/mutations/useDeselectStore';
-import { useCheckToken } from '../../../api/queries/useCheckToken';
+import { useCheckToken } from '../../../api/queries/checkTokenAtom';
 import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
 import { colors } from '../../../constants/colors';

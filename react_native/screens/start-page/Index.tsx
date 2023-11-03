@@ -8,8 +8,8 @@ import {
   type ListRenderItemInfo,
 } from 'react-native';
 
-import { checkTokenAtom } from '../../api/queries/useCheckToken';
-import { tokenAtom } from '../../api/queries/useToken';
+import { checkTokenAtom } from '../../api/queries/checkTokenAtom';
+import { tokenAtom } from '../../api/queries/tokenAtom';
 import { Loading } from '../../components/Loading';
 import { Tile, type TileT } from '../../components/Tile';
 import { TextCard } from '../../components/info-cards/TextCard';

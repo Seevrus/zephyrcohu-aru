@@ -3,8 +3,8 @@ import axios, { isAxiosError } from 'axios';
 
 import env from '../../env.json';
 import { type ListItem } from '../../providers/StorageFlowProvider';
-import { useStores } from '../queries/useStores';
-import { useToken } from '../queries/useToken';
+import { useStores } from '../queries/storesAtom';
+import { useToken } from '../queries/tokenAtom';
 import { mapSaveSelectedItemsRequest } from '../request-mappers/mapSaveSelectedItemsRequest';
 import { type StoreDetailsResponseType } from '../response-types/StoreDetailsResponseType';
 

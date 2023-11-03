@@ -1,5 +1,6 @@
 import axios, { isAxiosError } from 'axios';
 import { atomsWithQueryAsync } from 'jotai-tanstack-query';
+import * as SecureStore from 'expo-secure-store';
 
 import { netInfoAtom } from '../../atoms/helpers';
 import env from '../../env.json';
@@ -8,7 +9,8 @@ import {
   type CheckToken,
 } from '../response-mappers/mapCheckTokenResponse';
 import { type LoginResponse } from '../response-types/LoginResponseType';
-import { tokenAtom } from './useToken';
+import { tokenAtom } from './tokenAtom';
+import { queryClient } from '../queryClient';
 
 const [, checkTokenAtom] = atomsWithQueryAsync(async (get) => {
   const isInternetReachable = await get(netInfoAtom);
@@ -33,7 +35,13 @@ const [, checkTokenAtom] = atomsWithQueryAsync(async (get) => {
         if (isAxiosError(error)) {
           // eslint-disable-next-line no-console
           console.log('useCheckToken', error.response?.data);
+
+          if (error.response?.status === 401) {
+            await queryClient.invalidateQueries({ queryKey: ['token'] });
+            await SecureStore.deleteItemAsync('boreal-token');
+          }
         }
+
         throw new Error('A megadott token nem érvényes.');
       }
     },

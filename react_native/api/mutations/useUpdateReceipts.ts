@@ -3,7 +3,7 @@ import axios, { isAxiosError } from 'axios';
 
 import env from '../../env.json';
 import { type ContextReceipt } from '../../providers/types/receipts-provider-types';
-import { useToken } from '../queries/useToken';
+import { useToken } from '../queries/tokenAtom';
 import { mapUpdateReceiptsRequest } from '../request-mappers/mapUpdateReceiptsRequest';
 import {
   type ReceiptResponseData,

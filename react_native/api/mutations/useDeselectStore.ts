@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
 
 import env from '../../env.json';
-import { useToken } from '../queries/useToken';
+import { useToken } from '../queries/tokenAtom';
 import { type LoginResponse } from '../response-types/LoginResponseType';
 
 export function useDeselectStore() {

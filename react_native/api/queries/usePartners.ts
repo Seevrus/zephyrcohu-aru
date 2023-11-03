@@ -7,8 +7,8 @@ import {
   type Partners,
 } from '../response-mappers/mapPartnersResponse';
 import { type PartnersResponseType } from '../response-types/PartnersResponseType';
-import { useCheckToken } from './useCheckToken';
-import { useToken } from './useToken';
+import { useCheckToken } from './checkTokenAtom';
+import { useToken } from './tokenAtom';
 
 export function usePartners({ enabled = true } = {}): UseQueryResult<Partners> {
   const { data: user, isSuccess: isCheckTokenSuccess } = useCheckToken();

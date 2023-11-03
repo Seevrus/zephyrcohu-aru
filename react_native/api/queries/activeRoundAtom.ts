@@ -6,12 +6,13 @@ import env from '../../env.json';
 import { mapRoundsResponse } from '../response-mappers/mapRoundsResponse';
 import { type RoundsResponseType } from '../response-types/ActiveRoundResponseType';
 import { type RoundType } from '../response-types/common/RoundType';
-import { checkTokenAtom } from './useCheckToken';
-import { tokenAtom } from './useToken';
+import { checkTokenAtom } from './checkTokenAtom';
+import { tokenAtom } from './tokenAtom';
 
-export const [, activeRoundAtom] = atomsWithQueryAsync(async (get) => {
+const [, activeRoundAtom] = atomsWithQueryAsync(async (get) => {
   const isInternetReachable = await get(netInfoAtom);
-  const { data: user } = await get(checkTokenAtom);
+  const { data: user, isSuccess: isCheckTokenSuccess } =
+    await get(checkTokenAtom);
   const { isSuccess: isTokenSuccess, data: tokenData } = get(tokenAtom);
 
   const isRoundStarted = user?.state === 'R';
@@ -47,6 +48,9 @@ export const [, activeRoundAtom] = atomsWithQueryAsync(async (get) => {
       !tokenData.isTokenExpired &&
       !tokenData.isPasswordExpired &&
       !!tokenData.token &&
+      isCheckTokenSuccess &&
       isRoundStarted,
   };
 });
+
+export { activeRoundAtom };

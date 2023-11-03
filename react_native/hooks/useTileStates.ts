@@ -3,8 +3,8 @@ import { useIsFocused } from '@react-navigation/native';
 import { useAtomValue } from 'jotai';
 import { loadable } from 'jotai/utils';
 
-import { checkTokenAtom } from '../api/queries/useCheckToken';
-import { tokenAtom } from '../api/queries/useToken';
+import { checkTokenAtom } from '../api/queries/checkTokenAtom';
+import { tokenAtom } from '../api/queries/tokenAtom';
 import { numberOfReceiptsAtom } from '../atoms/receipts';
 
 export enum StorageTileState {

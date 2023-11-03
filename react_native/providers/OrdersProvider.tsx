@@ -11,7 +11,7 @@ import {
 } from 'react';
 
 import { useCreateOrders } from '../api/mutations/useCreateOrders';
-import { useCheckToken } from '../api/queries/useCheckToken';
+import { useCheckToken } from '../api/queries/checkTokenAtom';
 import { type OrderRequest } from '../api/request-types/CreateOrdersRequestType';
 import { type CreateOrdersResponseData } from '../api/response-types/CreateOrdersResponseType';
 import { type ContextOrder } from './types/orders-provider-types';
