@@ -57,10 +57,7 @@ function SuspendedReviewStorageChanges({
 
         setIsStorageSavedToApi(true);
 
-        navigation.reset({
-          index: 1,
-          routes: [{ name: 'StorageChangesSummary' }],
-        });
+        navigation.replace('StorageChangesSummary');
       }
     } catch {
       setIsLoading(false);

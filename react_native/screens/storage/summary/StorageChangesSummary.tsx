@@ -67,7 +67,10 @@ function SuspendedStorageChangesSummary({
     setIsStorageSavedToApi(false);
     setStorageListItems(undefined);
 
-    navigation.replace('Index');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Index' }],
+    });
   };
 
   const isPrintEnabled = !!user && !!selectedStoreInitialState;
