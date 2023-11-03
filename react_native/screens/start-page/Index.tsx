@@ -1,4 +1,5 @@
 import { useNetInfo } from '@react-native-community/netinfo';
+import { useAtomValue } from 'jotai';
 import {
   FlatList,
   StyleSheet,
@@ -7,21 +8,20 @@ import {
   type ListRenderItemInfo,
 } from 'react-native';
 
-import { useCheckToken } from '../../api/queries/useCheckToken';
-import { useToken } from '../../api/queries/useToken';
+import { checkTokenAtom } from '../../api/queries/useCheckToken';
+import { tokenAtom } from '../../api/queries/useToken';
 import { Loading } from '../../components/Loading';
 import { Tile, type TileT } from '../../components/Tile';
 import { TextCard } from '../../components/info-cards/TextCard';
 import { colors } from '../../constants/colors';
 import { useTiles } from '../../hooks/useTiles';
+import { Suspense } from 'react';
 
-export function Index() {
-  const { isFetching: isUserFetching } = useCheckToken();
+function SuspendedIndex() {
+  const { isFetching: isUserFetching } = useAtomValue(checkTokenAtom);
   const { isInternetReachable } = useNetInfo();
-  const {
-    isPending: isTokenPending,
-    data: { isPasswordExpired, isTokenExpired } = {},
-  } = useToken();
+  const { isPending: isTokenPending, data: tokenData } =
+    useAtomValue(tokenAtom);
 
   const tiles = useTiles();
 
@@ -37,7 +37,7 @@ export function Index() {
     />
   );
 
-  if (isTokenPending || isUserFetching || !tiles) {
+  if (isTokenPending || isUserFetching) {
     return <Loading />;
   }
 
@@ -50,12 +50,12 @@ export function Index() {
           </TextCard>
         </View>
       )}
-      {isPasswordExpired && (
+      {tokenData?.isPasswordExpired && (
         <View style={styles.textCardContainer}>
           <TextCard>Az Ön jelszava lejárt, kérem változtassa meg.</TextCard>
         </View>
       )}
-      {isTokenExpired && (
+      {tokenData?.isTokenExpired && (
         <View style={styles.textCardContainer}>
           <TextCard>Körindításhoz és -záráshoz kérem jelentkezzen be.</TextCard>
         </View>
@@ -66,6 +66,14 @@ export function Index() {
         renderItem={renderTile}
       />
     </View>
+  );
+}
+
+export function Index() {
+  return (
+    <Suspense>
+      <SuspendedIndex />
+    </Suspense>
   );
 }
 

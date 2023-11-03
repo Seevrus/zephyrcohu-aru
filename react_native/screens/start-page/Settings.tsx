@@ -1,19 +1,21 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQueryClient } from '@tanstack/react-query';
+import { useAtomValue } from 'jotai';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useLogout } from '../../api/mutations/useLogout';
-import { useCheckToken } from '../../api/queries/useCheckToken';
-import { useToken } from '../../api/queries/useToken';
+import { checkTokenAtom } from '../../api/queries/useCheckToken';
+import { tokenAtom } from '../../api/queries/useToken';
 import { Loading } from '../../components/Loading';
 import { Button } from '../../components/ui/Button';
 import { colors } from '../../constants/colors';
 import { type SettingsProps } from '../../navigators/screen-types';
 
 export function Settings({ navigation }: SettingsProps) {
-  const { data: user, isFetching: isUserFetching } = useCheckToken();
-  const { data: { isTokenExpired } = {} } = useToken();
+  const { data: user, isFetching: isUserFetching } =
+    useAtomValue(checkTokenAtom);
+  const { data: tokenData } = useAtomValue(tokenAtom);
   const { mutateAsync: logout } = useLogout();
 
   const queryClient = useQueryClient();
@@ -43,7 +45,8 @@ export function Settings({ navigation }: SettingsProps) {
     setIsLoading(true);
 
     queryClient.invalidateQueries({ queryKey: ['active-round'] });
-    queryClient.invalidateQueries({ queryKey: ['check-token'] });
+    queryClient.resetQueries({ queryKey: ['check-token'] });
+    queryClient.resetQueries({ queryKey: ['token'] });
     queryClient.invalidateQueries({ queryKey: ['items'] });
     queryClient.invalidateQueries({ queryKey: ['other-items'] });
     queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
@@ -61,24 +64,24 @@ export function Settings({ navigation }: SettingsProps) {
     });
   };
 
-  if (isLoading || isUserFetching) {
+  if (isLoading || isUserFetching || !tokenData) {
     return <Loading />;
   }
 
   return (
     <View style={styles.container}>
-      {isTokenExpired && (
+      {tokenData.isTokenExpired && (
         <Button variant="neutral" onPress={loginHandler}>
           Bejelentkezés
         </Button>
       )}
 
-      {!isTokenExpired && (
+      {!tokenData.isTokenExpired && (
         <Button variant="neutral" onPress={changePasswordHandler}>
           Jelszó megváltoztatása
         </Button>
       )}
-      {!isTokenExpired && !isRoundStarted && (
+      {!tokenData.isTokenExpired && !isRoundStarted && (
         <Button variant="neutral" onPress={logoutHandler}>
           Kijelentkezés
         </Button>

@@ -7,8 +7,8 @@ import { activeRoundAtom } from '../../api/queries/useActiveRound';
 const selectedPartnerAtom = atom<Partners[number] | null>(null);
 
 const currentPartnerListAtom = atom(async (get) => {
-  const partnerLists = await get(partnerListsAtom);
-  const activeRound = await get(activeRoundAtom);
+  const { data: partnerLists } = await get(partnerListsAtom);
+  const { data: activeRound } = await get(activeRoundAtom);
 
   return partnerLists?.find(
     (partnerList) => partnerList.id === activeRound?.partnerListId

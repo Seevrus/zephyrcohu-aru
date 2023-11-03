@@ -1,75 +1,53 @@
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { atom } from 'jotai';
+import { atomsWithQueryAsync } from 'jotai-tanstack-query';
 
+import { netInfoAtom } from '../../atoms/helpers';
 import env from '../../env.json';
 import {
   type PartnersListResponseData,
   type PartnersListResponseType,
 } from '../response-types/PartnersListResponseType';
-import { useCheckToken } from './useCheckToken';
-import { tokenAtom, useToken } from './useToken';
-import { queryClient } from '../queryClient';
+import { tokenAtom } from './useToken';
+import { checkTokenAtom } from './useCheckToken';
 
-export function usePartnerLists({
-  enabled = true,
-} = {}): UseQueryResult<PartnersListResponseData> {
-  const { isSuccess: isCheckTokenSuccess } = useCheckToken();
-  const {
-    data: { isPasswordExpired = true, isTokenExpired = true, token = '' } = {},
-  } = useToken();
+export const [, partnerListsAtom] = atomsWithQueryAsync(async (get) => {
+  const isInternetReachable = await get(netInfoAtom);
+  const { data: user } = await get(checkTokenAtom);
+  const { isSuccess: isTokenSuccess, data: tokenData } = get(tokenAtom);
 
-  return useQuery({
-    queryKey: partnerListsQueryKey,
-    queryFn: () => fetchPartnerLists(token),
-    enabled:
-      enabled &&
-      !isTokenExpired &&
-      !!token &&
-      isCheckTokenSuccess &&
-      !isPasswordExpired,
-  });
-}
+  const isRoundStarted = user?.state === 'R';
 
-export const partnerListsAtom = atom(async (get) => {
-  const { token, isPasswordExpired, isTokenExpired } = await get(tokenAtom);
+  return {
+    queryKey: ['partner-lists'],
+    queryFn: async (): Promise<PartnersListResponseData> => {
+      try {
+        const response = await axios.get<PartnersListResponseType>(
+          `${env.api_url}/partner_lists`,
+          {
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${tokenData?.token}`,
+            },
+          }
+        );
 
-  if (!!token && !isPasswordExpired && !isTokenExpired) {
-    try {
-      return await queryClient.fetchQuery({
-        queryKey: partnerListsQueryKey,
-        queryFn: () => fetchPartnerLists(token),
-      });
-    } catch {
-      return;
-    }
-  }
-
-  return;
-});
-
-const partnerListsQueryKey = ['partner-lists'];
-
-export async function fetchPartnerLists(
-  token: string
-): Promise<PartnersListResponseData> {
-  try {
-    const response = await axios.get<PartnersListResponseType>(
-      `${env.api_url}/partner_lists`,
-      {
-        headers: {
-          Accept: 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        return response.data.data;
+      } catch (error) {
+        if (isAxiosError(error)) {
+          // eslint-disable-next-line no-console
+          console.log('usePartnerLists:', error.response?.data);
+        }
+        throw new Error(
+          'Váratlan hiba lépett fel a partnerlisták lekérése során.'
+        );
       }
-    );
-
-    return response.data.data;
-  } catch (error) {
-    if (isAxiosError(error)) {
-      // eslint-disable-next-line no-console
-      console.log('usePartnerLists:', error.response?.data);
-    }
-    throw new Error('Váratlan hiba lépett fel a partnerlisták lekérése során.');
-  }
-}
+    },
+    enabled:
+      isInternetReachable === true &&
+      isTokenSuccess &&
+      !tokenData.isTokenExpired &&
+      !tokenData.isPasswordExpired &&
+      !!tokenData.token &&
+      isRoundStarted,
+  };
+});

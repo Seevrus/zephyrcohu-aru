@@ -1,3 +1,4 @@
+import { useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -9,7 +10,7 @@ import {
 } from 'react-native';
 
 import { useLogin } from '../../api/mutations/useLogin';
-import { useCheckToken } from '../../api/queries/useCheckToken';
+import { checkTokenAtom } from '../../api/queries/useCheckToken';
 import { Loading } from '../../components/Loading';
 import { ErrorCard } from '../../components/info-cards/ErrorCard';
 import { TextCard } from '../../components/info-cards/TextCard';
@@ -19,7 +20,8 @@ import { colors } from '../../constants/colors';
 import { type LoginProps } from '../../navigators/screen-types';
 
 export function Login({ navigation }: LoginProps) {
-  const { data: user, isFetching: isUserFetching } = useCheckToken();
+  const { data: user, isFetching: isUserFetching } =
+    useAtomValue(checkTokenAtom);
   const login = useLogin();
 
   const isRoundStarted = user?.state === 'R';

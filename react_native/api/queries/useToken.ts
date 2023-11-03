@@ -1,9 +1,6 @@
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { isPast, parseISO } from 'date-fns';
 import * as SecureStore from 'expo-secure-store';
-import { atom } from 'jotai';
-
-import { queryClient } from '../queryClient';
+import { atomsWithQuery } from 'jotai-tanstack-query';
 
 type StoredToken = {
   token: string;
@@ -17,57 +14,41 @@ type Token = {
   isTokenExpired: boolean;
 };
 
-export function useToken(): UseQueryResult<Token> {
-  return useQuery({
-    queryKey: tokenQueryKey,
-    queryFn: fetchToken,
-    staleTime: 300_000,
-  });
-}
+const [, tokenAtom] = atomsWithQuery(() => ({
+  queryKey: ['token'],
+  queryFn: async (): Promise<Token> => {
+    const defaultToken = {
+      token: '',
+      isPasswordExpired: false,
+      isTokenExpired: true,
+    };
 
-export const tokenAtom = atom(
-  async () =>
-    await queryClient.fetchQuery({
-      queryKey: tokenQueryKey,
-      queryFn: fetchToken,
-      staleTime: 300_000,
-    })
-);
+    try {
+      const rawToken = await SecureStore.getItemAsync('boreal-token');
 
-const tokenQueryKey = ['token'];
+      if (!rawToken) {
+        return defaultToken;
+      }
 
-async function fetchToken(): Promise<Token> {
-  const defaultToken = {
-    token: '',
-    isPasswordExpired: true,
-    isTokenExpired: true,
-  };
+      const {
+        token = '',
+        isPasswordExpired = false,
+        expiresAt = '1970-01-01 00:00:00',
+      }: StoredToken = JSON.parse(rawToken);
 
-  try {
-    const rawToken = await SecureStore.getItemAsync('boreal-token');
+      return {
+        token,
+        isPasswordExpired: !token || isPasswordExpired,
+        isTokenExpired: isPast(parseISO(expiresAt)),
+      };
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log('useToken:', error?.message);
 
-    if (!rawToken) {
+      await SecureStore.deleteItemAsync('boreal-token');
       return defaultToken;
     }
+  },
+}));
 
-    const {
-      token = '',
-      isPasswordExpired = true,
-      expiresAt = '1970-01-01 00:00:00',
-    }: StoredToken = JSON.parse(rawToken);
-
-    console.log(expiresAt);
-
-    return {
-      token,
-      isPasswordExpired: !token || isPasswordExpired,
-      isTokenExpired: isPast(parseISO(expiresAt)),
-    };
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.log('useToken:', error?.message);
-
-    await SecureStore.deleteItemAsync('boreal-token');
-    return defaultToken;
-  }
-}
+export { tokenAtom };

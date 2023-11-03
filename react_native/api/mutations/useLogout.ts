@@ -5,7 +5,7 @@ export function useLogout() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: ['login'],
+    mutationKey: ['logout'],
     mutationFn: async () => {
       try {
         await SecureStore.deleteItemAsync('boreal-token');

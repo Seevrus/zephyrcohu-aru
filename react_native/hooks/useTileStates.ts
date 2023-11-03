@@ -3,8 +3,8 @@ import { useIsFocused } from '@react-navigation/native';
 import { useAtomValue } from 'jotai';
 import { loadable } from 'jotai/utils';
 
-import { useCheckToken } from '../api/queries/useCheckToken';
-import { useToken } from '../api/queries/useToken';
+import { checkTokenAtom } from '../api/queries/useCheckToken';
+import { tokenAtom } from '../api/queries/useToken';
 import { numberOfReceiptsAtom } from '../atoms/receipts';
 
 export enum StorageTileState {
@@ -34,14 +34,13 @@ export enum EndErrandTileState {
 }
 
 export function useTileStates() {
-  const { data: user, isPending: isUserFetching } = useCheckToken();
+  const { data: user, isPending: isUserFetching } =
+    useAtomValue(checkTokenAtom);
   const isFocused = useIsFocused();
   const { isInternetReachable } = useNetInfo();
   const loadableNumberOfReceipts = useAtomValue(loadable(numberOfReceiptsAtom));
-  const {
-    isPending: isTokenPending,
-    data: { isPasswordExpired, isTokenExpired } = {},
-  } = useToken();
+  const { isPending: isTokenPending, data: tokenData } =
+    useAtomValue(tokenAtom);
 
   const isCheckTokenInProgress = !user && isUserFetching;
   const numberOfReceipts =
@@ -64,9 +63,9 @@ export function useTileStates() {
     let message = '';
 
     if (isFocused && !isTokenPending && !isCheckTokenInProgress) {
-      if (isTokenExpired) {
+      if (tokenData?.isTokenExpired) {
         message = DisabledTileMessage.LoggedOut;
-      } else if (isPasswordExpired) {
+      } else if (tokenData?.isPasswordExpired) {
         message = DisabledTileMessage.PasswordExpired;
       } else if (!isInternetReachable) {
         message = DisabledTileMessage.Offline;
@@ -87,9 +86,9 @@ export function useTileStates() {
     let message = '';
 
     if (isFocused && !isTokenPending && !isCheckTokenInProgress) {
-      if (isTokenExpired) {
+      if (tokenData?.isTokenExpired) {
         message = DisabledTileMessage.LoggedOut;
-      } else if (isPasswordExpired) {
+      } else if (tokenData?.isPasswordExpired) {
         message = DisabledTileMessage.PasswordExpired;
       } else if (!isInternetReachable) {
         message = DisabledTileMessage.Offline;
@@ -140,9 +139,9 @@ export function useTileStates() {
     let message = '';
 
     if (isFocused && !isTokenPending && !isCheckTokenInProgress) {
-      if (isTokenExpired) {
+      if (tokenData?.isTokenExpired) {
         message = DisabledTileMessage.LoggedOut;
-      } else if (isPasswordExpired) {
+      } else if (tokenData?.isPasswordExpired) {
         message = DisabledTileMessage.PasswordExpired;
       } else if (!isInternetReachable) {
         message = DisabledTileMessage.Offline;
