@@ -11,6 +11,7 @@ import { ReviewStorageChanges } from '../screens/storage/review/ReviewStorageCha
 import { ScanBarCodeInStorage } from '../screens/storage/select-items/ScanBarCodeInStorage';
 import { SelectItemsFromStore } from '../screens/storage/select-items/SelectItemsFromStore';
 import { SelectStore } from '../screens/storage/select-store/SelectStore';
+import { StorageChangesSummary } from '../screens/storage/summary/StorageChangesSummary';
 import { type StackParams } from './screen-types';
 
 const Stack = createNativeStackNavigator<StackParams>();
@@ -73,12 +74,12 @@ export function MainStack() {
         component={ReviewStorageChanges}
         options={{ headerTitle: 'Áttekintés' }}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="StorageChangesSummary"
         component={StorageChangesSummary}
-        options={{ headerLeft: null, headerTitle: 'Összegzés' }}
+        options={{ headerLeft: undefined, headerTitle: 'Összegzés' }}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="StartErrand"
         component={StartErrand}
         options={{

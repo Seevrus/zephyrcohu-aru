@@ -3,22 +3,21 @@ import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useDeselectStore } from '../../../api/mutations/useDeselectStore';
-import { useCheckToken } from '../../../api/queries/checkTokenAtom';
 import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
 import { colors } from '../../../constants/colors';
 import { fontSizes } from '../../../constants/fontSizes';
 import { type StorageChangesSummaryProps } from '../../../navigators/screen-types';
-import { useStorageFlowContext } from '../../../providers/StorageFlowProvider';
-import { useStorageContext } from '../../../providers/StorageProvider';
 import { createPrint } from './createPrint';
+import { useAtomValue } from 'jotai';
+import { checkTokenAtom } from '../../../api/queries/checkTokenAtom';
 
 export function StorageChangesSummary({
   navigation,
 }: StorageChangesSummaryProps) {
-  const { data: user, isPending: isUserPending } = useCheckToken();
+  const { data: user, isPending: isUserPending } = useAtomValue(checkTokenAtom);
   const { mutateAsync: deselectStore } = useDeselectStore();
-  const {
+  /*   const {
     isPending: isStorageContextPending,
     originalStorage,
     clearStorageFromContext,
@@ -27,7 +26,9 @@ export function StorageChangesSummary({
     isPending: isStorageFlowContextPending,
     items,
     resetStorageFlowContext,
-  } = useStorageFlowContext();
+  } = useStorageFlowContext(); */
+
+  const sto;
 
   const receiptItems = useMemo(
     () =>

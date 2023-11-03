@@ -1,7 +1,8 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { format, parseISO } from 'date-fns';
 import { useAtom, useAtomValue } from 'jotai';
-import { assocPath, isEmpty, isNil } from 'ramda';
-import { Suspense, useCallback, useEffect, useMemo } from 'react';
+import { isNil } from 'ramda';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Animated,
   Pressable,
@@ -10,18 +11,15 @@ import {
   type ListRenderItemInfo,
 } from 'react-native';
 
+import { itemsAtom } from '../../../api/queries/itemsAtom';
 import {
   primaryStoreAtom,
   selectedStoreAtom,
   selectedStoreInitialStateAtom,
 } from '../../../atoms/storage';
 import {
-  searchStateAtom,
   storageListItemsAtom,
   type StorageListItem,
-  primaryStoreExpirationsAtom,
-  originalStorageExpirationsAtom,
-  storageExpirationsAtom,
 } from '../../../atoms/storageFlow';
 import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
@@ -29,8 +27,6 @@ import { Input } from '../../../components/ui/Input';
 import { colors } from '../../../constants/colors';
 import { type SelectItemsFromStoreProps } from '../../../navigators/screen-types';
 import { ExpirationAccordionDetails } from './ExpirationAccordionDetails';
-import { itemsAtom } from '../../../api/queries/itemsAtom';
-import { format, parseISO } from 'date-fns';
 
 const keyExtractor = (item: StorageListItem) => String(item.expirationId);
 
@@ -42,7 +38,6 @@ function SuspendedSelectItemsFromStore({
   const { data: items, isPending: isItemsPending } = useAtomValue(itemsAtom);
 
   const [storageListItems, setStorageListItems] = useAtom(storageListItemsAtom);
-  const [searchState, setSearchState] = useAtom(searchStateAtom);
 
   const isAnyItemChanged = useMemo(
     () =>
@@ -53,106 +48,59 @@ function SuspendedSelectItemsFromStore({
   );
 
   const primaryStoreDetails = useAtomValue(primaryStoreAtom);
-  const [primaryStoreExpirations, setPrimaryStoreExpirations] = useAtom(
-    primaryStoreExpirationsAtom
-  );
-
-  const selectedStoreOriginalDetails = useAtomValue(
-    selectedStoreInitialStateAtom
-  );
-  const [originalStorageExpirations, setOriginalStorageExpirations] = useAtom(
-    originalStorageExpirationsAtom
-  );
-
+  const selectedStoreInitialState = useAtomValue(selectedStoreInitialStateAtom);
   const selectedStoreDetails = useAtomValue(selectedStoreAtom);
-  const [storageExpirations, setStorageExpirations] = useAtom(
-    storageExpirationsAtom
-  );
+
+  const [searchState, setSearchState] = useState({
+    searchTerm: '',
+    barCode: '',
+  });
 
   useEffect(() => {
     if (!isNil(scannedBarCode) && searchState.barCode !== scannedBarCode) {
       setSearchState({ searchTerm: '', barCode: scannedBarCode });
       navigation.setParams({ scannedBarCode: undefined });
     }
-  }, [navigation, scannedBarCode, searchState.barCode, setSearchState]);
-
-  useEffect(() => {
-    setPrimaryStoreExpirations((prevExpirations) => {
-      if (!isEmpty(prevExpirations) || isNil(primaryStoreDetails))
-        return prevExpirations;
-
-      const expirations: Record<number, Record<number, number>> = {};
-
-      primaryStoreDetails.expirations?.forEach((expiration) => {
-        if (!expirations[expiration.itemId]) {
-          expirations[expiration.itemId] = {};
-        }
-        expirations[expiration.itemId][expiration.expirationId] =
-          expiration.quantity;
-      });
-
-      return expirations;
-    });
-  }, [primaryStoreDetails, setPrimaryStoreExpirations]);
-
-  useEffect(() => {
-    setOriginalStorageExpirations((prevExpirations) => {
-      if (!isEmpty(prevExpirations) || isNil(selectedStoreOriginalDetails))
-        return prevExpirations;
-
-      const originalExpirations: Record<number, Record<number, number>> = {};
-
-      selectedStoreOriginalDetails.expirations?.forEach((expiration) => {
-        if (!originalExpirations[expiration.itemId]) {
-          originalExpirations[expiration.itemId] = {};
-        }
-        originalExpirations[expiration.itemId][expiration.expirationId] =
-          expiration.quantity;
-      });
-
-      return originalExpirations;
-    });
-  }, [selectedStoreOriginalDetails, setOriginalStorageExpirations]);
-
-  useEffect(() => {
-    setStorageExpirations((prevExpirations) => {
-      if (!isEmpty(prevExpirations) || isNil(selectedStoreDetails))
-        return prevExpirations;
-
-      const expirations: Record<number, Record<number, number>> = {};
-
-      selectedStoreDetails.expirations?.forEach((expiration) => {
-        if (!expirations[expiration.itemId]) {
-          expirations[expiration.itemId] = {};
-        }
-        expirations[expiration.itemId][expiration.expirationId] =
-          expiration.quantity;
-      });
-
-      return expirations;
-    });
-  }, [selectedStoreDetails, setStorageExpirations]);
+  }, [navigation, scannedBarCode, searchState.barCode]);
 
   useEffect(() => {
     setStorageListItems(
-      (items ?? [])
-        .flatMap<StorageListItem>((item) =>
-          item.expirations.map((expiration) => ({
-            itemId: item.id,
-            expirationId: expiration.id,
-            articleNumber: item.articleNumber,
-            name: item.name,
-            expiresAt: format(parseISO(expiration.expiresAt), 'yyyy-MM'),
-            itemBarcode: item.barcode ?? '',
-            expirationBarcode: expiration.barcode ?? '',
-            unitName: item.unitName,
-            primaryStoreQuantity:
-              primaryStoreExpirations[item.id]?.[expiration.id],
-            originalQuantity:
-              originalStorageExpirations[item.id]?.[expiration.id],
-            currentQuantity: storageExpirations[item.id]?.[expiration.id],
-          }))
-        )
+      (items ?? []).flatMap<StorageListItem>((item) =>
+        item.expirations.map((expiration) => ({
+          itemId: item.id,
+          expirationId: expiration.id,
+          articleNumber: item.articleNumber,
+          name: item.name,
+          expiresAt: format(parseISO(expiration.expiresAt), 'yyyy-MM'),
+          itemBarcode: item.barcode ?? '',
+          expirationBarcode: expiration.barcode ?? '',
+          unitName: item.unitName,
+          primaryStoreQuantity: primaryStoreDetails?.expirations.find(
+            (exp) =>
+              exp.itemId === item.id && exp.expirationId === expiration.id
+          )?.quantity,
+          originalQuantity: selectedStoreInitialState?.expirations.find(
+            (exp) =>
+              exp.itemId === item.id && exp.expirationId === expiration.id
+          )?.quantity,
+          currentQuantity: selectedStoreDetails?.expirations.find(
+            (exp) =>
+              exp.itemId === item.id && exp.expirationId === expiration.id
+          )?.quantity,
+        }))
+      )
+    );
+  }, [
+    items,
+    primaryStoreDetails?.expirations,
+    selectedStoreDetails?.expirations,
+    selectedStoreInitialState?.expirations,
+    setStorageListItems,
+  ]);
+
+  const itemsToShow = useMemo(
+    () =>
+      (storageListItems ?? [])
         .filter(
           (item) =>
             `${item.name.toLowerCase()}${item.expiresAt}`.includes(
@@ -163,46 +111,23 @@ function SuspendedSelectItemsFromStore({
             )
         )
         .sort((itemA, itemB) => itemA.name.localeCompare(itemB.name, 'HU-hu'))
-    );
-  }, [
-    items,
-    originalStorageExpirations,
-    primaryStoreExpirations,
-    searchState.barCode,
-    searchState.searchTerm,
-    setStorageListItems,
-    storageExpirations,
-  ]);
+        .slice(0, 10),
+    [searchState.barCode, searchState.searchTerm, storageListItems]
+  );
 
   const setCurrentQuantity = useCallback(
-    (item: StorageListItem, newCurrentQuantity: number | null) => {
-      const currentPrimaryStoreQuantity =
-        primaryStoreExpirations[item.itemId]?.[item.expirationId] ?? 0;
-      const currentQuantity =
-        storageExpirations[item.itemId]?.[item.expirationId] ?? 0;
-
-      const difference = (newCurrentQuantity || 0) - currentQuantity;
-
-      setPrimaryStoreExpirations(
-        assocPath(
-          [item.itemId, item.expirationId],
-          currentPrimaryStoreQuantity - difference
-        )
-      );
-
-      setStorageExpirations(
-        assocPath(
-          [item.itemId, item.expirationId],
-          currentQuantity + difference
-        )
+    (itemToSet: StorageListItem, newCurrentQuantity: number | null) => {
+      setStorageListItems(
+        (prevItems) =>
+          prevItems?.map((item) =>
+            item.itemId === itemToSet.itemId &&
+            item.expirationId === itemToSet.expirationId
+              ? { ...item, currentQuantity: newCurrentQuantity ?? 0 }
+              : item
+          )
       );
     },
-    [
-      primaryStoreExpirations,
-      setPrimaryStoreExpirations,
-      setStorageExpirations,
-      storageExpirations,
-    ]
+    [setStorageListItems]
   );
 
   const renderItem = (info: ListRenderItemInfo<StorageListItem>) => (
@@ -262,7 +187,7 @@ function SuspendedSelectItemsFromStore({
       </View>
       <View style={styles.listContainer}>
         <Animated.FlatList
-          data={(storageListItems ?? []).slice(0, 10)}
+          data={itemsToShow}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
         />

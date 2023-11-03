@@ -1,6 +1,6 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useAtomValue } from 'jotai';
-import { useMemo, useState } from 'react';
+import { Suspense, useCallback, useMemo, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -9,6 +9,7 @@ import {
   type ListRenderItemInfo,
 } from 'react-native';
 
+import { useSaveSelectedItems } from '../../../api/mutations/useSaveSelectedItems';
 import {
   storageListItemsAtom,
   type StorageListItem,
@@ -23,10 +24,13 @@ import { ReviewExpirationItem } from './ReviewExpirationItem';
 
 const keyExtractor = (item: StorageListItem) => String(item.expirationId);
 
-export function ReviewStorageChanges({
+function SuspendedReviewStorageChanges({
   navigation,
 }: ReviewStorageChangesProps) {
   const { isInternetReachable } = useNetInfo();
+
+  const { mutateAsync: saveSelectedItems } = useSaveSelectedItems();
+
   const storageListItems = useAtomValue(storageListItemsAtom);
 
   const changedItems = useMemo(
@@ -39,6 +43,26 @@ export function ReviewStorageChanges({
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
+
+  const handleSendChanges = useCallback(async () => {
+    try {
+      if (storageListItems) {
+        setIsLoading(true);
+
+        if (changedItems.length > 0) {
+          await saveSelectedItems(changedItems);
+        }
+
+        navigation.reset({
+          index: 1,
+          routes: [{ name: 'StorageChangesSummary' }],
+        });
+      }
+    } catch {
+      setIsLoading(false);
+      setIsError(true);
+    }
+  }, [changedItems, navigation, saveSelectedItems, storageListItems]);
 
   if (isLoading) {
     return <Loading />;
@@ -56,22 +80,7 @@ export function ReviewStorageChanges({
         { text: 'Mégse' },
         {
           text: 'Folytatás',
-          onPress: async () => {
-            try {
-              setIsLoading(true);
-              setIsError(false);
-
-              await handleSendChanges();
-
-              navigation.reset({
-                index: 1,
-                routes: [{ name: 'StorageChangesSummary' }],
-              });
-            } catch {
-              setIsError(true);
-              setIsLoading(false);
-            }
-          },
+          onPress: handleSendChanges,
         },
       ]
     );
@@ -111,6 +120,14 @@ export function ReviewStorageChanges({
         </View>
       </View>
     </View>
+  );
+}
+
+export function ReviewStorageChanges(props: ReviewStorageChangesProps) {
+  return (
+    <Suspense>
+      <SuspendedReviewStorageChanges {...props} />
+    </Suspense>
   );
 }
 

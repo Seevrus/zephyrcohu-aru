@@ -1,24 +1,25 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { useAtomValue } from 'jotai';
 
+import { type StorageListItem } from '../../atoms/storageFlow';
 import env from '../../env.json';
-import { type ListItem } from '../../providers/StorageFlowProvider';
-import { useStores } from '../queries/storesAtom';
-import { useToken } from '../queries/tokenAtom';
+import { storesAtom } from '../queries/storesAtom';
+import { tokenAtom } from '../queries/tokenAtom';
 import { mapSaveSelectedItemsRequest } from '../request-mappers/mapSaveSelectedItemsRequest';
 import { type StoreDetailsResponseType } from '../response-types/StoreDetailsResponseType';
 
 export function useSaveSelectedItems() {
   const queryClient = useQueryClient();
-  const { data: stores } = useStores();
+  const { data: stores } = useAtomValue(storesAtom);
 
   const primaryStoreId = stores?.find((store) => store.type === 'P')?.id;
 
-  const { data: { token } = {} } = useToken();
+  const { data: tokenData } = useAtomValue(tokenAtom);
 
   return useMutation({
     mutationKey: ['save-selected-items'],
-    mutationFn: async (changedItems: ListItem[]) => {
+    mutationFn: async (changedItems: StorageListItem[]) => {
       try {
         if (!primaryStoreId) {
           throw new Error('Elsődleges raktár nem található!');
@@ -35,7 +36,7 @@ export function useSaveSelectedItems() {
           {
             headers: {
               Accept: 'application/json',
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${tokenData?.token}`,
             },
           }
         );

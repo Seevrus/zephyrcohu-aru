@@ -14,21 +14,6 @@ export type StorageListItem = {
   currentQuantity: number | undefined;
 };
 
-export const primaryStoreExpirationsAtom = atom<
-  Record<number, Record<number, number>>
->({});
-export const originalStorageExpirationsAtom = atom<
-  Record<number, Record<number, number>>
->({});
-export const storageExpirationsAtom = atom<
-  Record<number, Record<number, number>>
->({});
-
-export const searchStateAtom = atom({
-  searchTerm: '',
-  barCode: '',
-});
-
 export const isStorageSavedToApiAtom = atom(false);
 
 export const storageListItemsAtom = atom<StorageListItem[] | undefined>(
