@@ -213,8 +213,8 @@ export function createPrint({
   user,
 }: {
   receiptItems: ListItem[];
-  storeDetails: StoreDetailsResponseData;
-  user: CheckToken;
+  storeDetails: StoreDetailsResponseData | null;
+  user: CheckToken | undefined;
 }) {
   const header = `
     <header>
@@ -226,11 +226,11 @@ export function createPrint({
       </div>
       <div class="contestants">
         <div>Rakodta:</div>
-        <div>${user.code}</div>
-        <div>${user.name}</div>
+        <div>${user?.code}</div>
+        <div>${user?.name}</div>
         <div>Raktár:</div>
-        <div>${storeDetails.code}</div>
-        <div>${storeDetails.name}</div>
+        <div>${storeDetails?.code}</div>
+        <div>${storeDetails?.name}</div>
       </div>
     </header>
   `;
@@ -276,13 +276,14 @@ export function createPrint({
     const itemsSummary = receiptItems.reduce(
       (prev, item) => {
         const quantityChange =
-          (item.currentQuantity || 0) - (item.originalQuantity || 0);
+          (item.currentQuantity ?? 0) - (item.originalQuantity ?? 0);
 
         return {
-          originalQuantity: prev.originalQuantity + item.originalQuantity,
+          originalQuantity:
+            prev.originalQuantity + (item.originalQuantity ?? 0),
           in: quantityChange > 0 ? prev.in + quantityChange : prev.in,
           out: quantityChange < 0 ? prev.out + quantityChange : prev.out,
-          currentQuantity: prev.currentQuantity + item.currentQuantity,
+          currentQuantity: prev.currentQuantity + (item.currentQuantity ?? 0),
         };
       },
       {
@@ -316,9 +317,10 @@ export function createPrint({
           <div>Ellenőrizte</div>
         </div>
       </div>
-      <div class="end-delimiter">|> ${format(new Date(), 'yyyy.MM.dd.')} | ${
-        user.code
-      } | ${user.name} <|</div>
+      <div class="end-delimiter">|> ${format(
+        new Date(),
+        'yyyy.MM.dd.'
+      )} | ${user?.code} | ${user?.name} <|</div>
     </footer>
   `;
 

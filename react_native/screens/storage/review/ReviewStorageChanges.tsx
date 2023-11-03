@@ -1,5 +1,5 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { Suspense, useCallback, useMemo, useState } from 'react';
 import {
   Alert,
@@ -11,6 +11,7 @@ import {
 
 import { useSaveSelectedItems } from '../../../api/mutations/useSaveSelectedItems';
 import {
+  isStorageSavedToApiAtom,
   storageListItemsAtom,
   type StorageListItem,
 } from '../../../atoms/storageFlow';
@@ -30,6 +31,7 @@ function SuspendedReviewStorageChanges({
   const { isInternetReachable } = useNetInfo();
 
   const { mutateAsync: saveSelectedItems } = useSaveSelectedItems();
+  const [, setIsStorageSavedToApi] = useAtom(isStorageSavedToApiAtom);
 
   const storageListItems = useAtomValue(storageListItemsAtom);
 
@@ -53,6 +55,8 @@ function SuspendedReviewStorageChanges({
           await saveSelectedItems(changedItems);
         }
 
+        setIsStorageSavedToApi(true);
+
         navigation.reset({
           index: 1,
           routes: [{ name: 'StorageChangesSummary' }],
@@ -62,7 +66,13 @@ function SuspendedReviewStorageChanges({
       setIsLoading(false);
       setIsError(true);
     }
-  }, [changedItems, navigation, saveSelectedItems, storageListItems]);
+  }, [
+    changedItems,
+    navigation,
+    saveSelectedItems,
+    setIsStorageSavedToApi,
+    storageListItems,
+  ]);
 
   if (isLoading) {
     return <Loading />;

@@ -1,60 +1,81 @@
+import { useNetInfo } from '@react-native-community/netinfo';
 import * as Print from 'expo-print';
-import { useMemo } from 'react';
+import { Suspense, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { useAtom, useAtomValue } from 'jotai';
 import { useDeselectStore } from '../../../api/mutations/useDeselectStore';
+import { checkTokenAtom } from '../../../api/queries/checkTokenAtom';
+import {
+  primaryStoreAtom,
+  selectedStoreAtom,
+  selectedStoreInitialStateAtom,
+} from '../../../atoms/storage';
+import {
+  isStorageSavedToApiAtom,
+  storageListItemsAtom,
+} from '../../../atoms/storageFlow';
 import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
 import { colors } from '../../../constants/colors';
 import { fontSizes } from '../../../constants/fontSizes';
 import { type StorageChangesSummaryProps } from '../../../navigators/screen-types';
 import { createPrint } from './createPrint';
-import { useAtomValue } from 'jotai';
-import { checkTokenAtom } from '../../../api/queries/checkTokenAtom';
 
-export function StorageChangesSummary({
+function SuspendedStorageChangesSummary({
   navigation,
 }: StorageChangesSummaryProps) {
+  const { isInternetReachable } = useNetInfo();
+
   const { data: user, isPending: isUserPending } = useAtomValue(checkTokenAtom);
   const { mutateAsync: deselectStore } = useDeselectStore();
-  /*   const {
-    isPending: isStorageContextPending,
-    originalStorage,
-    clearStorageFromContext,
-  } = useStorageContext();
-  const {
-    isPending: isStorageFlowContextPending,
-    items,
-    resetStorageFlowContext,
-  } = useStorageFlowContext(); */
 
-  const sto;
+  const [, setPrimaryStore] = useAtom(primaryStoreAtom);
+  const [selectedStoreInitialState, setSelectedStoreInitialState] = useAtom(
+    selectedStoreInitialStateAtom
+  );
+  const [, setSelectedStore] = useAtom(selectedStoreAtom);
+
+  const [, setIsStorageSavedToApi] = useAtom(isStorageSavedToApiAtom);
+  const [storageListItems, setStorageListItems] = useAtom(storageListItemsAtom);
 
   const receiptItems = useMemo(
     () =>
-      (items ?? []).filter(
+      (storageListItems ?? []).filter(
         (item) => !!item.originalQuantity || !!item.currentQuantity
       ),
-    [items]
+    [storageListItems]
   );
 
   const printButtonHandler = async () => {
     await Print.printAsync({
-      html: createPrint({ receiptItems, storeDetails: originalStorage, user }),
+      html: createPrint({
+        receiptItems,
+        storeDetails: selectedStoreInitialState,
+        user,
+      }),
     });
   };
 
   const returnButtonHandler = async () => {
     await deselectStore();
-    clearStorageFromContext();
-    resetStorageFlowContext();
+
+    setPrimaryStore(null);
+    setSelectedStoreInitialState(null);
+    setSelectedStore(null);
+
+    setIsStorageSavedToApi(false);
+    setStorageListItems(undefined);
+
     navigation.replace('Index');
   };
 
-  const isPrintEnabled = !!user && !!originalStorage && !!items;
+  const isPrintEnabled = !!user && !!selectedStoreInitialState;
   const printButtonVariant = isPrintEnabled ? 'ok' : 'disabled';
+  const returnButtonVariant =
+    isInternetReachable === true ? 'warning' : 'disabled';
 
-  if (isUserPending || isStorageContextPending || isStorageFlowContextPending) {
+  if (isUserPending) {
     return <Loading />;
   }
 
@@ -75,11 +96,19 @@ export function StorageChangesSummary({
         későbbiekben nyomtatásra már nem lesz lehetőség!
       </Text>
       <View style={styles.buttonContainer}>
-        <Button variant="warning" onPress={returnButtonHandler}>
+        <Button variant={returnButtonVariant} onPress={returnButtonHandler}>
           Visszatérés a kezdőképernyőre
         </Button>
       </View>
     </View>
+  );
+}
+
+export function StorageChangesSummary(props: StorageChangesSummaryProps) {
+  return (
+    <Suspense>
+      <SuspendedStorageChangesSummary {...props} />
+    </Suspense>
   );
 }
 
