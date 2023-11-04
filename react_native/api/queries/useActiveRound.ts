@@ -1,43 +1,24 @@
+import { useNetInfo } from '@react-native-community/netinfo';
+import { useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
 
 import env from '../../env.json';
 import { mapRoundsResponse } from '../response-mappers/mapRoundsResponse';
 import { type RoundsResponseType } from '../response-types/ActiveRoundResponseType';
 import { type RoundType } from '../response-types/common/RoundType';
+import { useCheckToken } from './useCheckToken';
+import { useToken } from './useToken';
 
-/* const [, activeRoundAtom] = atomsWithQueryAsync(async (get) => {
-  const isInternetReachable = await get(netInfoAtom);
-  const { data: user, isSuccess: isCheckTokenSuccess } =
-    await get(checkTokenAtom);
-  const { isSuccess: isTokenSuccess, data: tokenData } = get(tokenAtom);
+export function useActiveRound() {
+  const { isInternetReachable } = useNetInfo();
+  const { data: user, isSuccess: isCheckTokenSuccess } = useCheckToken();
+  const { isSuccess: isTokenSuccess, data: tokenData } = useToken();
 
   const isRoundStarted = user?.state === 'R';
 
-  return {
+  return useQuery({
     queryKey: ['active-round'],
-    queryFn: async (): Promise<RoundType> => {
-      try {
-        const response = await axios.get<RoundsResponseType>(
-          `${env.api_url}/rounds`,
-          {
-            headers: {
-              Accept: 'application/json',
-              Authorization: `Bearer ${tokenData?.token}`,
-            },
-          }
-        );
-
-        return mapRoundsResponse(response.data);
-      } catch (error) {
-        if (isAxiosError(error)) {
-          // eslint-disable-next-line no-console
-          console.log('useActiveRound:', error.response?.data);
-        }
-        throw new Error(
-          'Váratlan hiba lépett fel a kör adatainak lekérése során.'
-        );
-      }
-    },
+    queryFn: fetchActiveRound(tokenData?.token as string),
     enabled:
       isInternetReachable === true &&
       isTokenSuccess &&
@@ -46,8 +27,8 @@ import { type RoundType } from '../response-types/common/RoundType';
       !!tokenData.token &&
       isCheckTokenSuccess &&
       isRoundStarted,
-  };
-}); */
+  });
+}
 
 export const fetchActiveRound =
   (token: string) => async (): Promise<RoundType | undefined> => {

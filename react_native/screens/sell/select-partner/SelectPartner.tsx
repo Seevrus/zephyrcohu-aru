@@ -1,19 +1,19 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNetInfo } from '@react-native-community/netinfo';
+import { useAtom } from 'jotai';
 import {
   allPass,
   complement,
   filter,
   includes,
-  isNil,
-  not,
+  isNotNil,
   pipe,
   prepend,
-  prop,
+  sort,
   take,
   when,
 } from 'ramda';
-import { useEffect, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   FlatList,
   Pressable,
@@ -23,93 +23,156 @@ import {
   type ListRenderItemInfo,
 } from 'react-native';
 
-import { type Partners } from '../../../api/response-mappers/mapPartnersResponse';
+import { useActiveRound } from '../../../api/queries/useActiveRound';
+import { usePartnerLists } from '../../../api/queries/usePartnerLists';
+import { usePartners } from '../../../api/queries/usePartners';
+import {
+  type Partner,
+  type Partners,
+} from '../../../api/response-mappers/mapPartnersResponse';
+import { currentReceiptAtom } from '../../../atoms/receipts';
+import { selectedPartnerAtom } from '../../../atoms/sell-flow/partners';
 import { Loading } from '../../../components/Loading';
 import { Input } from '../../../components/ui/Input';
 import { colors } from '../../../constants/colors';
 import {
-  type PartnerList,
+  PartnerList,
   type SelectPartnerProps,
 } from '../../../navigators/screen-types';
-import { useSellFlowContext } from '../../../providers/SellFlowProvider';
 import { Selection } from './Selection';
 
 const NUM_PARTNERS_SHOWN = 10;
 
 export function SelectPartner({ route, navigation }: SelectPartnerProps) {
   const { isInternetReachable } = useNetInfo();
-  const {
+
+  const { data: activeRound, isPending: isActiveRoundPending } =
+    useActiveRound();
+  const { data: partnerLists, isPending: isPartnerListsPending } =
+    usePartnerLists();
+  const { data: partners, isPending: isPartnersPending } = usePartners();
+  /* const {
     isPending: isContextPending,
     partners,
     selectedPartner,
     selectPartner,
     saveSelectedPartnerInFlow,
-  } = useSellFlowContext();
+  } = useSellFlowContext(); */
+
+  const [, setCurrentReceipt] = useAtom(currentReceiptAtom);
+  const [selectedPartner, setSelectedPartner] = useAtom(selectedPartnerAtom);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [searchInputValue, setSearchInputValue] = useState<string>('');
 
   const partnerListType = route.params.partners;
-  const [partnersShown, setPartnersShown] = useState<Partners>(null);
 
-  useEffect(() => {
-    setPartnersShown((prevPartnersShown) => {
-      if (!isNil(prevPartnersShown) || !partners) {
-        return prevPartnersShown;
-      }
+  const currentPartnerList = useMemo(
+    () =>
+      partnerLists?.find(
+        (partnerList) => partnerList.id === activeRound?.partnerListId
+      ),
+    [activeRound?.partnerListId, partnerLists]
+  );
 
-      return pipe(
-        prop(partnerListType),
-        take(NUM_PARTNERS_SHOWN),
-        when<Partners, Partners>(
-          allPass([
-            () => not(isNil(selectedPartner)),
-            complement(includes(selectedPartner)),
-          ]),
-          prepend(selectedPartner)
-        )
-      )(partners);
-    });
-  }, [partnerListType, partners, selectedPartner]);
-
-  const searchInputHandler = (inputValue: string) => {
-    setPartnersShown(
-      pipe<
-        [Record<PartnerList, Partners>],
-        Partners,
-        Partners,
-        Partners,
-        Partners
-      >(
-        prop(partnerListType),
-        filter<Partners[number]>((partner) => {
-          const needle = inputValue.toLocaleLowerCase();
-          const haystack = Object.values(partner.locations)
-            .map(
-              (location) =>
-                `${location.name}${location.city}${location.address}`
+  const partnersShown: Partners = useMemo(
+    () =>
+      pipe(
+        when(
+          () => partnerListType === PartnerList.STORE,
+          filter<Partner>(
+            (partner) => !!currentPartnerList?.partners?.includes(partner.id)
+          )
+        ),
+        sort<Partner>(
+          (partner1, partner2) =>
+            partner1.locations?.D?.name.localeCompare(
+              partner2.locations?.D?.name,
+              'HU-hu'
             )
-            .join('');
+        ),
+        when<Partners, Partners>(
+          () => !!searchInputValue,
+          filter<Partner>((partner) => {
+            const needle = searchInputValue.toLocaleLowerCase();
+            const haystack = Object.values(partner.locations)
+              .map(
+                (location) =>
+                  `${location.name}${location.city}${location.address}`
+              )
+              .join('');
 
-          return haystack.toLocaleLowerCase().includes(needle);
-        }),
-        take(NUM_PARTNERS_SHOWN),
+            return haystack.toLocaleLowerCase().includes(needle);
+          })
+        ),
+        (partners) => take<Partner>(NUM_PARTNERS_SHOWN, partners),
         when<Partners, Partners>(
           allPass([
-            () => not(isNil(selectedPartner)),
+            () => isNotNil(selectedPartner),
             complement(includes(selectedPartner)),
           ]),
-          prepend(selectedPartner)
+          prepend(selectedPartner as Partner)
         )
-      )(partners)
-    );
-  };
+      )(partners ?? []),
+    [
+      currentPartnerList?.partners,
+      partnerListType,
+      partners,
+      searchInputValue,
+      selectedPartner,
+    ]
+  );
 
-  const confirmPartnerHandler = async () => {
-    setIsLoading(true);
-    await saveSelectedPartnerInFlow();
-    setIsLoading(false);
-    navigation.replace('SelectItemsToSell');
-  };
+  const selectPartnerHandler = useCallback(
+    (partnerId: string | number) => {
+      setSelectedPartner(
+        partners?.find((partner) => partner.id === +partnerId) ?? null
+      );
+    },
+    [partners, setSelectedPartner]
+  );
+
+  const confirmPartnerHandler = useCallback(async () => {
+    if (selectedPartner) {
+      setIsLoading(true);
+
+      setCurrentReceipt({
+        partnerId: selectedPartner.id,
+        partnerCode: selectedPartner.code,
+        partnerSiteCode: selectedPartner.siteCode,
+        buyer: {
+          id: selectedPartner.id,
+          name:
+            selectedPartner.locations.C?.name ??
+            selectedPartner.locations.D?.name,
+          country:
+            selectedPartner.locations.C?.country ??
+            selectedPartner.locations.D?.country,
+          postalCode:
+            selectedPartner.locations.C?.postalCode ??
+            selectedPartner.locations.D?.postalCode,
+          city:
+            selectedPartner.locations.C?.city ??
+            selectedPartner.locations.D?.city,
+          address:
+            selectedPartner.locations.C?.address ??
+            selectedPartner.locations.D?.address,
+          deliveryName: selectedPartner.locations.D?.name,
+          deliveryCountry: selectedPartner.locations.D?.country,
+          deliveryPostalCode: selectedPartner.locations.D?.postalCode,
+          deliveryCity: selectedPartner.locations.D?.city,
+          deliveryAddress: selectedPartner.locations.D?.address,
+          iban: selectedPartner.iban,
+          bankAccount: selectedPartner.bankAccount,
+          vatNumber: selectedPartner.vatNumber,
+        },
+        paymentDays: selectedPartner.paymentDays,
+        invoiceType: selectedPartner.invoiceType,
+      });
+
+      navigation.replace('SelectItemsToSell');
+    }
+  }, [navigation, selectedPartner, setCurrentReceipt]);
 
   const renderPartner: ListRenderItem<Partners[number]> = (
     info: ListRenderItemInfo<Partners[number]>
@@ -117,12 +180,17 @@ export function SelectPartner({ route, navigation }: SelectPartnerProps) {
     <Selection
       item={info.item}
       selected={info.item.id === selectedPartner?.id}
-      onSelect={selectPartner}
+      onSelect={selectPartnerHandler}
       onConfirmSelection={confirmPartnerHandler}
     />
   );
 
-  if (isLoading || isContextPending) {
+  if (
+    isLoading ||
+    isActiveRoundPending ||
+    isPartnerListsPending ||
+    isPartnersPending
+  ) {
     return <Loading />;
   }
 
@@ -134,7 +202,7 @@ export function SelectPartner({ route, navigation }: SelectPartnerProps) {
             label="Keresés"
             labelPosition="left"
             config={{
-              onChangeText: searchInputHandler,
+              onChangeText: setSearchInputValue,
             }}
           />
           <Pressable

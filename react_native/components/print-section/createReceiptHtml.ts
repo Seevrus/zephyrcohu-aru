@@ -3,7 +3,7 @@ import { propOr, repeat, take, takeLast } from 'ramda';
 import { type ReceiptOtherItem } from '../../api/request-types/common/ReceiptItemsTypes';
 import { type ReceiptVatAmount } from '../../api/request-types/common/ReceiptVatAmount';
 import { type CheckToken } from '../../api/response-mappers/mapCheckTokenResponse';
-import { type Partners } from '../../api/response-mappers/mapPartnersResponse';
+import { type Partner } from '../../api/response-mappers/mapPartnersResponse';
 import {
   type ContextReceipt,
   type ContextReceiptItem,
@@ -416,9 +416,9 @@ export function createReceiptHtml({
   receipt,
   partner,
 }: {
-  user: CheckToken;
+  user: CheckToken | undefined;
   receipt: ContextReceipt;
-  partner: Partners[number];
+  partner: Partner;
 }) {
   const originalOrCopy =
     receipt.invoiceType === 'E' ||
@@ -485,8 +485,8 @@ export function createReceiptHtml({
 
   const agent = `
     <section class="agent">
-      <div class="agent-name">Üzletkötő: ${user.name}</div>
-      <div class="agent-phone">${user.phoneNumber ?? ''}</div>
+      <div class="agent-name">Üzletkötő: ${user?.name}</div>
+      <div class="agent-phone">${user?.phoneNumber ?? ''}</div>
     </section>
   `;
 

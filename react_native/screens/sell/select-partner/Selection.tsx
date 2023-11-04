@@ -2,7 +2,7 @@ import { equals } from 'ramda';
 import { memo, useState } from 'react';
 import { type LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
 
-import { type Partners } from '../../../api/response-mappers/mapPartnersResponse';
+import { type Partner } from '../../../api/response-mappers/mapPartnersResponse';
 import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';
 import { Button } from '../../../components/ui/Button';
 import { LabeledItem } from '../../../components/ui/LabeledItem';
@@ -11,9 +11,9 @@ import { fontSizes } from '../../../constants/fontSizes';
 
 type SelectionProps = {
   selected: boolean;
-  item: Partners[number];
-  onSelect: (id: number) => void;
-  onConfirmSelection: (id: number) => void;
+  item: Partner;
+  onSelect: (id: string | number) => void;
+  onConfirmSelection: (id: string | number) => void;
 };
 
 function _Selection({

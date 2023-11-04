@@ -20,17 +20,13 @@ type AnimatedListItemProps = {
   onSelect?: (id: string | number) => void;
 };
 
-const defaultProps = {
-  onSelect: () => {},
-};
-
 export function AnimatedListItem({
   id,
   expandedInitially,
   title,
   height,
   backgroundColor,
-  onSelect,
+  onSelect = () => {},
   children,
 }: PropsWithChildren<AnimatedListItemProps>) {
   const [expanded, setExpanded] = useState<boolean>(expandedInitially);
@@ -76,7 +72,6 @@ export function AnimatedListItem({
     </View>
   );
 }
-AnimatedListItem.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
   childContainer: {

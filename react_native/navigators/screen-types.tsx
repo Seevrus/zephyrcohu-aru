@@ -24,9 +24,11 @@ export type StackParams = {
   StorageChangesSummary: undefined;
 
   SelectPartner: NavigatorScreenParams<PartnerTabParams>;
-  SelectItemsToSell: {
-    scannedBarCode?: string;
-  };
+  SelectItemsToSell:
+    | {
+        scannedBarCode?: string;
+      }
+    | undefined;
   ScanBarCodeInSell: undefined;
   Review: undefined;
   Discounts: {

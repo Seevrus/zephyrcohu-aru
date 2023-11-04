@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useCheckToken } from '../../api/queries/useCheckToken';
-import { type Partners } from '../../api/response-mappers/mapPartnersResponse';
+import { type Partner } from '../../api/response-mappers/mapPartnersResponse';
 import { colors } from '../../constants/colors';
 import { fontSizes } from '../../constants/fontSizes';
 import { useReceiptsContext } from '../../providers/ReceiptsProvider';
@@ -14,7 +14,7 @@ import { Button } from '../ui/Button';
 import { createReceiptHtml } from './createReceiptHtml';
 
 type PrintSectionProps = {
-  partner: Partners[number];
+  partner: Partner;
   receipt: ContextReceipt;
 };
 

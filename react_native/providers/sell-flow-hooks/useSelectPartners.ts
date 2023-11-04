@@ -5,7 +5,10 @@ import { useActiveRound } from '../../api/queries/useActiveRound';
 import { usePartnerLists } from '../../api/queries/usePartnerLists';
 import { usePartners } from '../../api/queries/usePartners';
 import { usePriceLists } from '../../api/queries/usePriceLists';
-import { type Partners } from '../../api/response-mappers/mapPartnersResponse';
+import {
+  type Partner,
+  type Partners,
+} from '../../api/response-mappers/mapPartnersResponse';
 import { type TaxPayer } from '../../api/response-mappers/mapSearchTaxPayerResponse';
 import { type PriceListType } from '../../api/response-types/PriceListResponseType';
 import { PartnerList } from '../../navigators/screen-types';
@@ -14,7 +17,7 @@ import { useReceiptsContext } from '../ReceiptsProvider';
 export type UseSelectPartners = {
   isPending: boolean;
   partners: Record<PartnerList, Partners>;
-  selectedPartner: Partners[number];
+  selectedPartner: Partner;
   isSelectedPartnerOnCurrentPartnerList: boolean;
   isPartnerChosenForCurrentReceipt: boolean;
   selectPartner: (id: number) => void;
@@ -39,9 +42,7 @@ export function useSelectPartners(): UseSelectPartners {
 
   const isPartnerChosenForCurrentReceipt = !!currentReceipt?.buyer;
 
-  const [selectedPartner, setSelectedPartner] = useState<
-    Partners[number] | null
-  >(null);
+  const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
 
   const currentPartnerList = useMemo(
     () =>
@@ -58,11 +59,6 @@ export function useSelectPartners(): UseSelectPartners {
       ),
     [priceLists, selectedPartner?.priceList?.id]
   );
-
-  const isSelectedPartnerOnCurrentPartnerList =
-    !currentPartnerList || !selectedPartner
-      ? undefined
-      : currentPartnerList?.partners?.includes(selectedPartner.id);
 
   const maxPartnerIdInUse = useRef<number>(-1);
 

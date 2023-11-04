@@ -18,6 +18,7 @@ export type CreateReceiptRequest = {
   invoiceDate: string; // yyyy-MM-dd
   fulfillmentDate: string; // yyyy-MM-dd
   invoiceType: 'P' | 'E';
+  paymentDays: number;
   paidDate: string; // yyyy-MM-dd
   items: ReceiptItem[];
   otherItems?: ReceiptOtherItem[];

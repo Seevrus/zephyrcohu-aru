@@ -3,9 +3,11 @@ import { assoc, indexBy, map, pipe, prop } from 'ramda';
 import { type PartnersResponseData } from '../response-types/PartnersResponseType';
 import { type PartnerLocation } from '../response-types/common/PartnerType';
 
-export type Partners = (Omit<PartnersResponseData[number], 'locations'> & {
+export type Partner = Omit<PartnersResponseData[number], 'locations'> & {
   locations: Record<PartnerLocation['locationType'], PartnerLocation>;
-})[];
+};
+
+export type Partners = Partner[];
 
 export function mapPartnersResponse(partners: PartnersResponseData): Partners {
   return pipe(

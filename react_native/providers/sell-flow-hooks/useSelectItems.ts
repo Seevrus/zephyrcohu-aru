@@ -22,7 +22,7 @@ import {
 } from 'react';
 
 import { useItems } from '../../api/queries/useItems';
-import { type Partners } from '../../api/response-mappers/mapPartnersResponse';
+import { type Partner } from '../../api/response-mappers/mapPartnersResponse';
 import {
   type Discount,
   type Expiration,
@@ -83,7 +83,7 @@ export function useSelectItems({
   selectedPartner,
   currentPriceList,
 }: {
-  selectedPartner: Partners[number];
+  selectedPartner: Partner;
   currentPriceList: PriceListType;
 }): UseSelectItems {
   const { data: items } = useItems();

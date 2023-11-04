@@ -7,10 +7,11 @@ const receiptsAtom = atomWithAsyncStorage<ContextReceipt[]>(
   []
 );
 
-const currentReceiptAtom = atomWithAsyncStorage<Partial<ContextReceipt> | null>(
-  'boreal-current-receipt-context',
-  null
-);
+export const currentReceiptAtom =
+  atomWithAsyncStorage<Partial<ContextReceipt> | null>(
+    'boreal-current-receipt-context',
+    null
+  );
 
 export const numberOfReceiptsAtom = atom(async (get) => {
   const receipts = await get(receiptsAtom);

@@ -2,6 +2,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useAtom } from 'jotai';
 import {
+  allPass,
   complement,
   compose,
   filter,
@@ -9,10 +10,12 @@ import {
   isNotNil,
   map,
   pipe,
+  prepend,
   prop,
   propEq,
   sortBy,
   toLower,
+  when,
 } from 'ramda';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
@@ -76,8 +79,21 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
 
   const storesShown = useMemo(
     () =>
-      (stores ?? []).filter((store) => store.name.includes(storeSearchValue)),
-    [storeSearchValue, stores]
+      pipe(
+        when(
+          () => !!storeSearchValue,
+          filter<StoreType>((store) => store.name.includes(storeSearchValue))
+        ),
+        sortBy<StoreType>(prop('name')),
+        when(
+          allPass([
+            () => isNotNil(selectedStoreId),
+            (stores) => !!stores.some((store) => store.id === selectedStoreId),
+          ]),
+          prepend((stores ?? []).find((store) => store.id === selectedStoreId))
+        )
+      )(stores ?? []),
+    [selectedStoreId, storeSearchValue, stores]
   );
 
   useEffect(() => {

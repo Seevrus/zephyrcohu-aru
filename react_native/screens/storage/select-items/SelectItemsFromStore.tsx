@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { format, parseISO } from 'date-fns';
 import { useAtom, useAtomValue } from 'jotai';
-import { isNil } from 'ramda';
+import { filter, isNil, pipe, prop, sortBy, take, when } from 'ramda';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Animated,
@@ -100,18 +100,22 @@ function SuspendedSelectItemsFromStore({
 
   const itemsToShow = useMemo(
     () =>
-      (storageListItems ?? [])
-        .filter(
-          (item) =>
-            `${item.name.toLowerCase()}${item.expiresAt}`.includes(
-              searchState.searchTerm.toLowerCase()
-            ) &&
-            `${item.itemBarcode}${item.expirationBarcode}`.includes(
-              searchState.barCode
-            )
-        )
-        .sort((itemA, itemB) => itemA.name.localeCompare(itemB.name, 'HU-hu'))
-        .slice(0, 10),
+      pipe(
+        when(
+          () => !!searchState.searchTerm || !!searchState.barCode,
+          filter<StorageListItem>(
+            (item) =>
+              `${item.name.toLowerCase()}${item.expiresAt}`.includes(
+                searchState.searchTerm.toLowerCase()
+              ) &&
+              `${item.itemBarcode}${item.expirationBarcode}`.includes(
+                searchState.barCode
+              )
+          )
+        ),
+        sortBy<StorageListItem>(prop('name')),
+        (items) => take(10, items)
+      )(storageListItems ?? []),
     [searchState.barCode, searchState.searchTerm, storageListItems]
   );
 

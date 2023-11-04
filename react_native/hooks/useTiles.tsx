@@ -14,6 +14,7 @@ import {
 import { isStorageSavedToApiAtom } from '../atoms/storageFlow';
 import { type TileT } from '../components/Tile';
 import { type StackParams } from '../navigators/screen-types';
+import { useIsSelectedPartnerForSellOnCurrentPartnerList } from './sell/useIsSelectedPartnerForSellOnCurrentPartnerList';
 import {
   EndErrandTileState,
   ReceiptsTileState,
@@ -33,9 +34,8 @@ export function useTiles(): TileT[] | undefined {
   const isPartnerChosenForCurrentReceipt = useAtomValue(
     loadable(isPartnerChosenForCurrentReceiptAtom)
   );
-  // const isSelectedPartnerOnCurrentPartnerList = useAtomValue(
-  //   isSelectedPartnerOnCurrentPartnerListAtom
-  // );
+  const isSelectedPartnerOnCurrentPartnerList =
+    useIsSelectedPartnerForSellOnCurrentPartnerList();
   const isStorageSavedToApi = useAtomValue(isStorageSavedToApiAtom);
 
   const {
@@ -107,14 +107,14 @@ export function useTiles(): TileT[] | undefined {
               { text: 'Értem' },
             ]);
           } else if (isPartnerChosenForCurrentReceipt.data) {
-            // navigation.navigate('SelectItemsToSell');
+            navigation.navigate('SelectItemsToSell');
           } else {
-            // const partnerScreen =
-            //   isSelectedPartnerOnCurrentPartnerList === undefined ||
-            //   isSelectedPartnerOnCurrentPartnerList === true
-            //     ? 'SelectPartnerFromStore'
-            //     : 'SelectPartnerFromAll';
-            // navigation.navigate('SelectPartner', { screen: partnerScreen });
+            const partnerScreen =
+              isSelectedPartnerOnCurrentPartnerList === undefined ||
+              isSelectedPartnerOnCurrentPartnerList === true
+                ? 'SelectPartnerFromStore'
+                : 'SelectPartnerFromAll';
+            navigation.navigate('SelectPartner', { screen: partnerScreen });
           }
         },
       },
