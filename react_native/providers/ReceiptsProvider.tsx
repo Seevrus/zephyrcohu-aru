@@ -13,8 +13,8 @@ import {
 
 import { useCreateReceipts } from '../api/mutations/useCreateReceipts';
 import { useUpdateReceipts } from '../api/mutations/useUpdateReceipts';
-import { useActiveRound } from '../api/queries/activeRoundAtom';
-import { useCheckToken } from '../api/queries/checkTokenAtom';
+import { useActiveRound } from '../api/queries/useActiveRound';
+import { useCheckToken } from '../api/queries/useCheckToken';
 import { type ReceiptBuyer } from '../api/request-types/common/ReceiptBuyer';
 import { type ReceiptOtherItem } from '../api/request-types/common/ReceiptItemsTypes';
 import { type ReceiptResponseData } from '../api/response-types/ReceiptsResponseType';

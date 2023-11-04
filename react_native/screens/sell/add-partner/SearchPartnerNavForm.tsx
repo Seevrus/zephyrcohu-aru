@@ -22,7 +22,7 @@ import {
 } from 'react-native';
 
 import { useSearchTaxNumber } from '../../../api/queries/useSearchTaxNumber';
-import { useToken } from '../../../api/queries/tokenAtom';
+import { useToken } from '../../../api/queries/useToken';
 import { type TaxPayer } from '../../../api/response-mappers/mapSearchTaxPayerResponse';
 import { Loading } from '../../../components/Loading';
 import { TextCard } from '../../../components/info-cards/TextCard';

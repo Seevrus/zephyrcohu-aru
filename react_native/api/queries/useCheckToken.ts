@@ -1,22 +1,22 @@
+import { useNetInfo } from '@react-native-community/netinfo';
 import axios, { isAxiosError } from 'axios';
-import { atomsWithQueryAsync } from 'jotai-tanstack-query';
 import * as SecureStore from 'expo-secure-store';
 
-import { netInfoAtom } from '../../atoms/helpers';
 import env from '../../env.json';
+import { queryClient } from '../queryClient';
 import {
   mapCheckTokenResponse,
   type CheckToken,
 } from '../response-mappers/mapCheckTokenResponse';
 import { type LoginResponse } from '../response-types/LoginResponseType';
-import { tokenAtom } from './tokenAtom';
-import { queryClient } from '../queryClient';
+import { useToken } from './useToken';
+import { useQuery } from '@tanstack/react-query';
 
-const [, checkTokenAtom] = atomsWithQueryAsync(async (get) => {
-  const isInternetReachable = await get(netInfoAtom);
-  const { isSuccess: isTokenSuccess, data: tokenData } = get(tokenAtom);
+export function useCheckToken() {
+  const { isInternetReachable } = useNetInfo();
+  const { isSuccess: isTokenSuccess, data: tokenData } = useToken();
 
-  return {
+  return useQuery({
     queryKey: ['check-token'],
     queryFn: async (): Promise<CheckToken> => {
       try {
@@ -49,7 +49,5 @@ const [, checkTokenAtom] = atomsWithQueryAsync(async (get) => {
       isInternetReachable === true && isTokenSuccess && !!tokenData.token,
     staleTime: 300_000,
     retry: false,
-  };
-});
-
-export { checkTokenAtom };
+  });
+}

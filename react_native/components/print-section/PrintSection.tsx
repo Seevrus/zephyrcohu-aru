@@ -3,7 +3,7 @@ import { isNotNil } from 'ramda';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useCheckToken } from '../../api/queries/checkTokenAtom';
+import { useCheckToken } from '../../api/queries/useCheckToken';
 import { type Partners } from '../../api/response-mappers/mapPartnersResponse';
 import { colors } from '../../constants/colors';
 import { fontSizes } from '../../constants/fontSizes';

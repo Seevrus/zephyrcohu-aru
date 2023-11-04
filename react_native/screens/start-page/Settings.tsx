@@ -1,12 +1,21 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useLogout } from '../../api/mutations/useLogout';
-import { checkTokenAtom } from '../../api/queries/checkTokenAtom';
-import { tokenAtom } from '../../api/queries/tokenAtom';
+import { checkTokenAtom } from '../../api/queries/useCheckToken';
+import { tokenAtom } from '../../api/queries/useToken';
+import {
+  primaryStoreAtom,
+  selectedStoreAtom,
+  selectedStoreInitialStateAtom,
+} from '../../atoms/storage';
+import {
+  isStorageSavedToApiAtom,
+  storageListItemsAtom,
+} from '../../atoms/storageFlow';
 import { Loading } from '../../components/Loading';
 import { Button } from '../../components/ui/Button';
 import { colors } from '../../constants/colors';
@@ -21,6 +30,15 @@ export function Settings({ navigation }: SettingsProps) {
   const queryClient = useQueryClient();
 
   const isRoundStarted = user?.state === 'R';
+
+  const [, setPrimaryStore] = useAtom(primaryStoreAtom);
+  const [, setSelectedStoreInitialState] = useAtom(
+    selectedStoreInitialStateAtom
+  );
+  const [, setSelectedStore] = useAtom(selectedStoreAtom);
+
+  const [, setIsStorageSavedToApi] = useAtom(isStorageSavedToApiAtom);
+  const [, setStorageListItems] = useAtom(storageListItemsAtom);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -44,17 +62,24 @@ export function Settings({ navigation }: SettingsProps) {
   const resetHandler = async () => {
     setIsLoading(true);
 
-    queryClient.invalidateQueries({ queryKey: ['active-round'] });
-    queryClient.resetQueries({ queryKey: ['check-token'] });
-    queryClient.resetQueries({ queryKey: ['token'] });
-    queryClient.invalidateQueries({ queryKey: ['items'] });
-    queryClient.invalidateQueries({ queryKey: ['other-items'] });
-    queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
-    queryClient.invalidateQueries({ queryKey: ['partners'] });
-    queryClient.invalidateQueries({ queryKey: ['price-lists'] });
-    queryClient.invalidateQueries({ queryKey: ['search-tax-number'] });
-    queryClient.invalidateQueries({ queryKey: ['store-details'] });
-    queryClient.invalidateQueries({ queryKey: ['stores'] });
+    setPrimaryStore(null);
+    setSelectedStoreInitialState(null);
+    setSelectedStore(null);
+
+    setIsStorageSavedToApi(false);
+    setStorageListItems(undefined);
+
+    await queryClient.invalidateQueries({ queryKey: ['active-round'] });
+    await queryClient.resetQueries({ queryKey: ['check-token'] });
+    await queryClient.resetQueries({ queryKey: ['token'] });
+    await queryClient.invalidateQueries({ queryKey: ['items'] });
+    await queryClient.invalidateQueries({ queryKey: ['other-items'] });
+    await queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
+    await queryClient.invalidateQueries({ queryKey: ['partners'] });
+    await queryClient.invalidateQueries({ queryKey: ['price-lists'] });
+    await queryClient.invalidateQueries({ queryKey: ['search-tax-number'] });
+    await queryClient.invalidateQueries({ queryKey: ['store-details'] });
+    await queryClient.invalidateQueries({ queryKey: ['stores'] });
 
     await AsyncStorage.removeItem('boreal-user-backup');
 

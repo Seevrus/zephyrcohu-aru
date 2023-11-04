@@ -1,5 +1,4 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useAtomValue } from 'jotai';
 import {
   FlatList,
   StyleSheet,
@@ -8,20 +7,19 @@ import {
   type ListRenderItemInfo,
 } from 'react-native';
 
-import { checkTokenAtom } from '../../api/queries/checkTokenAtom';
-import { tokenAtom } from '../../api/queries/tokenAtom';
+import { Suspense } from 'react';
+import { useCheckToken } from '../../api/queries/useCheckToken';
+import { useToken } from '../../api/queries/useToken';
 import { Loading } from '../../components/Loading';
 import { Tile, type TileT } from '../../components/Tile';
 import { TextCard } from '../../components/info-cards/TextCard';
 import { colors } from '../../constants/colors';
 import { useTiles } from '../../hooks/useTiles';
-import { Suspense } from 'react';
 
 function SuspendedIndex() {
-  const { isFetching: isUserFetching } = useAtomValue(checkTokenAtom);
+  const { isFetching: isUserFetching } = useCheckToken();
   const { isInternetReachable } = useNetInfo();
-  const { isPending: isTokenPending, data: tokenData } =
-    useAtomValue(tokenAtom);
+  const { isPending: isTokenPending, data: tokenData } = useToken();
 
   const tiles = useTiles();
 

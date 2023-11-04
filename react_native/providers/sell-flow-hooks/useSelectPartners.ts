@@ -1,8 +1,8 @@
 import { sort } from 'ramda';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { useActiveRound } from '../../api/queries/activeRoundAtom';
-import { usePartnerLists } from '../../api/queries/partnerListstAtom';
+import { useActiveRound } from '../../api/queries/useActiveRound';
+import { usePartnerLists } from '../../api/queries/usePartnerLists';
 import { usePartners } from '../../api/queries/usePartners';
 import { usePriceLists } from '../../api/queries/usePriceLists';
 import { type Partners } from '../../api/response-mappers/mapPartnersResponse';

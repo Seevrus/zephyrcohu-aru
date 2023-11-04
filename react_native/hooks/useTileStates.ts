@@ -3,8 +3,8 @@ import { useIsFocused } from '@react-navigation/native';
 import { useAtomValue } from 'jotai';
 import { loadable } from 'jotai/utils';
 
-import { checkTokenAtom } from '../api/queries/checkTokenAtom';
-import { tokenAtom } from '../api/queries/tokenAtom';
+import { useCheckToken } from '../api/queries/useCheckToken';
+import { useToken } from '../api/queries/useToken';
 import { numberOfReceiptsAtom } from '../atoms/receipts';
 
 export enum StorageTileState {
@@ -34,13 +34,11 @@ export enum EndErrandTileState {
 }
 
 export function useTileStates() {
-  const { data: user, isPending: isUserFetching } =
-    useAtomValue(checkTokenAtom);
+  const { data: user, isPending: isUserFetching } = useCheckToken();
   const isFocused = useIsFocused();
   const { isInternetReachable } = useNetInfo();
   const loadableNumberOfReceipts = useAtomValue(loadable(numberOfReceiptsAtom));
-  const { isPending: isTokenPending, data: tokenData } =
-    useAtomValue(tokenAtom);
+  const { isPending: isTokenPending, data: tokenData } = useToken();
 
   const isCheckTokenInProgress = !user && isUserFetching;
   const numberOfReceipts =

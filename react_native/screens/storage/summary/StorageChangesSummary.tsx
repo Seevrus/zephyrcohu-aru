@@ -1,11 +1,11 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import * as Print from 'expo-print';
-import { Suspense, useMemo } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 import { useDeselectStore } from '../../../api/mutations/useDeselectStore';
-import { checkTokenAtom } from '../../../api/queries/checkTokenAtom';
+import { useCheckToken } from '../../../api/queries/useCheckToken';
 import {
   primaryStoreAtom,
   selectedStoreAtom,
@@ -27,7 +27,7 @@ function SuspendedStorageChangesSummary({
 }: StorageChangesSummaryProps) {
   const { isInternetReachable } = useNetInfo();
 
-  const { data: user, isPending: isUserPending } = useAtomValue(checkTokenAtom);
+  const { data: user, isPending: isUserPending } = useCheckToken();
   const { mutateAsync: deselectStore } = useDeselectStore();
 
   const [, setPrimaryStore] = useAtom(primaryStoreAtom);
@@ -38,6 +38,8 @@ function SuspendedStorageChangesSummary({
 
   const [, setIsStorageSavedToApi] = useAtom(isStorageSavedToApiAtom);
   const [storageListItems, setStorageListItems] = useAtom(storageListItemsAtom);
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const receiptItems = useMemo(
     () =>
@@ -58,6 +60,7 @@ function SuspendedStorageChangesSummary({
   };
 
   const returnButtonHandler = async () => {
+    setIsLoading(true);
     await deselectStore();
 
     setPrimaryStore(null);
@@ -78,7 +81,7 @@ function SuspendedStorageChangesSummary({
   const returnButtonVariant =
     isInternetReachable === true ? 'warning' : 'disabled';
 
-  if (isUserPending) {
+  if (isUserPending || isLoading) {
     return <Loading />;
   }
 

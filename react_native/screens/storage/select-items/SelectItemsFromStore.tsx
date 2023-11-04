@@ -11,7 +11,7 @@ import {
   type ListRenderItemInfo,
 } from 'react-native';
 
-import { itemsAtom } from '../../../api/queries/itemsAtom';
+import { useItems } from '../../../api/queries/useItems';
 import {
   primaryStoreAtom,
   selectedStoreAtom,
@@ -35,7 +35,7 @@ function SuspendedSelectItemsFromStore({
   route,
 }: SelectItemsFromStoreProps) {
   const scannedBarCode = route.params?.scannedBarCode;
-  const { data: items, isPending: isItemsPending } = useAtomValue(itemsAtom);
+  const { data: items, isPending: isItemsPending } = useItems();
 
   const [storageListItems, setStorageListItems] = useAtom(storageListItemsAtom);
 
@@ -122,7 +122,13 @@ function SuspendedSelectItemsFromStore({
           prevItems?.map((item) =>
             item.itemId === itemToSet.itemId &&
             item.expirationId === itemToSet.expirationId
-              ? { ...item, currentQuantity: newCurrentQuantity ?? 0 }
+              ? {
+                  ...item,
+                  primaryStoreQuantity:
+                    (item.primaryStoreQuantity ?? 0) -
+                    ((newCurrentQuantity ?? 0) - (item.currentQuantity ?? 0)),
+                  currentQuantity: newCurrentQuantity ?? undefined,
+                }
               : item
           )
       );

@@ -9,18 +9,18 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useStartRound } from '../../api/mutations/useStartRound';
-import { fetchActiveRound } from '../../api/queries/activeRoundAtom';
-import { fetchItems } from '../../api/queries/itemsAtom';
+import { fetchActiveRound } from '../../api/queries/useActiveRound';
+import { fetchItems } from '../../api/queries/useItems';
 import { fetchOtherItems } from '../../api/queries/useOtherItems';
 import {
   fetchPartnerLists,
   usePartnerLists,
-} from '../../api/queries/partnerListstAtom';
+} from '../../api/queries/usePartnerLists';
 import { fetchPartners } from '../../api/queries/usePartners';
 import { fetchPriceLists } from '../../api/queries/usePriceLists';
-import { fetchStoreDetails } from '../../api/queries/storeDetailsAtom';
-import { fetchStores, useStores } from '../../api/queries/storesAtom';
-import { useToken } from '../../api/queries/tokenAtom';
+import { fetchStoreDetails } from '../../api/queries/useStoreDetails';
+import { fetchStores, useStores } from '../../api/queries/useStores';
+import { useToken } from '../../api/queries/useToken';
 import { Loading } from '../../components/Loading';
 import { ErrorCard } from '../../components/info-cards/ErrorCard';
 import { Button } from '../../components/ui/Button';
@@ -60,56 +60,58 @@ export function StartErrand({ navigation }: StartErrandProps) {
   }, [isInternetReachable, navigation]);
 
   const confirmRoundHandler = async () => {
-    setLoadingMessage('Körindítás folyamatban...');
+    if (token) {
+      setLoadingMessage('Körindítás folyamatban...');
 
-    try {
-      await startRound({
-        storeId,
-        partnerListId,
-        roundStarted: format(date, 'yyyy-MM-dd'),
-      });
+      try {
+        await startRound({
+          storeId,
+          partnerListId,
+          roundStarted: format(date, 'yyyy-MM-dd'),
+        });
 
-      await queryClient.fetchQuery({
-        queryKey: ['active-round', token],
-        queryFn: () => fetchActiveRound(token),
-      });
-      await queryClient.invalidateQueries({
-        queryKey: ['check-token', token],
-        refetchType: 'all',
-      });
-      await queryClient.fetchQuery({
-        queryKey: ['items', token],
-        queryFn: () => fetchItems(token),
-      });
-      await queryClient.fetchQuery({
-        queryKey: ['other-items', token],
-        queryFn: () => fetchOtherItems(token),
-      });
-      await queryClient.fetchQuery({
-        queryKey: ['partner-lists', token],
-        queryFn: () => fetchPartnerLists(token),
-      });
-      await queryClient.fetchQuery({
-        queryKey: ['partners', token],
-        queryFn: () => fetchPartners(token),
-      });
-      await queryClient.fetchQuery({
-        queryKey: ['price-lists', token],
-        queryFn: () => fetchPriceLists(token),
-      });
-      await queryClient.fetchQuery({
-        queryKey: ['store-details', storeId, token],
-        queryFn: () => fetchStoreDetails(token, storeId),
-      });
-      await queryClient.fetchQuery({
-        queryKey: ['stores', token],
-        queryFn: () => fetchStores(token),
-      });
+        await queryClient.fetchQuery({
+          queryKey: ['active-round'],
+          queryFn: fetchActiveRound(token),
+        });
+        await queryClient.invalidateQueries({
+          queryKey: ['check-token'],
+          refetchType: 'all',
+        });
+        await queryClient.fetchQuery({
+          queryKey: ['items'],
+          queryFn: fetchItems(token),
+        });
+        await queryClient.fetchQuery({
+          queryKey: ['other-items'],
+          queryFn: fetchOtherItems(token),
+        });
+        await queryClient.fetchQuery({
+          queryKey: ['partner-lists'],
+          queryFn: fetchPartnerLists(token),
+        });
+        await queryClient.fetchQuery({
+          queryKey: ['partners'],
+          queryFn: fetchPartners(token),
+        });
+        await queryClient.fetchQuery({
+          queryKey: ['price-lists'],
+          queryFn: fetchPriceLists(token),
+        });
+        await queryClient.fetchQuery({
+          queryKey: ['store-details', storeId],
+          queryFn: fetchStoreDetails(token, storeId),
+        });
+        await queryClient.fetchQuery({
+          queryKey: ['stores'],
+          queryFn: fetchStores(token),
+        });
 
-      navigation.pop();
-    } catch (error_) {
-      setLoadingMessage('');
-      setError(error_.message);
+        navigation.pop();
+      } catch (error) {
+        setLoadingMessage('');
+        setError(error.message);
+      }
     }
   };
 
@@ -149,8 +151,11 @@ export function StartErrand({ navigation }: StartErrandProps) {
     setPartnerListId(+key);
   };
 
-  const selectDateHandler = (_: DateTimePickerEvent, selectedDate: Date) => {
-    setDate(selectedDate);
+  const selectDateHandler = (
+    _: DateTimePickerEvent,
+    selectedDate: Date | undefined
+  ) => {
+    setDate(selectedDate ?? new Date());
   };
 
   const showDatePicker = () => {
@@ -164,7 +169,7 @@ export function StartErrand({ navigation }: StartErrandProps) {
   };
 
   const confirmButtonVariant =
-    storeId > -1 && partnerListId > -1 ? 'ok' : 'disabled';
+    storeId > -1 && partnerListId > -1 && !!token ? 'ok' : 'disabled';
 
   return (
     <View style={styles.container}>

@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native';
 
+import { type StorageListItem } from '../../../atoms/storageFlow';
 import { colors } from '../../../constants/colors';
 import { fontSizes } from '../../../constants/fontSizes';
-import { type ListItem } from '../../../providers/StorageFlowProvider';
 
 type ReviewExpirationItemProps = {
-  item: ListItem;
+  item: StorageListItem;
 };
 
 export function ReviewExpirationItem({ item }: ReviewExpirationItemProps) {
@@ -21,7 +21,7 @@ export function ReviewExpirationItem({ item }: ReviewExpirationItemProps) {
         <View style={styles.detailsRow}>
           <Text style={styles.detailsRowText}>Rakodott mennyiség:</Text>
           <Text style={styles.detailsRowText}>
-            {item.currentQuantity - (item.originalQuantity ?? 0)}
+            {(item.currentQuantity ?? 0) - (item.originalQuantity ?? 0)}
           </Text>
         </View>
         <View style={styles.detailsRow}>

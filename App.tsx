@@ -7,10 +7,7 @@ import { onlineManager } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
-import { queryClientAtom } from 'jotai-tanstack-query';
 import { Provider } from 'jotai/react';
-import { useHydrateAtoms } from 'jotai/react/utils';
-import { type PropsWithChildren } from 'react';
 
 import { queryClient } from './react_native/api/queryClient';
 import { Loading } from './react_native/components/Loading';
@@ -25,11 +22,6 @@ onlineManager.setEventListener((setOnline) =>
     setOnline(!!state.isConnected);
   })
 );
-
-const HydrateAtoms = ({ children }: PropsWithChildren) => {
-  useHydrateAtoms([[queryClientAtom, queryClient]]);
-  return children;
-};
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -48,12 +40,10 @@ export default function App() {
       persistOptions={{ persister: asyncStoragePersister }}
     >
       <Provider>
-        <HydrateAtoms>
-          <StatusBar style="auto" />
-          <NavigationContainer>
-            <MainStack />
-          </NavigationContainer>
-        </HydrateAtoms>
+        <StatusBar style="auto" />
+        <NavigationContainer>
+          <MainStack />
+        </NavigationContainer>
       </Provider>
     </PersistQueryClientProvider>
   );

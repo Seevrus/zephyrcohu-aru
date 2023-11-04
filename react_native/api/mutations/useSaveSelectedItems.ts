@@ -4,14 +4,14 @@ import { useAtomValue } from 'jotai';
 
 import { type StorageListItem } from '../../atoms/storageFlow';
 import env from '../../env.json';
-import { storesAtom } from '../queries/storesAtom';
-import { tokenAtom } from '../queries/tokenAtom';
+import { tokenAtom } from '../queries/useToken';
+import { useStores } from '../queries/useStores';
 import { mapSaveSelectedItemsRequest } from '../request-mappers/mapSaveSelectedItemsRequest';
 import { type StoreDetailsResponseType } from '../response-types/StoreDetailsResponseType';
 
 export function useSaveSelectedItems() {
   const queryClient = useQueryClient();
-  const { data: stores } = useAtomValue(storesAtom);
+  const { data: stores } = useStores();
 
   const primaryStoreId = stores?.find((store) => store.type === 'P')?.id;
 

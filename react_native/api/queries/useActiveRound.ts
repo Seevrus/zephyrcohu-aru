@@ -1,15 +1,11 @@
 import axios, { isAxiosError } from 'axios';
-import { atomsWithQueryAsync } from 'jotai-tanstack-query';
 
-import { netInfoAtom } from '../../atoms/helpers';
 import env from '../../env.json';
 import { mapRoundsResponse } from '../response-mappers/mapRoundsResponse';
 import { type RoundsResponseType } from '../response-types/ActiveRoundResponseType';
 import { type RoundType } from '../response-types/common/RoundType';
-import { checkTokenAtom } from './checkTokenAtom';
-import { tokenAtom } from './tokenAtom';
 
-const [, activeRoundAtom] = atomsWithQueryAsync(async (get) => {
+/* const [, activeRoundAtom] = atomsWithQueryAsync(async (get) => {
   const isInternetReachable = await get(netInfoAtom);
   const { data: user, isSuccess: isCheckTokenSuccess } =
     await get(checkTokenAtom);
@@ -51,6 +47,29 @@ const [, activeRoundAtom] = atomsWithQueryAsync(async (get) => {
       isCheckTokenSuccess &&
       isRoundStarted,
   };
-});
+}); */
 
-export { activeRoundAtom };
+export const fetchActiveRound =
+  (token: string) => async (): Promise<RoundType | undefined> => {
+    try {
+      const response = await axios.get<RoundsResponseType>(
+        `${env.api_url}/rounds`,
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return mapRoundsResponse(response.data);
+    } catch (error) {
+      if (isAxiosError(error)) {
+        // eslint-disable-next-line no-console
+        console.log('useActiveRound:', error.response?.data);
+      }
+      throw new Error(
+        'Váratlan hiba lépett fel a kör adatainak lekérése során.'
+      );
+    }
+  };

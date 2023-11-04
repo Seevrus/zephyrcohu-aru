@@ -1,6 +1,6 @@
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 import {
   complement,
   compose,
@@ -24,10 +24,8 @@ import {
 } from 'react-native';
 
 import { useSelectStore } from '../../../api/mutations/useSelectStore';
-import { storesAtom } from '../../../api/queries/storesAtom';
-import { queryClient } from '../../../api/queryClient';
-import { type StoreDetailsResponseData } from '../../../api/response-types/StoreDetailsResponseType';
-import { type StoresResponseData } from '../../../api/response-types/StoresResponseType';
+import { useStoreDetails } from '../../../api/queries/useStoreDetails';
+import { useStores } from '../../../api/queries/useStores';
 import { type StoreType } from '../../../api/response-types/common/StoreType';
 import {
   primaryStoreAtom,
@@ -44,20 +42,43 @@ import { type SelectStoreProps } from '../../../navigators/screen-types';
 function SuspendedSelectStore({ navigation }: SelectStoreProps) {
   const { isInternetReachable } = useNetInfo();
   const { mutateAsync: selectStore } = useSelectStore();
-  const { isPending: isStoresPending, data: stores } = useAtomValue(storesAtom);
+  const { isPending: isStoresPending, data: stores } = useStores();
 
-  const [, setPrimaryStore] = useAtom(primaryStoreAtom);
-  const [, setSelectedStoreInitialState] = useAtom(
+  const [primaryStore, setPrimaryStore] = useAtom(primaryStoreAtom);
+  const [selectedStoreInitialState, setSelectedStoreInitialState] = useAtom(
     selectedStoreInitialStateAtom
   );
-  const [, setSelectedStore] = useAtom(selectedStoreAtom);
+  const [selectedStore, setSelectedStore] = useAtom(selectedStoreAtom);
 
   const [isSubmitInProgress, setIsSubmitInProgress] = useState<boolean>(false);
   const [selectedStoreId, setSelectedStoreId] = useState<number | null>(null);
   const [storeSearchValue, setStoreSearchValue] = useState<string>('');
-  const [storesShown, setStoresShown] = useState<StoresResponseData>([]);
 
   const primaryStoreId = stores?.find((store) => store.type === 'P')?.id;
+
+  const [
+    isPrimaryStoreDetailsQueryEnabled,
+    setIsPrimaryStoreDetailsQueryEnabled,
+  ] = useState<boolean>(false);
+  const {
+    data: primaryStoreDetails,
+    isSuccess: isPrimaryStoreDetailsSuccess,
+    isFetching: isPrimaryStoreDetailsFetching,
+  } = useStoreDetails(primaryStoreId, isPrimaryStoreDetailsQueryEnabled);
+
+  const [isStoreDetailsQueryEnabled, setIsStoreDetailsQueryEnabled] =
+    useState<boolean>(false);
+  const {
+    data: storeDetails,
+    isSuccess: isStoreDetailsSuccess,
+    isFetching: isStoreDetailsFetching,
+  } = useStoreDetails(selectedStoreId ?? undefined, isStoreDetailsQueryEnabled);
+
+  const storesShown = useMemo(
+    () =>
+      (stores ?? []).filter((store) => store.name.includes(storeSearchValue)),
+    [storeSearchValue, stores]
+  );
 
   useEffect(() => {
     if (isInternetReachable === false) {
@@ -66,10 +87,51 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
   }, [isInternetReachable, navigation]);
 
   useEffect(() => {
-    setStoresShown(
-      (stores ?? []).filter((store) => store.name.includes(storeSearchValue))
-    );
-  }, [storeSearchValue, stores]);
+    if (
+      !!primaryStoreDetails &&
+      isPrimaryStoreDetailsSuccess &&
+      !isPrimaryStoreDetailsFetching
+    ) {
+      setPrimaryStore(primaryStoreDetails);
+    }
+  }, [
+    isPrimaryStoreDetailsFetching,
+    isPrimaryStoreDetailsSuccess,
+    primaryStoreDetails,
+    setPrimaryStore,
+  ]);
+
+  useEffect(() => {
+    if (!!storeDetails && isStoreDetailsSuccess && !isStoreDetailsFetching) {
+      setSelectedStoreInitialState(storeDetails);
+      setSelectedStore(storeDetails);
+    }
+  }, [
+    isStoreDetailsFetching,
+    isStoreDetailsSuccess,
+    setSelectedStore,
+    setSelectedStoreInitialState,
+    storeDetails,
+  ]);
+
+  useEffect(() => {
+    if (
+      isPrimaryStoreDetailsQueryEnabled &&
+      !!primaryStore &&
+      isStoreDetailsQueryEnabled &&
+      !!selectedStoreInitialState &&
+      !!selectedStore
+    ) {
+      navigation.replace('SelectItemsFromStore');
+    }
+  }, [
+    isPrimaryStoreDetailsQueryEnabled,
+    isStoreDetailsQueryEnabled,
+    navigation,
+    primaryStore,
+    selectedStore,
+    selectedStoreInitialState,
+  ]);
 
   const searchInputHandler = useCallback((inputValue: string) => {
     setStoreSearchValue(inputValue);
@@ -82,33 +144,12 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
   const handleSubmitSelectedStore = useCallback(async () => {
     if (isNotNil(selectedStoreId)) {
       setIsSubmitInProgress(true);
+
+      setIsPrimaryStoreDetailsQueryEnabled(true);
+      setIsStoreDetailsQueryEnabled(true);
       await selectStore({ storeId: selectedStoreId });
-
-      Promise.all([
-        queryClient.fetchQuery<StoreDetailsResponseData>({
-          queryKey: ['store-details', primaryStoreId],
-        }),
-        queryClient.fetchQuery<StoreDetailsResponseData>({
-          queryKey: ['store-details', selectedStoreId],
-        }),
-      ]).then(([primaryStoreDetails, selectedStoreDetails]) => {
-        setPrimaryStore(primaryStoreDetails);
-        setSelectedStoreInitialState(selectedStoreDetails);
-        setSelectedStore(selectedStoreDetails);
-      });
-
-      setIsSubmitInProgress(false);
-      navigation.replace('SelectItemsFromStore');
     }
-  }, [
-    navigation,
-    primaryStoreId,
-    selectStore,
-    selectedStoreId,
-    setPrimaryStore,
-    setSelectedStore,
-    setSelectedStoreInitialState,
-  ]);
+  }, [selectStore, selectedStoreId]);
 
   const storeTiles = useMemo(
     () =>

@@ -1,8 +1,8 @@
 import { atom } from 'jotai';
 
 import { type Partners } from '../../api/response-mappers/mapPartnersResponse';
-import { partnerListsAtom } from '../../api/queries/partnerListstAtom';
-import { activeRoundAtom } from '../../api/queries/activeRoundAtom';
+import { partnerListsAtom } from '../../api/queries/usePartnerLists';
+import { activeRoundAtom } from '../../api/queries/useActiveRound';
 
 const selectedPartnerAtom = atom<Partners[number] | null>(null);
 

@@ -3,7 +3,7 @@ import axios, { isAxiosError } from 'axios';
 import { useAtomValue } from 'jotai';
 
 import env from '../../env.json';
-import { tokenAtom } from '../queries/tokenAtom';
+import { tokenAtom } from '../queries/useToken';
 import { type SelectStoreRequestType } from '../request-types/SelectStoreRequestType';
 import { type SelectStoreResponseType } from '../response-types/SelectStoreResponseType';
 

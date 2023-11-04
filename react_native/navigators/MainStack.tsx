@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { colors } from '../constants/colors';
 import { fontSizes } from '../constants/fontSizes';
+import { StartErrand } from '../screens/errand-administration/StartErrand';
 import { Login } from '../screens/login/Login';
 import { ChangePassword } from '../screens/start-page/ChangePassword';
 import { Index } from '../screens/start-page/Index';
@@ -79,14 +80,14 @@ export function MainStack() {
         component={StorageChangesSummary}
         options={{ headerLeft: undefined, headerTitle: 'Összegzés' }}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="StartErrand"
         component={StartErrand}
         options={{
           headerTitle: 'Kör indítása',
         }}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="SelectPartner"
         component={PartnersBottomTab}
         options={{

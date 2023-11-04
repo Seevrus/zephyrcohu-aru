@@ -7,8 +7,8 @@ import {
   type Partners,
 } from '../response-mappers/mapPartnersResponse';
 import { type PartnersResponseType } from '../response-types/PartnersResponseType';
-import { useCheckToken } from './checkTokenAtom';
-import { useToken } from './tokenAtom';
+import { useCheckToken } from './useCheckToken';
+import { useToken } from './useToken';
 
 export function usePartners({ enabled = true } = {}): UseQueryResult<Partners> {
   const { data: user, isSuccess: isCheckTokenSuccess } = useCheckToken();
@@ -18,8 +18,8 @@ export function usePartners({ enabled = true } = {}): UseQueryResult<Partners> {
   const isRoundStarted = user?.state === 'R';
 
   return useQuery({
-    queryKey: ['partners', token],
-    queryFn: () => fetchPartners(token),
+    queryKey: ['partners'],
+    queryFn: fetchPartners(token as string),
     enabled:
       enabled &&
       !isTokenExpired &&
@@ -30,7 +30,7 @@ export function usePartners({ enabled = true } = {}): UseQueryResult<Partners> {
   });
 }
 
-export async function fetchPartners(token: string): Promise<Partners> {
+export const fetchPartners = (token: string) => async (): Promise<Partners> => {
   try {
     const response = await axios.get<PartnersResponseType>(
       `${env.api_url}/partners`,
@@ -52,4 +52,4 @@ export async function fetchPartners(token: string): Promise<Partners> {
       'Váratlan hiba lépett fel a partnerek adatainak lekérése során.'
     );
   }
-}
+};

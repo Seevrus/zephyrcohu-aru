@@ -6,7 +6,7 @@ import { loadable } from 'jotai/utils';
 import { isNil } from 'ramda';
 import { Alert } from 'react-native';
 
-import { checkTokenAtom } from '../api/queries/checkTokenAtom';
+import { useCheckToken } from '../api/queries/useCheckToken';
 import {
   isPartnerChosenForCurrentReceiptAtom,
   numberOfReceiptsAtom,
@@ -26,7 +26,7 @@ import {
 const FEATURE_NOT_AVAILABLE = 'Funkció nem elérhető';
 
 export function useTiles(): TileT[] | undefined {
-  const { data: user } = useAtomValue(checkTokenAtom);
+  const { data: user } = useCheckToken();
   const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
   const numberOfReceipts = useAtomValue(loadable(numberOfReceiptsAtom));
 
@@ -71,7 +71,7 @@ export function useTiles(): TileT[] | undefined {
           } else if (isStorageSavedToApi) {
             navigation.navigate('StorageChangesSummary');
           } else {
-            // navigation.navigate('SelectItemsFromStore');
+            navigation.navigate('SelectItemsFromStore');
           }
         },
       },

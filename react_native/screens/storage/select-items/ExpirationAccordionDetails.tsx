@@ -27,10 +27,6 @@ function _ExpirationAccordionDetails({
   item,
   setCurrentQuantity,
 }: ExpirationAccordionDetailsProps) {
-  const [selectedQuantity, setSelectedQuantity] = useState<number | null>(
-    item.currentQuantity ?? 0
-  );
-
   const [dropdownHeight, setDropdownHeight] = useState(170);
 
   const quantityHandler = (newQuantity: string) => {
@@ -49,10 +45,8 @@ function _ExpirationAccordionDetails({
       formattedQuantity < 0 ||
       isNil(nullIshFormattedQuantity)
     ) {
-      setSelectedQuantity(null);
       setCurrentQuantity(item, null);
     } else {
-      setSelectedQuantity(nullIshFormattedQuantity);
       setCurrentQuantity(item, nullIshFormattedQuantity);
     }
   };
@@ -102,7 +96,9 @@ function _ExpirationAccordionDetails({
         <View style={styles.selectionContainer}>
           <Pressable
             style={styles.selectIconContainer}
-            onPress={() => quantityHandler(String((selectedQuantity ?? 0) - 1))}
+            onPress={() =>
+              quantityHandler(String((item.currentQuantity ?? 0) - 1))
+            }
           >
             <MaterialIcons
               name="remove-circle-outline"
@@ -122,14 +118,16 @@ function _ExpirationAccordionDetails({
                 contextMenuHidden: true,
                 keyboardType: 'numeric',
                 maxLength: 4,
-                value: String(selectedQuantity ?? ''),
+                value: String(item.currentQuantity ?? ''),
                 onChangeText: quantityHandler,
               }}
             />
           </View>
           <Pressable
             style={styles.selectIconContainer}
-            onPress={() => quantityHandler(String((selectedQuantity ?? 0) + 1))}
+            onPress={() =>
+              quantityHandler(String((item.currentQuantity ?? 0) + 1))
+            }
           >
             <MaterialIcons
               name="add-circle-outline"

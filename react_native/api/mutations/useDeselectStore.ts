@@ -1,13 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { useAtomValue } from 'jotai';
 
 import env from '../../env.json';
-import { useToken } from '../queries/tokenAtom';
+import { tokenAtom } from '../queries/useToken';
 import { type LoginResponse } from '../response-types/LoginResponseType';
 
 export function useDeselectStore() {
   const queryClient = useQueryClient();
-  const { data: { token } = {} } = useToken();
+  const { data: tokenData } = useAtomValue(tokenAtom);
 
   return useMutation({
     mutationKey: ['deselect-store'],
@@ -19,7 +20,7 @@ export function useDeselectStore() {
           {
             headers: {
               Accept: 'application/json',
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${tokenData?.token}`,
             },
           }
         );
