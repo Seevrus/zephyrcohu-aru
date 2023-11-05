@@ -16,6 +16,4 @@ export type StorageListItem = {
 
 export const isStorageSavedToApiAtom = atom(false);
 
-export const storageListItemsAtom = atom<StorageListItem[] | undefined>(
-  undefined
-);
+export const storageListItemsAtom = atom<StorageListItem[] | null>(null);

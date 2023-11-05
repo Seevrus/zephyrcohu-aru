@@ -1,87 +1,27 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import * as Print from 'expo-print';
-import { Suspense, useMemo, useState } from 'react';
+import { Suspense } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useAtom } from 'jotai';
-import { useDeselectStore } from '../../../api/mutations/useDeselectStore';
-import { useCheckToken } from '../../../api/queries/useCheckToken';
-import {
-  primaryStoreAtom,
-  selectedStoreAtom,
-  selectedStoreInitialStateAtom,
-} from '../../../atoms/storage';
-import {
-  isStorageSavedToApiAtom,
-  storageListItemsAtom,
-} from '../../../atoms/storageFlow';
 import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
 import { colors } from '../../../constants/colors';
 import { fontSizes } from '../../../constants/fontSizes';
 import { type StorageChangesSummaryProps } from '../../../navigators/screen-types';
-import { createPrint } from './createPrint';
+import { useStorageChangesSummaryData } from './useStorageChangesSummaryData';
 
 function SuspendedStorageChangesSummary({
   navigation,
 }: StorageChangesSummaryProps) {
   const { isInternetReachable } = useNetInfo();
 
-  const { data: user, isPending: isUserPending } = useCheckToken();
-  const { mutateAsync: deselectStore } = useDeselectStore();
+  const { isLoading, isPrintEnabled, printButtonHandler, returnButtonHandler } =
+    useStorageChangesSummaryData(navigation);
 
-  const [, setPrimaryStore] = useAtom(primaryStoreAtom);
-  const [selectedStoreInitialState, setSelectedStoreInitialState] = useAtom(
-    selectedStoreInitialStateAtom
-  );
-  const [, setSelectedStore] = useAtom(selectedStoreAtom);
-
-  const [, setIsStorageSavedToApi] = useAtom(isStorageSavedToApiAtom);
-  const [storageListItems, setStorageListItems] = useAtom(storageListItemsAtom);
-
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const receiptItems = useMemo(
-    () =>
-      (storageListItems ?? []).filter(
-        (item) => !!item.originalQuantity || !!item.currentQuantity
-      ),
-    [storageListItems]
-  );
-
-  const printButtonHandler = async () => {
-    await Print.printAsync({
-      html: createPrint({
-        receiptItems,
-        storeDetails: selectedStoreInitialState,
-        user,
-      }),
-    });
-  };
-
-  const returnButtonHandler = async () => {
-    setIsLoading(true);
-    await deselectStore();
-
-    setPrimaryStore(null);
-    setSelectedStoreInitialState(null);
-    setSelectedStore(null);
-
-    setIsStorageSavedToApi(false);
-    setStorageListItems(undefined);
-
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Index' }],
-    });
-  };
-
-  const isPrintEnabled = !!user && !!selectedStoreInitialState;
   const printButtonVariant = isPrintEnabled ? 'ok' : 'disabled';
   const returnButtonVariant =
     isInternetReachable === true ? 'warning' : 'disabled';
 
-  if (isUserPending || isLoading) {
+  if (isLoading) {
     return <Loading />;
   }
 

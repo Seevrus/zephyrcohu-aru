@@ -1,6 +1,5 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useAtom, useAtomValue } from 'jotai';
-import { Suspense, useCallback, useMemo, useState } from 'react';
+import { Suspense } from 'react';
 import {
   Alert,
   FlatList,
@@ -9,12 +8,7 @@ import {
   type ListRenderItemInfo,
 } from 'react-native';
 
-import { useSaveSelectedItems } from '../../../api/mutations/useSaveSelectedItems';
-import {
-  isStorageSavedToApiAtom,
-  storageListItemsAtom,
-  type StorageListItem,
-} from '../../../atoms/storageFlow';
+import { type StorageListItem } from '../../../atoms/storageFlow';
 import { Loading } from '../../../components/Loading';
 import { ErrorCard } from '../../../components/info-cards/ErrorCard';
 import { TextCard } from '../../../components/info-cards/TextCard';
@@ -22,6 +16,7 @@ import { Button } from '../../../components/ui/Button';
 import { colors } from '../../../constants/colors';
 import { type ReviewStorageChangesProps } from '../../../navigators/screen-types';
 import { ReviewExpirationItem } from './ReviewExpirationItem';
+import { useReviewStorageChangesData } from './useReviewStorageChangesData';
 
 const keyExtractor = (item: StorageListItem) => String(item.expirationId);
 
@@ -30,46 +25,8 @@ function SuspendedReviewStorageChanges({
 }: ReviewStorageChangesProps) {
   const { isInternetReachable } = useNetInfo();
 
-  const { mutateAsync: saveSelectedItems } = useSaveSelectedItems();
-  const [, setIsStorageSavedToApi] = useAtom(isStorageSavedToApiAtom);
-
-  const storageListItems = useAtomValue(storageListItemsAtom);
-
-  const changedItems = useMemo(
-    () =>
-      (storageListItems ?? []).filter(
-        (item) => item.currentQuantity !== item.originalQuantity
-      ),
-    [storageListItems]
-  );
-
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isError, setIsError] = useState<boolean>(false);
-
-  const handleSendChanges = useCallback(async () => {
-    try {
-      if (storageListItems) {
-        setIsLoading(true);
-
-        if (changedItems.length > 0) {
-          await saveSelectedItems(changedItems);
-        }
-
-        setIsStorageSavedToApi(true);
-
-        navigation.replace('StorageChangesSummary');
-      }
-    } catch {
-      setIsLoading(false);
-      setIsError(true);
-    }
-  }, [
-    changedItems,
-    navigation,
-    saveSelectedItems,
-    setIsStorageSavedToApi,
-    storageListItems,
-  ]);
+  const { isLoading, isError, changedItems, handleSendChanges } =
+    useReviewStorageChangesData(navigation);
 
   if (isLoading) {
     return <Loading />;
