@@ -2,7 +2,7 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { useFocusEffect, type EventArg } from '@react-navigation/native';
 import { useAtomValue } from 'jotai';
 import { last } from 'ramda';
-import { useCallback, useMemo, useState } from 'react';
+import { Suspense, useCallback, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { usePartners } from '../../../api/queries/usePartners';
@@ -18,7 +18,7 @@ import { useResetSellFlow } from '../../../hooks/sell/useResetSellFlow';
 import { useSyncSellWithApi } from '../../../hooks/useSyncSellWithApi';
 import { type SummaryProps } from '../../../navigators/screen-types';
 
-export function Summary({ navigation }: SummaryProps) {
+function SuspendedSummary({ navigation }: SummaryProps) {
   const { isInternetReachable } = useNetInfo();
   const { isPending: isPartnersPending, data: partners } = usePartners();
 
@@ -129,6 +129,14 @@ export function Summary({ navigation }: SummaryProps) {
         </Button>
       </View>
     </View>
+  );
+}
+
+export function Summary(props: SummaryProps) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <SuspendedSummary {...props} />
+    </Suspense>
   );
 }
 

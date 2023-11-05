@@ -1,3 +1,4 @@
+import { useAtomValue } from 'jotai';
 import {
   FlatList,
   StyleSheet,
@@ -5,16 +6,15 @@ import {
   type ListRenderItemInfo,
 } from 'react-native';
 
+import { Suspense } from 'react';
+import { receiptsAtom, type ContextReceipt } from '../../atoms/receipts';
 import { Loading } from '../../components/Loading';
 import { colors } from '../../constants/colors';
 import { type ReceiptListProps } from '../../navigators/screen-types';
-import { useReceiptsContext } from '../../providers/ReceiptsProvider';
-import { type ContextReceipt } from '../../providers/types/receipts-provider-types';
 import { ReceiptListItem } from './ReceiptListItem';
 
-export function ReceiptList({ navigation }: ReceiptListProps) {
-  const { isPending: isReceiptsContextPending, receipts } =
-    useReceiptsContext();
+function SuspendedReceiptList({ navigation }: ReceiptListProps) {
+  const receipts = useAtomValue(receiptsAtom);
 
   const receiptListItemPressHandler = (serialNumber: number) => {
     navigation.navigate('ReceiptDetails', { serialNumber });
@@ -30,10 +30,6 @@ export function ReceiptList({ navigation }: ReceiptListProps) {
     />
   );
 
-  if (isReceiptsContextPending) {
-    return <Loading />;
-  }
-
   return (
     <View style={styles.container}>
       <FlatList
@@ -42,6 +38,14 @@ export function ReceiptList({ navigation }: ReceiptListProps) {
         renderItem={renderReceiptListItem}
       />
     </View>
+  );
+}
+
+export function ReceiptList(props: ReceiptListProps) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <SuspendedReceiptList {...props} />
+    </Suspense>
   );
 }
 
