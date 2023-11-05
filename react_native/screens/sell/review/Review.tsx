@@ -1,3 +1,4 @@
+import { useNetInfo } from '@react-native-community/netinfo';
 import { useAtom, useAtomValue } from 'jotai';
 import { and, dissoc, dissocPath, isEmpty, reduce } from 'ramda';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
@@ -10,17 +11,26 @@ import {
   type ListRenderItemInfo,
 } from 'react-native';
 
+import { useSellSelectedItems } from '../../../api/mutations/useSellSelectedItems';
+import { useCheckToken } from '../../../api/queries/useCheckToken';
 import { useItems } from '../../../api/queries/useItems';
 import { useOtherItems } from '../../../api/queries/useOtherItems';
+import { type StoreDetailsResponseData } from '../../../api/response-types/StoreDetailsResponseType';
 import { currentOrderAtom, ordersAtom } from '../../../atoms/orders';
+import {
+  currentReceiptAtom,
+  receiptsAtom,
+  type ContextReceipt,
+} from '../../../atoms/receipts';
 import {
   reviewItemsAtom,
   selectedItemsAtom,
+  selectedOtherItemsAtom,
   type OtherReviewItem,
   type RegularReviewItem,
   type ReviewItem,
-  selectedOtherItemsAtom,
 } from '../../../atoms/sellFlow';
+import { selectedStoreAtom } from '../../../atoms/storage';
 import { Loading } from '../../../components/Loading';
 import { ErrorCard } from '../../../components/info-cards/ErrorCard';
 import { Button } from '../../../components/ui/Button';
@@ -31,20 +41,30 @@ import { useResetSellFlow } from '../../../hooks/sell/useResetSellFlow';
 import { type ReviewProps } from '../../../navigators/screen-types';
 import { calculateAmounts } from '../../../utils/calculateAmounts';
 import { calculateDiscountedItemAmounts } from '../../../utils/calculateDiscountedItemAmounts';
+import { calculateReceiptTotals } from '../../../utils/calculateReceiptTotals';
 import { formatPrice } from '../../../utils/formatPrice';
 import { OtherItemSelection } from './OtherItemSelection';
 import { RegularItemSelection } from './RegularItemSelection';
 import { getReviewItemId } from './getReviewItemId';
 
 function SuspendedReview({ navigation }: ReviewProps) {
+  const { isInternetReachable } = useNetInfo();
+
+  const { data: user, isPending: isUserPending } = useCheckToken();
   const { data: items, isPending: isItemsPending } = useItems();
   const { data: otherItems, isPending: isOtherItemsPending } = useOtherItems();
+
+  const { mutateAsync: updateStorageAPI } = useSellSelectedItems();
 
   const currentPriceList = useCurrentPriceList();
   const resetSellFlow = useResetSellFlow();
 
   const currentOrder = useAtomValue(currentOrderAtom);
+  const [currentReceipt, setCurrentReceipt] = useAtom(currentReceiptAtom);
+  const [selectedStoreCurrentState, setSelectedStoreCurrentState] =
+    useAtom(selectedStoreAtom);
   const [, setOrders] = useAtom(ordersAtom);
+  const [receipts, setReceipts] = useAtom(receiptsAtom);
   const [reviewItems, setReviewItems] = useAtom(reviewItemsAtom);
   const [selectedItems, setSelectedItems] = useAtom(selectedItemsAtom);
   const [selectedOtherItems, setSelectedOtherItems] = useAtom(
@@ -240,11 +260,99 @@ function SuspendedReview({ navigation }: ReviewProps) {
     );
   }, [navigation, resetSellFlow]);
 
-  const finishReview = useCallback(() => {
+  const finishReview = useCallback(async () => {
     if (currentOrder) {
       setOrders(async (prevOrders) => [...(await prevOrders), currentOrder]);
     }
-  }, [currentOrder, setOrders]);
+    if (!!currentReceipt && !!user) {
+      const serialNumber = isEmpty(receipts)
+        ? selectedStoreCurrentState?.firstAvailableSerialNumber
+        : receipts.reduce(
+            (sn, { serialNumber: receiptSn }) =>
+              receiptSn > sn ? receiptSn : sn,
+            0
+          ) + 1;
+
+      const receiptTotals = calculateReceiptTotals({
+        items: currentReceipt.items ?? [],
+        otherItems: currentReceipt.otherItems,
+      });
+
+      const roundedAmount =
+        currentReceipt.invoiceType === 'P'
+          ? Math.round(receiptTotals.grossAmount / 5) * 5
+          : receiptTotals.grossAmount;
+      const roundAmount = roundedAmount - receiptTotals.grossAmount;
+
+      const finalReceipt = {
+        ...currentReceipt,
+        isSent: false,
+        shouldBeUpdated: false,
+        serialNumber,
+        yearCode: selectedStoreCurrentState?.yearCode,
+        originalCopiesPrinted: 0,
+        vendor: {
+          name: user.company.name,
+          country: user.company.country,
+          postalCode: user.company.postalCode,
+          city: user.company.city,
+          address: user.company.address,
+          felir: user.company.felir,
+          iban: user.company.iban,
+          bankAccount: user.company.bankAccount,
+          vatNumber: user.company.vatNumber,
+        },
+        ...receiptTotals,
+        roundAmount,
+        roundedAmount,
+      } as ContextReceipt;
+
+      setCurrentReceipt(finalReceipt);
+
+      setReceipts(async (prevReceiptsPromise) => {
+        const prevReceipts = await prevReceiptsPromise;
+        return [...prevReceipts, finalReceipt];
+      });
+    }
+
+    if (selectedStoreCurrentState) {
+      const updatedStorage: StoreDetailsResponseData = {
+        ...selectedStoreCurrentState,
+        expirations: selectedStoreCurrentState.expirations.map((expiration) => {
+          const soldItemQuantity =
+            selectedItems?.[expiration.itemId]?.[expiration.expirationId];
+
+          if (!soldItemQuantity) {
+            return expiration;
+          }
+
+          return {
+            ...expiration,
+            quantity: expiration.quantity - soldItemQuantity,
+          };
+        }),
+      };
+
+      if (isInternetReachable === true) {
+        await updateStorageAPI(updatedStorage);
+      }
+
+      setSelectedStoreCurrentState(updatedStorage);
+    }
+  }, [
+    currentOrder,
+    currentReceipt,
+    isInternetReachable,
+    receipts,
+    selectedItems,
+    selectedStoreCurrentState,
+    setCurrentReceipt,
+    setOrders,
+    setReceipts,
+    setSelectedStoreCurrentState,
+    updateStorageAPI,
+    user,
+  ]);
 
   const confirmReceiptHandler = useCallback(() => {
     Alert.alert(
@@ -257,7 +365,7 @@ function SuspendedReview({ navigation }: ReviewProps) {
           onPress: async () => {
             try {
               setIsLoading(true);
-              finishReview();
+              await finishReview();
               navigation.reset({
                 index: 1,
                 routes: [{ name: 'Index' }, { name: 'Summary' }],
@@ -303,7 +411,7 @@ function SuspendedReview({ navigation }: ReviewProps) {
     [removeItemHandler, removeOtherItemHandler, reviewItems, selectedRow]
   );
 
-  if (isLoading || isItemsPending || isOtherItemsPending) {
+  if (isLoading || isItemsPending || isOtherItemsPending || isUserPending) {
     return <Loading />;
   }
 

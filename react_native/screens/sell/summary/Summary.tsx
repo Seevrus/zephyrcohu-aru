@@ -1,10 +1,12 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useFocusEffect, type EventArg } from '@react-navigation/native';
+import { useAtomValue } from 'jotai';
 import { last } from 'ramda';
 import { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { usePartners } from '../../../api/queries/usePartners';
+import { receiptsAtom } from '../../../atoms/receipts';
 import { Loading } from '../../../components/Loading';
 import { ErrorCard } from '../../../components/info-cards/ErrorCard';
 import { TextCard } from '../../../components/info-cards/TextCard';
@@ -12,19 +14,17 @@ import { PrintSection } from '../../../components/print-section/PrintSection';
 import { Button } from '../../../components/ui/Button';
 import { colors } from '../../../constants/colors';
 import { fontSizes } from '../../../constants/fontSizes';
+import { useResetSellFlow } from '../../../hooks/sell/useResetSellFlow';
 import { useSyncSellWithApi } from '../../../hooks/useSyncSellWithApi';
 import { type SummaryProps } from '../../../navigators/screen-types';
-import { useReceiptsContext } from '../../../providers/ReceiptsProvider';
-import { useSellFlowContext } from '../../../providers/SellFlowProvider';
 
 export function Summary({ navigation }: SummaryProps) {
   const { isInternetReachable } = useNetInfo();
   const { isPending: isPartnersPending, data: partners } = usePartners();
-  const { isPending: isReceiptsContextPending, receipts } =
-    useReceiptsContext();
-  const { isPending: isSellFlowContextPending, resetSellFlowContext } =
-    useSellFlowContext();
 
+  const resetSellFlow = useResetSellFlow();
+
+  const receipts = useAtomValue(receiptsAtom);
   const currentReceipt = last(receipts);
 
   const currentPartner = useMemo(
@@ -59,10 +59,10 @@ export function Summary({ navigation }: SummaryProps) {
     ) => {
       setIsLoading(true);
       event.preventDefault();
-      await resetSellFlowContext();
+      resetSellFlow();
       navigation.dispatch(event.data.action);
     },
-    [navigation, resetSellFlowContext]
+    [navigation, resetSellFlow]
   );
 
   useFocusEffect(
@@ -75,13 +75,7 @@ export function Summary({ navigation }: SummaryProps) {
     }, [exitSummaryHandler, navigation])
   );
 
-  if (
-    isLoading ||
-    isPartnersPending ||
-    isReceiptsContextPending ||
-    isSellFlowContextPending ||
-    isSyncSellPending
-  ) {
+  if (isLoading || isPartnersPending || isSyncSellPending) {
     return <Loading />;
   }
 
@@ -122,8 +116,13 @@ export function Summary({ navigation }: SummaryProps) {
           onPress={async () => {
             setIsLoading(true);
             navigation.removeListener('beforeRemove', exitSummaryHandler);
-            await resetSellFlowContext();
-            navigation.pop();
+
+            resetSellFlow();
+
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Index' }],
+            });
           }}
         >
           Visszatérés a kezdőképernyőre

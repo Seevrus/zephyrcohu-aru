@@ -7,7 +7,7 @@ import { type Partner } from '../../api/response-mappers/mapPartnersResponse';
 import {
   type ContextReceipt,
   type ContextReceiptItem,
-} from '../../providers/types/receipts-provider-types';
+} from '../../atoms/receipts';
 import { createUniqueDiscountedItems } from '../../utils/createUniqueDiscountedItems';
 
 const documentType = '<!DOCTYPE html>';

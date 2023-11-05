@@ -21,18 +21,18 @@ export type SelectedDiscount = {
     }
 );
 
-type ContextReceiptItem = ReceiptItem & {
+export type ContextReceiptItem = ReceiptItem & {
   selectedDiscounts?: SelectedDiscount[];
 };
 
-type ContextReceipt = Omit<CreateReceiptRequest, 'items'> & {
+export type ContextReceipt = Omit<CreateReceiptRequest, 'items'> & {
   id: number;
   isSent: boolean;
   shouldBeUpdated: boolean;
   items: ContextReceiptItem[];
 };
 
-const receiptsAtom = atomWithAsyncStorage<ContextReceipt[]>(
+export const receiptsAtom = atomWithAsyncStorage<ContextReceipt[]>(
   'boreal-receipts-context',
   []
 );

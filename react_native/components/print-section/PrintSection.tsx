@@ -5,17 +5,17 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { useCheckToken } from '../../api/queries/useCheckToken';
 import { type Partner } from '../../api/response-mappers/mapPartnersResponse';
+import { type ContextReceipt } from '../../atoms/receipts';
 import { colors } from '../../constants/colors';
 import { fontSizes } from '../../constants/fontSizes';
 import { useReceiptsContext } from '../../providers/ReceiptsProvider';
-import { type ContextReceipt } from '../../providers/types/receipts-provider-types';
 import { Loading } from '../Loading';
 import { Button } from '../ui/Button';
 import { createReceiptHtml } from './createReceiptHtml';
 
 type PrintSectionProps = {
-  partner: Partner;
-  receipt: ContextReceipt;
+  partner: Partner | undefined;
+  receipt: ContextReceipt | undefined;
 };
 
 export function PrintSection({ partner, receipt }: PrintSectionProps) {
@@ -27,22 +27,24 @@ export function PrintSection({ partner, receipt }: PrintSectionProps) {
     useState<string>('');
 
   const canPrintOriginalCopy =
-    partner?.invoiceCopies > receipt?.originalCopiesPrinted;
+    (partner?.invoiceCopies ?? 0) > (receipt?.originalCopiesPrinted ?? 0);
 
   const printButtonHandler = async () => {
-    if (canPrintOriginalCopy && isNotNil(receipt.id)) {
+    if (canPrintOriginalCopy && isNotNil(receipt)) {
       setUpdateProgressMessage('Számla frissítése folyamatban...');
       await updateNumberOfPrintedCopies(receipt.id);
       setUpdateProgressMessage('');
     }
 
-    await Print.printAsync({
-      html: createReceiptHtml({
-        user,
-        receipt,
-        partner,
-      }),
-    });
+    if (!!partner && !!receipt) {
+      await Print.printAsync({
+        html: createReceiptHtml({
+          user,
+          receipt,
+          partner,
+        }),
+      });
+    }
   };
 
   if (isUserPending || isReceiptsContextPending || !!updateProgressMessage) {
