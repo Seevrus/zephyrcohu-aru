@@ -12,7 +12,7 @@ type ReceiptBaseItem = {
 };
 
 export type ReceiptOtherItem = ReceiptBaseItem & {
-  comment: string;
+  comment: string | undefined;
 };
 
 export type ReceiptItem = ReceiptBaseItem & {

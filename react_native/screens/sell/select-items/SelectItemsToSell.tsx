@@ -32,7 +32,6 @@ import {
 } from 'react-native';
 
 import { useItems } from '../../../api/queries/useItems';
-import { usePriceLists } from '../../../api/queries/usePriceLists';
 import { type OrderItem } from '../../../api/request-types/common/OrderItem';
 import {
   type Discount,
@@ -41,13 +40,18 @@ import {
 } from '../../../api/response-types/ItemsResponseType';
 import { currentOrderAtom } from '../../../atoms/orders';
 import { currentReceiptAtom } from '../../../atoms/receipts';
-import { selectedPartnerAtom } from '../../../atoms/sellFlow';
+import {
+  selectedItemsAtom,
+  selectedPartnerAtom,
+} from '../../../atoms/sellFlow';
 import { selectedStoreAtom } from '../../../atoms/storage';
 import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { LabeledItem } from '../../../components/ui/LabeledItem';
 import { colors } from '../../../constants/colors';
+import { useCurrentPriceList } from '../../../hooks/sell/useCurrentPriceList';
+import { useResetSellFlow } from '../../../hooks/sell/useResetSellFlow';
 import { type SelectItemsToSellProps } from '../../../navigators/screen-types';
 import { calculateAmounts } from '../../../utils/calculateAmounts';
 import { formatPrice } from '../../../utils/formatPrice';
@@ -85,16 +89,16 @@ export function SelectItemsToSell({
   const scannedBarCode = route.params?.scannedBarCode;
 
   const { data: items, isPending: isItemsPending } = useItems();
-  const { data: priceLists, isPending: isPriceListsPending } = usePriceLists();
+
+  const currentPriceList = useCurrentPriceList();
+  const resetSellFlow = useResetSellFlow();
 
   const [, setCurrentOrder] = useAtom(currentOrderAtom);
   const [, setCurrentReceipt] = useAtom(currentReceiptAtom);
-  const [selectedPartner, setSelectedPartner] = useAtom(selectedPartnerAtom);
   const currentStorage = useAtomValue(selectedStoreAtom);
+  const [selectedItems, setSelectedItems] = useAtom(selectedItemsAtom);
+  const selectedPartner = useAtomValue(selectedPartnerAtom);
 
-  const [selectedItems, setSelectedItems] = useState<
-    Record<number, Record<number, number>>
-  >({});
   const [selectedOrderItems, setSelectedOrderItems] = useState<
     Record<number, number>
   >({});
@@ -105,14 +109,6 @@ export function SelectItemsToSell({
     searchTerm: '',
     barCode: '',
   });
-
-  const currentPriceList = useMemo(
-    () =>
-      priceLists?.find(
-        (priceList) => priceList.id === selectedPartner?.priceList?.id
-      ),
-    [priceLists, selectedPartner?.priceList?.id]
-  );
 
   const storageExpirations = useMemo(() => {
     const expirations: Record<number, Record<number, number>> = {};
@@ -284,11 +280,6 @@ export function SelectItemsToSell({
     [setSelectedOrderItems]
   );
 
-  const resetSellFlow = useCallback(() => {
-    setCurrentReceipt(null);
-    setSelectedPartner(null);
-  }, [setCurrentReceipt, setSelectedPartner]);
-
   useEffect(() => {
     if (!isNil(scannedBarCode) && searchState.barCode !== scannedBarCode) {
       setSearchState({ searchTerm: '', barCode: scannedBarCode });
@@ -453,7 +444,7 @@ export function SelectItemsToSell({
     [selectedItems, selectedOrderItems, upsertOrderItem, upsertSelectedItem]
   );
 
-  if (isLoading || isItemsPending || isPriceListsPending) {
+  if (isLoading || isItemsPending) {
     return <Loading />;
   }
 

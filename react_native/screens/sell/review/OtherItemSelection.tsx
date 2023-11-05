@@ -6,9 +6,9 @@ import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';
 import { Button } from '../../../components/ui/Button';
 import { LabeledItem } from '../../../components/ui/LabeledItem';
 import { colors } from '../../../constants/colors';
-import { type OtherReviewItem } from '../../../providers/sell-flow-hooks/useReview';
 import { formatPrice } from '../../../utils/formatPrice';
 import { getReviewItemId } from './getReviewItemId';
+import { type OtherReviewItem } from './Review';
 
 type SelectionProps = {
   selected: boolean;
@@ -34,7 +34,7 @@ function _OtherItemSelection({
       expandedInitially={selected}
       height={dropdownHeight}
       backgroundColor={backgroundColor}
-      onSelect={onSelect}
+      onSelect={(id: string | number) => onSelect(String(id))}
     >
       <View
         style={styles.selectPartnerContainer}

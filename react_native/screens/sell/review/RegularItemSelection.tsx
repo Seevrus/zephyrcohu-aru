@@ -10,9 +10,9 @@ import { Button } from '../../../components/ui/Button';
 import { LabeledItem } from '../../../components/ui/LabeledItem';
 import { colors } from '../../../constants/colors';
 import { type StackParams } from '../../../navigators/screen-types';
-import { type RegularReviewItem } from '../../../providers/sell-flow-hooks/useReview';
 import { formatPrice } from '../../../utils/formatPrice';
 import { getReviewItemId } from './getReviewItemId';
+import { type RegularReviewItem } from './Review';
 
 type SelectionProps = {
   selected: boolean;
@@ -57,7 +57,7 @@ function _RegularItemSelection({
       expandedInitially={selected}
       height={dropdownHeight}
       backgroundColor={backgroundColor}
-      onSelect={onSelect}
+      onSelect={(id: string | number) => onSelect(String(id))}
     >
       <View
         style={styles.selectPartnerContainer}
@@ -139,7 +139,7 @@ function _RegularItemSelection({
           >
             Törlés
           </Button>
-          {item.availableDiscounts?.length > 0 && (
+          {(item.availableDiscounts?.length ?? 0) > 0 && (
             <Button
               variant="ok"
               onPress={() => {

@@ -1,8 +1,14 @@
 import { format } from 'date-fns';
-import { isEmpty, not } from 'ramda';
-import { useState } from 'react';
+import { useAtom } from 'jotai';
+import { assoc, dissoc, isEmpty, not } from 'ramda';
+import { Suspense, useCallback, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import {
+  currentReceiptAtom,
+  type SelectedDiscount,
+} from '../../../atoms/receipts';
+import { reviewItemsAtom } from '../../../atoms/sellFlow';
 import { Loading } from '../../../components/Loading';
 import { ErrorCard } from '../../../components/info-cards/ErrorCard';
 import { Button } from '../../../components/ui/Button';
@@ -11,7 +17,6 @@ import { LabeledItem } from '../../../components/ui/LabeledItem';
 import { colors } from '../../../constants/colors';
 import { fontSizes } from '../../../constants/fontSizes';
 import { type DiscountsProps } from '../../../navigators/screen-types';
-import { useSellFlowContext } from '../../../providers/SellFlowProvider';
 
 type FormErrors = {
   absoluteDiscountedQuantity?: boolean;
@@ -20,20 +25,65 @@ type FormErrors = {
   freeFormDiscountedQuantity?: boolean;
 };
 
-export function Discounts({ navigation, route }: DiscountsProps) {
-  const { isPending: isContextPending, saveDiscountedItemsInFlow } =
-    useSellFlowContext();
+function SuspendedDiscounts({ navigation, route }: DiscountsProps) {
+  const [, setCurrentReceipt] = useAtom(currentReceiptAtom);
+  const [, setReviewItems] = useAtom(reviewItemsAtom);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const applyDiscounts = useCallback(
+    (itemId: number, discounts?: SelectedDiscount[]) => {
+      setReviewItems((prevItems) =>
+        prevItems.map((item) => {
+          if (item.itemId !== itemId || item.type !== 'item') {
+            return item;
+          }
+
+          if (discounts) {
+            return assoc('selectedDiscounts', discounts, item);
+          }
+
+          return dissoc('selectedDiscounts', item);
+        })
+      );
+    },
+    [setReviewItems]
+  );
+
+  const saveDiscountedItemsInFlow = useCallback(
+    async (itemId: number, discounts?: SelectedDiscount[]) => {
+      applyDiscounts(itemId, discounts);
+
+      setCurrentReceipt(async (prevReceiptPromise) => {
+        const prevReceipt = await prevReceiptPromise;
+
+        return {
+          ...prevReceipt,
+          items: prevReceipt?.items?.map((contextReceiptItem) => {
+            if (contextReceiptItem.id !== itemId) {
+              return contextReceiptItem;
+            }
+
+            if (discounts) {
+              return assoc('selectedDiscounts', discounts, contextReceiptItem);
+            }
+
+            return dissoc('selectedDiscounts', contextReceiptItem);
+          }),
+        };
+      });
+    },
+    [applyDiscounts, setCurrentReceipt]
+  );
+
   const item = route.params?.item;
-  const absoluteDiscount = item.availableDiscounts.find(
+  const absoluteDiscount = item.availableDiscounts?.find(
     (d) => d.type === 'absolute'
   );
-  const percentageDiscount = item.availableDiscounts.find(
+  const percentageDiscount = item.availableDiscounts?.find(
     (d) => d.type === 'percentage'
   );
-  const freeFormDiscount = item.availableDiscounts.find(
+  const freeFormDiscount = item.availableDiscounts?.find(
     (d) => d.type === 'freeForm'
   );
 
@@ -96,7 +146,7 @@ export function Discounts({ navigation, route }: DiscountsProps) {
       await (absolute + percentage + freeForm === 0
         ? saveDiscountedItemsInFlow(item.itemId)
         : saveDiscountedItemsInFlow(item.itemId, [
-            ...(absolute > 0
+            ...(absolute > 0 && absoluteDiscount
               ? [
                   {
                     id: absoluteDiscount.id,
@@ -107,7 +157,7 @@ export function Discounts({ navigation, route }: DiscountsProps) {
                   } as const,
                 ]
               : []),
-            ...(percentage > 0
+            ...(percentage > 0 && percentageDiscount
               ? [
                   {
                     id: percentageDiscount.id,
@@ -118,7 +168,7 @@ export function Discounts({ navigation, route }: DiscountsProps) {
                   } as const,
                 ]
               : []),
-            ...(freeForm > 0
+            ...(freeForm > 0 && freeFormDiscount
               ? [
                   {
                     id: freeFormDiscount.id,
@@ -136,7 +186,7 @@ export function Discounts({ navigation, route }: DiscountsProps) {
     }
   };
 
-  if (isLoading || isContextPending) {
+  if (isLoading) {
     return <Loading />;
   }
 
@@ -233,6 +283,14 @@ export function Discounts({ navigation, route }: DiscountsProps) {
         </View>
       </View>
     </ScrollView>
+  );
+}
+
+export function Discounts(props: DiscountsProps) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <SuspendedDiscounts {...props} />
+    </Suspense>
   );
 }
 

@@ -1,3 +1,4 @@
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
 
 import env from '../../env.json';
@@ -5,8 +6,10 @@ import {
   type OtherItemsResponseData,
   type OtherItemsResponseType,
 } from '../response-types/OtherItemsResponseType';
+import { useCheckToken } from './useCheckToken';
+import { useToken } from './useToken';
 
-/* export function useOtherItems({
+export function useOtherItems({
   enabled = true,
 } = {}): UseQueryResult<OtherItemsResponseData> {
   const { data: user, isSuccess: isCheckTokenSuccess } = useCheckToken();
@@ -17,7 +20,7 @@ import {
 
   return useQuery({
     queryKey: ['other-items'],
-    queryFn: () => fetchOtherItems(token),
+    queryFn: fetchOtherItems(token as string),
     enabled:
       enabled &&
       !isTokenExpired &&
@@ -26,7 +29,7 @@ import {
       !isPasswordExpired &&
       isRoundStarted,
   });
-} */
+}
 
 export const fetchOtherItems =
   (token: string) => async (): Promise<OtherItemsResponseData> => {

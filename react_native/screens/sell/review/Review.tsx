@@ -1,5 +1,6 @@
-import { dissoc, dissocPath, reduce } from 'ramda';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useAtom, useAtomValue } from 'jotai';
+import { and, dissoc, dissocPath, isEmpty, reduce } from 'ramda';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -9,32 +10,49 @@ import {
   type ListRenderItemInfo,
 } from 'react-native';
 
+import { useItems } from '../../../api/queries/useItems';
+import { useOtherItems } from '../../../api/queries/useOtherItems';
+import { currentOrderAtom, ordersAtom } from '../../../atoms/orders';
+import {
+  reviewItemsAtom,
+  selectedItemsAtom,
+  type OtherReviewItem,
+  type RegularReviewItem,
+  type ReviewItem,
+  selectedOtherItemsAtom,
+} from '../../../atoms/sellFlow';
 import { Loading } from '../../../components/Loading';
 import { ErrorCard } from '../../../components/info-cards/ErrorCard';
 import { Button } from '../../../components/ui/Button';
 import { LabeledItem } from '../../../components/ui/LabeledItem';
 import { colors } from '../../../constants/colors';
+import { useCurrentPriceList } from '../../../hooks/sell/useCurrentPriceList';
+import { useResetSellFlow } from '../../../hooks/sell/useResetSellFlow';
 import { type ReviewProps } from '../../../navigators/screen-types';
-import { useSellFlowContext } from '../../../providers/SellFlowProvider';
-import { type ReviewItem } from '../../../providers/sell-flow-hooks/useReview';
+import { calculateAmounts } from '../../../utils/calculateAmounts';
 import { calculateDiscountedItemAmounts } from '../../../utils/calculateDiscountedItemAmounts';
 import { formatPrice } from '../../../utils/formatPrice';
 import { OtherItemSelection } from './OtherItemSelection';
 import { RegularItemSelection } from './RegularItemSelection';
 import { getReviewItemId } from './getReviewItemId';
 
-export function Review({ navigation }: ReviewProps) {
-  const {
-    isPending: isContextPending,
-    setSelectedItems,
-    setSelectedOtherItems,
-    reviewItems,
-    resetSellFlowContext,
-    finishReview,
-  } = useSellFlowContext();
+function SuspendedReview({ navigation }: ReviewProps) {
+  const { data: items, isPending: isItemsPending } = useItems();
+  const { data: otherItems, isPending: isOtherItemsPending } = useOtherItems();
+
+  const currentPriceList = useCurrentPriceList();
+  const resetSellFlow = useResetSellFlow();
+
+  const currentOrder = useAtomValue(currentOrderAtom);
+  const [, setOrders] = useAtom(ordersAtom);
+  const [reviewItems, setReviewItems] = useAtom(reviewItemsAtom);
+  const [selectedItems, setSelectedItems] = useAtom(selectedItemsAtom);
+  const [selectedOtherItems, setSelectedOtherItems] = useAtom(
+    selectedOtherItemsAtom
+  );
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [selectedRow, setSelectedRow] = useState<ReviewItem>(null);
+  const [selectedRow, setSelectedRow] = useState<ReviewItem | null>(null);
   const [saveReceiptError, setSaveReceiptError] = useState<string>('');
 
   const discountedGrossAmount = useMemo(
@@ -45,7 +63,7 @@ export function Review({ navigation }: ReviewProps) {
           return accumulatedGrossAmount + grossAmount;
         },
         0,
-        reviewItems
+        reviewItems ?? []
       ),
     [reviewItems]
   );
@@ -79,14 +97,127 @@ export function Review({ navigation }: ReviewProps) {
 
     if (reviewItems && numberOfRegularReviewItems === 0) {
       setIsLoading(true);
-      resetSellFlowContext().then(() => {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Index' }],
-        });
+      resetSellFlow();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Index' }],
       });
     }
-  }, [navigation, resetSellFlowContext, reviewItems]);
+  }, [navigation, resetSellFlow, reviewItems]);
+
+  useEffect(() => {
+    setReviewItems((prevItems) => {
+      if (
+        !items ||
+        !otherItems ||
+        and(isEmpty(selectedItems), isEmpty(selectedOtherItems))
+      ) {
+        return prevItems;
+      }
+
+      const regularReviewItems: RegularReviewItem[] = Object.entries(
+        selectedItems
+      )
+        .flatMap(([itemId, expirations]) => {
+          const item = items.find((index) => index.id === +itemId);
+
+          if (!item) {
+            return;
+          }
+
+          return Object.entries(expirations).map<RegularReviewItem | undefined>(
+            ([expirationId, quantity]) => {
+              const expiration = item.expirations.find(
+                (exp) => exp.id === +expirationId
+              );
+              const currentReviewItem = prevItems?.find(
+                (index) =>
+                  index.itemId === +itemId &&
+                  index.type === 'item' &&
+                  index.expirationId === +expirationId
+              );
+
+              if (!expiration) {
+                return;
+              }
+
+              const netPrice =
+                currentPriceList?.items.find(
+                  (index) => index.itemId === item.id
+                )?.netPrice ?? item.netPrice;
+
+              const { grossAmount } = calculateAmounts({
+                netPrice,
+                quantity,
+                vatRate: item.vatRate,
+              });
+
+              return {
+                type: 'item',
+                itemId: item.id,
+                articleNumber: item.articleNumber,
+                name: item.name,
+                expirationId: expiration.id,
+                expiresAt: expiration.expiresAt,
+                quantity,
+                unitName: item.unitName,
+                netPrice,
+                vatRate: item.vatRate,
+                grossAmount,
+                availableDiscounts: item.discounts,
+                selectedDiscounts: currentReviewItem?.selectedDiscounts,
+              };
+            }
+          );
+        })
+        .filter((item): item is RegularReviewItem => !!item)
+        .sort((item1, item2) => item1.name.localeCompare(item2.name, 'HU-hu'));
+
+      const otherReviewItems: OtherReviewItem[] = Object.entries(
+        selectedOtherItems
+      )
+        .map<OtherReviewItem | undefined>(
+          ([otherItemId, { netPrice, quantity, comment }]) => {
+            const otherItem = otherItems.find(
+              (index) => index.id === +otherItemId
+            );
+
+            if (!otherItem || !quantity) {
+              return;
+            }
+
+            const { grossAmount } = calculateAmounts({
+              netPrice: netPrice ?? otherItem.netPrice,
+              quantity,
+              vatRate: otherItem.vatRate,
+            });
+
+            return {
+              type: 'otherItem',
+              itemId: otherItem.id,
+              articleNumber: otherItem.articleNumber,
+              name: otherItem.name,
+              quantity,
+              unitName: otherItem.unitName,
+              netPrice: netPrice ?? otherItem.netPrice,
+              vatRate: otherItem.vatRate,
+              grossAmount,
+              comment: comment ?? undefined,
+            };
+          }
+        )
+        .filter((item): item is OtherReviewItem => !!item);
+
+      return [...regularReviewItems, ...otherReviewItems];
+    });
+  }, [
+    currentPriceList?.items,
+    items,
+    otherItems,
+    selectedItems,
+    selectedOtherItems,
+    setReviewItems,
+  ]);
 
   const removeReceiptHandler = useCallback(() => {
     Alert.alert(
@@ -98,7 +229,7 @@ export function Review({ navigation }: ReviewProps) {
           text: 'Biztosan ezt szeretném',
           onPress: async () => {
             setIsLoading(true);
-            await resetSellFlowContext();
+            resetSellFlow();
             navigation.reset({
               index: 0,
               routes: [{ name: 'Index' }],
@@ -107,7 +238,13 @@ export function Review({ navigation }: ReviewProps) {
         },
       ]
     );
-  }, [navigation, resetSellFlowContext]);
+  }, [navigation, resetSellFlow]);
+
+  const finishReview = useCallback(() => {
+    if (currentOrder) {
+      setOrders(async (prevOrders) => [...(await prevOrders), currentOrder]);
+    }
+  }, [currentOrder, setOrders]);
 
   const confirmReceiptHandler = useCallback(() => {
     Alert.alert(
@@ -120,7 +257,7 @@ export function Review({ navigation }: ReviewProps) {
           onPress: async () => {
             try {
               setIsLoading(true);
-              await finishReview();
+              finishReview();
               navigation.reset({
                 index: 1,
                 routes: [{ name: 'Index' }, { name: 'Summary' }],
@@ -143,9 +280,9 @@ export function Review({ navigation }: ReviewProps) {
         <RegularItemSelection
           selected={reviewItemId === selectedRowId}
           item={info.item}
-          onSelect={(id: string) => {
+          onSelect={(id: string | number) => {
             setSelectedRow(
-              reviewItems.find((row) => getReviewItemId(row) === id)
+              reviewItems.find((row) => getReviewItemId(row) === id) ?? null
             );
           }}
           onDelete={removeItemHandler}
@@ -156,7 +293,7 @@ export function Review({ navigation }: ReviewProps) {
           item={info.item}
           onSelect={(id: string) => {
             setSelectedRow(
-              reviewItems.find((row) => getReviewItemId(row) === id)
+              reviewItems.find((row) => getReviewItemId(row) === id) ?? null
             );
           }}
           onDelete={removeOtherItemHandler}
@@ -166,7 +303,7 @@ export function Review({ navigation }: ReviewProps) {
     [removeItemHandler, removeOtherItemHandler, reviewItems, selectedRow]
   );
 
-  if (isLoading || isContextPending) {
+  if (isLoading || isItemsPending || isOtherItemsPending) {
     return <Loading />;
   }
 
@@ -213,6 +350,14 @@ export function Review({ navigation }: ReviewProps) {
         </View>
       </View>
     </View>
+  );
+}
+
+export function Review(props: ReviewProps) {
+  return (
+    <Suspense>
+      <SuspendedReview {...props} />
+    </Suspense>
   );
 }
 

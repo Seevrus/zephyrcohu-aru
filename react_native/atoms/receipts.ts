@@ -4,7 +4,7 @@ import { atomWithAsyncStorage } from './helpers';
 import { type ReceiptItem } from '../api/request-types/common/ReceiptItemsTypes';
 import { type CreateReceiptRequest } from '../api/request-types/CreateReceiptsRequestType';
 
-type SelectedDiscount = {
+export type SelectedDiscount = {
   id: number;
   quantity: number;
   name: string;

@@ -13,7 +13,7 @@ import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';
 import { Input } from '../../../components/ui/Input';
 import { colors } from '../../../constants/colors';
 import { fontSizes } from '../../../constants/fontSizes';
-import { type OtherSellItem } from '../../../providers/sell-flow-hooks/useSelectOtherItems';
+import { type OtherSellItem } from './SelectOtherItemsToSell';
 
 type ExpirationAccordionDetailsProps = {
   item: OtherSellItem;
@@ -36,7 +36,7 @@ function _ExpirationAccordionDetails({
 }: ExpirationAccordionDetailsProps) {
   const [dropdownHeight, setDropdownHeight] = useState(0);
 
-  const backgroundColor = quantity > 0 ? colors.ok : colors.neutral;
+  const backgroundColor = (quantity ?? 0) > 0 ? colors.ok : colors.neutral;
 
   const priceHandler = (newPrice: string) => {
     const formattedPrice = pipe(

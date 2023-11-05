@@ -1,4 +1,4 @@
-import { type ReviewItem } from '../../../providers/sell-flow-hooks/useReview';
+import { type ReviewItem } from './Review';
 
 export function getReviewItemId(item: ReviewItem | null) {
   return item?.type === 'item'

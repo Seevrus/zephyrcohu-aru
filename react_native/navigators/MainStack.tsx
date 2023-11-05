@@ -6,8 +6,11 @@ import { StartErrand } from '../screens/errand-administration/StartErrand';
 import { Login } from '../screens/login/Login';
 import { AddPartnerForm } from '../screens/sell/add-partner/AddPartnerForm';
 import { SearchPartnerNavForm } from '../screens/sell/add-partner/SearchPartnerNavForm';
+import { Discounts } from '../screens/sell/review/Discounts';
+import { Review } from '../screens/sell/review/Review';
 import { ScanBarCodeInSell } from '../screens/sell/select-items/ScanBarCodeInSell';
 import { SelectItemsToSell } from '../screens/sell/select-items/SelectItemsToSell';
+import { SelectOtherItemsToSell } from '../screens/sell/select-other-items/SelectOtherItemsToSell';
 import { ChangePassword } from '../screens/start-page/ChangePassword';
 import { Index } from '../screens/start-page/Index';
 import { Settings } from '../screens/start-page/Settings';
@@ -125,7 +128,7 @@ export function MainStack() {
         component={ScanBarCodeInSell}
         options={{ headerTitle: 'Vonalkód olvasása' }}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="Review"
         component={Review}
         options={{
@@ -146,7 +149,7 @@ export function MainStack() {
           headerTitle: 'Egyéb Tételek',
         }}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Summary"
         component={Summary}
         options={{
