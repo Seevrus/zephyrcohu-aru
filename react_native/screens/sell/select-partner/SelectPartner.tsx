@@ -51,13 +51,6 @@ export function SelectPartner({ route, navigation }: SelectPartnerProps) {
   const { data: partnerLists, isPending: isPartnerListsPending } =
     usePartnerLists();
   const { data: partners, isPending: isPartnersPending } = usePartners();
-  /* const {
-    isPending: isContextPending,
-    partners,
-    selectedPartner,
-    selectPartner,
-    saveSelectedPartnerInFlow,
-  } = useSellFlowContext(); */
 
   const [, setCurrentReceipt] = useAtom(currentReceiptAtom);
   const [selectedPartner, setSelectedPartner] = useAtom(selectedPartnerAtom);

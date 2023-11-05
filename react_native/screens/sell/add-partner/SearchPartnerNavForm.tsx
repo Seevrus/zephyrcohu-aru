@@ -5,14 +5,13 @@ import {
   complement,
   filter,
   includes,
-  isNil,
-  not,
+  isNotNil,
   pipe,
   prepend,
   take,
   when,
 } from 'ramda';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useMemo, useState } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -102,15 +101,43 @@ export function SearchPartnerNavForm({
 
   const [taxNumber, setTaxNumber] = useState<string>(params?.taxNumber ?? '');
   const [searchValue, setSearchValue] = useState<string>('');
-  const [selectedResult, setSelectedResult] = useState<TaxPayer>(null);
+  const [selectedResult, setSelectedResult] = useState<TaxPayer | null>(null);
 
   const {
     data: taxPayerData,
-    isPending,
-    isSuccess,
+    isPending: isTaxPayerPending,
+    isSuccess: isTaxPayerSuccess,
   } = useSearchTaxNumber({ taxNumber });
 
-  const [taxPayersShown, setTaxPayersShown] = useState<TaxPayer[]>(null);
+  const taxPayersShown: TaxPayer[] = useMemo(
+    () =>
+      pipe(
+        when<TaxPayer[], TaxPayer[]>(
+          () => !!searchValue,
+          filter<TaxPayer>((taxPayer) => {
+            const needle = searchValue.toLocaleLowerCase();
+            const haystack = Object.values(taxPayer.locations)
+              .filter((location) => !!location)
+              .map(
+                (location) =>
+                  `${location.name}${location.city}${location.address}`
+              )
+              .join('');
+
+            return haystack.toLocaleLowerCase().includes(needle);
+          })
+        ),
+        (taxPayers) => take<TaxPayer>(NUM_PARTNERS_SHOWN, taxPayers),
+        when<TaxPayer[], TaxPayer[]>(
+          allPass([
+            () => isNotNil(selectedResult),
+            complement(includes(selectedResult)),
+          ]),
+          prepend(selectedResult as TaxPayer)
+        )
+      )(taxPayerData ?? []),
+    [searchValue, selectedResult, taxPayerData]
+  );
 
   useLayoutEffect(() => {
     if (isInternetReachable === false || isTokenExpired) {
@@ -118,70 +145,18 @@ export function SearchPartnerNavForm({
     }
   }, [isInternetReachable, isTokenExpired, navigation]);
 
-  useEffect(() => {
-    if (isPending) {
-      setTaxPayersShown(null);
-    }
-  }, [isPending]);
-
-  useEffect(() => {
-    setTaxPayersShown((prevTaxpayersShown) => {
-      if (!isNil(prevTaxpayersShown) || isPending || !taxPayerData) {
-        return prevTaxpayersShown;
-      }
-
-      return pipe(
-        take(NUM_PARTNERS_SHOWN),
-        when<TaxPayer[], TaxPayer[]>(
-          allPass([
-            () => not(isNil(selectedResult)),
-            complement(includes(selectedResult)),
-          ]),
-          prepend(selectedResult)
-        )
-      )(taxPayerData);
-    });
-  }, [isPending, selectedResult, taxPayerData]);
-
   const taxNumberSearchHandler = (value: string) => {
     setTaxNumber(value);
     setSearchValue('');
   };
 
-  const resultsSearchHandler = (inputValue: string) => {
-    setTaxPayersShown(
-      pipe<[TaxPayer[]], TaxPayer[], TaxPayer[], TaxPayer[]>(
-        filter<TaxPayer>((taxPayer) => {
-          const needle = inputValue.toLocaleLowerCase();
-          const haystack = Object.values(taxPayer.locations)
-            .filter((location) => !!location)
-            .map(
-              (location) =>
-                `${location.name}${location.city}${location.address}`
-            )
-            .join('');
-
-          return haystack.toLocaleLowerCase().includes(needle);
-        }),
-        take(NUM_PARTNERS_SHOWN),
-        when<TaxPayer[], TaxPayer[]>(
-          allPass([
-            () => not(isNil(selectedResult)),
-            complement(includes(selectedResult)),
-          ]),
-          prepend(selectedResult)
-        )
-      )(taxPayerData)
-    );
+  const selectResult = (id: string | number) => {
+    setSelectedResult(taxPayerData?.find((tp) => tp.id === +id) ?? null);
   };
 
-  const selectResult = (id: number) => {
-    setSelectedResult(taxPayerData?.find((tp) => tp.id === id));
-  };
-
-  const confirmResultHandler = (id: number) => {
-    const selectedTaxPayer = taxPayerData?.find((tp) => tp.id === id);
-    setSelectedResult(selectedTaxPayer);
+  const confirmResultHandler = (id: string | number) => {
+    const selectedTaxPayer = taxPayerData?.find((tp) => tp.id === +id);
+    setSelectedResult(selectedTaxPayer ?? null);
     if (selectedTaxPayer) {
       navigation.navigate('AddPartnerForm', {
         taxNumber: selectedTaxPayer.vatNumber,
@@ -215,7 +190,7 @@ export function SearchPartnerNavForm({
     />
   );
 
-  if (isTokenPending) {
+  if (isTokenPending || isTaxPayerPending) {
     return <Loading />;
   }
 
@@ -235,7 +210,7 @@ export function SearchPartnerNavForm({
           renderItem={renderPartner}
         />
       </View>
-      {isSuccess && (
+      {isTaxPayerSuccess && (
         <View style={[styles.formContainer, styles.bottomFormContainer]}>
           <View style={styles.inputContainer}>
             <Input
@@ -243,7 +218,7 @@ export function SearchPartnerNavForm({
               value={searchValue}
               config={{
                 autoCorrect: false,
-                onChangeText: resultsSearchHandler,
+                onChangeText: setSearchValue,
               }}
             />
           </View>

@@ -1,9 +1,11 @@
 import { type EventArg } from '@react-navigation/native';
-import { formatISO } from 'date-fns';
+import { useAtom } from 'jotai';
 import { isEmpty } from 'ramda';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { currentReceiptAtom } from '../../../atoms/receipts';
+import { maxNewPartnerIdInUseAtom } from '../../../atoms/sell-flow/partners';
 import { Loading } from '../../../components/Loading';
 import { TextCard } from '../../../components/info-cards/TextCard';
 import { Button } from '../../../components/ui/Button';
@@ -11,7 +13,6 @@ import { Input } from '../../../components/ui/Input';
 import { colors } from '../../../constants/colors';
 import { fontSizes } from '../../../constants/fontSizes';
 import { type AddPartnerFormProps } from '../../../navigators/screen-types';
-import { useSellFlowContext } from '../../../providers/SellFlowProvider';
 
 type FormErrors = {
   taxNumber: string;
@@ -28,8 +29,10 @@ export function AddPartnerForm({
   navigation,
   route: { params },
 }: AddPartnerFormProps) {
-  const { isPending: isContextPending, saveNewPartnerInFlow } =
-    useSellFlowContext();
+  const [maxNewPartnerIdInUse, setMaxNewPartnerIdInUse] = useAtom(
+    maxNewPartnerIdInUseAtom
+  );
+  const [, setCurrentReceipt] = useAtom(currentReceiptAtom);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -135,38 +138,38 @@ export function AddPartnerForm({
 
     if (isEmpty(formErrors)) {
       setIsLoading(true);
-      const now = formatISO(new Date());
-      await saveNewPartnerInFlow({
-        id: -1,
-        vatNumber: taxNumber,
-        locations: {
-          C: {
-            name,
-            locationType: 'C',
-            country: 'HU',
-            postalCode: centralPostalCode,
-            city: centralCity,
-            address: centralAddress,
-            createdAt: now,
-            updatedAt: now,
-          },
-          D: {
-            name,
-            locationType: 'D',
-            country: 'HU',
-            postalCode: deliveryPostalCode,
-            city: deliveryCity,
-            address: deliveryAddress,
-            createdAt: now,
-            updatedAt: now,
-          },
+
+      const partnerTemporaryId = maxNewPartnerIdInUse + 1;
+
+      setCurrentReceipt({
+        partnerId: partnerTemporaryId,
+        partnerCode: '',
+        partnerSiteCode: '',
+        buyer: {
+          id: partnerTemporaryId,
+          name,
+          country: 'HU',
+          postalCode: centralPostalCode || deliveryPostalCode,
+          city: centralCity || deliveryCity,
+          address: centralAddress || deliveryAddress,
+          deliveryName: name,
+          deliveryCountry: 'HU',
+          deliveryPostalCode: deliveryPostalCode,
+          deliveryCity: deliveryCity,
+          deliveryAddress: deliveryAddress,
+          iban: '',
+          bankAccount: '',
+          vatNumber: taxNumber,
         },
+        paymentDays: 0,
+        invoiceType: 'P',
       });
+
+      setMaxNewPartnerIdInUse(partnerTemporaryId);
     } else {
       setFormError(formErrors);
     }
 
-    setIsLoading(false);
     navigation.removeListener('beforeRemove', handleGoBack);
     navigation.reset({
       index: 1,
@@ -174,7 +177,7 @@ export function AddPartnerForm({
     });
   };
 
-  if (isLoading || isContextPending) {
+  if (isLoading) {
     return <Loading />;
   }
 

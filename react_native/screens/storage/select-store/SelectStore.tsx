@@ -14,6 +14,7 @@ import {
   prop,
   propEq,
   sortBy,
+  take,
   toLower,
   when,
 } from 'ramda';
@@ -77,7 +78,7 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
     isFetching: isStoreDetailsFetching,
   } = useStoreDetails(selectedStoreId ?? undefined, isStoreDetailsQueryEnabled);
 
-  const storesShown = useMemo(
+  const storesShown: StoreType[] = useMemo(
     () =>
       pipe(
         when(
@@ -85,12 +86,17 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
           filter<StoreType>((store) => store.name.includes(storeSearchValue))
         ),
         sortBy<StoreType>(prop('name')),
+        (stores) => take<StoreType>(10, stores),
         when(
           allPass([
             () => isNotNil(selectedStoreId),
             (stores) => !!stores.some((store) => store.id === selectedStoreId),
           ]),
-          prepend((stores ?? []).find((store) => store.id === selectedStoreId))
+          prepend(
+            (stores ?? []).find(
+              (store) => store.id === selectedStoreId
+            ) as StoreType
+          )
         )
       )(stores ?? []),
     [selectedStoreId, storeSearchValue, stores]

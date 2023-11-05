@@ -4,6 +4,8 @@ import { colors } from '../constants/colors';
 import { fontSizes } from '../constants/fontSizes';
 import { StartErrand } from '../screens/errand-administration/StartErrand';
 import { Login } from '../screens/login/Login';
+import { AddPartnerForm } from '../screens/sell/add-partner/AddPartnerForm';
+import { SearchPartnerNavForm } from '../screens/sell/add-partner/SearchPartnerNavForm';
 import { ChangePassword } from '../screens/start-page/ChangePassword';
 import { Index } from '../screens/start-page/Index';
 import { Settings } from '../screens/start-page/Settings';
@@ -13,6 +15,7 @@ import { ScanBarCodeInStorage } from '../screens/storage/select-items/ScanBarCod
 import { SelectItemsFromStore } from '../screens/storage/select-items/SelectItemsFromStore';
 import { SelectStore } from '../screens/storage/select-store/SelectStore';
 import { StorageChangesSummary } from '../screens/storage/summary/StorageChangesSummary';
+import { PartnersBottomTab } from './PartnersBottomTab';
 import { type StackParams } from './screen-types';
 
 const Stack = createNativeStackNavigator<StackParams>();
@@ -87,7 +90,7 @@ export function MainStack() {
           headerTitle: 'Kör indítása',
         }}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="SelectPartner"
         component={PartnersBottomTab}
         options={{
@@ -108,7 +111,7 @@ export function MainStack() {
           headerTitle: 'Új partner hozzáadása',
         }}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="SelectItemsToSell"
         component={SelectItemsToSell}
         options={{

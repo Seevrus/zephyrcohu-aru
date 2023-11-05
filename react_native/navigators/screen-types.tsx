@@ -37,19 +37,23 @@ export type StackParams = {
   SelectOtherItemsToSell: undefined;
   Summary: undefined;
 
-  SearchPartnerNavForm: {
-    taxNumber?: string;
-  };
-  AddPartnerForm: {
-    taxNumber?: string;
-    name?: string;
-    centralPostalCode?: string | undefined;
-    centralCity?: string | undefined;
-    centralAddress?: string | undefined;
-    deliveryPostalCode?: string;
-    deliveryCity?: string;
-    deliveryAddress?: string;
-  };
+  SearchPartnerNavForm:
+    | {
+        taxNumber?: string;
+      }
+    | undefined;
+  AddPartnerForm:
+    | {
+        taxNumber?: string;
+        name?: string;
+        centralPostalCode?: string | undefined;
+        centralCity?: string | undefined;
+        centralAddress?: string | undefined;
+        deliveryPostalCode?: string;
+        deliveryCity?: string;
+        deliveryAddress?: string;
+      }
+    | undefined;
 
   ReceiptList: undefined;
   ReceiptDetails: {
@@ -144,6 +148,9 @@ export type PartnerTabParams = {
 };
 
 export type SelectPartnerProps = CompositeScreenProps<
-  BottomTabScreenProps<PartnerTabParams, 'SelectPartnerFromStore'>,
+  BottomTabScreenProps<
+    PartnerTabParams,
+    'SelectPartnerFromStore' | 'SelectPartnerFromAll'
+  >,
   NativeStackScreenProps<StackParams>
 >;
