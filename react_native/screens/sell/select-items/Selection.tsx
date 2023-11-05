@@ -2,15 +2,15 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { equals, pipe, replace, trim } from 'ramda';
 import { memo } from 'react';
 import {
-  type ListRenderItemInfo,
   Pressable,
   StyleSheet,
   View,
+  type ListRenderItemInfo,
 } from 'react-native';
 
 import { format } from 'date-fns';
 import { Input } from '../../../components/ui/Input';
-import { type SellExpiration } from '../../../providers/sell-flow-hooks/useSelectItems';
+import { type SellExpiration } from './SelectItemsToSell';
 
 type SelectionProps = {
   info: ListRenderItemInfo<SellExpiration>;

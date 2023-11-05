@@ -1,11 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { useAtomValue } from 'jotai';
 
 import { type StorageListItem } from '../../atoms/storageFlow';
 import env from '../../env.json';
-import { tokenAtom } from '../queries/useToken';
 import { useStores } from '../queries/useStores';
+import { useToken } from '../queries/useToken';
 import { mapSaveSelectedItemsRequest } from '../request-mappers/mapSaveSelectedItemsRequest';
 import { type StoreDetailsResponseType } from '../response-types/StoreDetailsResponseType';
 
@@ -15,7 +14,7 @@ export function useSaveSelectedItems() {
 
   const primaryStoreId = stores?.find((store) => store.type === 'P')?.id;
 
-  const { data: tokenData } = useAtomValue(tokenAtom);
+  const { data: tokenData } = useToken();
 
   return useMutation({
     mutationKey: ['save-selected-items'],

@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { colors } from '../constants/colors';
 import { fontSizes } from '../constants/fontSizes';
+import { EndErrand } from '../screens/errand-administration/EndErrand';
 import { StartErrand } from '../screens/errand-administration/StartErrand';
 import { Login } from '../screens/login/Login';
 import { ReceiptDetails } from '../screens/receipts/ReceiptDetails';
@@ -173,13 +174,13 @@ export function MainStack() {
           headerTitle: '',
         }}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="EndErrand"
         component={EndErrand}
         options={{
           headerTitle: 'Kör zárása',
         }}
-      /> */}
+      />
     </Stack.Navigator>
   );
 }

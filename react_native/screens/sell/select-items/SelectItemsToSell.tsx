@@ -21,7 +21,7 @@ import {
   take,
   values,
 } from 'ramda';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Animated,
@@ -57,7 +57,7 @@ import { calculateAmounts } from '../../../utils/calculateAmounts';
 import { formatPrice } from '../../../utils/formatPrice';
 import { ItemAvailability, SelectItem } from './SelectItem';
 
-type SellExpiration = {
+export type SellExpiration = {
   itemId: number;
   expirationId: number;
   expiresAt: string;
@@ -66,7 +66,7 @@ type SellExpiration = {
 
 type SellExpirations = Record<number, SellExpiration>;
 
-type SellItem = {
+export type SellItem = {
   id: number;
   name: string;
   articleNumber: string;
@@ -82,7 +82,7 @@ type SellItems = SellItem[];
 
 const NUM_ITEMS_SHOWN = 10;
 
-export function SelectItemsToSell({
+function SuspendedSelectItemsToSell({
   navigation,
   route,
 }: SelectItemsToSellProps) {
@@ -314,11 +314,8 @@ export function SelectItemsToSell({
             style: 'destructive',
             onPress: async () => {
               setIsLoading(true);
-              resetSellFlow();
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Index' }],
-              });
+              await resetSellFlow();
+              navigation.dispatch(event.data.action);
             },
           },
         ]
@@ -512,6 +509,14 @@ export function SelectItemsToSell({
         </View>
       </View>
     </View>
+  );
+}
+
+export function SelectItemsToSell(props: SelectItemsToSellProps) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <SuspendedSelectItemsToSell {...props} />
+    </Suspense>
   );
 }
 

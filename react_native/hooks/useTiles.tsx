@@ -13,7 +13,7 @@ import {
 } from '../atoms/receipts';
 import { isStorageSavedToApiAtom } from '../atoms/storageFlow';
 import { type TileT } from '../components/Tile';
-import { type StackParams } from '../navigators/screen-types';
+import { PartnerList, type StackParams } from '../navigators/screen-types';
 import { useIsSelectedPartnerForSellOnCurrentPartnerList } from './sell/useIsSelectedPartnerForSellOnCurrentPartnerList';
 import {
   EndErrandTileState,
@@ -114,7 +114,15 @@ export function useTiles(): TileT[] | undefined {
               isSelectedPartnerOnCurrentPartnerList === true
                 ? 'SelectPartnerFromStore'
                 : 'SelectPartnerFromAll';
-            navigation.navigate('SelectPartner', { screen: partnerScreen });
+            navigation.navigate('SelectPartner', {
+              screen: partnerScreen,
+              params: {
+                partners:
+                  partnerScreen === 'SelectPartnerFromStore'
+                    ? PartnerList.STORE
+                    : PartnerList.ALL,
+              },
+            });
           }
         },
       },

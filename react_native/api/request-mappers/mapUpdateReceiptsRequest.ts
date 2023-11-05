@@ -1,6 +1,6 @@
 import { map, pick } from 'ramda';
 
-import { type ContextReceipt } from '../../providers/types/receipts-provider-types';
+import { type ContextReceipt } from '../../atoms/receipts';
 import {
   type UpdateReceiptRequest,
   type UpdateReceiptsRequestData,

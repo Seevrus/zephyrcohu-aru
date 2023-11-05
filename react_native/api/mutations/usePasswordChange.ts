@@ -13,9 +13,7 @@ export function usePasswordChange() {
   const queryClient = useQueryClient();
   const logout = useLogout();
 
-  const {
-    data: { token },
-  } = useToken();
+  const { data: { token } = {} } = useToken();
 
   return useMutation({
     mutationKey: ['login'],
@@ -47,14 +45,14 @@ export function usePasswordChange() {
           // eslint-disable-next-line no-console
           console.log('usePasswordChange:', error.response?.data);
         }
-        if (isAxiosError(error) && error.response.status === 400) {
+        if (isAxiosError(error) && error.response?.status === 400) {
           throw new Error('A jelszó nem egyezhet meg a korábbi 10 jelszóval.');
-        } else if (isAxiosError(error) && error.response.status === 401) {
+        } else if (isAxiosError(error) && error.response?.status === 401) {
           await logout.mutateAsync();
           throw new Error(
             'A jelszó megváltoztatásához újra be kell jelentkeznie.'
           );
-        } else if (isAxiosError(error) && error.response.status === 422) {
+        } else if (isAxiosError(error) && error.response?.status === 422) {
           throw new Error('A jelszó formátuma nem megfelelő.');
         } else {
           throw new Error(

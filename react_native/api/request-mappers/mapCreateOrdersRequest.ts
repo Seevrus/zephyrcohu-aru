@@ -1,6 +1,6 @@
 import { complement, dissoc, filter, map, pipe, prop } from 'ramda';
 
-import { type ContextOrder } from '../../providers/types/orders-provider-types';
+import { type ContextOrder } from '../../atoms/orders';
 import { type OrderRequestData } from '../request-types/CreateOrdersRequestType';
 
 export function mapCreateOrdersRequest(

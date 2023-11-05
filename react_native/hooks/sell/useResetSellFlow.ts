@@ -17,8 +17,8 @@ export function useResetSellFlow() {
   const [, setSelectedOtherItems] = useAtom(selectedOtherItemsAtom);
   const [, setReviewItems] = useAtom(reviewItemsAtom);
 
-  return useCallback(() => {
-    setCurrentReceipt(null);
+  return useCallback(async () => {
+    await setCurrentReceipt(null);
 
     setSelectedPartner(null);
     setSelectedItems({});

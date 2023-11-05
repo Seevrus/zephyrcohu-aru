@@ -15,9 +15,7 @@ export function useSellSelectedItems() {
   const queryClient = useQueryClient();
   const { data: user } = useCheckToken();
   const { data: { token } = {} } = useToken();
-  const { data: storeDetails } = useStoreDetails({
-    storeId: user?.storeId,
-  });
+  const { data: storeDetails } = useStoreDetails(user?.storeId ?? undefined);
 
   return useMutation({
     mutationKey: ['sell-selected-items'],

@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
 
+import { type ContextReceipt } from '../../atoms/receipts';
 import env from '../../env.json';
-import { type ContextReceipt } from '../../providers/types/receipts-provider-types';
 import { useToken } from '../queries/useToken';
 import { mapCreateReceiptsRequest } from '../request-mappers/mapCreateReceiptsRequest';
 import {

@@ -1,6 +1,5 @@
-import { identity } from 'ramda';
-
 import { type SellSelectedItemsRequest } from '../request-types/SellSelectedItemsRequest';
+import { type ExpirationChange } from '../request-types/common/ExpirationChange';
 import { type StoreDetailsResponseData } from '../response-types/StoreDetailsResponseType';
 
 export function mapSellSelectedItemsRequest(
@@ -8,7 +7,7 @@ export function mapSellSelectedItemsRequest(
   updatedStorage: StoreDetailsResponseData
 ): SellSelectedItemsRequest {
   const changes = storeDetails.expirations
-    .map((expiration) => {
+    .map<ExpirationChange | undefined>((expiration) => {
       const soldItemExpiration = updatedStorage.expirations.find(
         (exp) => exp.expirationId === expiration.expirationId
       );
@@ -25,7 +24,7 @@ export function mapSellSelectedItemsRequest(
         quantityChange: soldItemExpiration.quantity - expiration.quantity,
       };
     })
-    .filter(identity);
+    .filter((expiration): expiration is ExpirationChange => !!expiration);
 
   return {
     data: {

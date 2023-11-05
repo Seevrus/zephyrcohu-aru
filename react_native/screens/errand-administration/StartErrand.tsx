@@ -114,6 +114,11 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
           queryKey: ['stores'],
           queryFn: fetchStores(token),
         });
+
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Index' }],
+        });
       } catch (error) {
         setLoadingMessage('');
         setError(error.message);

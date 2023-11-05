@@ -1,7 +1,7 @@
 import { dissoc, mergeLeft, prepend } from 'ramda';
 
 import { type ReceiptItem } from '../api/request-types/common/ReceiptItemsTypes';
-import { type ContextReceiptItem } from '../providers/types/receipts-provider-types';
+import { type ContextReceiptItem } from '../atoms/receipts';
 import { calculateAmounts } from './calculateAmounts';
 
 export function createUniqueDiscountedItems(

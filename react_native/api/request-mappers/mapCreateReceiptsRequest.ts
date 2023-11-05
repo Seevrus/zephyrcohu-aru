@@ -1,6 +1,6 @@
 import { assoc, complement, filter, map, pipe, prop } from 'ramda';
 
-import { type ContextReceipt } from '../../providers/types/receipts-provider-types';
+import { type ContextReceipt } from '../../atoms/receipts';
 import { createUniqueDiscountedItems } from '../../utils/createUniqueDiscountedItems';
 import {
   type CreateReceiptRequest,

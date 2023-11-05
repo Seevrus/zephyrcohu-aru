@@ -1,5 +1,5 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Loading } from '../../components/Loading';
@@ -10,7 +10,7 @@ import { fontSizes } from '../../constants/fontSizes';
 import { type EndErrandProps } from '../../navigators/screen-types';
 import { useEndErrand } from './useEndErrand';
 
-export function EndErrand({ navigation }: EndErrandProps) {
+function SuspendedEndErrand({ navigation }: EndErrandProps) {
   const { isInternetReachable } = useNetInfo();
   const { isPending: isEndErrandPending, finishRound } = useEndErrand();
 
@@ -67,6 +67,14 @@ export function EndErrand({ navigation }: EndErrandProps) {
         </Button>
       </View>
     </View>
+  );
+}
+
+export function EndErrand(props: EndErrandProps) {
+  return (
+    <Suspense>
+      <SuspendedEndErrand {...props} />
+    </Suspense>
   );
 }
 

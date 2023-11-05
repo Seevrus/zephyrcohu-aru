@@ -1,12 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useLogout } from '../../api/mutations/useLogout';
-import { checkTokenAtom } from '../../api/queries/useCheckToken';
-import { tokenAtom } from '../../api/queries/useToken';
+import { useCheckToken } from '../../api/queries/useCheckToken';
+import { useToken } from '../../api/queries/useToken';
+import { currentOrderAtom, ordersAtom } from '../../atoms/orders';
+import { currentReceiptAtom, receiptsAtom } from '../../atoms/receipts';
 import {
   primaryStoreAtom,
   selectedStoreAtom,
@@ -19,18 +21,24 @@ import {
 import { Loading } from '../../components/Loading';
 import { Button } from '../../components/ui/Button';
 import { colors } from '../../constants/colors';
+import { useResetSellFlow } from '../../hooks/sell/useResetSellFlow';
 import { type SettingsProps } from '../../navigators/screen-types';
 
 export function Settings({ navigation }: SettingsProps) {
-  const { data: user, isFetching: isUserFetching } =
-    useAtomValue(checkTokenAtom);
-  const { data: tokenData } = useAtomValue(tokenAtom);
+  const { data: user, isFetching: isUserFetching } = useCheckToken();
+  const { data: tokenData } = useToken();
   const { mutateAsync: logout } = useLogout();
 
   const queryClient = useQueryClient();
 
+  const resetSellFlow = useResetSellFlow();
+
   const isRoundStarted = user?.state === 'R';
 
+  const [, setCurrentOrder] = useAtom(currentOrderAtom);
+  const [, setCurrentReceipt] = useAtom(currentReceiptAtom);
+  const [, setOrders] = useAtom(ordersAtom);
+  const [, setReceipts] = useAtom(receiptsAtom);
   const [, setPrimaryStore] = useAtom(primaryStoreAtom);
   const [, setSelectedStoreInitialState] = useAtom(
     selectedStoreInitialStateAtom
@@ -62,12 +70,19 @@ export function Settings({ navigation }: SettingsProps) {
   const resetHandler = async () => {
     setIsLoading(true);
 
-    setPrimaryStore(null);
-    setSelectedStoreInitialState(null);
-    setSelectedStore(null);
+    await setPrimaryStore(null);
+    await setSelectedStoreInitialState(null);
+    await setSelectedStore(null);
 
     setIsStorageSavedToApi(false);
     setStorageListItems(undefined);
+
+    await setCurrentOrder(null);
+    await setCurrentReceipt(null);
+    await setOrders([]);
+    await setReceipts([]);
+
+    await resetSellFlow();
 
     await queryClient.invalidateQueries({ queryKey: ['active-round'] });
     await queryClient.resetQueries({ queryKey: ['check-token'] });

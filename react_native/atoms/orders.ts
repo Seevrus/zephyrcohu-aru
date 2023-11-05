@@ -1,7 +1,7 @@
 import { type OrderRequest } from '../api/request-types/CreateOrdersRequestType';
 import { atomWithAsyncStorage } from './helpers';
 
-type ContextOrder = OrderRequest & {
+export type ContextOrder = OrderRequest & {
   isSent: boolean;
 };
 

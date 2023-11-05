@@ -161,7 +161,7 @@ export function SearchPartnerNavForm({
       navigation.navigate('AddPartnerForm', {
         taxNumber: selectedTaxPayer.vatNumber,
         name:
-          selectedTaxPayer.locations.C.name ??
+          selectedTaxPayer.locations.C?.name ??
           selectedTaxPayer.locations.D.name,
         centralPostalCode: selectedTaxPayer.locations.C?.postalCode,
         centralCity: selectedTaxPayer.locations.C?.city,

@@ -1,14 +1,19 @@
 import * as Print from 'expo-print';
-import { isNotNil } from 'ramda';
-import { useState } from 'react';
+import { useAtom } from 'jotai';
+import { assoc, isNotNil, prop } from 'ramda';
+import { useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { useUpdateReceipts } from '../../api/mutations/useUpdateReceipts';
 import { useCheckToken } from '../../api/queries/useCheckToken';
 import { type Partner } from '../../api/response-mappers/mapPartnersResponse';
-import { type ContextReceipt } from '../../atoms/receipts';
+import {
+  currentReceiptAtom,
+  receiptsAtom,
+  type ContextReceipt,
+} from '../../atoms/receipts';
 import { colors } from '../../constants/colors';
 import { fontSizes } from '../../constants/fontSizes';
-import { useReceiptsContext } from '../../providers/ReceiptsProvider';
 import { Loading } from '../Loading';
 import { Button } from '../ui/Button';
 import { createReceiptHtml } from './createReceiptHtml';
@@ -20,8 +25,71 @@ type PrintSectionProps = {
 
 export function PrintSection({ partner, receipt }: PrintSectionProps) {
   const { data: user, isPending: isUserPending } = useCheckToken();
-  const { isPending: isReceiptsContextPending, updateNumberOfPrintedCopies } =
-    useReceiptsContext();
+
+  const {
+    mutateAsync: updateReceiptsAPI,
+    isPending: isUpdateReceiptsAPIPending,
+  } = useUpdateReceipts();
+
+  const [receipts, setReceipts] = useAtom(receiptsAtom);
+  const [currentReceipt, setCurrentReceipt] = useAtom(currentReceiptAtom);
+
+  const updateNumberOfPrintedCopies = useCallback(
+    async (receiptId: number) => {
+      if (receiptId === currentReceipt?.id) {
+        const updatedReceipt = assoc(
+          'originalCopiesPrinted',
+          (currentReceipt.originalCopiesPrinted ?? 0) + 1,
+          currentReceipt
+        );
+
+        setCurrentReceipt(updatedReceipt);
+      }
+
+      let updatedReceipts = receipts.map((receipt) => {
+        if (receipt.id !== receiptId) {
+          return receipt;
+        }
+
+        return {
+          ...receipt,
+          originalCopiesPrinted: (receipt.originalCopiesPrinted ?? 0) + 1,
+          shouldBeUpdated: true,
+        };
+      });
+
+      setReceipts(updatedReceipts);
+
+      const updateReceiptsResult = await updateReceiptsAPI(
+        updatedReceipts.filter(prop('shouldBeUpdated'))
+      );
+
+      updatedReceipts = receipts.map((receipt) => {
+        const updateReceiptResult = updateReceiptsResult.find(
+          (result) => result.id === receipt.id
+        );
+
+        if (!updateReceiptResult) {
+          return receipt;
+        }
+
+        return {
+          ...receipt,
+          originalCopiesPrinted: updateReceiptResult.originalCopiesPrinted,
+          shouldBeUpdated: false,
+        };
+      });
+
+      setReceipts(updatedReceipts);
+    },
+    [
+      currentReceipt,
+      receipts,
+      setCurrentReceipt,
+      setReceipts,
+      updateReceiptsAPI,
+    ]
+  );
 
   const [updateProgressMessage, setUpdateProgressMessage] =
     useState<string>('');
@@ -47,7 +115,7 @@ export function PrintSection({ partner, receipt }: PrintSectionProps) {
     }
   };
 
-  if (isUserPending || isReceiptsContextPending || !!updateProgressMessage) {
+  if (isUserPending || isUpdateReceiptsAPIPending || !!updateProgressMessage) {
     return <Loading message={updateProgressMessage} />;
   }
 

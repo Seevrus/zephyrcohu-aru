@@ -4,8 +4,7 @@ import {
   type NavigatorScreenParams,
 } from '@react-navigation/native';
 import { type NativeStackScreenProps } from '@react-navigation/native-stack';
-
-import { type RegularReviewItem } from '../providers/sell-flow-hooks/useReview';
+import { type RegularReviewItem } from '../atoms/sellFlow';
 
 export type StackParams = {
   Login: undefined;

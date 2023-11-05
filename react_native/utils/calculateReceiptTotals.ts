@@ -1,11 +1,11 @@
-import { groupBy, map, prop, values } from 'ramda';
+import { groupBy, map, prop } from 'ramda';
 
 import {
   type ReceiptItem,
   type ReceiptOtherItem,
 } from '../api/request-types/common/ReceiptItemsTypes';
 import { type ReceiptVatAmount } from '../api/request-types/common/ReceiptVatAmount';
-import { type SelectedDiscount } from '../providers/types/receipts-provider-types';
+import { type SelectedDiscount } from '../atoms/receipts';
 import { calculateDiscountedItemAmounts } from './calculateDiscountedItemAmounts';
 
 type Item = {
@@ -34,7 +34,14 @@ function reduceAmounts(items: Item[]) {
 function calculateVatAmounts(items: Item[]): ReceiptVatAmount[] {
   const itemsByVatRate = groupBy(prop('vatRate'), items);
 
-  const receiptVatAmountsByVatRate = map((itemsUnderOneVatRate) => {
+  const receiptVatAmountsByVatRate: Record<
+    string,
+    ReceiptVatAmount | undefined
+  > = map((itemsUnderOneVatRate) => {
+    if (!itemsUnderOneVatRate) {
+      return;
+    }
+
     const { netAmount, vatAmount, grossAmount } =
       reduceAmounts(itemsUnderOneVatRate);
 
@@ -46,7 +53,9 @@ function calculateVatAmounts(items: Item[]): ReceiptVatAmount[] {
     };
   }, itemsByVatRate);
 
-  return values(receiptVatAmountsByVatRate);
+  return Object.values(receiptVatAmountsByVatRate).filter(
+    (amount): amount is ReceiptVatAmount => !!amount
+  );
 }
 
 type ReceiptTotals = {

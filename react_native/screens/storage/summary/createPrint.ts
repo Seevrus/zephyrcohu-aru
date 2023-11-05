@@ -3,8 +3,8 @@ import { format } from 'date-fns';
 import { hu } from 'date-fns/locale';
 
 import { type CheckToken } from '../../../api/response-mappers/mapCheckTokenResponse';
-import { type ListItem } from '../../../providers/StorageFlowProvider';
 import { type StoreDetailsResponseData } from '../../../api/response-types/StoreDetailsResponseType';
+import { type StorageListItem } from '../../../atoms/storageFlow';
 
 function mapToNr(index: number) {
   const stringIndex = String(index);
@@ -212,7 +212,7 @@ export function createPrint({
   storeDetails,
   user,
 }: {
-  receiptItems: ListItem[];
+  receiptItems: StorageListItem[];
   storeDetails: StoreDetailsResponseData | null;
   user: CheckToken | undefined;
 }) {

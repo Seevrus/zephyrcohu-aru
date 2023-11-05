@@ -41,6 +41,7 @@ export function Button({
     ok: colors.okRipple,
     warning: colors.warningRipple,
     error: colors.errorRipple,
+    disabled: undefined,
   };
 
   return (

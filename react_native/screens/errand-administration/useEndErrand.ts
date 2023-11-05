@@ -1,69 +1,80 @@
-import { useQueryClient } from '@tanstack/react-query';
+import { useAtom, useAtomValue } from 'jotai';
 import { useCallback, useMemo } from 'react';
 
 import { useFinishRound } from '../../api/mutations/useFinishRound';
 import { useActiveRound } from '../../api/queries/useActiveRound';
-import { useOrdersContext } from '../../providers/OrdersProvider';
-import { useReceiptsContext } from '../../providers/ReceiptsProvider';
-import { useSellFlowContext } from '../../providers/SellFlowProvider';
-import { useStorageContext } from '../../providers/StorageProvider';
+import { queryClient } from '../../api/queryClient';
+import { currentOrderAtom, ordersAtom } from '../../atoms/orders';
+import {
+  currentReceiptAtom,
+  numberOfReceiptsAtom,
+  receiptsAtom,
+} from '../../atoms/receipts';
+import { selectedStoreAtom } from '../../atoms/storage';
+import { useResetSellFlow } from '../../hooks/sell/useResetSellFlow';
 
 export function useEndErrand() {
   const { isPending: isActiveRoundPending, data: activeRound } =
     useActiveRound();
   const { mutateAsync: finishRoundAPI } = useFinishRound();
-  const { resetOrdersContext } = useOrdersContext();
-  const { receipts, numberOfReceipts, resetReceiptsContext } =
-    useReceiptsContext();
-  const { resetSellFlowContext } = useSellFlowContext();
-  const { storage, clearStorageFromContext } = useStorageContext();
-  const queryClient = useQueryClient();
+
+  const resetSellFlow = useResetSellFlow();
+
+  const [, setCurrentOrder] = useAtom(currentOrderAtom);
+  const [, setCurrentReceipt] = useAtom(currentReceiptAtom);
+  const numberOfReceipts = useAtomValue(numberOfReceiptsAtom);
+  const [, setOrders] = useAtom(ordersAtom);
+  const [receipts, setReceipts] = useAtom(receiptsAtom);
+  const [selectedStoreCurrentState, setSelectedStoreCurrentState] =
+    useAtom(selectedStoreAtom);
 
   const finishRound = useCallback(async () => {
-    const lastSerialNumber =
-      numberOfReceipts === 0
-        ? storage.firstAvailableSerialNumber
-        : receipts.reduce(
-            (sn, { serialNumber: receiptSn }) =>
-              receiptSn > sn ? receiptSn : sn,
-            0
-          ) + 1;
+    if (!!activeRound && !!selectedStoreCurrentState) {
+      const lastSerialNumber =
+        numberOfReceipts === 0
+          ? selectedStoreCurrentState.firstAvailableSerialNumber
+          : receipts.reduce(
+              (sn, { serialNumber: receiptSn }) =>
+                receiptSn > sn ? receiptSn : sn,
+              0
+            ) + 1;
 
-    await finishRoundAPI({
-      roundId: activeRound?.id,
-      lastSerialNumber,
-      yearCode: storage?.yearCode,
-    });
+      await finishRoundAPI({
+        roundId: activeRound?.id,
+        lastSerialNumber,
+        yearCode: selectedStoreCurrentState.yearCode,
+      });
 
-    await Promise.all([
-      clearStorageFromContext(),
-      resetOrdersContext(),
-      resetReceiptsContext(),
-      resetSellFlowContext(),
-    ]);
+      setSelectedStoreCurrentState(null);
+      resetSellFlow();
+      setReceipts([]);
+      setCurrentReceipt(null);
+      setOrders([]);
+      setCurrentOrder(null);
 
-    await queryClient.invalidateQueries({ queryKey: ['active-round'] });
-    await queryClient.invalidateQueries({ queryKey: ['check-token'] });
-    await queryClient.invalidateQueries({ queryKey: ['items'] });
-    await queryClient.invalidateQueries({ queryKey: ['other-items'] });
-    await queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
-    await queryClient.invalidateQueries({ queryKey: ['partners'] });
-    await queryClient.invalidateQueries({ queryKey: ['price-lists'] });
-    await queryClient.invalidateQueries({ queryKey: ['search-tax-number'] });
-    await queryClient.invalidateQueries({ queryKey: ['store-details'] });
-    await queryClient.invalidateQueries({ queryKey: ['stores'] });
+      await queryClient.invalidateQueries({ queryKey: ['active-round'] });
+      await queryClient.invalidateQueries({ queryKey: ['check-token'] });
+      await queryClient.invalidateQueries({ queryKey: ['items'] });
+      await queryClient.invalidateQueries({ queryKey: ['other-items'] });
+      await queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
+      await queryClient.invalidateQueries({ queryKey: ['partners'] });
+      await queryClient.invalidateQueries({ queryKey: ['price-lists'] });
+      await queryClient.invalidateQueries({ queryKey: ['search-tax-number'] });
+      await queryClient.invalidateQueries({ queryKey: ['store-details'] });
+      await queryClient.invalidateQueries({ queryKey: ['stores'] });
+    }
   }, [
-    activeRound?.id,
-    clearStorageFromContext,
+    activeRound,
     finishRoundAPI,
     numberOfReceipts,
-    queryClient,
     receipts,
-    resetOrdersContext,
-    resetReceiptsContext,
-    resetSellFlowContext,
-    storage?.firstAvailableSerialNumber,
-    storage?.yearCode,
+    resetSellFlow,
+    selectedStoreCurrentState,
+    setCurrentOrder,
+    setCurrentReceipt,
+    setOrders,
+    setReceipts,
+    setSelectedStoreCurrentState,
   ]);
 
   return useMemo(

@@ -15,7 +15,7 @@ import { Button } from '../../../components/ui/Button';
 import { colors } from '../../../constants/colors';
 import { fontSizes } from '../../../constants/fontSizes';
 import { useResetSellFlow } from '../../../hooks/sell/useResetSellFlow';
-import { useSyncSellWithApi } from '../../../hooks/useSyncSellWithApi';
+import { useSyncSellWithApi } from '../../../hooks/sell/useSyncSellWithApi';
 import { type SummaryProps } from '../../../navigators/screen-types';
 
 function SuspendedSummary({ navigation }: SummaryProps) {

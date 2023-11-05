@@ -1,4 +1,7 @@
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import {
+  BarCodeScanner,
+  type BarCodeScannedCallback,
+} from 'expo-barcode-scanner';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -14,7 +17,7 @@ type BorealBarCodeScannerProps = {
 export function BorealBarCodeScanner({
   onCodeScanned,
 }: BorealBarCodeScannerProps) {
-  const [hasPermission, setHasPermission] = useState(null);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
@@ -25,7 +28,7 @@ export function BorealBarCodeScanner({
     getBarCodeScannerPermissions();
   }, []);
 
-  const handleBarCodeScanned = ({ data }) => {
+  const handleBarCodeScanned: BarCodeScannedCallback = ({ data }) => {
     onCodeScanned(data);
   };
 

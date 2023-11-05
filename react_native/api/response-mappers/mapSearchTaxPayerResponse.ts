@@ -6,7 +6,10 @@ import { type PartnerLocation } from '../response-types/common/PartnerType';
 export type TaxPayer = {
   id: number;
   vatNumber: string;
-  locations: Record<'C' | 'D', PartnerLocation>;
+  locations: {
+    C?: PartnerLocation;
+    D: PartnerLocation;
+  };
 };
 
 export function mapSearchTaxPayerResponse(
@@ -15,13 +18,13 @@ export function mapSearchTaxPayerResponse(
   const now = formatISO(new Date());
 
   if (Array.isArray(response.addressList)) {
-    const hqAddress = response?.addressList.find(
+    const hqAddress = response.addressList.find(
       (address) => address.taxpayerAddressType === 'HQ'
     );
 
     const centralAddress = hqAddress
       ? ({
-          name: response?.name,
+          name: response?.name ?? '',
           locationType: 'C',
           country: hqAddress.taxpayerAddress?.countryCode,
           postalCode: hqAddress.taxpayerAddress?.postalCode,
@@ -44,9 +47,9 @@ export function mapSearchTaxPayerResponse(
       id: idx + 1,
       vatNumber: response?.taxNumber,
       locations: {
-        C: centralAddress,
+        ...(centralAddress && { C: centralAddress }),
         D: {
-          name: response?.name,
+          name: response?.name ?? '',
           locationType: 'D',
           country: address?.countryCode,
           postalCode: address?.postalCode,
@@ -63,20 +66,19 @@ export function mapSearchTaxPayerResponse(
     }));
   }
 
-  const address = response?.addressList.taxpayerAddress;
+  const address = response?.addressList?.taxpayerAddress;
 
   return [
     {
       id: 1,
       vatNumber: response?.taxNumber,
       locations: {
-        C: undefined,
         D: {
-          name: response?.name,
+          name: response?.name ?? '',
           locationType: 'D',
-          country: address?.countryCode,
-          postalCode: address?.postalCode,
-          city: address?.city,
+          country: address?.countryCode ?? '',
+          postalCode: address?.postalCode ?? '',
+          city: address?.city ?? '',
           address: [
             address?.streetName,
             address?.publicPlaceCategory,

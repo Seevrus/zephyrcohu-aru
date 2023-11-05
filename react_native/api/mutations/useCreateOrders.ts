@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
 
+import { type ContextOrder } from '../../atoms/orders';
 import env from '../../env.json';
-import { type ContextOrder } from '../../providers/types/orders-provider-types';
 import { useToken } from '../queries/useToken';
 import { mapCreateOrdersRequest } from '../request-mappers/mapCreateOrdersRequest';
 import {

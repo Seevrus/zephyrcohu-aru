@@ -2,13 +2,13 @@ import { equals } from 'ramda';
 import { memo, useState } from 'react';
 import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 
+import { type OtherReviewItem } from '../../../atoms/sellFlow';
 import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';
 import { Button } from '../../../components/ui/Button';
 import { LabeledItem } from '../../../components/ui/LabeledItem';
 import { colors } from '../../../constants/colors';
 import { formatPrice } from '../../../utils/formatPrice';
 import { getReviewItemId } from './getReviewItemId';
-import { type OtherReviewItem } from './Review';
 
 type SelectionProps = {
   selected: boolean;

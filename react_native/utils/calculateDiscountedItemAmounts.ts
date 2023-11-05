@@ -1,4 +1,4 @@
-import { type SelectedDiscount } from '../providers/types/receipts-provider-types';
+import { type SelectedDiscount } from '../atoms/receipts';
 import { calculateAmounts } from './calculateAmounts';
 
 type Item = {

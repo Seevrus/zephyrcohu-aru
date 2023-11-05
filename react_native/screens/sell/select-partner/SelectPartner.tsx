@@ -13,7 +13,7 @@ import {
   take,
   when,
 } from 'ramda';
-import { useCallback, useMemo, useState } from 'react';
+import { Suspense, useCallback, useMemo, useState } from 'react';
 import {
   FlatList,
   Pressable,
@@ -43,7 +43,7 @@ import { Selection } from './Selection';
 
 const NUM_PARTNERS_SHOWN = 10;
 
-export function SelectPartner({ route, navigation }: SelectPartnerProps) {
+function SuspendedSelectPartner({ route, navigation }: SelectPartnerProps) {
   const { isInternetReachable } = useNetInfo();
 
   const { data: activeRound, isPending: isActiveRoundPending } =
@@ -129,7 +129,7 @@ export function SelectPartner({ route, navigation }: SelectPartnerProps) {
     if (selectedPartner) {
       setIsLoading(true);
 
-      setCurrentReceipt({
+      await setCurrentReceipt({
         partnerId: selectedPartner.id,
         partnerCode: selectedPartner.code,
         partnerSiteCode: selectedPartner.siteCode,
@@ -220,6 +220,14 @@ export function SelectPartner({ route, navigation }: SelectPartnerProps) {
         />
       </View>
     </View>
+  );
+}
+
+export function SelectPartner(props: SelectPartnerProps) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <SuspendedSelectPartner {...props} />
+    </Suspense>
   );
 }
 
