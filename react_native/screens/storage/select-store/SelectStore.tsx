@@ -54,6 +54,7 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
   );
   const [selectedStore, setSelectedStore] = useAtom(selectedStoreAtom);
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSubmitInProgress, setIsSubmitInProgress] = useState<boolean>(false);
   const [selectedStoreId, setSelectedStoreId] = useState<number | null>(null);
   const [storeSearchValue, setStoreSearchValue] = useState<string>('');
@@ -90,7 +91,7 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
         when(
           allPass([
             () => isNotNil(selectedStoreId),
-            (stores) => !!stores.some((store) => store.id === selectedStoreId),
+            (stores) => !stores.some((store) => store.id === selectedStoreId),
           ]),
           prepend(
             (stores ?? []).find(
@@ -114,7 +115,10 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
       isPrimaryStoreDetailsSuccess &&
       !isPrimaryStoreDetailsFetching
     ) {
-      setPrimaryStore(primaryStoreDetails);
+      setIsLoading(true);
+      setPrimaryStore(primaryStoreDetails).then(() => {
+        setIsLoading(false);
+      });
     }
   }, [
     isPrimaryStoreDetailsFetching,
@@ -125,8 +129,13 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
 
   useEffect(() => {
     if (!!storeDetails && isStoreDetailsSuccess && !isStoreDetailsFetching) {
-      setSelectedStoreInitialState(storeDetails);
-      setSelectedStore(storeDetails);
+      setIsLoading(true);
+      Promise.all([
+        setSelectedStoreInitialState(storeDetails),
+        setSelectedStore(storeDetails),
+      ]).then(() => {
+        setIsLoading(false);
+      });
     }
   }, [
     isStoreDetailsFetching,
@@ -222,7 +231,7 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
 
   const confirmButtonVariant = isNil(selectedStoreId) ? 'disabled' : 'neutral';
 
-  if (isStoresPending || isSubmitInProgress) {
+  if (isStoresPending || isLoading || isSubmitInProgress) {
     return <Loading />;
   }
 

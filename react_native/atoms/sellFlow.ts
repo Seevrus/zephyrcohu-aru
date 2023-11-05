@@ -47,4 +47,4 @@ export const selectedItemsAtom = atom<Record<number, Record<number, number>>>(
   {}
 );
 export const selectedOtherItemsAtom = atom<SelectedOtherItems>({});
-export const reviewItemsAtom = atom<ReviewItem[]>([]);
+export const reviewItemsAtom = atom<ReviewItem[] | null>(null);

@@ -23,7 +23,7 @@ export function useResetSellFlow() {
     setSelectedPartner(null);
     setSelectedItems({});
     setSelectedOtherItems({});
-    setReviewItems([]);
+    setReviewItems(null);
   }, [
     setCurrentReceipt,
     setReviewItems,

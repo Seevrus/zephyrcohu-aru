@@ -390,7 +390,7 @@ function SuspendedReview({ navigation }: ReviewProps) {
           item={info.item}
           onSelect={(id: string | number) => {
             setSelectedRow(
-              reviewItems.find((row) => getReviewItemId(row) === id) ?? null
+              reviewItems?.find((row) => getReviewItemId(row) === id) ?? null
             );
           }}
           onDelete={removeItemHandler}
@@ -401,7 +401,7 @@ function SuspendedReview({ navigation }: ReviewProps) {
           item={info.item}
           onSelect={(id: string) => {
             setSelectedRow(
-              reviewItems.find((row) => getReviewItemId(row) === id) ?? null
+              reviewItems?.find((row) => getReviewItemId(row) === id) ?? null
             );
           }}
           onDelete={removeOtherItemHandler}

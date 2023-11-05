@@ -341,7 +341,7 @@ function SuspendedSelectItemsToSell({
     if (canConfirmItems) {
       setIsLoading(true);
 
-      setCurrentOrder({
+      await setCurrentOrder({
         isSent: false,
         partnerId: selectedPartner.id,
         orderedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
@@ -360,7 +360,7 @@ function SuspendedSelectItemsToSell({
           .filter(identity) as OrderItem[],
       });
 
-      setCurrentReceipt(
+      await setCurrentReceipt(
         assoc(
           'items',
           items
@@ -396,6 +396,8 @@ function SuspendedSelectItemsToSell({
             .filter(identity)
         )
       );
+
+      setIsLoading(false);
 
       navigation.removeListener('beforeRemove', exitConfimationHandler);
       navigation.navigate('Review');

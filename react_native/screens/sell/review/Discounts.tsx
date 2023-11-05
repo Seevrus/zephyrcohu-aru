@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { useAtom } from 'jotai';
-import { assoc, dissoc, isEmpty, not } from 'ramda';
+import { assoc, dissoc, isEmpty, isNil, not } from 'ramda';
 import { Suspense, useCallback, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -33,8 +33,12 @@ function SuspendedDiscounts({ navigation, route }: DiscountsProps) {
 
   const applyDiscounts = useCallback(
     (itemId: number, discounts?: SelectedDiscount[]) => {
-      setReviewItems((prevItems) =>
-        prevItems.map((item) => {
+      setReviewItems((prevItems) => {
+        if (isNil(prevItems)) {
+          return prevItems;
+        }
+
+        return prevItems.map((item) => {
           if (item.itemId !== itemId || item.type !== 'item') {
             return item;
           }
@@ -44,8 +48,8 @@ function SuspendedDiscounts({ navigation, route }: DiscountsProps) {
           }
 
           return dissoc('selectedDiscounts', item);
-        })
-      );
+        });
+      });
     },
     [setReviewItems]
   );

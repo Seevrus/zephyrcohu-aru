@@ -83,7 +83,7 @@ function SuspendedSelectOtherItemsToSell({
 
           const currentItem = otherItems?.find((item) => item.id === +itemId);
 
-          if (!currentItem || quantity === null) {
+          if (!currentItem || isNil(quantity)) {
             return prev;
           }
 
@@ -263,8 +263,7 @@ function SuspendedSelectOtherItemsToSell({
         item={info.item}
         netPrice={
           selectedOtherItems[info.item.id]?.netPrice ??
-          info.item.netPrice ??
-          null
+          (info.item.netPrice || null)
         }
         setNetPrice={priceChangeHandler}
         quantity={selectedOtherItems[info.item.id]?.quantity ?? null}
