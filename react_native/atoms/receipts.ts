@@ -1,6 +1,36 @@
 import { atom } from 'jotai';
-import { type ContextReceipt } from '../providers/types/receipts-provider-types';
 import { atomWithAsyncStorage } from './helpers';
+
+import { type ReceiptItem } from '../api/request-types/common/ReceiptItemsTypes';
+import { type CreateReceiptRequest } from '../api/request-types/CreateReceiptsRequestType';
+
+type SelectedDiscount = {
+  id: number;
+  quantity: number;
+  name: string;
+} & (
+  | {
+      type: 'absolute' | 'percentage';
+      amount: number;
+      price?: undefined;
+    }
+  | {
+      type: 'freeForm';
+      amount?: undefined;
+      price: number;
+    }
+);
+
+type ContextReceiptItem = ReceiptItem & {
+  selectedDiscounts?: SelectedDiscount[];
+};
+
+type ContextReceipt = Omit<CreateReceiptRequest, 'items'> & {
+  id: number;
+  isSent: boolean;
+  shouldBeUpdated: boolean;
+  items: ContextReceiptItem[];
+};
 
 const receiptsAtom = atomWithAsyncStorage<ContextReceipt[]>(
   'boreal-receipts-context',

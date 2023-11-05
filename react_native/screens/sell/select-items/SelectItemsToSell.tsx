@@ -1,41 +1,80 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { type EventArg, useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, type EventArg } from '@react-navigation/native';
+import { format } from 'date-fns';
+import { useAtom, useAtomValue } from 'jotai';
 import {
-  __,
   all,
-  any,
   anyPass,
+  assoc,
   dissoc,
   equals,
-  gte,
+  filter,
+  identity,
+  indexBy,
   isEmpty,
   isNil,
+  map,
   not,
   pipe,
   prop,
+  sortBy,
+  take,
   values,
 } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Animated,
-  type ListRenderItemInfo,
   Pressable,
   StyleSheet,
   View,
+  type ListRenderItemInfo,
 } from 'react-native';
 
+import { useItems } from '../../../api/queries/useItems';
+import { usePriceLists } from '../../../api/queries/usePriceLists';
+import { type OrderItem } from '../../../api/request-types/common/OrderItem';
+import {
+  type Discount,
+  type Expiration,
+  type ItemType,
+} from '../../../api/response-types/ItemsResponseType';
+import { currentOrderAtom } from '../../../atoms/orders';
+import { currentReceiptAtom } from '../../../atoms/receipts';
+import { selectedPartnerAtom } from '../../../atoms/sellFlow';
+import { selectedStoreAtom } from '../../../atoms/storage';
 import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { LabeledItem } from '../../../components/ui/LabeledItem';
 import { colors } from '../../../constants/colors';
 import { type SelectItemsToSellProps } from '../../../navigators/screen-types';
-import { useSellFlowContext } from '../../../providers/SellFlowProvider';
-import { type SellItem } from '../../../providers/sell-flow-hooks/useSelectItems';
 import { calculateAmounts } from '../../../utils/calculateAmounts';
 import { formatPrice } from '../../../utils/formatPrice';
-import { SelectItem, ItemAvailability } from './SelectItem';
+import { ItemAvailability, SelectItem } from './SelectItem';
+
+type SellExpiration = {
+  itemId: number;
+  expirationId: number;
+  expiresAt: string;
+  quantity: number | undefined;
+};
+
+type SellExpirations = Record<number, SellExpiration>;
+
+type SellItem = {
+  id: number;
+  name: string;
+  articleNumber: string;
+  unitName: string;
+  barcodes: string[];
+  netPrice: number;
+  vatRate: string;
+  expirations: SellExpirations;
+  availableDiscounts: Discount[] | null;
+};
+
+type SellItems = SellItem[];
 
 const NUM_ITEMS_SHOWN = 10;
 
@@ -45,23 +84,94 @@ export function SelectItemsToSell({
 }: SelectItemsToSellProps) {
   const scannedBarCode = route.params?.scannedBarCode;
 
-  const {
-    isPending: isContextPending,
-    items,
-    selectedItems,
-    setSelectedItems,
-    selectedOrderItems,
-    setSelectedOrderItems,
-    searchTerm,
-    setSearchTerm,
-    barCode,
-    setBarCode,
-    saveSelectedItemsInFlow,
-    saveSelectedOrderItemsInFlow,
-    resetSellFlowContext,
-  } = useSellFlowContext();
+  const { data: items, isPending: isItemsPending } = useItems();
+  const { data: priceLists, isPending: isPriceListsPending } = usePriceLists();
+
+  const [, setCurrentOrder] = useAtom(currentOrderAtom);
+  const [, setCurrentReceipt] = useAtom(currentReceiptAtom);
+  const [selectedPartner, setSelectedPartner] = useAtom(selectedPartnerAtom);
+  const currentStorage = useAtomValue(selectedStoreAtom);
+
+  const [selectedItems, setSelectedItems] = useState<
+    Record<number, Record<number, number>>
+  >({});
+  const [selectedOrderItems, setSelectedOrderItems] = useState<
+    Record<number, number>
+  >({});
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const [searchState, setSearchState] = useState({
+    searchTerm: '',
+    barCode: '',
+  });
+
+  const currentPriceList = useMemo(
+    () =>
+      priceLists?.find(
+        (priceList) => priceList.id === selectedPartner?.priceList?.id
+      ),
+    [priceLists, selectedPartner?.priceList?.id]
+  );
+
+  const storageExpirations = useMemo(() => {
+    const expirations: Record<number, Record<number, number>> = {};
+
+    currentStorage?.expirations?.forEach((expiration) => {
+      if (!expirations[expiration.itemId]) {
+        expirations[expiration.itemId] = {};
+      }
+      expirations[expiration.itemId][expiration.expirationId] =
+        expiration.quantity;
+    });
+
+    return expirations;
+  }, [currentStorage?.expirations]);
+
+  const sellItems: SellItems = useMemo(
+    () =>
+      pipe(
+        map<ItemType, SellItem>((item) => ({
+          id: item.id,
+          name: item.name,
+          articleNumber: item.articleNumber,
+          unitName: item.unitName,
+          barcodes: item.expirations.map(
+            (expiration) => `${item.barcode}${expiration.barcode}`
+          ),
+          netPrice:
+            currentPriceList?.items.find((index) => index.itemId === item.id)
+              ?.netPrice ?? item.netPrice,
+          vatRate: item.vatRate,
+          expirations: pipe(
+            map<Expiration, SellExpiration>((expiration) => ({
+              itemId: item.id,
+              expirationId: expiration.id,
+              expiresAt: expiration.expiresAt,
+              quantity: storageExpirations[item.id]?.[expiration.id] ?? 0,
+            })),
+            indexBy(prop('itemId'))
+          )(item.expirations),
+          availableDiscounts: item.discounts,
+        })),
+        filter<SellItem>(
+          (item) =>
+            item.name
+              .toLowerCase()
+              .includes(searchState.searchTerm.toLowerCase()) &&
+            item.barcodes.some((bc) => bc.includes(searchState.barCode))
+        ),
+        sortBy(prop('name')),
+        (items) => take<SellItem>(NUM_ITEMS_SHOWN, items)
+      )(items ?? []),
+    [
+      currentPriceList?.items,
+      items,
+      searchState.barCode,
+      searchState.searchTerm,
+      storageExpirations,
+    ]
+  );
 
   const [netTotal, grossTotal] = useMemo(
     () =>
@@ -161,7 +271,7 @@ export function SelectItemsToSell({
   );
 
   const upsertOrderItem = useCallback(
-    (id: number, quantity: number) => {
+    (id: number, quantity: number | null) => {
       if (quantity) {
         setSelectedOrderItems((prevItems) => ({
           ...prevItems,
@@ -174,12 +284,17 @@ export function SelectItemsToSell({
     [setSelectedOrderItems]
   );
 
+  const resetSellFlow = useCallback(() => {
+    setCurrentReceipt(null);
+    setSelectedPartner(null);
+  }, [setCurrentReceipt, setSelectedPartner]);
+
   useEffect(() => {
-    if (!isNil(scannedBarCode) && barCode !== scannedBarCode) {
-      setBarCode(scannedBarCode);
+    if (!isNil(scannedBarCode) && searchState.barCode !== scannedBarCode) {
+      setSearchState({ searchTerm: '', barCode: scannedBarCode });
       navigation.setParams({ scannedBarCode: undefined });
     }
-  }, [barCode, navigation, scannedBarCode, setBarCode]);
+  }, [navigation, scannedBarCode, searchState.barCode]);
 
   const exitConfimationHandler = useCallback(
     (
@@ -208,15 +323,17 @@ export function SelectItemsToSell({
             style: 'destructive',
             onPress: async () => {
               setIsLoading(true);
-              await resetSellFlowContext();
-              setIsLoading(false);
-              navigation.dispatch(event.data.action);
+              resetSellFlow();
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Index' }],
+              });
             },
           },
         ]
       );
     },
-    [navigation, resetSellFlowContext]
+    [navigation, resetSellFlow]
   );
 
   useFocusEffect(
@@ -229,27 +346,82 @@ export function SelectItemsToSell({
     }, [exitConfimationHandler, navigation])
   );
 
-  const canConfirmItems = not(isEmpty(selectedItems));
+  const canConfirmItems =
+    !!items && !!selectedPartner && not(isEmpty(selectedItems));
   const confirmButtonVariant = canConfirmItems ? 'ok' : 'disabled';
   const confirmItemsHandler = useCallback(async () => {
     if (canConfirmItems) {
       setIsLoading(true);
 
-      Promise.all([
-        saveSelectedItemsInFlow(),
-        saveSelectedOrderItemsInFlow(),
-      ]).then(() => {
-        setIsLoading(false);
-        navigation.removeListener('beforeRemove', exitConfimationHandler);
-        navigation.navigate('Review');
+      setCurrentOrder({
+        isSent: false,
+        partnerId: selectedPartner.id,
+        orderedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+        items: items
+          .map((item) => {
+            const quantity = selectedOrderItems[item.id];
+
+            if (quantity === undefined) return;
+
+            return {
+              articleNumber: item.articleNumber,
+              name: item.name,
+              quantity,
+            };
+          })
+          .filter(identity) as OrderItem[],
       });
+
+      setCurrentReceipt(
+        assoc(
+          'items',
+          items
+            .flatMap((item) =>
+              item.expirations.map((expiration) => {
+                const quantity = selectedItems[item.id]?.[expiration.id];
+
+                if (quantity === undefined) return;
+
+                const { netAmount, vatAmount, grossAmount } = calculateAmounts({
+                  netPrice: item.netPrice,
+                  quantity,
+                  vatRate: item.vatRate,
+                });
+
+                return {
+                  id: item.id,
+                  expirationId: expiration.id,
+                  CNCode: item.CNCode,
+                  articleNumber: item.articleNumber,
+                  expiresAt: format(new Date(expiration.expiresAt), 'yyyy-MM'),
+                  name: item.name,
+                  quantity,
+                  unitName: item.unitName,
+                  netPrice: item.netPrice,
+                  netAmount,
+                  vatRate: item.vatRate,
+                  vatAmount,
+                  grossAmount,
+                };
+              })
+            )
+            .filter(identity)
+        )
+      );
+
+      navigation.removeListener('beforeRemove', exitConfimationHandler);
+      navigation.navigate('Review');
     }
   }, [
     canConfirmItems,
     exitConfimationHandler,
+    items,
     navigation,
-    saveSelectedItemsInFlow,
-    saveSelectedOrderItemsInFlow,
+    selectedItems,
+    selectedOrderItems,
+    selectedPartner?.id,
+    setCurrentOrder,
+    setCurrentReceipt,
   ]);
 
   const renderItem = useCallback(
@@ -258,9 +430,8 @@ export function SelectItemsToSell({
       if (!!selectedItems[info.item.id] || !!selectedOrderItems[info.item.id]) {
         type = ItemAvailability.IN_RECEIPT;
       } else if (
-        any(
-          pipe(prop('quantity'), gte(__, 0)),
-          pipe(prop('expirations'), values)(info.item)
+        Object.values(info.item.expirations).some(
+          (expiration) => (expiration.quantity ?? 0) >= 0
         )
       ) {
         type = ItemAvailability.AVAILABLE;
@@ -282,7 +453,7 @@ export function SelectItemsToSell({
     [selectedItems, selectedOrderItems, upsertOrderItem, upsertSelectedItem]
   );
 
-  if (isContextPending || isLoading) {
+  if (isLoading || isItemsPending || isPriceListsPending) {
     return <Loading />;
   }
 
@@ -294,13 +465,16 @@ export function SelectItemsToSell({
           <Input
             label=""
             labelPosition="left"
-            value={searchTerm}
-            config={{ onChangeText: setSearchTerm }}
+            value={searchState.searchTerm}
+            config={{
+              onChangeText: (text: string) =>
+                setSearchState({ searchTerm: text, barCode: '' }),
+            }}
           />
-          {barCode ? (
+          {searchState.barCode ? (
             <Pressable
               onPress={() => {
-                setBarCode('');
+                setSearchState((prevState) => ({ ...prevState, barCode: '' }));
               }}
             >
               <MaterialCommunityIcons
@@ -322,7 +496,7 @@ export function SelectItemsToSell({
       </View>
       <View style={styles.listContainer}>
         <Animated.FlatList
-          data={items.slice(0, NUM_ITEMS_SHOWN)}
+          data={sellItems}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderItem}
         />

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { currentReceiptAtom } from '../../../atoms/receipts';
-import { maxNewPartnerIdInUseAtom } from '../../../atoms/sell-flow/partners';
+import { maxNewPartnerIdInUseAtom } from '../../../atoms/sellFlow';
 import { Loading } from '../../../components/Loading';
 import { TextCard } from '../../../components/info-cards/TextCard';
 import { Button } from '../../../components/ui/Button';

@@ -31,7 +31,7 @@ import {
   type Partners,
 } from '../../../api/response-mappers/mapPartnersResponse';
 import { currentReceiptAtom } from '../../../atoms/receipts';
-import { selectedPartnerAtom } from '../../../atoms/sell-flow/partners';
+import { selectedPartnerAtom } from '../../../atoms/sellFlow';
 import { Loading } from '../../../components/Loading';
 import { Input } from '../../../components/ui/Input';
 import { colors } from '../../../constants/colors';

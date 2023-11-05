@@ -5,7 +5,9 @@ import {
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useAtom } from 'jotai';
+import { isNotNil } from 'ramda';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useStartRound } from '../../api/mutations/useStartRound';
@@ -21,6 +23,7 @@ import { fetchPriceLists } from '../../api/queries/usePriceLists';
 import { fetchStoreDetails } from '../../api/queries/useStoreDetails';
 import { fetchStores, useStores } from '../../api/queries/useStores';
 import { useToken } from '../../api/queries/useToken';
+import { selectedStoreAtom } from '../../atoms/storage';
 import { Loading } from '../../components/Loading';
 import { ErrorCard } from '../../components/info-cards/ErrorCard';
 import { Button } from '../../components/ui/Button';
@@ -29,7 +32,7 @@ import { Input } from '../../components/ui/Input';
 import { colors } from '../../constants/colors';
 import { type StartErrandProps } from '../../navigators/screen-types';
 
-export function StartErrand({ navigation }: StartErrandProps) {
+function SuspendedStartErrand({ navigation }: StartErrandProps) {
   const { isInternetReachable } = useNetInfo();
   const {
     data: partnerLists,
@@ -46,8 +49,10 @@ export function StartErrand({ navigation }: StartErrandProps) {
   } = useStores();
   const { data: { token } = {} } = useToken();
 
-  const [storeId, setStoreId] = useState<number>(-1);
-  const [partnerListId, setPartnerListId] = useState<number>(-1);
+  const [, setSelectedStore] = useAtom(selectedStoreAtom);
+
+  const [storeId, setStoreId] = useState<number | null>(null);
+  const [partnerListId, setPartnerListId] = useState<number | null>(null);
   const [date, setDate] = useState<Date>(new Date());
 
   const [loadingMessage, setLoadingMessage] = useState<string>('');
@@ -60,7 +65,7 @@ export function StartErrand({ navigation }: StartErrandProps) {
   }, [isInternetReachable, navigation]);
 
   const confirmRoundHandler = async () => {
-    if (token) {
+    if (isNotNil(storeId) && isNotNil(partnerListId) && token) {
       setLoadingMessage('Körindítás folyamatban...');
 
       try {
@@ -98,16 +103,17 @@ export function StartErrand({ navigation }: StartErrandProps) {
           queryKey: ['price-lists'],
           queryFn: fetchPriceLists(token),
         });
-        await queryClient.fetchQuery({
+
+        const storeDetails = await queryClient.fetchQuery({
           queryKey: ['store-details', storeId],
           queryFn: fetchStoreDetails(token, storeId),
         });
+        setSelectedStore(storeDetails);
+
         await queryClient.fetchQuery({
           queryKey: ['stores'],
           queryFn: fetchStores(token),
         });
-
-        navigation.pop();
       } catch (error) {
         setLoadingMessage('');
         setError(error.message);
@@ -115,10 +121,58 @@ export function StartErrand({ navigation }: StartErrandProps) {
     }
   };
 
-  const refreshHandler = () => {
+  const refreshHandler = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
     queryClient.invalidateQueries({ queryKey: ['stores'] });
-  };
+  }, [queryClient]);
+
+  const displayStores = useMemo(
+    () =>
+      (stores ?? [])
+        .filter((store) => store.type !== 'P' && store.state === 'I')
+        .map((store) => ({
+          key: String(store.id),
+          value: store.name,
+        })),
+    [stores]
+  );
+
+  const selectStoreHandler = useCallback((key: string) => {
+    setStoreId(+key);
+  }, []);
+
+  const displayPartnerLists = useMemo(
+    () =>
+      (partnerLists ?? []).map((partnerList) => ({
+        key: String(partnerList.id),
+        value: partnerList.name,
+      })),
+    [partnerLists]
+  );
+
+  const selectPartnerListHandler = useCallback((key: string) => {
+    setPartnerListId(+key);
+  }, []);
+
+  const selectDateHandler = useCallback(
+    (_: DateTimePickerEvent, selectedDate: Date | undefined) => {
+      setDate(selectedDate ?? new Date());
+    },
+    []
+  );
+
+  const showDatePicker = useCallback(() => {
+    DateTimePickerAndroid.open({
+      value: date,
+      onChange: selectDateHandler,
+      mode: 'date',
+      is24Hour: true,
+      minimumDate: new Date(),
+    });
+  }, [date, selectDateHandler]);
+
+  const confirmButtonVariant =
+    isNotNil(storeId) && isNotNil(partnerListId) && !!token ? 'ok' : 'disabled';
 
   if (
     isPartnersListsFetching ||
@@ -130,46 +184,6 @@ export function StartErrand({ navigation }: StartErrandProps) {
   ) {
     return <Loading message={loadingMessage} />;
   }
-
-  const displayStores = (stores ?? [])
-    .filter((store) => store.type !== 'P' && store.state === 'I')
-    .map((store) => ({
-      key: String(store.id),
-      value: store.name,
-    }));
-
-  const selectStoreHandler = (key: string) => {
-    setStoreId(+key);
-  };
-
-  const displayPartners = (partnerLists ?? []).map((partnerList) => ({
-    key: String(partnerList.id),
-    value: partnerList.name,
-  }));
-
-  const selectPartnerListHandler = (key: string) => {
-    setPartnerListId(+key);
-  };
-
-  const selectDateHandler = (
-    _: DateTimePickerEvent,
-    selectedDate: Date | undefined
-  ) => {
-    setDate(selectedDate ?? new Date());
-  };
-
-  const showDatePicker = () => {
-    DateTimePickerAndroid.open({
-      value: date,
-      onChange: selectDateHandler,
-      mode: 'date',
-      is24Hour: true,
-      minimumDate: new Date(),
-    });
-  };
-
-  const confirmButtonVariant =
-    storeId > -1 && partnerListId > -1 && !!token ? 'ok' : 'disabled';
 
   return (
     <View style={styles.container}>
@@ -188,7 +202,7 @@ export function StartErrand({ navigation }: StartErrandProps) {
       <View style={styles.inputContainer}>
         <Dropdown
           label="Partnerlista"
-          data={displayPartners}
+          data={displayPartnerLists}
           onSelect={selectPartnerListHandler}
         />
       </View>
@@ -210,6 +224,14 @@ export function StartErrand({ navigation }: StartErrandProps) {
         </Button>
       </View>
     </View>
+  );
+}
+
+export function StartErrand(props: StartErrandProps) {
+  return (
+    <Suspense fallback={<Loading />}>
+      <SuspendedStartErrand {...props} />
+    </Suspense>
   );
 }
 

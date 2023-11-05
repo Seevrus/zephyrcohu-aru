@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 
 import { useActiveRound } from '../../api/queries/useActiveRound';
 import { usePartnerLists } from '../../api/queries/usePartnerLists';
-import { selectedPartnerAtom } from '../../atoms/sell-flow/partners';
+import { selectedPartnerAtom } from '../../atoms/sellFlow';
 
 export function useIsSelectedPartnerForSellOnCurrentPartnerList() {
   const { data: activeRound } = useActiveRound();

@@ -15,7 +15,10 @@ import { type SellExpiration } from '../../../providers/sell-flow-hooks/useSelec
 type SelectionProps = {
   info: ListRenderItemInfo<SellExpiration>;
   quantity: number | null;
-  onQuantityModified: (expirationId: number, newQuantity: number) => void;
+  onQuantityModified: (
+    expirationId: number,
+    newQuantity: number | null
+  ) => void;
 };
 
 function _Selection({ info, quantity, onQuantityModified }: SelectionProps) {
@@ -32,10 +35,10 @@ function _Selection({ info, quantity, onQuantityModified }: SelectionProps) {
 
     if (formattedQuantity < 0) {
       onQuantityModified(info.item.expirationId, null);
-    } else if (formattedQuantity > info.item.quantity) {
+    } else if (formattedQuantity > (info.item.quantity ?? 0)) {
       const newSelectedQuantity =
         info.item.quantity === 0 ? null : info.item.quantity;
-      onQuantityModified(info.item.expirationId, newSelectedQuantity);
+      onQuantityModified(info.item.expirationId, newSelectedQuantity ?? null);
     } else {
       onQuantityModified(info.item.expirationId, nullIshFormattedQuantity);
     }
@@ -50,7 +53,7 @@ function _Selection({ info, quantity, onQuantityModified }: SelectionProps) {
 
   return (
     <View style={styles.selectionContainer}>
-      <Pressable onPress={() => quantityHandler(String(quantity - 1))}>
+      <Pressable onPress={() => quantityHandler(String((quantity ?? 0) - 1))}>
         <MaterialIcons
           name="remove-circle-outline"
           size={40}
@@ -74,7 +77,7 @@ function _Selection({ info, quantity, onQuantityModified }: SelectionProps) {
           }}
         />
       </View>
-      <Pressable onPress={() => quantityHandler(String(quantity + 1))}>
+      <Pressable onPress={() => quantityHandler(String((quantity ?? 0) + 1))}>
         <MaterialIcons
           name="add-circle-outline"
           size={40}

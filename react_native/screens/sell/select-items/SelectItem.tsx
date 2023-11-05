@@ -29,9 +29,9 @@ type SelectItemProps = {
   upsertSelectedItem: (
     id: number,
     expirationId: number,
-    quantity: number
+    quantity: number | null
   ) => void;
-  upsertOrderItem: (id: number, quantity: number) => void;
+  upsertOrderItem: (id: number, quantity: number | null) => void;
 };
 
 function _SelectItem({
@@ -53,7 +53,7 @@ function _SelectItem({
   )(info.item.expirations ?? []);
 
   const modifyQuantity = useCallback(
-    (expirationId: number, newQuantity: number) => {
+    (expirationId: number, newQuantity: number | null) => {
       if (expirationId === -1000) {
         upsertOrderItem(info.item.id, newQuantity);
       } else {

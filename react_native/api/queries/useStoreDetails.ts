@@ -11,7 +11,7 @@ import {
 import { useCheckToken } from './useCheckToken';
 import { useToken } from './useToken';
 
-export function useStoreDetails(storeId: number | undefined, enabled: boolean) {
+export function useStoreDetails(storeId: number | undefined, enabled = true) {
   const { isInternetReachable } = useNetInfo();
   const { isSuccess: isCheckTokenSuccess } = useCheckToken();
   const { isSuccess: isTokenSuccess, data: tokenData } = useToken();
