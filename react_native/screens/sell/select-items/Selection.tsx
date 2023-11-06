@@ -10,7 +10,7 @@ import {
 
 import { format } from 'date-fns';
 import { Input } from '../../../components/ui/Input';
-import { type SellExpiration } from './SelectItemsToSell';
+import { type SellExpiration } from './useSelectItemsToSellData';
 
 type SelectionProps = {
   info: ListRenderItemInfo<SellExpiration>;

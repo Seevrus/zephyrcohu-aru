@@ -1,17 +1,6 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
-import {
-  allPass,
-  complement,
-  filter,
-  includes,
-  isNotNil,
-  pipe,
-  prepend,
-  take,
-  when,
-} from 'ramda';
-import { useLayoutEffect, useMemo, useState } from 'react';
+import { useLayoutEffect } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -20,7 +9,6 @@ import {
   type ListRenderItemInfo,
 } from 'react-native';
 
-import { useSearchTaxNumber } from '../../../api/queries/useSearchTaxNumber';
 import { useToken } from '../../../api/queries/useToken';
 import { type TaxPayer } from '../../../api/response-mappers/mapSearchTaxPayerResponse';
 import { Loading } from '../../../components/Loading';
@@ -33,6 +21,7 @@ import {
   type StackParams,
 } from '../../../navigators/screen-types';
 import { Selection } from '../select-partner/Selection';
+import { useSearchPartnerNavFormData } from './useSearchPartnerNavFormData';
 
 function Header({
   taxNumber,
@@ -89,89 +78,35 @@ function Header({
   );
 }
 
-const NUM_PARTNERS_SHOWN = 10;
-
 export function SearchPartnerNavForm({
   navigation,
-  route: { params },
+  route,
 }: SearchPartnerNavFormProps) {
   const { isInternetReachable } = useNetInfo();
   const { isPending: isTokenPending, data: { isTokenExpired } = {} } =
     useToken();
 
-  const [taxNumber, setTaxNumber] = useState<string>(params?.taxNumber ?? '');
-  const [searchValue, setSearchValue] = useState<string>('');
-  const [selectedResult, setSelectedResult] = useState<TaxPayer | null>(null);
-
   const {
-    data: taxPayerData,
-    isPending: isTaxPayerPending,
-    isSuccess: isTaxPayerSuccess,
-  } = useSearchTaxNumber({ taxNumber });
-
-  const taxPayersShown: TaxPayer[] = useMemo(
-    () =>
-      pipe(
-        when<TaxPayer[], TaxPayer[]>(
-          () => !!searchValue,
-          filter<TaxPayer>((taxPayer) => {
-            const needle = searchValue.toLocaleLowerCase();
-            const haystack = Object.values(taxPayer.locations)
-              .filter((location) => !!location)
-              .map(
-                (location) =>
-                  `${location.name}${location.city}${location.address}`
-              )
-              .join('');
-
-            return haystack.toLocaleLowerCase().includes(needle);
-          })
-        ),
-        (taxPayers) => take<TaxPayer>(NUM_PARTNERS_SHOWN, taxPayers),
-        when<TaxPayer[], TaxPayer[]>(
-          allPass([
-            () => isNotNil(selectedResult),
-            complement(includes(selectedResult)),
-          ]),
-          prepend(selectedResult as TaxPayer)
-        )
-      )(taxPayerData ?? []),
-    [searchValue, selectedResult, taxPayerData]
-  );
+    isLoading,
+    searchValue,
+    setSearchValue,
+    taxNumber,
+    taxNumberSearchHandler,
+    isTaxPayerSuccess,
+    taxPayers,
+    selectedResult,
+    selectResult,
+    confirmResultHandler,
+  } = useSearchPartnerNavFormData({
+    navigation,
+    route,
+  });
 
   useLayoutEffect(() => {
     if (isInternetReachable === false || isTokenExpired) {
       navigation.replace('AddPartnerForm');
     }
   }, [isInternetReachable, isTokenExpired, navigation]);
-
-  const taxNumberSearchHandler = (value: string) => {
-    setTaxNumber(value);
-    setSearchValue('');
-  };
-
-  const selectResult = (id: string | number) => {
-    setSelectedResult(taxPayerData?.find((tp) => tp.id === +id) ?? null);
-  };
-
-  const confirmResultHandler = (id: string | number) => {
-    const selectedTaxPayer = taxPayerData?.find((tp) => tp.id === +id);
-    setSelectedResult(selectedTaxPayer ?? null);
-    if (selectedTaxPayer) {
-      navigation.navigate('AddPartnerForm', {
-        taxNumber: selectedTaxPayer.vatNumber,
-        name:
-          selectedTaxPayer.locations.C?.name ??
-          selectedTaxPayer.locations.D.name,
-        centralPostalCode: selectedTaxPayer.locations.C?.postalCode,
-        centralCity: selectedTaxPayer.locations.C?.city,
-        centralAddress: selectedTaxPayer.locations.C?.address,
-        deliveryPostalCode: selectedTaxPayer.locations.D?.postalCode,
-        deliveryCity: selectedTaxPayer.locations.D?.city,
-        deliveryAddress: selectedTaxPayer.locations.D?.address,
-      });
-    }
-  };
 
   const renderPartner: ListRenderItem<TaxPayer> = (
     info: ListRenderItemInfo<TaxPayer>
@@ -190,7 +125,7 @@ export function SearchPartnerNavForm({
     />
   );
 
-  if (isTokenPending || isTaxPayerPending) {
+  if (isLoading || isTokenPending) {
     return <Loading />;
   }
 
@@ -205,7 +140,7 @@ export function SearchPartnerNavForm({
               navigation={navigation}
             />
           }
-          data={taxPayersShown}
+          data={taxPayers}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderPartner}
         />

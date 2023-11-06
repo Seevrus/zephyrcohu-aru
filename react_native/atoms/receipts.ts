@@ -47,8 +47,3 @@ export const numberOfReceiptsAtom = atom(async (get) => {
   const receipts = await get(receiptsAtom);
   return receipts.length;
 });
-
-export const isPartnerChosenForCurrentReceiptAtom = atom(async (get) => {
-  const currentReceipt = await get(currentReceiptAtom);
-  return !!currentReceipt?.buyer;
-});

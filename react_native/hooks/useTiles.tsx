@@ -7,10 +7,8 @@ import { isNil } from 'ramda';
 import { Alert } from 'react-native';
 
 import { useCheckToken } from '../api/queries/useCheckToken';
-import {
-  isPartnerChosenForCurrentReceiptAtom,
-  numberOfReceiptsAtom,
-} from '../atoms/receipts';
+import { numberOfReceiptsAtom } from '../atoms/receipts';
+import { selectedPartnerAtom } from '../atoms/sellFlow';
 import { isStorageSavedToApiAtom } from '../atoms/storageFlow';
 import { type TileT } from '../components/Tile';
 import { PartnerList, type StackParams } from '../navigators/screen-types';
@@ -31,9 +29,7 @@ export function useTiles(): TileT[] | undefined {
   const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
   const numberOfReceipts = useAtomValue(loadable(numberOfReceiptsAtom));
 
-  const isPartnerChosenForCurrentReceipt = useAtomValue(
-    loadable(isPartnerChosenForCurrentReceiptAtom)
-  );
+  const isPartnerSelectedInSell = !!useAtomValue(selectedPartnerAtom);
   const isSelectedPartnerOnCurrentPartnerList =
     useIsSelectedPartnerForSellOnCurrentPartnerList();
   const isStorageSavedToApi = useAtomValue(isStorageSavedToApiAtom);
@@ -51,10 +47,7 @@ export function useTiles(): TileT[] | undefined {
     endErrandTileMessage,
   } = useTileStates();
 
-  if (
-    isPartnerChosenForCurrentReceipt.state === 'hasData' &&
-    numberOfReceipts.state === 'hasData'
-  ) {
+  if (numberOfReceipts.state === 'hasData') {
     return [
       {
         id: 't0',
@@ -106,7 +99,7 @@ export function useTiles(): TileT[] | undefined {
             Alert.alert(FEATURE_NOT_AVAILABLE, selectPartnerTileMessage, [
               { text: 'Értem' },
             ]);
-          } else if (isPartnerChosenForCurrentReceipt.data) {
+          } else if (isPartnerSelectedInSell) {
             navigation.navigate('SelectItemsToSell');
           } else {
             const partnerScreen =

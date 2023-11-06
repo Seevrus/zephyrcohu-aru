@@ -10,7 +10,7 @@ import {
 import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';
 import { colors } from '../../../constants/colors';
 import { Selection } from './Selection';
-import { type SellExpiration, type SellItem } from './SelectItemsToSell';
+import { type SellExpiration, type SellItem } from './useSelectItemsToSellData';
 
 export enum ItemAvailability {
   IN_RECEIPT,

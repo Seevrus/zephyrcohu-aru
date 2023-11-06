@@ -17,6 +17,7 @@ import { fontSizes } from '../../../constants/fontSizes';
 import { useResetSellFlow } from '../../../hooks/sell/useResetSellFlow';
 import { useSyncSellWithApi } from '../../../hooks/sell/useSyncSellWithApi';
 import { type SummaryProps } from '../../../navigators/screen-types';
+import { Container } from '../../../components/container/Container';
 
 function SuspendedSummary({ navigation }: SummaryProps) {
   const { isInternetReachable } = useNetInfo();
@@ -80,7 +81,7 @@ function SuspendedSummary({ navigation }: SummaryProps) {
   }
 
   return (
-    <View style={styles.container}>
+    <Container style={styles.container}>
       {isInternetReachable === false && (
         <View style={styles.textCardContainer}>
           <TextCard>
@@ -128,13 +129,13 @@ function SuspendedSummary({ navigation }: SummaryProps) {
           Visszatérés a kezdőképernyőre
         </Button>
       </View>
-    </View>
+    </Container>
   );
 }
 
 export function Summary(props: SummaryProps) {
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<Container />}>
       <SuspendedSummary {...props} />
     </Suspense>
   );
@@ -147,8 +148,6 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   container: {
-    backgroundColor: colors.background,
-    flex: 1,
     paddingHorizontal: '7%',
     paddingTop: 20,
   },
