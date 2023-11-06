@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Loading } from '../../../components/Loading';
+import { Container } from '../../../components/container/Container';
 import { Button } from '../../../components/ui/Button';
 import { colors } from '../../../constants/colors';
 import { fontSizes } from '../../../constants/fontSizes';
@@ -26,7 +27,7 @@ function SuspendedStorageChangesSummary({
   }
 
   return (
-    <View style={styles.container}>
+    <Container style={styles.container}>
       <Text style={styles.header}>Rakodás mentése sikeres!</Text>
       <Text style={styles.text}>
         Az alábbi gombra kattintva jegyzék nyomtatható a rakodás adatairól.
@@ -46,13 +47,13 @@ function SuspendedStorageChangesSummary({
           Visszatérés a kezdőképernyőre
         </Button>
       </View>
-    </View>
+    </Container>
   );
 }
 
 export function StorageChangesSummary(props: StorageChangesSummaryProps) {
   return (
-    <Suspense>
+    <Suspense fallback={<Container />}>
       <SuspendedStorageChangesSummary {...props} />
     </Suspense>
   );
@@ -66,8 +67,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   container: {
-    backgroundColor: colors.background,
-    flex: 1,
     paddingHorizontal: '7%',
     paddingTop: 20,
   },

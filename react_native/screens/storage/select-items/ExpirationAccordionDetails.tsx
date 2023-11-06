@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   quantityContainer: {
-    height: 90,
+    height: 85,
     width: '50%',
   },
   selectIcon: {

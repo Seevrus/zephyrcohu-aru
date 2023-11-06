@@ -2,6 +2,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../constants/colors';
 import { fontSizes } from '../constants/fontSizes';
+import { Container } from './container/Container';
 
 type LoadingProps = {
   message?: string;
@@ -13,21 +14,19 @@ const defaultProps = {
 
 export function Loading({ message }: LoadingProps) {
   return (
-    <View style={styles.container}>
+    <Container style={styles.centeredContainer}>
       <ActivityIndicator size="large" color={colors.blue200} />
       <View style={styles.messageContainer}>
         <Text style={styles.message}>{message}</Text>
       </View>
-    </View>
+    </Container>
   );
 }
 Loading.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
-  container: {
+  centeredContainer: {
     alignItems: 'center',
-    backgroundColor: colors.background,
-    flex: 1,
     justifyContent: 'center',
   },
   message: {

@@ -12,6 +12,7 @@ import { useCheckToken } from '../../api/queries/useCheckToken';
 import { useToken } from '../../api/queries/useToken';
 import { Loading } from '../../components/Loading';
 import { Tile, type TileT } from '../../components/Tile';
+import { Container } from '../../components/container/Container';
 import { TextCard } from '../../components/info-cards/TextCard';
 import { colors } from '../../constants/colors';
 import { useTiles } from '../../hooks/useTiles';
@@ -69,7 +70,7 @@ function SuspendedIndex() {
 
 export function Index() {
   return (
-    <Suspense>
+    <Suspense fallback={<Container />}>
       <SuspendedIndex />
     </Suspense>
   );

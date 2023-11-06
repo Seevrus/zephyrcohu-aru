@@ -1,7 +1,9 @@
 import { useNetInfo } from '@react-native-community/netinfo';
+import { useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import * as SecureStore from 'expo-secure-store';
+import { useAtom } from 'jotai';
 
+import { defaultStoredToken, tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
 import { queryClient } from '../queryClient';
 import {
@@ -10,11 +12,12 @@ import {
 } from '../response-mappers/mapCheckTokenResponse';
 import { type LoginResponse } from '../response-types/LoginResponseType';
 import { useToken } from './useToken';
-import { useQuery } from '@tanstack/react-query';
 
 export function useCheckToken() {
   const { isInternetReachable } = useNetInfo();
   const { isSuccess: isTokenSuccess, data: tokenData } = useToken();
+
+  const [, setStoredToken] = useAtom(tokenAtom);
 
   return useQuery({
     queryKey: ['check-token'],
@@ -38,7 +41,7 @@ export function useCheckToken() {
 
           if (error.response?.status === 401) {
             await queryClient.invalidateQueries({ queryKey: ['token'] });
-            await SecureStore.deleteItemAsync('boreal-token');
+            await setStoredToken(defaultStoredToken);
           }
         }
 

@@ -44,7 +44,10 @@ export function useReviewStorageChangesData(
 
         setIsStorageSavedToApi(true);
 
-        navigation.replace('StorageChangesSummary');
+        navigation.reset({
+          index: 1,
+          routes: [{ name: 'Index' }, { name: 'StorageChangesSummary' }],
+        });
       }
     } catch {
       setIsLoading(false);

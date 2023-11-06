@@ -11,6 +11,7 @@ import {
 
 import { type StorageListItem } from '../../../atoms/storageFlow';
 import { Loading } from '../../../components/Loading';
+import { Container } from '../../../components/container/Container';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { colors } from '../../../constants/colors';
@@ -60,7 +61,7 @@ function SuspendedSelectItemsFromStore({
   }
 
   return (
-    <View style={styles.container}>
+    <Container>
       <View style={styles.headerContainer}>
         <View style={styles.searchInputContainer}>
           <MaterialCommunityIcons name="magnify" size={30} color="white" />
@@ -111,13 +112,13 @@ function SuspendedSelectItemsFromStore({
           </Button>
         </View>
       </View>
-    </View>
+    </Container>
   );
 }
 
 export function SelectItemsFromStore(props: SelectItemsFromStoreProps) {
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<Container />}>
       <SuspendedSelectItemsFromStore {...props} />
     </Suspense>
   );
@@ -128,10 +129,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     justifyContent: 'space-between',
-  },
-  container: {
-    backgroundColor: colors.background,
-    flex: 1,
   },
   footerContainer: {
     borderTopColor: colors.white,

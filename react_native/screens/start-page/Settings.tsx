@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useLogout } from '../../api/mutations/useLogout';
@@ -19,12 +19,13 @@ import {
   storageListItemsAtom,
 } from '../../atoms/storageFlow';
 import { Loading } from '../../components/Loading';
+import { Container } from '../../components/container/Container';
 import { Button } from '../../components/ui/Button';
 import { colors } from '../../constants/colors';
 import { useResetSellFlow } from '../../hooks/sell/useResetSellFlow';
 import { type SettingsProps } from '../../navigators/screen-types';
 
-export function Settings({ navigation }: SettingsProps) {
+function SuspendedSettings({ navigation }: SettingsProps) {
   const { data: user, isFetching: isUserFetching } = useCheckToken();
   const { data: tokenData } = useToken();
   const { mutateAsync: logout } = useLogout();
@@ -75,7 +76,7 @@ export function Settings({ navigation }: SettingsProps) {
     await setSelectedStore(null);
 
     setIsStorageSavedToApi(false);
-    setStorageListItems(undefined);
+    setStorageListItems(null);
 
     await setCurrentOrder(null);
     await setCurrentReceipt(null);
@@ -130,6 +131,14 @@ export function Settings({ navigation }: SettingsProps) {
         Reset (béta teszthez)
       </Button>
     </View>
+  );
+}
+
+export function Settings(props: SettingsProps) {
+  return (
+    <Suspense fallback={<Container />}>
+      <SuspendedSettings {...props} />
+    </Suspense>
   );
 }
 

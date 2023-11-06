@@ -69,6 +69,11 @@ export function Input({
           dynamicStyles.input,
         ]}
         {...config}
+        {...(!config.multiline &&
+          !config.secureTextEntry && {
+            multiline: true,
+            numberOfLines: 1,
+          })}
         {...(value && { value })}
       />
     </View>

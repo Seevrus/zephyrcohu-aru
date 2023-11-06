@@ -1,7 +1,8 @@
+import { useFocusEffect, type EventArg } from '@react-navigation/native';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Print from 'expo-print';
 import { useAtomValue } from 'jotai';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { useDeselectStore } from '../../../api/mutations/useDeselectStore';
 import { useCheckToken } from '../../../api/queries/useCheckToken';
@@ -41,6 +42,46 @@ export function useStorageChangesSummaryData(
     [storageListItems]
   );
 
+  const finishStorage = useCallback(async () => {
+    setIsLoading(true);
+    await deselectStore();
+
+    await resetStorage();
+    resetStorageFlow();
+  }, [deselectStore, resetStorage, resetStorageFlow]);
+
+  const exitConfirmationHandler = useCallback(
+    async (
+      event: EventArg<
+        'beforeRemove',
+        true,
+        {
+          action: Readonly<{
+            type: string;
+            payload?: object;
+            source?: string;
+            target?: string;
+          }>;
+        }
+      >
+    ) => {
+      event.preventDefault();
+      await finishStorage();
+      navigation.dispatch(event.data.action);
+    },
+    [finishStorage, navigation]
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      navigation.addListener('beforeRemove', exitConfirmationHandler);
+
+      return () => {
+        navigation.removeListener('beforeRemove', exitConfirmationHandler);
+      };
+    }, [exitConfirmationHandler, navigation])
+  );
+
   const printButtonHandler = async () => {
     await Print.printAsync({
       html: createPrint({
@@ -52,11 +93,8 @@ export function useStorageChangesSummaryData(
   };
 
   const returnButtonHandler = async () => {
-    setIsLoading(true);
-    await deselectStore();
-
-    await resetStorage();
-    resetStorageFlow();
+    await finishStorage();
+    navigation.removeListener('beforeRemove', exitConfirmationHandler);
 
     navigation.reset({
       index: 0,

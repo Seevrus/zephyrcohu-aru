@@ -11,6 +11,8 @@ import {
 
 import { Loading } from '../../../components/Loading';
 import { Tile, type TileT } from '../../../components/Tile';
+import { Container } from '../../../components/container/Container';
+import { ErrorCard } from '../../../components/info-cards/ErrorCard';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { colors } from '../../../constants/colors';
@@ -22,11 +24,12 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
 
   const {
     isLoading,
+    error,
     selectedStoreId,
     searchInputHandler,
     handleSubmitSelectedStore,
     storeTiles,
-  } = useSelectStoreData();
+  } = useSelectStoreData(navigation);
 
   useEffect(() => {
     if (isInternetReachable === false) {
@@ -54,7 +57,7 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
   }
 
   return (
-    <View style={styles.container}>
+    <Container style={styles.container}>
       <View style={styles.headerContainer}>
         <View style={styles.searchInputContainer}>
           <Input
@@ -64,6 +67,11 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
           />
         </View>
       </View>
+      {error && (
+        <View>
+          <ErrorCard>{error}</ErrorCard>
+        </View>
+      )}
       <View style={styles.listContainer}>
         <FlatList
           data={storeTiles}
@@ -81,13 +89,13 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
           </Button>
         </View>
       </View>
-    </View>
+    </Container>
   );
 }
 
 export function SelectStore(props: SelectStoreProps) {
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<Container />}>
       <SuspendedSelectStore {...props} />
     </Suspense>
   );
@@ -100,8 +108,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   container: {
-    backgroundColor: colors.background,
-    flex: 1,
     paddingBottom: 30,
   },
   footerContainer: {

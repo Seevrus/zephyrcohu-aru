@@ -1,4 +1,5 @@
 import { FontAwesome5 } from '@expo/vector-icons';
+import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAtom } from 'jotai';
 import {
   allPass,
@@ -32,8 +33,11 @@ import {
   selectedStoreInitialStateAtom,
 } from '../../../atoms/storage';
 import { type TileT } from '../../../components/Tile';
+import { type StackParams } from '../../../navigators/screen-types';
 
-export function useSelectStoreData() {
+export function useSelectStoreData(
+  navigation: NativeStackNavigationProp<StackParams, 'SelectStore', undefined>
+) {
   const { mutateAsync: selectStore } = useSelectStore();
   const { isPending: isStoresPending, data: stores } = useStores();
   const { isPending: isTokenPending, data: { token } = {} } = useToken();
@@ -47,6 +51,7 @@ export function useSelectStoreData() {
   const [storeSearchValue, setStoreSearchValue] = useState<string>('');
   const [selectedStoreId, setSelectedStoreId] = useState<number | null>(null);
   const [isSubmitInProgress, setIsSubmitInProgress] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string>('');
 
   const primaryStoreId = stores?.find((store) => store.type === 'P')?.id;
 
@@ -80,26 +85,33 @@ export function useSelectStoreData() {
       isNotNil(selectedStoreId) &&
       isNotNil(token)
     ) {
-      setIsSubmitInProgress(true);
+      try {
+        setIsSubmitInProgress(true);
 
-      const primaryStoreDetails =
-        await queryClient.fetchQuery<StoreDetailsResponseData>({
-          queryKey: ['store-details', primaryStoreId],
-          queryFn: fetchStoreDetails(token, primaryStoreId),
-        });
-      await setPrimaryStore(primaryStoreDetails);
+        await selectStore({ storeId: selectedStoreId });
 
-      const selectedStoreDetails =
-        await queryClient.fetchQuery<StoreDetailsResponseData>({
-          queryKey: ['store-details', selectedStoreId],
-          queryFn: fetchStoreDetails(token, selectedStoreId),
-        });
-      await setSelectedStoreInitialState(selectedStoreDetails);
-      await setSelectedStore(selectedStoreDetails);
+        const primaryStoreDetails =
+          await queryClient.fetchQuery<StoreDetailsResponseData>({
+            queryKey: ['store-details', primaryStoreId],
+            queryFn: fetchStoreDetails(token, primaryStoreId),
+          });
+        await setPrimaryStore(primaryStoreDetails);
 
-      await selectStore({ storeId: selectedStoreId });
+        const selectedStoreDetails =
+          await queryClient.fetchQuery<StoreDetailsResponseData>({
+            queryKey: ['store-details', selectedStoreId],
+            queryFn: fetchStoreDetails(token, selectedStoreId),
+          });
+        await setSelectedStoreInitialState(selectedStoreDetails);
+        await setSelectedStore(selectedStoreDetails);
+
+        navigation.replace('SelectItemsFromStore');
+      } catch (error) {
+        setSubmitError(error?.message ?? 'Váratlan hiba lépett fel.');
+      }
     }
   }, [
+    navigation,
     primaryStoreId,
     selectStore,
     selectedStoreId,
@@ -149,6 +161,7 @@ export function useSelectStoreData() {
 
   return {
     isLoading: isStoresPending || isTokenPending || isSubmitInProgress,
+    error: submitError,
     selectedStoreId,
     searchInputHandler: setStoreSearchValue,
     handleSubmitSelectedStore,

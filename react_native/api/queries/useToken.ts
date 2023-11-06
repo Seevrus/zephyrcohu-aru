@@ -1,12 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { isPast, parseISO } from 'date-fns';
-import * as SecureStore from 'expo-secure-store';
-
-type StoredToken = {
-  token: string;
-  isPasswordExpired: boolean;
-  expiresAt: string; // DateTime
-};
+import { useAtom } from 'jotai';
+import { defaultStoredToken, tokenAtom } from '../../atoms/token';
 
 type Token = {
   token: string;
@@ -15,28 +10,19 @@ type Token = {
 };
 
 export function useToken() {
+  const [{ token, isPasswordExpired, expiresAt }, setStoredToken] =
+    useAtom(tokenAtom);
+
+  const defaultToken: Token = {
+    token: '',
+    isPasswordExpired: false,
+    isTokenExpired: true,
+  };
+
   return useQuery({
     queryKey: ['token'],
     queryFn: async (): Promise<Token> => {
-      const defaultToken = {
-        token: '',
-        isPasswordExpired: false,
-        isTokenExpired: true,
-      };
-
       try {
-        const rawToken = await SecureStore.getItemAsync('boreal-token');
-
-        if (!rawToken) {
-          return defaultToken;
-        }
-
-        const {
-          token = '',
-          isPasswordExpired = false,
-          expiresAt = '1970-01-01 00:00:00',
-        }: StoredToken = JSON.parse(rawToken);
-
         return {
           token,
           isPasswordExpired: !token || isPasswordExpired,
@@ -46,7 +32,7 @@ export function useToken() {
         // eslint-disable-next-line no-console
         console.log('useToken:', error?.message);
 
-        await SecureStore.deleteItemAsync('boreal-token');
+        await setStoredToken(defaultStoredToken);
         return defaultToken;
       }
     },

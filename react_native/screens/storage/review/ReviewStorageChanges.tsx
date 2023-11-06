@@ -10,6 +10,7 @@ import {
 
 import { type StorageListItem } from '../../../atoms/storageFlow';
 import { Loading } from '../../../components/Loading';
+import { Container } from '../../../components/container/Container';
 import { ErrorCard } from '../../../components/info-cards/ErrorCard';
 import { TextCard } from '../../../components/info-cards/TextCard';
 import { Button } from '../../../components/ui/Button';
@@ -53,7 +54,7 @@ function SuspendedReviewStorageChanges({
   const confirmButtonVariant = isInternetReachable ? 'ok' : 'disabled';
 
   return (
-    <View style={styles.container}>
+    <Container>
       {!isInternetReachable && (
         <View style={styles.cardContainer}>
           <TextCard>
@@ -61,7 +62,7 @@ function SuspendedReviewStorageChanges({
           </TextCard>
         </View>
       )}
-      {!!isError && (
+      {isError && (
         <View style={styles.cardContainer}>
           <ErrorCard>A rakodás mentése sikertelen.</ErrorCard>
         </View>
@@ -83,13 +84,13 @@ function SuspendedReviewStorageChanges({
           </Button>
         </View>
       </View>
-    </View>
+    </Container>
   );
 }
 
 export function ReviewStorageChanges(props: ReviewStorageChangesProps) {
   return (
-    <Suspense>
+    <Suspense fallback={<Container />}>
       <SuspendedReviewStorageChanges {...props} />
     </Suspense>
   );
@@ -103,10 +104,6 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     marginTop: 30,
-  },
-  container: {
-    backgroundColor: colors.background,
-    flex: 1,
   },
   footerContainer: {
     borderTopColor: colors.white,
