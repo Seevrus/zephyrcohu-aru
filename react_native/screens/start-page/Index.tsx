@@ -49,16 +49,16 @@ function SuspendedIndex() {
           </TextCard>
         </View>
       )}
-      {tokenData?.isPasswordExpired && (
+      {tokenData?.isPasswordExpired ? (
         <View style={styles.textCardContainer}>
           <TextCard>Az Ön jelszava lejárt, kérem változtassa meg.</TextCard>
         </View>
-      )}
-      {tokenData?.isTokenExpired && (
+      ) : null}
+      {tokenData?.isTokenExpired ? (
         <View style={styles.textCardContainer}>
           <TextCard>Körindításhoz és -záráshoz kérem jelentkezzen be.</TextCard>
         </View>
-      )}
+      ) : null}
       <FlatList
         data={tiles}
         keyExtractor={(tile) => tile.id}

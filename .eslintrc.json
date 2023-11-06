@@ -27,6 +27,7 @@
     "plugin:import/typescript",
     "plugin:prettier/recommended",
     "plugin:promise/recommended",
+    "plugin:react/recommended",
     "plugin:react/jsx-runtime",
     "plugin:react-hooks/recommended",
     "plugin:react-native/all",
@@ -92,8 +93,21 @@
     "prefer-arrow-callback": "error",
     "promise/always-return": "off",
     "promise/catch-or-return": "off",
+    "react/boolean-prop-naming": "warn",
+    "react/destructuring-assignment": "error",
+    "react/function-component-definition": [
+      "error",
+      {
+        "namedComponents": "function-declaration",
+        "unnamedComponents": "arrow-function"
+      }
+    ],
+    "react/hook-use-state": "warn",
     "react/jsx-boolean-value": ["warn", "never"],
     "react/jsx-curly-brace-presence": "warn",
+    "react/jsx-no-leaked-render": "error",
+    "react/jsx-pascal-case": "error",
+    "react/no-arrow-function-lifecycle": "error",
     "react/self-closing-comp": "warn",
     "react-hooks/exhaustive-deps": "warn",
     "react-native/no-raw-text": "off",

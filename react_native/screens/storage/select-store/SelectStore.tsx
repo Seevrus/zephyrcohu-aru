@@ -67,11 +67,11 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
           />
         </View>
       </View>
-      {error && (
+      {error ? (
         <View>
           <ErrorCard>{error}</ErrorCard>
         </View>
-      )}
+      ) : null}
       <View style={styles.listContainer}>
         <FlatList
           data={storeTiles}

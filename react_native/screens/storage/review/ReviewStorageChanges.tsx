@@ -62,11 +62,11 @@ function SuspendedReviewStorageChanges({
           </TextCard>
         </View>
       )}
-      {isError && (
+      {isError ? (
         <View style={styles.cardContainer}>
           <ErrorCard>A rakodás mentése sikertelen.</ErrorCard>
         </View>
-      )}
+      ) : null}
       <View style={styles.listContainer}>
         <FlatList
           data={changedItems}

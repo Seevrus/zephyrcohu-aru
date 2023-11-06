@@ -79,12 +79,12 @@ function _RegularItemSelection({
             text={formatPrice(item.grossAmount)}
           />
         </View>
-        {item.selectedDiscounts && (
+        {item.selectedDiscounts ? (
           <>
             <View style={styles.infoGroup}>
               <LabeledItem label="Érvényes kedvezmények" text="" />
             </View>
-            {absoluteDiscount && (
+            {absoluteDiscount ? (
               <View style={styles.firstInfoGroup}>
                 <LabeledItem label="Típus" text="abszolút" />
                 <LabeledItem label="Név" text={absoluteDiscount.name} />
@@ -93,8 +93,8 @@ function _RegularItemSelection({
                   text={String(absoluteDiscount.quantity)}
                 />
               </View>
-            )}
-            {percentageDiscount && (
+            ) : null}
+            {percentageDiscount ? (
               <View
                 style={
                   absoluteDiscount ? styles.infoGroup : styles.firstInfoGroup
@@ -107,8 +107,8 @@ function _RegularItemSelection({
                   text={String(percentageDiscount.quantity)}
                 />
               </View>
-            )}
-            {freeFormDiscount && (
+            ) : null}
+            {freeFormDiscount ? (
               <View
                 style={
                   absoluteDiscount || percentageDiscount
@@ -127,9 +127,9 @@ function _RegularItemSelection({
                   text={String(freeFormDiscount.price ?? '')}
                 />
               </View>
-            )}
+            ) : null}
           </>
-        )}
+        ) : null}
         <View style={styles.buttonContainer}>
           <Button
             variant="warning"

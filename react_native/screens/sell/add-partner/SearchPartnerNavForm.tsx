@@ -210,7 +210,7 @@ export function SearchPartnerNavForm({
           renderItem={renderPartner}
         />
       </View>
-      {isTaxPayerSuccess && (
+      {isTaxPayerSuccess ? (
         <View style={[styles.formContainer, styles.bottomFormContainer]}>
           <View style={styles.inputContainer}>
             <Input
@@ -223,7 +223,7 @@ export function SearchPartnerNavForm({
             />
           </View>
         </View>
-      )}
+      ) : null}
     </View>
   );
 }

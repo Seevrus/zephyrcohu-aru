@@ -101,7 +101,7 @@ function SuspendedDiscounts({ navigation, route }: DiscountsProps) {
     (d) => d.type === 'freeForm'
   );
 
-  const [absoluteDiscountedQuantity, setAboluteDiscountedQuantity] =
+  const [absoluteDiscountedQuantity, setAbsoluteDiscountedQuantity] =
     useState<string>(String(currentAbsoluteDiscount?.quantity ?? ''));
   const [percentageDiscountedQuantity, setPercentageDiscountedQuantity] =
     useState<string>(String(currentPercentageDiscount?.quantity ?? ''));
@@ -201,11 +201,11 @@ function SuspendedDiscounts({ navigation, route }: DiscountsProps) {
           {item.name} ({format(new Date(item.expiresAt), 'yyyy-MM')})
         </Text>
       </View>
-      {formErrorMessage && (
+      {formErrorMessage ? (
         <View style={styles.errorContainer}>
           <ErrorCard>{formErrorMessage}</ErrorCard>
         </View>
-      )}
+      ) : null}
       <View style={styles.firstInfoGroup}>
         <LabeledItem
           label="Mennyiség"
@@ -213,7 +213,7 @@ function SuspendedDiscounts({ navigation, route }: DiscountsProps) {
         />
         <Text style={styles.infoLabel}>Elérhető kedvezmények:</Text>
       </View>
-      {absoluteDiscount && (
+      {absoluteDiscount ? (
         <View style={styles.infoGroup}>
           <LabeledItem label="Típus" text="abszolút" />
           <LabeledItem label="Név" text={absoluteDiscount.name} />
@@ -225,13 +225,13 @@ function SuspendedDiscounts({ navigation, route }: DiscountsProps) {
               config={{
                 autoCorrect: false,
                 keyboardType: 'numeric',
-                onChangeText: setAboluteDiscountedQuantity,
+                onChangeText: setAbsoluteDiscountedQuantity,
               }}
             />
           </View>
         </View>
-      )}
-      {percentageDiscount && (
+      ) : null}
+      {percentageDiscount ? (
         <View style={styles.infoGroup}>
           <LabeledItem label="Típus" text="százalékos" />
           <LabeledItem label="Név" text={percentageDiscount.name} />
@@ -248,8 +248,8 @@ function SuspendedDiscounts({ navigation, route }: DiscountsProps) {
             />
           </View>
         </View>
-      )}
-      {freeFormDiscount && (
+      ) : null}
+      {freeFormDiscount ? (
         <View style={styles.infoGroup}>
           <LabeledItem label="Típus" text="tetszőleges" />
           <LabeledItem label="Név" text={freeFormDiscount.name} />
@@ -278,7 +278,7 @@ function SuspendedDiscounts({ navigation, route }: DiscountsProps) {
             />
           </View>
         </View>
-      )}
+      ) : null}
       <View style={styles.infoGroup}>
         <View style={styles.buttonContainer}>
           <Button variant="ok" onPress={handleApplyDiscounts}>

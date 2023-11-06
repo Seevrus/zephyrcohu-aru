@@ -111,11 +111,11 @@ function SuspendedSettings({ navigation }: SettingsProps) {
 
   return (
     <View style={styles.container}>
-      {tokenData.isTokenExpired && (
+      {tokenData.isTokenExpired ? (
         <Button variant="neutral" onPress={loginHandler}>
           Bejelentkezés
         </Button>
-      )}
+      ) : null}
 
       {!tokenData.isTokenExpired && (
         <Button variant="neutral" onPress={changePasswordHandler}>

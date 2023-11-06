@@ -184,11 +184,11 @@ export function AddPartnerForm({
   return (
     <ScrollView style={styles.container}>
       <View style={styles.textCardContainer}>
-        {params?.taxNumber && (
+        {params?.taxNumber ? (
           <TextCard>
             Kérem ellenőrizze az adatokat és szükség esetén módosítsa azokat.
           </TextCard>
-        )}
+        ) : null}
         {!params?.taxNumber && (
           <TextCard>
             Amennyiben nem találja a keresett partnert a listában, ezen az

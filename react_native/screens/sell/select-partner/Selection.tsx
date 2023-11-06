@@ -51,17 +51,17 @@ function _Selection({
         <View style={styles.firstInfoGroup}>
           <Text style={styles.infoText}>{deliveryAddress}</Text>
         </View>
-        {hasCentralLocation && (
+        {hasCentralLocation ? (
           <View style={styles.infoGroup}>
             <Text style={styles.infoText}>{centralName}</Text>
             <Text style={styles.infoText}>{centralAddress}</Text>
           </View>
-        )}
-        {phoneNumber && (
+        ) : null}
+        {phoneNumber ? (
           <View style={styles.infoGroup}>
             <LabeledItem label="Telefon" text={phoneNumber} />
           </View>
-        )}
+        ) : null}
         <View style={styles.buttonContainer}>
           <Button variant="ok" onPress={() => onConfirmSelection(id)}>
             Kiválasztás
