@@ -24,6 +24,7 @@ import {
 import { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 
+import { loadable } from 'jotai/utils';
 import { useItems } from '../../../api/queries/useItems';
 import { type OrderItem } from '../../../api/request-types/common/OrderItem';
 import {
@@ -82,7 +83,7 @@ export function useSelectItemsToSellData(
 
   const [, setCurrentOrder] = useAtom(currentOrderAtom);
   const [, setCurrentReceipt] = useAtom(currentReceiptAtom);
-  const currentStorage = useAtomValue(selectedStoreAtom);
+  const currentStorage = useAtomValue(loadable(selectedStoreAtom));
   const [selectedItems, setSelectedItems] = useAtom(selectedItemsAtom);
   const selectedPartner = useAtomValue(selectedPartnerAtom);
 
@@ -100,7 +101,11 @@ export function useSelectItemsToSellData(
   const storageExpirations = useMemo(() => {
     const expirations: Record<number, Record<number, number>> = {};
 
-    currentStorage?.expirations?.forEach((expiration) => {
+    if (currentStorage.state !== 'hasData') {
+      return expirations;
+    }
+
+    currentStorage.data?.expirations?.forEach((expiration) => {
       if (!expirations[expiration.itemId]) {
         expirations[expiration.itemId] = {};
       }
@@ -109,7 +114,7 @@ export function useSelectItemsToSellData(
     });
 
     return expirations;
-  }, [currentStorage?.expirations]);
+  }, [currentStorage]);
 
   const sellItems: SellItems = useMemo(
     () =>
@@ -342,7 +347,7 @@ export function useSelectItemsToSellData(
         });
       }
 
-      await setCurrentReceipt(
+      await setCurrentReceipt(async (receipt) =>
         assoc(
           'items',
           items
@@ -375,7 +380,8 @@ export function useSelectItemsToSellData(
                 };
               })
             )
-            .filter(identity)
+            .filter(identity),
+          await receipt
         )
       );
 
@@ -397,7 +403,8 @@ export function useSelectItemsToSellData(
   ]);
 
   return {
-    isLoading: isLoading || isItemsPending,
+    isLoading:
+      isLoading || isItemsPending || currentStorage.state !== 'hasData',
     selectedOrderItems,
     searchState,
     setSearchState,

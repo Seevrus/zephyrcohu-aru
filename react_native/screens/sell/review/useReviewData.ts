@@ -1,11 +1,13 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { add, format, parseISO } from 'date-fns';
 import { useAtom, useAtomValue } from 'jotai';
 import { and, dissoc, dissocPath, isEmpty, reduce } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 
 import { useSellSelectedItems } from '../../../api/mutations/useSellSelectedItems';
+import { useActiveRound } from '../../../api/queries/useActiveRound';
 import { useCheckToken } from '../../../api/queries/useCheckToken';
 import { useItems } from '../../../api/queries/useItems';
 import { useOtherItems } from '../../../api/queries/useOtherItems';
@@ -24,6 +26,7 @@ import {
   type RegularReviewItem,
 } from '../../../atoms/sellFlow';
 import { selectedStoreAtom } from '../../../atoms/storage';
+import { tokenAtom } from '../../../atoms/token';
 import { useCurrentPriceList } from '../../../hooks/sell/useCurrentPriceList';
 import { useResetSellFlow } from '../../../hooks/sell/useResetSellFlow';
 import { type StackParams } from '../../../navigators/screen-types';
@@ -35,8 +38,10 @@ export function useReviewData(
   navigation: NativeStackNavigationProp<StackParams, 'Review', undefined>
 ) {
   const { isInternetReachable } = useNetInfo();
+  const { token } = useAtomValue(tokenAtom);
 
-  const { data: user, isPending: isUserPending } = useCheckToken();
+  const { data: activeRound } = useActiveRound();
+  const { data: user } = useCheckToken();
   const { data: items, isPending: isItemsPending } = useItems();
   const { data: otherItems, isPending: isOtherItemsPending } = useOtherItems();
 
@@ -228,7 +233,8 @@ export function useReviewData(
     if (currentOrder) {
       setOrders(async (prevOrders) => [...(await prevOrders), currentOrder]);
     }
-    if (!!currentReceipt && !!user) {
+
+    if (!!activeRound && !!currentReceipt && !!token && !!user) {
       const serialNumber = isEmpty(receipts)
         ? selectedStoreCurrentState?.firstAvailableSerialNumber
         : receipts.reduce(
@@ -241,6 +247,12 @@ export function useReviewData(
         items: currentReceipt.items ?? [],
         otherItems: currentReceipt.otherItems,
       });
+
+      const invoiceDate = parseISO(activeRound.roundStarted);
+      const fulfillmentDate = add(invoiceDate, {
+        days: currentReceipt.paymentDays ?? 0,
+      });
+      const receiptDateFormat = 'yyyy-MM-dd';
 
       const roundedAmount =
         currentReceipt.invoiceType === 'P'
@@ -266,14 +278,17 @@ export function useReviewData(
           bankAccount: user.company.bankAccount,
           vatNumber: user.company.vatNumber,
         },
+        invoiceDate: format(invoiceDate, receiptDateFormat),
+        fulfillmentDate: format(fulfillmentDate, receiptDateFormat),
+        paidDate: format(fulfillmentDate, receiptDateFormat),
         ...receiptTotals,
         roundAmount,
         roundedAmount,
       } as ContextReceipt;
 
-      setCurrentReceipt(finalReceipt);
+      await setCurrentReceipt(finalReceipt);
 
-      setReceipts(async (prevReceiptsPromise) => {
+      await setReceipts(async (prevReceiptsPromise) => {
         const prevReceipts = await prevReceiptsPromise;
         return [...prevReceipts, finalReceipt];
       });
@@ -301,9 +316,10 @@ export function useReviewData(
         await updateStorageAPI(updatedStorage);
       }
 
-      setSelectedStoreCurrentState(updatedStorage);
+      await setSelectedStoreCurrentState(updatedStorage);
     }
   }, [
+    activeRound,
     currentOrder,
     currentReceipt,
     isInternetReachable,
@@ -314,6 +330,7 @@ export function useReviewData(
     setOrders,
     setReceipts,
     setSelectedStoreCurrentState,
+    token,
     updateStorageAPI,
     user,
   ]);
@@ -349,6 +366,7 @@ export function useReviewData(
           text: 'Biztosan ezt szeretném',
           onPress: async () => {
             try {
+              setSaveReceiptError('');
               setIsLoading(true);
               await finishReview();
               navigation.reset({
@@ -366,13 +384,13 @@ export function useReviewData(
   }, [finishReview, navigation]);
 
   return {
-    isLoading:
-      isLoading || isItemsPending || isOtherItemsPending || isUserPending,
+    isLoading: isLoading || isItemsPending || isOtherItemsPending,
     discountedGrossAmount,
     removeItemHandler,
     removeOtherItemHandler,
     saveReceiptError,
     removeReceiptHandler,
+    canConfirm: !!activeRound && !!currentReceipt && !!token && !!user,
     confirmReceiptHandler,
   };
 }

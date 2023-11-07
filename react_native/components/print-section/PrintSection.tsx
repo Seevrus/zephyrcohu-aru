@@ -43,7 +43,7 @@ export function PrintSection({ partner, receipt }: PrintSectionProps) {
           currentReceipt
         );
 
-        setCurrentReceipt(updatedReceipt);
+        await setCurrentReceipt(updatedReceipt);
       }
 
       let updatedReceipts = receipts.map((receipt) => {
@@ -57,8 +57,6 @@ export function PrintSection({ partner, receipt }: PrintSectionProps) {
           shouldBeUpdated: true,
         };
       });
-
-      setReceipts(updatedReceipts);
 
       const updateReceiptsResult = await updateReceiptsAPI(
         updatedReceipts.filter(prop('shouldBeUpdated'))
@@ -80,7 +78,7 @@ export function PrintSection({ partner, receipt }: PrintSectionProps) {
         };
       });
 
-      setReceipts(updatedReceipts);
+      await setReceipts(updatedReceipts);
     },
     [
       currentReceipt,

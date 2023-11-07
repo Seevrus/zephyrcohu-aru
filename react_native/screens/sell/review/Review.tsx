@@ -30,6 +30,7 @@ function SuspendedReview({ navigation }: ReviewProps) {
     removeOtherItemHandler,
     saveReceiptError,
     removeReceiptHandler,
+    canConfirm,
     confirmReceiptHandler,
   } = useReviewData(navigation);
 
@@ -68,6 +69,8 @@ function SuspendedReview({ navigation }: ReviewProps) {
     },
     [removeItemHandler, removeOtherItemHandler, reviewItems, selectedRow]
   );
+
+  const confimButtonVariant = canConfirm ? 'ok' : 'disabled';
 
   if (isLoading) {
     return <Loading />;
@@ -110,7 +113,7 @@ function SuspendedReview({ navigation }: ReviewProps) {
           <Button variant="warning" onPress={removeReceiptHandler}>
             Elvetés
           </Button>
-          <Button variant="ok" onPress={confirmReceiptHandler}>
+          <Button variant={confimButtonVariant} onPress={confirmReceiptHandler}>
             Véglegesítés
           </Button>
         </View>

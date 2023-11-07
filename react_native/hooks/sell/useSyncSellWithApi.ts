@@ -10,10 +10,6 @@ import { receiptsAtom } from '../../atoms/receipts';
 
 export function useSyncSellWithApi() {
   const { isInternetReachable } = useNetInfo();
-  /* const { isPending: isOrdersContextPending, sendInOrders } =
-    useOrdersContext();
-  const { isPending: isReceiptsContextPending, sendInReceipts } =
-    useReceiptsContext(); */
 
   const { isPending: isCreateOrdersPending, mutateAsync: createOrdersAPI } =
     useCreateOrders();
@@ -38,8 +34,9 @@ export function useSyncSellWithApi() {
       setIsOrdersSyncInProgress(true);
 
       const ordersApiResult = await createOrdersAPI(orders);
-      const updatedOrders = orders.map<ContextOrder>(assoc('isSent', true));
-      setOrders(updatedOrders);
+      await setOrders(async (prevOrders) =>
+        (await prevOrders).map<ContextOrder>(assoc('isSent', true))
+      );
 
       setIsOrdersSyncInProgress(false);
       return ordersApiResult;
@@ -64,7 +61,7 @@ export function useSyncSellWithApi() {
           isSent: receipt.isSent || !!updatedReceipt,
         };
       });
-      setReceipts(updatedReceipts);
+      await setReceipts(updatedReceipts);
 
       setIsReceiptsSyncInProgress(false);
       return updateReceiptsResponse;

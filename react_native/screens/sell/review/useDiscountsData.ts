@@ -58,7 +58,7 @@ export function useDiscountsData({ navigation, item }: UseDiscountsProps) {
     async (itemId: number, discounts?: SelectedDiscount[]) => {
       applyDiscounts(itemId, discounts);
 
-      setCurrentReceipt(async (prevReceiptPromise) => {
+      await setCurrentReceipt(async (prevReceiptPromise) => {
         const prevReceipt = await prevReceiptPromise;
 
         return {

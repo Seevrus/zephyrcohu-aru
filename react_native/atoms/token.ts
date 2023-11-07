@@ -31,7 +31,7 @@ export const tokenAtom = atom<Promise<Token>>(async (get) => {
 
   return {
     token,
-    isPasswordExpired: !token || isPasswordExpired,
+    isPasswordExpired,
     isTokenExpired: isPast(parseISO(expiresAt)),
   };
 });

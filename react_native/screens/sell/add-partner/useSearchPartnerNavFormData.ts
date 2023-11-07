@@ -38,7 +38,7 @@ export function useSearchPartnerNavFormData({
 
   const {
     data: taxPayerData,
-    isPending: isTaxPayerPending,
+    isFetching: isTaxPayerFetching,
     isSuccess: isTaxPayerSuccess,
   } = useSearchTaxNumber({ taxNumber });
 
@@ -102,7 +102,7 @@ export function useSearchPartnerNavFormData({
   };
 
   return {
-    isLoading: isTaxPayerPending,
+    isLoading: isTaxPayerFetching,
     searchValue,
     setSearchValue,
     taxNumber,

@@ -45,12 +45,12 @@ export function useEndErrand() {
         yearCode: selectedStoreCurrentState.yearCode,
       });
 
-      setSelectedStoreCurrentState(null);
-      resetSellFlow();
-      setReceipts([]);
-      setCurrentReceipt(null);
-      setOrders([]);
-      setCurrentOrder(null);
+      await setSelectedStoreCurrentState(null);
+      await resetSellFlow();
+      await setReceipts([]);
+      await setCurrentReceipt(null);
+      await setOrders([]);
+      await setCurrentOrder(null);
 
       await queryClient.invalidateQueries({ queryKey: ['active-round'] });
       await queryClient.invalidateQueries({ queryKey: ['check-token'] });

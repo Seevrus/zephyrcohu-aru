@@ -29,7 +29,7 @@ function SuspendedSettings({ navigation }: SettingsProps) {
   const { data: user, isFetching: isUserFetching } = useCheckToken();
   const { mutateAsync: logout } = useLogout();
 
-  const { token, isTokenExpired } = useAtomValue(tokenAtom);
+  const { isTokenExpired } = useAtomValue(tokenAtom);
 
   const queryClient = useQueryClient();
 
@@ -106,7 +106,7 @@ function SuspendedSettings({ navigation }: SettingsProps) {
     });
   };
 
-  if (isLoading || isUserFetching || !token) {
+  if (isLoading || isUserFetching) {
     return <Loading />;
   }
 

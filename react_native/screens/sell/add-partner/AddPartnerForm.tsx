@@ -1,7 +1,7 @@
 import { type EventArg } from '@react-navigation/native';
 import { useAtom } from 'jotai';
 import { isEmpty } from 'ramda';
-import { useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { currentReceiptAtom } from '../../../atoms/receipts';
@@ -25,7 +25,7 @@ type FormErrors = {
   deliveryAddress: string;
 };
 
-export function AddPartnerForm({
+function SuspendedAddPartnerForm({
   navigation,
   route: { params },
 }: AddPartnerFormProps) {
@@ -141,7 +141,7 @@ export function AddPartnerForm({
 
       const partnerTemporaryId = maxNewPartnerIdInUse + 1;
 
-      setCurrentReceipt({
+      await setCurrentReceipt({
         partnerId: partnerTemporaryId,
         partnerCode: '',
         partnerSiteCode: '',
@@ -165,7 +165,7 @@ export function AddPartnerForm({
         invoiceType: 'P',
       });
 
-      setMaxNewPartnerIdInUse(partnerTemporaryId);
+      await setMaxNewPartnerIdInUse(partnerTemporaryId);
     } else {
       setFormError(formErrors);
     }
@@ -300,6 +300,14 @@ export function AddPartnerForm({
         </View>
       </View>
     </ScrollView>
+  );
+}
+
+export function AddPartnerForm(props: AddPartnerFormProps) {
+  return (
+    <Suspense>
+      <SuspendedAddPartnerForm {...props} />
+    </Suspense>
   );
 }
 
