@@ -1,17 +1,14 @@
+import { useNetInfo } from '@react-native-community/netinfo';
 import * as Print from 'expo-print';
 import { useAtom } from 'jotai';
-import { assoc, isNotNil, prop } from 'ramda';
+import { isNotNil, prop } from 'ramda';
 import { useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useUpdateReceipts } from '../../api/mutations/useUpdateReceipts';
 import { useCheckToken } from '../../api/queries/useCheckToken';
 import { type Partner } from '../../api/response-mappers/mapPartnersResponse';
-import {
-  currentReceiptAtom,
-  receiptsAtom,
-  type ContextReceipt,
-} from '../../atoms/receipts';
+import { receiptsAtom, type ContextReceipt } from '../../atoms/receipts';
 import { colors } from '../../constants/colors';
 import { fontSizes } from '../../constants/fontSizes';
 import { Loading } from '../Loading';
@@ -24,6 +21,7 @@ type PrintSectionProps = {
 };
 
 export function PrintSection({ partner, receipt }: PrintSectionProps) {
+  const { isInternetReachable } = useNetInfo();
   const { data: user, isPending: isUserPending } = useCheckToken();
 
   const {
@@ -32,73 +30,68 @@ export function PrintSection({ partner, receipt }: PrintSectionProps) {
   } = useUpdateReceipts();
 
   const [receipts, setReceipts] = useAtom(receiptsAtom);
-  const [currentReceipt, setCurrentReceipt] = useAtom(currentReceiptAtom);
 
-  const updateNumberOfPrintedCopies = useCallback(
-    async (receiptId: number) => {
-      if (receiptId === currentReceipt?.id) {
-        const updatedReceipt = assoc(
-          'originalCopiesPrinted',
-          (currentReceipt.originalCopiesPrinted ?? 0) + 1,
-          currentReceipt
-        );
-
-        await setCurrentReceipt(updatedReceipt);
-      }
-
-      let updatedReceipts = receipts.map((receipt) => {
-        if (receipt.id !== receiptId) {
-          return receipt;
+  const updateNumberOfPrintedCopies = useCallback(async () => {
+    if (!!partner && !!receipt) {
+      let updatedReceipts = receipts.map((rcpt) => {
+        if (rcpt.id !== receipt.id) {
+          return rcpt;
         }
 
         return {
-          ...receipt,
-          originalCopiesPrinted: (receipt.originalCopiesPrinted ?? 0) + 1,
+          ...rcpt,
+          originalCopiesPrinted: (rcpt.originalCopiesPrinted ?? 0) + 1,
           shouldBeUpdated: true,
         };
       });
 
-      const updateReceiptsResult = await updateReceiptsAPI(
-        updatedReceipts.filter(prop('shouldBeUpdated'))
-      );
-
-      updatedReceipts = receipts.map((receipt) => {
-        const updateReceiptResult = updateReceiptsResult.find(
-          (result) => result.id === receipt.id
+      if (isInternetReachable === true) {
+        const updateReceiptsResult = await updateReceiptsAPI(
+          updatedReceipts.filter(prop('shouldBeUpdated'))
         );
 
-        if (!updateReceiptResult) {
-          return receipt;
-        }
+        updatedReceipts = receipts.map((receipt) => {
+          const updateReceiptResult = updateReceiptsResult.find(
+            (result) => result.id === receipt.id
+          );
 
-        return {
-          ...receipt,
-          originalCopiesPrinted: updateReceiptResult.originalCopiesPrinted,
-          shouldBeUpdated: false,
-        };
-      });
+          if (!updateReceiptResult) {
+            return receipt;
+          }
+
+          return {
+            ...receipt,
+            originalCopiesPrinted: updateReceiptResult.originalCopiesPrinted,
+            shouldBeUpdated: false,
+          };
+        });
+      }
 
       await setReceipts(updatedReceipts);
-    },
-    [
-      currentReceipt,
-      receipts,
-      setCurrentReceipt,
-      setReceipts,
-      updateReceiptsAPI,
-    ]
-  );
+    }
+  }, [
+    isInternetReachable,
+    partner,
+    receipt,
+    receipts,
+    setReceipts,
+    updateReceiptsAPI,
+  ]);
 
   const [updateProgressMessage, setUpdateProgressMessage] =
     useState<string>('');
 
+  const canPrint = !!user && !!receipt;
+
   const canPrintOriginalCopy =
     (partner?.invoiceCopies ?? 0) > (receipt?.originalCopiesPrinted ?? 0);
+
+  const printButtonVariant = canPrint ? 'ok' : 'disabled';
 
   const printButtonHandler = async () => {
     if (canPrintOriginalCopy && isNotNil(receipt)) {
       setUpdateProgressMessage('Számla frissítése folyamatban...');
-      await updateNumberOfPrintedCopies(receipt.id);
+      await updateNumberOfPrintedCopies();
       setUpdateProgressMessage('');
     }
 
@@ -142,7 +135,7 @@ export function PrintSection({ partner, receipt }: PrintSectionProps) {
         </Text>
       )}
       <View style={styles.buttonContainer}>
-        <Button variant="ok" onPress={printButtonHandler}>
+        <Button variant={printButtonVariant} onPress={printButtonHandler}>
           {canPrintOriginalCopy
             ? 'Eredeti példány nyomtatása'
             : 'Másolat nyomtatása'}

@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 
 import { currentReceiptAtom } from '../../atoms/receipts';
 import {
+  maxNewPartnerIdInUseAtom,
   reviewItemsAtom,
   selectedItemsAtom,
   selectedOtherItemsAtom,
@@ -16,6 +17,7 @@ export function useResetSellFlow() {
   const [, setSelectedItems] = useAtom(selectedItemsAtom);
   const [, setSelectedOtherItems] = useAtom(selectedOtherItemsAtom);
   const [, setReviewItems] = useAtom(reviewItemsAtom);
+  const [, setMaxNewPartnerIdInUse] = useAtom(maxNewPartnerIdInUseAtom);
 
   return useCallback(async () => {
     await setCurrentReceipt(null);
@@ -24,8 +26,10 @@ export function useResetSellFlow() {
     setSelectedItems({});
     setSelectedOtherItems({});
     setReviewItems(null);
+    await setMaxNewPartnerIdInUse(0);
   }, [
     setCurrentReceipt,
+    setMaxNewPartnerIdInUse,
     setReviewItems,
     setSelectedItems,
     setSelectedOtherItems,

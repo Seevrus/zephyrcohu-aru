@@ -19,6 +19,7 @@ export function useSyncSellWithApi() {
   const [orders, setOrders] = useAtom(ordersAtom);
   const [receipts, setReceipts] = useAtom(receiptsAtom);
 
+  const [oneTimeSync, setOneTimeSync] = useState<number>(0);
   const [isOrdersSyncInProgress, setIsOrdersSyncInProgress] = useState<boolean>(
     isCreateOrdersPending
   );
@@ -47,9 +48,9 @@ export function useSyncSellWithApi() {
     if (!isReceiptsSyncInProgress && receipts.some((r) => !r.isSent)) {
       setIsReceiptsSyncInProgress(true);
 
-      const updateReceiptsResponse = await createReceiptsAPI(receipts);
+      const createReceiptsResponse = await createReceiptsAPI(receipts);
       const updatedReceipts = receipts.map((receipt) => {
-        const updatedReceipt = updateReceiptsResponse.find(
+        const updatedReceipt = createReceiptsResponse.find(
           (receiptResponse) =>
             receiptResponse.serialNumber === receipt.serialNumber &&
             receiptResponse.yearCode === receipt.yearCode
@@ -64,20 +65,13 @@ export function useSyncSellWithApi() {
       await setReceipts(updatedReceipts);
 
       setIsReceiptsSyncInProgress(false);
-      return updateReceiptsResponse;
+      return createReceiptsResponse;
     }
   }, [createReceiptsAPI, isReceiptsSyncInProgress, receipts, setReceipts]);
 
   useEffect(() => {
-    if (
-      isInternetReachable === true &&
-      !isOrdersSyncInProgress &&
-      !isReceiptsSyncInProgress &&
-      !ordersSuccess &&
-      !ordersError &&
-      !receiptsSuccess &&
-      !receiptsError
-    ) {
+    if (isInternetReachable === true && oneTimeSync === 0) {
+      setOneTimeSync(1);
       Promise.allSettled([sendInOrders(), sendInReceipts()]).then(
         ([ordersResult, receiptsResult]) => {
           if (
@@ -96,22 +90,12 @@ export function useSyncSellWithApi() {
             setReceiptsError('');
           } else {
             setReceiptsSuccess('');
-            setReceiptsError('Számlák beküldése sikertelen');
+            setReceiptsError('Számlák beküldése sikertelen.');
           }
         }
       );
     }
-  }, [
-    isInternetReachable,
-    isOrdersSyncInProgress,
-    isReceiptsSyncInProgress,
-    ordersError,
-    ordersSuccess,
-    receiptsError,
-    receiptsSuccess,
-    sendInOrders,
-    sendInReceipts,
-  ]);
+  }, [isInternetReachable, oneTimeSync, sendInOrders, sendInReceipts]);
 
   return {
     isPending: isOrdersSyncInProgress || isReceiptsSyncInProgress,

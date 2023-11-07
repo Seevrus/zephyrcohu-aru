@@ -63,7 +63,7 @@ function SuspendedSelectItemsToSell({
         type = ItemAvailability.IN_RECEIPT;
       } else if (
         Object.values(info.item.expirations).some(
-          (expiration) => (expiration.quantity ?? 0) >= 0
+          (expiration) => (expiration.quantity ?? 0) > 0
         )
       ) {
         type = ItemAvailability.AVAILABLE;

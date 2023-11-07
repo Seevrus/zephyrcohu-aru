@@ -8,6 +8,7 @@ import { useLogout } from '../../api/mutations/useLogout';
 import { useCheckToken } from '../../api/queries/useCheckToken';
 import { currentOrderAtom, ordersAtom } from '../../atoms/orders';
 import { currentReceiptAtom, receiptsAtom } from '../../atoms/receipts';
+import { maxNewPartnerIdInUseAtom } from '../../atoms/sellFlow';
 import {
   primaryStoreAtom,
   selectedStoreAtom,
@@ -50,6 +51,8 @@ function SuspendedSettings({ navigation }: SettingsProps) {
   const [, setIsStorageSavedToApi] = useAtom(isStorageSavedToApiAtom);
   const [, setStorageListItems] = useAtom(storageListItemsAtom);
 
+  const [, setMaxNewPartnerIdInUse] = useAtom(maxNewPartnerIdInUseAtom);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const loginHandler = () => {
@@ -83,6 +86,8 @@ function SuspendedSettings({ navigation }: SettingsProps) {
     await setCurrentReceipt(null);
     await setOrders([]);
     await setReceipts([]);
+
+    await setMaxNewPartnerIdInUse(0);
 
     await resetSellFlow();
 
