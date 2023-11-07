@@ -94,7 +94,7 @@ class RoundController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Started round '.$round->id,
+                'action' => 'Started round ' . $round->id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -129,6 +129,7 @@ class RoundController extends Controller
             $store = $sender->store;
             $store->state = 'I';
             $store->user_id = null;
+            $store->first_available_serial_number = $request->data['lastSerialNumber'] + 1;
             $store->save();
 
             $sender->state = 'I';
@@ -144,7 +145,7 @@ class RoundController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Finished round '.$round->id,
+                'action' => 'Finished round ' . $round->id,
                 'occured_at' => Carbon::now(),
             ]);
 
