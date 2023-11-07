@@ -13,7 +13,7 @@ import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';
 import { Input } from '../../../components/ui/Input';
 import { colors } from '../../../constants/colors';
 import { fontSizes } from '../../../constants/fontSizes';
-import { type OtherSellItem } from './SelectOtherItemsToSell';
+import { type OtherSellItem } from './useSelectOtherItemsToSellData';
 
 type ExpirationAccordionDetailsProps = {
   item: OtherSellItem;

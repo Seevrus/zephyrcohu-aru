@@ -1,5 +1,6 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useAtomValue } from 'jotai';
 import { useLayoutEffect } from 'react';
 import {
   FlatList,
@@ -9,8 +10,8 @@ import {
   type ListRenderItemInfo,
 } from 'react-native';
 
-import { useToken } from '../../../api/queries/useToken';
 import { type TaxPayer } from '../../../api/response-mappers/mapSearchTaxPayerResponse';
+import { tokenAtom } from '../../../atoms/token';
 import { Loading } from '../../../components/Loading';
 import { TextCard } from '../../../components/info-cards/TextCard';
 import { Button } from '../../../components/ui/Button';
@@ -83,8 +84,7 @@ export function SearchPartnerNavForm({
   route,
 }: SearchPartnerNavFormProps) {
   const { isInternetReachable } = useNetInfo();
-  const { isPending: isTokenPending, data: { isTokenExpired } = {} } =
-    useToken();
+  const { isTokenExpired } = useAtomValue(tokenAtom);
 
   const {
     isLoading,
@@ -125,7 +125,7 @@ export function SearchPartnerNavForm({
     />
   );
 
-  if (isLoading || isTokenPending) {
+  if (isLoading) {
     return <Loading />;
   }
 

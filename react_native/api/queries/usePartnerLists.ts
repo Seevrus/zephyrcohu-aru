@@ -1,29 +1,29 @@
-import axios, { isAxiosError } from 'axios';
-
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQuery } from '@tanstack/react-query';
+import axios, { isAxiosError } from 'axios';
+import { useAtomValue } from 'jotai';
+
+import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
 import {
   type PartnersListResponseData,
   type PartnersListResponseType,
 } from '../response-types/PartnersListResponseType';
 import { useCheckToken } from './useCheckToken';
-import { useToken } from './useToken';
 
 export function usePartnerLists() {
   const { isInternetReachable } = useNetInfo();
   const { isSuccess: isCheckTokenSuccess } = useCheckToken();
-  const { isSuccess: isTokenSuccess, data: tokenData } = useToken();
+  const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
 
   return useQuery({
     queryKey: ['partner-lists'],
-    queryFn: fetchPartnerLists(tokenData?.token as string),
+    queryFn: fetchPartnerLists(token),
     enabled:
       isInternetReachable === true &&
-      isTokenSuccess &&
-      !tokenData.isTokenExpired &&
-      !tokenData.isPasswordExpired &&
-      !!tokenData.token &&
+      !isTokenExpired &&
+      !isPasswordExpired &&
+      !!token &&
       isCheckTokenSuccess,
   });
 }

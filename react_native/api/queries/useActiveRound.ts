@@ -7,24 +7,25 @@ import { mapRoundsResponse } from '../response-mappers/mapRoundsResponse';
 import { type RoundsResponseType } from '../response-types/ActiveRoundResponseType';
 import { type RoundType } from '../response-types/common/RoundType';
 import { useCheckToken } from './useCheckToken';
-import { useToken } from './useToken';
+import { tokenAtom } from '../../atoms/token';
+import { useAtomValue } from 'jotai';
 
 export function useActiveRound() {
   const { isInternetReachable } = useNetInfo();
   const { data: user, isSuccess: isCheckTokenSuccess } = useCheckToken();
-  const { isSuccess: isTokenSuccess, data: tokenData } = useToken();
+
+  const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
 
   const isRoundStarted = user?.state === 'R';
 
   return useQuery({
     queryKey: ['active-round'],
-    queryFn: fetchActiveRound(tokenData?.token as string),
+    queryFn: fetchActiveRound(token),
     enabled:
       isInternetReachable === true &&
-      isTokenSuccess &&
-      !tokenData.isTokenExpired &&
-      !tokenData.isPasswordExpired &&
-      !!tokenData.token &&
+      !isTokenExpired &&
+      !isPasswordExpired &&
+      !!token &&
       isCheckTokenSuccess &&
       isRoundStarted,
   });

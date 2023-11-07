@@ -1,4 +1,5 @@
 import { useNetInfo } from '@react-native-community/netinfo';
+import { useAtomValue } from 'jotai';
 import {
   FlatList,
   StyleSheet,
@@ -9,7 +10,7 @@ import {
 
 import { Suspense } from 'react';
 import { useCheckToken } from '../../api/queries/useCheckToken';
-import { useToken } from '../../api/queries/useToken';
+import { tokenAtom } from '../../atoms/token';
 import { Loading } from '../../components/Loading';
 import { Tile, type TileT } from '../../components/Tile';
 import { Container } from '../../components/container/Container';
@@ -20,7 +21,7 @@ import { useTiles } from '../../hooks/useTiles';
 function SuspendedIndex() {
   const { isFetching: isUserFetching } = useCheckToken();
   const { isInternetReachable } = useNetInfo();
-  const { isPending: isTokenPending, data: tokenData } = useToken();
+  const { isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
 
   const tiles = useTiles();
 
@@ -36,7 +37,7 @@ function SuspendedIndex() {
     />
   );
 
-  if (isTokenPending || isUserFetching) {
+  if (isUserFetching) {
     return <Loading />;
   }
 
@@ -49,12 +50,12 @@ function SuspendedIndex() {
           </TextCard>
         </View>
       )}
-      {tokenData?.isPasswordExpired ? (
+      {isPasswordExpired ? (
         <View style={styles.textCardContainer}>
           <TextCard>Az Ön jelszava lejárt, kérem változtassa meg.</TextCard>
         </View>
       ) : null}
-      {tokenData?.isTokenExpired ? (
+      {isTokenExpired ? (
         <View style={styles.textCardContainer}>
           <TextCard>Körindításhoz és -záráshoz kérem jelentkezzen be.</TextCard>
         </View>

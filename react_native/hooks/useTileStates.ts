@@ -4,8 +4,9 @@ import { useAtomValue } from 'jotai';
 import { loadable } from 'jotai/utils';
 
 import { useCheckToken } from '../api/queries/useCheckToken';
-import { useToken } from '../api/queries/useToken';
 import { numberOfReceiptsAtom } from '../atoms/receipts';
+import { tokenAtom } from '../atoms/token';
+import { useMemo } from 'react';
 
 export enum StorageTileState {
   Ok = 'ok',
@@ -38,7 +39,9 @@ export function useTileStates() {
   const isFocused = useIsFocused();
   const { isInternetReachable } = useNetInfo();
   const loadableNumberOfReceipts = useAtomValue(loadable(numberOfReceiptsAtom));
-  const { isPending: isTokenPending, data: tokenData } = useToken();
+  const tokenData = useAtomValue(loadable(tokenAtom));
+
+  const tokenHasData = tokenData.state === 'hasData';
 
   const isCheckTokenInProgress = !user && isUserFetching;
   const numberOfReceipts =
@@ -56,14 +59,14 @@ export function useTileStates() {
     Offline = 'A funkció csak online érhető el.',
   }
 
-  const [storageTileState, storageTileMessage] = (() => {
+  const [storageTileState, storageTileMessage] = useMemo(() => {
     let state = StorageTileState.Disabled;
     let message = '';
 
-    if (isFocused && !isTokenPending && !isCheckTokenInProgress) {
-      if (tokenData?.isTokenExpired) {
+    if (tokenHasData && isFocused && !isCheckTokenInProgress) {
+      if (tokenData.data.isTokenExpired) {
         message = DisabledTileMessage.LoggedOut;
-      } else if (tokenData?.isPasswordExpired) {
+      } else if (tokenData.data.isPasswordExpired) {
         message = DisabledTileMessage.PasswordExpired;
       } else if (!isInternetReachable) {
         message = DisabledTileMessage.Offline;
@@ -77,16 +80,28 @@ export function useTileStates() {
     }
 
     return [state, message];
-  })();
+  }, [
+    DisabledTileMessage.LoggedOut,
+    DisabledTileMessage.Offline,
+    DisabledTileMessage.PasswordExpired,
+    isCheckTokenInProgress,
+    isFocused,
+    isInternetReachable,
+    isRoundStarted,
+    isStorageStarted,
+    isUserIdle,
+    tokenData,
+    tokenHasData,
+  ]);
 
-  const [startErrandTileState, startErrandTileMessage] = (() => {
+  const [startErrandTileState, startErrandTileMessage] = useMemo(() => {
     let state = StartErrandTileState.Disabled;
     let message = '';
 
-    if (isFocused && !isTokenPending && !isCheckTokenInProgress) {
-      if (tokenData?.isTokenExpired) {
+    if (tokenHasData && isFocused && !isCheckTokenInProgress) {
+      if (tokenData.data.isTokenExpired) {
         message = DisabledTileMessage.LoggedOut;
-      } else if (tokenData?.isPasswordExpired) {
+      } else if (tokenData.data.isPasswordExpired) {
         message = DisabledTileMessage.PasswordExpired;
       } else if (!isInternetReachable) {
         message = DisabledTileMessage.Offline;
@@ -100,13 +115,25 @@ export function useTileStates() {
     }
 
     return [state, message];
-  })();
+  }, [
+    DisabledTileMessage.LoggedOut,
+    DisabledTileMessage.Offline,
+    DisabledTileMessage.PasswordExpired,
+    isCheckTokenInProgress,
+    isFocused,
+    isInternetReachable,
+    isRoundStarted,
+    isStorageStarted,
+    isUserIdle,
+    tokenData,
+    tokenHasData,
+  ]);
 
   const [selectPartnerTileState, selectPartnerTileMessage] = (() => {
     let state = SelectPartnerTileState.Disabled;
     let message = '';
 
-    if (isFocused && !isTokenPending && !isCheckTokenInProgress) {
+    if (isFocused && !isCheckTokenInProgress) {
       if (isRoundStarted) {
         state = SelectPartnerTileState.Neutral;
       } else {
@@ -121,7 +148,7 @@ export function useTileStates() {
     let state = ReceiptsTileState.Disabled;
     let message = '';
 
-    if (isFocused && !isTokenPending && !isCheckTokenInProgress) {
+    if (isFocused && !isCheckTokenInProgress) {
       if (numberOfReceipts > 0) {
         state = ReceiptsTileState.Neutral;
       } else {
@@ -136,10 +163,10 @@ export function useTileStates() {
     let state = EndErrandTileState.Disabled;
     let message = '';
 
-    if (isFocused && !isTokenPending && !isCheckTokenInProgress) {
-      if (tokenData?.isTokenExpired) {
+    if (tokenHasData && isFocused && !isCheckTokenInProgress) {
+      if (tokenData.data.isTokenExpired) {
         message = DisabledTileMessage.LoggedOut;
-      } else if (tokenData?.isPasswordExpired) {
+      } else if (tokenData.data.isPasswordExpired) {
         message = DisabledTileMessage.PasswordExpired;
       } else if (!isInternetReachable) {
         message = DisabledTileMessage.Offline;

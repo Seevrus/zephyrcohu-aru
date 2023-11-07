@@ -1,14 +1,18 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import * as SecureStore from 'expo-secure-store';
+import { useAtom } from 'jotai';
+
+import { defaultStoredToken, storedTokenAtom } from '../../atoms/token';
 
 export function useLogout() {
   const queryClient = useQueryClient();
+
+  const [, setStoredToken] = useAtom(storedTokenAtom);
 
   return useMutation({
     mutationKey: ['logout'],
     mutationFn: async () => {
       try {
-        await SecureStore.deleteItemAsync('boreal-token');
+        await setStoredToken(defaultStoredToken);
       } catch {
         throw new Error('Váratlan hiba lépett fel a kijelentkezés során.');
       }

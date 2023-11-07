@@ -1,6 +1,6 @@
 import { FontAwesome5 } from '@expo/vector-icons';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import {
   allPass,
   complement,
@@ -23,7 +23,6 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSelectStore } from '../../../api/mutations/useSelectStore';
 import { fetchStoreDetails } from '../../../api/queries/useStoreDetails';
 import { useStores } from '../../../api/queries/useStores';
-import { useToken } from '../../../api/queries/useToken';
 import { queryClient } from '../../../api/queryClient';
 import { type StoreDetailsResponseData } from '../../../api/response-types/StoreDetailsResponseType';
 import { type StoreType } from '../../../api/response-types/common/StoreType';
@@ -32,6 +31,7 @@ import {
   selectedStoreAtom,
   selectedStoreInitialStateAtom,
 } from '../../../atoms/storage';
+import { tokenAtom } from '../../../atoms/token';
 import { type TileT } from '../../../components/Tile';
 import { type StackParams } from '../../../navigators/screen-types';
 
@@ -40,7 +40,7 @@ export function useSelectStoreData(
 ) {
   const { mutateAsync: selectStore } = useSelectStore();
   const { isPending: isStoresPending, data: stores } = useStores();
-  const { isPending: isTokenPending, data: { token } = {} } = useToken();
+  const { token } = useAtomValue(tokenAtom);
 
   const [, setPrimaryStore] = useAtom(primaryStoreAtom);
   const [, setSelectedStoreInitialState] = useAtom(
@@ -160,7 +160,7 @@ export function useSelectStoreData(
   );
 
   return {
-    isLoading: isStoresPending || isTokenPending || isSubmitInProgress,
+    isLoading: isStoresPending || isSubmitInProgress,
     error: submitError,
     selectedStoreId,
     searchInputHandler: setStoreSearchValue,

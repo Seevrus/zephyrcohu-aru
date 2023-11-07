@@ -1,9 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { useAtomValue } from 'jotai';
 
 import { type ContextOrder } from '../../atoms/orders';
+import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
-import { useToken } from '../queries/useToken';
 import { mapCreateOrdersRequest } from '../request-mappers/mapCreateOrdersRequest';
 import {
   type CreateOrdersResponseData,
@@ -11,7 +12,7 @@ import {
 } from '../response-types/CreateOrdersResponseType';
 
 export function useCreateOrders() {
-  const { data: { token } = {} } = useToken();
+  const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
     mutationKey: ['create-orders'],

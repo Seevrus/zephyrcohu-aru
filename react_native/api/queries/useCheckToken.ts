@@ -1,9 +1,13 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 
-import { defaultStoredToken, tokenAtom } from '../../atoms/token';
+import {
+  defaultStoredToken,
+  storedTokenAtom,
+  tokenAtom,
+} from '../../atoms/token';
 import env from '../../env.json';
 import { queryClient } from '../queryClient';
 import {
@@ -11,13 +15,12 @@ import {
   type CheckToken,
 } from '../response-mappers/mapCheckTokenResponse';
 import { type LoginResponse } from '../response-types/LoginResponseType';
-import { useToken } from './useToken';
 
 export function useCheckToken() {
   const { isInternetReachable } = useNetInfo();
-  const { isSuccess: isTokenSuccess, data: tokenData } = useToken();
 
-  const [, setStoredToken] = useAtom(tokenAtom);
+  const [, setStoredToken] = useAtom(storedTokenAtom);
+  const { token } = useAtomValue(tokenAtom);
 
   return useQuery({
     queryKey: ['check-token'],
@@ -28,7 +31,7 @@ export function useCheckToken() {
           {
             headers: {
               Accept: 'application/json',
-              Authorization: `Bearer ${tokenData?.token}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -48,8 +51,7 @@ export function useCheckToken() {
         throw new Error('A megadott token nem érvényes.');
       }
     },
-    enabled:
-      isInternetReachable === true && isTokenSuccess && !!tokenData.token,
+    enabled: isInternetReachable === true && !!token,
     staleTime: 300_000,
     retry: false,
   });

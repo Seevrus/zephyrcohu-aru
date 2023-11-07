@@ -1,10 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { useAtomValue } from 'jotai';
 
+import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
 import { useCheckToken } from '../queries/useCheckToken';
 import { useStoreDetails } from '../queries/useStoreDetails';
-import { useToken } from '../queries/useToken';
 import { mapSellSelectedItemsRequest } from '../request-mappers/mapSellSelectedItemsRequest';
 import {
   type StoreDetailsResponseData,
@@ -14,8 +15,9 @@ import {
 export function useSellSelectedItems() {
   const queryClient = useQueryClient();
   const { data: user } = useCheckToken();
-  const { data: { token } = {} } = useToken();
   const { data: storeDetails } = useStoreDetails(user?.storeId ?? undefined);
+
+  const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
     mutationKey: ['sell-selected-items'],

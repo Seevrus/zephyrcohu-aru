@@ -5,7 +5,7 @@ import {
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { isNotNil } from 'ramda';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -22,14 +22,14 @@ import { fetchPartners } from '../../api/queries/usePartners';
 import { fetchPriceLists } from '../../api/queries/usePriceLists';
 import { fetchStoreDetails } from '../../api/queries/useStoreDetails';
 import { fetchStores, useStores } from '../../api/queries/useStores';
-import { useToken } from '../../api/queries/useToken';
 import { selectedStoreAtom } from '../../atoms/storage';
+import { tokenAtom } from '../../atoms/token';
 import { Loading } from '../../components/Loading';
+import { Container } from '../../components/container/Container';
 import { ErrorCard } from '../../components/info-cards/ErrorCard';
 import { Button } from '../../components/ui/Button';
 import { Dropdown } from '../../components/ui/Dropdown';
 import { Input } from '../../components/ui/Input';
-import { colors } from '../../constants/colors';
 import { type StartErrandProps } from '../../navigators/screen-types';
 
 function SuspendedStartErrand({ navigation }: StartErrandProps) {
@@ -47,8 +47,8 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
     isFetching: isStoresFetching,
     isPending: isStoresPending,
   } = useStores();
-  const { data: { token } = {} } = useToken();
 
+  const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
   const [, setSelectedStore] = useAtom(selectedStoreAtom);
 
   const [storeId, setStoreId] = useState<number | null>(null);
@@ -59,10 +59,10 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    if (isInternetReachable === false) {
+    if (isInternetReachable === false || isTokenExpired || isPasswordExpired) {
       navigation.pop();
     }
-  }, [isInternetReachable, navigation]);
+  }, [isInternetReachable, isPasswordExpired, isTokenExpired, navigation]);
 
   const confirmRoundHandler = async () => {
     if (isNotNil(storeId) && isNotNil(partnerListId) && token) {
@@ -108,7 +108,7 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
           queryKey: ['store-details', storeId],
           queryFn: fetchStoreDetails(token, storeId),
         });
-        setSelectedStore(storeDetails);
+        await setSelectedStore(storeDetails);
 
         await queryClient.fetchQuery({
           queryKey: ['stores'],
@@ -138,7 +138,10 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
         .map((store) => ({
           key: String(store.id),
           value: store.name,
-        })),
+        }))
+        .sort((storeA, storeB) =>
+          storeA.value.localeCompare(storeB.value, 'HU-hu')
+        ),
     [stores]
   );
 
@@ -191,7 +194,7 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
   }
 
   return (
-    <View style={styles.container}>
+    <Container>
       {!!error && (
         <View style={styles.error}>
           <ErrorCard>{error}</ErrorCard>
@@ -228,13 +231,13 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
           Adatok frissítése
         </Button>
       </View>
-    </View>
+    </Container>
   );
 }
 
 export function StartErrand(props: StartErrandProps) {
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<Container />}>
       <SuspendedStartErrand {...props} />
     </Suspense>
   );
@@ -246,10 +249,6 @@ const styles = StyleSheet.create({
     height: 150,
     justifyContent: 'space-between',
     marginTop: 30,
-  },
-  container: {
-    backgroundColor: colors.background,
-    flex: 1,
   },
   dateContainer: {
     marginHorizontal: '7%',

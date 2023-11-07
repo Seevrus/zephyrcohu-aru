@@ -1,6 +1,8 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { useAtomValue } from 'jotai';
 
+import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
 import {
   mapSearchTaxPayerResponse,
@@ -8,7 +10,6 @@ import {
 } from '../response-mappers/mapSearchTaxPayerResponse';
 import { type SearchTaxNumberResponseType } from '../response-types/SearchTaxNumberResponseType';
 import { useCheckToken } from './useCheckToken';
-import { useToken } from './useToken';
 
 type UseSearhcTaxNumberProps = {
   taxNumber: string;
@@ -20,8 +21,7 @@ export function useSearchTaxNumber({
   enabled = true,
 }: UseSearhcTaxNumberProps): UseQueryResult<TaxPayer[]> {
   const { isSuccess: isCheckTokenSuccess } = useCheckToken();
-  const { data: { isPasswordExpired, isTokenExpired, token } = {} } =
-    useToken();
+  const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
 
   return useQuery({
     queryKey: ['search-tax-number', taxNumber, token],

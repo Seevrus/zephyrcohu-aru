@@ -1,33 +1,33 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { useAtomValue } from 'jotai';
 import { isNotNil } from 'ramda';
 
+import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
 import {
   type StoreDetailsResponseData,
   type StoreDetailsResponseType,
 } from '../response-types/StoreDetailsResponseType';
 import { useCheckToken } from './useCheckToken';
-import { useToken } from './useToken';
 
 export function useStoreDetails(storeId: number | undefined, enabled = true) {
   const { isInternetReachable } = useNetInfo();
   const { isSuccess: isCheckTokenSuccess } = useCheckToken();
-  const { isSuccess: isTokenSuccess, data: tokenData } = useToken();
+  const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
 
   return useQuery({
     queryKey: ['store-details', storeId],
-    queryFn: fetchStoreDetails(tokenData?.token as string, storeId as number),
+    queryFn: fetchStoreDetails(token, storeId as number),
     enabled:
       enabled &&
       isInternetReachable === true &&
       isNotNil(storeId) &&
-      isTokenSuccess &&
-      !tokenData.isTokenExpired &&
-      !tokenData.isPasswordExpired &&
+      !isTokenExpired &&
+      !isPasswordExpired &&
       isCheckTokenSuccess &&
-      !!tokenData.token,
+      !!token,
   });
 }
 

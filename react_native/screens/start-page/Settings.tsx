@@ -1,12 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { Suspense, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useLogout } from '../../api/mutations/useLogout';
 import { useCheckToken } from '../../api/queries/useCheckToken';
-import { useToken } from '../../api/queries/useToken';
 import { currentOrderAtom, ordersAtom } from '../../atoms/orders';
 import { currentReceiptAtom, receiptsAtom } from '../../atoms/receipts';
 import {
@@ -18,6 +17,7 @@ import {
   isStorageSavedToApiAtom,
   storageListItemsAtom,
 } from '../../atoms/storageFlow';
+import { tokenAtom } from '../../atoms/token';
 import { Loading } from '../../components/Loading';
 import { Container } from '../../components/container/Container';
 import { Button } from '../../components/ui/Button';
@@ -27,8 +27,9 @@ import { type SettingsProps } from '../../navigators/screen-types';
 
 function SuspendedSettings({ navigation }: SettingsProps) {
   const { data: user, isFetching: isUserFetching } = useCheckToken();
-  const { data: tokenData } = useToken();
   const { mutateAsync: logout } = useLogout();
+
+  const { token, isTokenExpired } = useAtomValue(tokenAtom);
 
   const queryClient = useQueryClient();
 
@@ -105,24 +106,24 @@ function SuspendedSettings({ navigation }: SettingsProps) {
     });
   };
 
-  if (isLoading || isUserFetching || !tokenData) {
+  if (isLoading || isUserFetching || !token) {
     return <Loading />;
   }
 
   return (
     <View style={styles.container}>
-      {tokenData.isTokenExpired ? (
+      {isTokenExpired ? (
         <Button variant="neutral" onPress={loginHandler}>
           Bejelentkezés
         </Button>
       ) : null}
 
-      {!tokenData.isTokenExpired && (
+      {!isTokenExpired && (
         <Button variant="neutral" onPress={changePasswordHandler}>
           Jelszó megváltoztatása
         </Button>
       )}
-      {!tokenData.isTokenExpired && !isRoundStarted && (
+      {!isTokenExpired && !isRoundStarted && (
         <Button variant="neutral" onPress={logoutHandler}>
           Kijelentkezés
         </Button>

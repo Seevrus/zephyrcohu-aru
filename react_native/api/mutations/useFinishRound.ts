@@ -1,13 +1,14 @@
 import { useMutation } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { useAtomValue } from 'jotai';
 
+import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
-import { useToken } from '../queries/useToken';
 import { type FinishRoundRequestType } from '../request-types/FinishRoundRequestType';
 import { type FinishRoundResponseType } from '../response-types/FinishRoundResponseType';
 
 export function useFinishRound() {
-  const { data: { token } = {} } = useToken();
+  const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
     mutationKey: ['start-round'],

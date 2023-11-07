@@ -1,9 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { useAtomValue } from 'jotai';
 
 import { type ContextReceipt } from '../../atoms/receipts';
+import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
-import { useToken } from '../queries/useToken';
 import { mapUpdateReceiptsRequest } from '../request-mappers/mapUpdateReceiptsRequest';
 import {
   type ReceiptResponseData,
@@ -11,7 +12,7 @@ import {
 } from '../response-types/ReceiptsResponseType';
 
 export function useUpdateReceipts() {
-  const { data: { token } = {} } = useToken();
+  const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
     mutationKey: ['update-receipts'],

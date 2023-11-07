@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import * as SecureStore from 'expo-secure-store';
+import { useAtom, useAtomValue } from 'jotai';
 
+import { storedTokenAtom, tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
-import { useToken } from '../queries/useToken';
 import { type ChangePasswordRequest } from '../request-types/ChangePasswordRequestType';
 import { mapLoginResponse } from '../response-mappers/mapLoginResponse';
 import { type LoginResponse } from '../response-types/LoginResponseType';
@@ -13,7 +13,8 @@ export function usePasswordChange() {
   const queryClient = useQueryClient();
   const logout = useLogout();
 
-  const { data: { token } = {} } = useToken();
+  const [, setStoredToken] = useAtom(storedTokenAtom);
+  const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
     mutationKey: ['login'],
@@ -30,16 +31,13 @@ export function usePasswordChange() {
               },
             }
           )
-          .then((r) => mapLoginResponse(r.data));
+          .then((response) => mapLoginResponse(response.data));
 
-        await SecureStore.setItemAsync(
-          'boreal-token',
-          JSON.stringify({
-            token: response.token.accessToken,
-            isPasswordExpired: response.token.isPasswordExpired,
-            expiresAt: response.token.expiresAt,
-          })
-        );
+        await setStoredToken({
+          token: response.token.accessToken,
+          isPasswordExpired: response.token.isPasswordExpired,
+          expiresAt: response.token.expiresAt,
+        });
       } catch (error) {
         if (isAxiosError(error)) {
           // eslint-disable-next-line no-console
