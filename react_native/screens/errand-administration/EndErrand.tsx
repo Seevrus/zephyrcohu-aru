@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: colors.white,
-    fontFamily: 'Muli',
+    fontFamily: 'Nunito-Sans',
     fontSize: fontSizes.body,
     marginTop: 10,
   },

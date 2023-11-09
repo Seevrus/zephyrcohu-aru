@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: colors.white,
-    fontFamily: 'Muli',
+    fontFamily: 'Nunito-Sans',
     fontSize: fontSizes.body,
     fontWeight: 'bold',
     marginRight: '18%',

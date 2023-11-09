@@ -1,4 +1,5 @@
-/* eslint-disable unicorn/prefer-module */
+import { NunitoSans_400Regular } from '@expo-google-fonts/nunito-sans';
+import { Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addEventListener as NetInfoAddEventListener } from '@react-native-community/netinfo';
 import { NavigationContainer } from '@react-navigation/native';
@@ -25,9 +26,9 @@ onlineManager.setEventListener((setOnline) =>
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    Muli: require('./react_native/assets/fonts/Muli.ttf'),
-    'Roboto-Regular': require('./react_native/assets/fonts/Roboto-Regular.ttf'),
-    'Roboto-Bold': require('./react_native/assets/fonts/Roboto-Bold.ttf'),
+    'Nunito-Sans': NunitoSans_400Regular,
+    'Roboto-Regular': Roboto_400Regular,
+    'Roboto-Bold': Roboto_700Bold,
   });
 
   if (!fontsLoaded) {
@@ -40,11 +41,11 @@ export default function App() {
       persistOptions={{ persister: asyncStoragePersister }}
     >
       <AtomsProvider>
-        <StatusBar style="auto" />
         <NavigationContainer>
           <MainStack />
         </NavigationContainer>
       </AtomsProvider>
+      <StatusBar style="light" />
     </PersistQueryClientProvider>
   );
 }

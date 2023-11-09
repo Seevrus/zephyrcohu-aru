@@ -73,13 +73,13 @@ const styles = StyleSheet.create({
   header: {
     alignSelf: 'center',
     color: colors.white,
-    fontFamily: 'Muli',
+    fontFamily: 'Nunito-Sans',
     fontSize: fontSizes.subtitle,
     marginBottom: 20,
   },
   text: {
     color: colors.white,
-    fontFamily: 'Muli',
+    fontFamily: 'Nunito-Sans',
     fontSize: fontSizes.body,
   },
 });

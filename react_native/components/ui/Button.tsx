@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: colors.white,
-    fontFamily: 'Muli',
+    fontFamily: 'Nunito-Sans',
     fontSize: fontSizes.input,
     fontWeight: 'bold',
   },

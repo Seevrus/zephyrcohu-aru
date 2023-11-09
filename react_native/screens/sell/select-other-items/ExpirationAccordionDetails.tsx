@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   },
   selectItemText: {
     color: colors.white,
-    fontFamily: 'Muli',
+    fontFamily: 'Nunito-Sans',
     fontSize: fontSizes.body,
     fontWeight: 'bold',
   },

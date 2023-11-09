@@ -25,14 +25,14 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     color: colors.white,
-    fontFamily: 'Muli',
+    fontFamily: 'Nunito-Sans',
     fontSize: fontSizes.input,
     fontWeight: '700',
     marginRight: 5,
   },
   infoText: {
     color: colors.white,
-    fontFamily: 'Muli',
+    fontFamily: 'Nunito-Sans',
     fontSize: fontSizes.input,
   },
 });

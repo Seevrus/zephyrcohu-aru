@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   },
   header: {
     color: colors.white,
-    fontFamily: 'Muli',
+    fontFamily: 'Nunito-Sans',
     fontSize: fontSizes.body,
     fontWeight: 'bold',
   },
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     color: colors.white,
-    fontFamily: 'Muli',
+    fontFamily: 'Nunito-Sans',
     fontSize: fontSizes.input,
     fontWeight: '700',
     marginRight: 5,

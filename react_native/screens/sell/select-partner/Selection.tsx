@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   },
   infoText: {
     color: colors.white,
-    fontFamily: 'Muli',
+    fontFamily: 'Nunito-Sans',
     fontSize: fontSizes.input,
   },
   selectPartnerContainer: {

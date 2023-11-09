@@ -314,7 +314,7 @@ export function AddPartnerForm(props: AddPartnerFormProps) {
 const styles = StyleSheet.create({
   addressHeader: {
     color: colors.white,
-    fontFamily: 'Muli',
+    fontFamily: 'Nunito-Sans',
     fontSize: fontSizes.subtitle,
   },
   addressHeaderContainer: {

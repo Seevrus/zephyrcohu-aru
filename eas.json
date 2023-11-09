@@ -1,9 +1,13 @@
 {
   "cli": {
-    "version": ">= 3.17.1"
+    "version": ">= 5"
   },
   "build": {
+    "base": {
+      "node": "18.17.0"
+    },
     "development": {
+      "extends": "base",
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
@@ -11,12 +15,14 @@
       }
     },
     "preview": {
+      "extends": "base",
       "distribution": "internal",
       "ios": {
         "resourceClass": "m1-medium"
       }
     },
     "production": {
+      "extends": "base",
       "ios": {
         "resourceClass": "m1-medium"
       }

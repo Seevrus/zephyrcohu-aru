@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   },
   information: {
     color: colors.white,
-    fontFamily: 'Muli',
+    fontFamily: 'Nunito-Sans',
     fontSize: fontSizes.body,
   },
   informationContainer: {

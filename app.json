@@ -2,7 +2,7 @@
   "expo": {
     "name": "Zephyr Boreal",
     "slug": "zephyr-boreal",
-    "version": "0.6.0",
+    "version": "0.6.1",
     "orientation": "portrait",
     "icon": "./react_native/assets/expo-app-icons/icon.png",
     "userInterfaceStyle": "dark",
@@ -20,7 +20,7 @@
     },
     "android": {
       "package": "com.zephyr.boreal",
-      "versionCode": 9,
+      "versionCode": 10,
       "adaptiveIcon": {
         "foregroundImage": "./react_native/assets/expo-app-icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -37,6 +37,14 @@
         "expo-barcode-scanner",
         {
           "cameraPermission": "Kérem a vonalkódleolvasáshoz engedélyezd a kamera hozzáférést."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
         }
       ]
     ]
