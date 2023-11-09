@@ -12,7 +12,7 @@ class Order extends Model
     protected $fillable = [
         'company_id',
         'partner_id',
-        'order_date',
+        'ordered_at',
     ];
 
     public function company()
@@ -25,7 +25,7 @@ class Order extends Model
         return $this->belongsTo(Partner::class);
     }
 
-    public function order_items()
+    public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
     }

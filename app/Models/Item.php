@@ -13,6 +13,7 @@ class Item extends Model
         'company_id',
         'cn_code',
         'article_number',
+        'barcode',
         'name',
         'short_name',
         'category',
@@ -25,6 +26,11 @@ class Item extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function discounts()
+    {
+        return $this->hasMany(Discount::class);
     }
 
     public function expirations()

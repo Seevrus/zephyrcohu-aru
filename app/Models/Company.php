@@ -9,14 +9,19 @@ class Company extends Model
 {
     use HasFactory;
 
-    public function agents()
+    public function partners()
     {
-        return $this->hasMany(Agent::class);
+        return $this->hasMany(Partner::class);
     }
 
-    public function rounds()
+    public function partnerLists()
     {
-        return $this->hasMany(Round::class);
+        return $this->hasMany(PartnerList::class);
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
     }
 
     public function items()
@@ -24,24 +29,14 @@ class Company extends Model
         return $this->hasMany(Item::class);
     }
 
-    public function orders()
+    public function priceLists()
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(PriceList::class);
     }
 
-    public function partners()
+    public function otherItems()
     {
-        return $this->hasMany(Partner::class);
-    }
-
-    public function partner_lists()
-    {
-        return $this->hasMany(PartnerList::class);
-    }
-
-    public function receipts()
-    {
-        return $this->hasMany(Receipt::class);
+        return $this->hasMany(OtherItem::class);
     }
 
     public function stores()
@@ -49,8 +44,18 @@ class Company extends Model
         return $this->hasMany(Store::class);
     }
 
-    public function users()
+    public function rounds()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(Round::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function receipts()
+    {
+        return $this->hasMany(Receipt::class);
     }
 }

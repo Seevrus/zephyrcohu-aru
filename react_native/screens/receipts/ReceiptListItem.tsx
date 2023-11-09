@@ -1,8 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { formatCurrency } from 'react-native-format-currency';
 
-import colors from '../../constants/colors';
-import fontSizes from '../../constants/fontSizes';
+import { colors } from '../../constants/colors';
+import { fontSizes } from '../../constants/fontSizes';
+import { formatPrice } from '../../utils/formatPrice';
 
 type ReceiptListItemProps = {
   partnerName: string;
@@ -12,15 +12,13 @@ type ReceiptListItemProps = {
   onPress: (serialNumber: number) => void;
 };
 
-export default function ReceiptListItem({
+export function ReceiptListItem({
   partnerName,
   serialNumber,
   yearCode,
   total,
   onPress,
 }: ReceiptListItemProps) {
-  const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
-
   return (
     <View style={styles.container}>
       <Pressable
@@ -40,9 +38,9 @@ export default function ReceiptListItem({
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
     backgroundColor: colors.neutral,
     borderRadius: 8,
+    marginTop: 20,
     overflow: 'hidden',
   },
   listItem: {
@@ -55,8 +53,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   text: {
-    color: 'white',
-    fontFamily: 'Muli',
+    color: colors.white,
+    fontFamily: 'Nunito-Sans',
     fontSize: fontSizes.input,
   },
   total: {

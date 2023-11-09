@@ -1,13 +1,16 @@
-import { append, eqProps, pipe, values } from 'ramda';
-import { memo } from 'react';
-import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import { append, eqProps, equals, pipe, values } from 'ramda';
+import { memo, useCallback } from 'react';
+import {
+  FlatList,
+  StyleSheet,
+  View,
+  type ListRenderItemInfo,
+} from 'react-native';
 
-import AnimatedListItem from '../../../components/ui/AnimatedListItem';
-import colors from '../../../constants/colors';
-import { useAppSelector } from '../../../store/hooks';
-import { Item } from '../../../store/items-slice/items-slice-types';
-import { Expiration } from '../../../store/stores-slice/stores-slice-types';
-import Selection from './Selection';
+import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';
+import { colors } from '../../../constants/colors';
+import { Selection } from './Selection';
+import { type SellExpiration, type SellItem } from './useSelectItemsToSellData';
 
 export enum ItemAvailability {
   IN_RECEIPT,
@@ -16,30 +19,46 @@ export enum ItemAvailability {
 }
 
 type SelectItemProps = {
-  info: ListRenderItemInfo<Item>;
+  info: ListRenderItemInfo<SellItem>;
   type: ItemAvailability;
-  upsertSelectedItem: (id: string, name: string, expiresAt: string, quantity: number) => void;
-  upsertOrderItem: (id: string, name: string, quantity: number) => void;
+  selectedItems: Record<number, Record<number, number>>;
+  selectedOrderItems: Record<number, number>;
+  upsertSelectedItem: (
+    id: number,
+    expirationId: number,
+    quantity: number | null
+  ) => void;
+  upsertOrderItem: (id: number, quantity: number | null) => void;
 };
 
-function SelectItem({ info, type, upsertSelectedItem, upsertOrderItem }: SelectItemProps) {
-  const storeItem = useAppSelector((state) => state.stores.store.items[info.item.id]);
-
-  const expirations: Expiration[] = pipe(
+function _SelectItem({
+  info,
+  type,
+  selectedItems,
+  selectedOrderItems,
+  upsertSelectedItem,
+  upsertOrderItem,
+}: SelectItemProps) {
+  const expirations: SellExpiration[] = pipe(
     values,
     append({
+      itemId: info.item.id,
+      expirationId: -1000,
       expiresAt: 'Rendelés',
       quantity: 1000,
     })
-  )(storeItem.expirations ?? []);
+  )(info.item.expirations ?? []);
 
-  const modifyQuantity = (expiresAt: string, newQuantity: number) => {
-    if (expiresAt === 'Rendelés') {
-      upsertOrderItem(String(info.item.id), info.item.name, newQuantity);
-    } else {
-      upsertSelectedItem(String(info.item.id), info.item.name, expiresAt, newQuantity);
-    }
-  };
+  const modifyQuantity = useCallback(
+    (expirationId: number, newQuantity: number | null) => {
+      if (expirationId === -1000) {
+        upsertOrderItem(info.item.id, newQuantity);
+      } else {
+        upsertSelectedItem(info.item.id, expirationId, newQuantity);
+      }
+    },
+    [info.item.id, upsertOrderItem, upsertSelectedItem]
+  );
 
   const backgroundColors = {
     [ItemAvailability.AVAILABLE]: colors.neutral,
@@ -52,15 +71,25 @@ function SelectItem({ info, type, upsertSelectedItem, upsertOrderItem }: SelectI
       id={info.item.id}
       expandedInitially={false}
       title={info.item.name}
-      height={expirations.length * 100}
+      height={expirations.length * 105}
       backgroundColor={backgroundColors[type]}
     >
       <View style={styles.selectItemContainer}>
         <FlatList
           data={expirations}
-          keyExtractor={(item) => item.expiresAt}
+          keyExtractor={(expiration) => expiration.expiresAt}
           renderItem={(expirationInfo) => (
-            <Selection info={expirationInfo} onQuantityModified={modifyQuantity} />
+            <Selection
+              info={expirationInfo}
+              quantity={
+                expirationInfo.item.expiresAt === 'Rendelés'
+                  ? selectedOrderItems[expirationInfo.item.itemId] ?? null
+                  : selectedItems[expirationInfo.item.itemId]?.[
+                      expirationInfo.item.expirationId
+                    ] ?? null
+              }
+              onQuantityModified={modifyQuantity}
+            />
           )}
         />
       </View>
@@ -72,23 +101,19 @@ const styles = StyleSheet.create({
   selectItemContainer: {
     padding: 10,
   },
-  selectionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    marginVertical: 5,
-  },
-  selectIcon: {
-    marginHorizontal: 30,
-    marginBottom: 5,
-  },
-  quantityContainer: {
-    width: '50%',
-  },
 });
 
 function arePropsEqual(oldProps: SelectItemProps, newProps: SelectItemProps) {
-  return eqProps('info', oldProps, newProps) && eqProps('type', oldProps, newProps);
+  return (
+    eqProps('info', oldProps, newProps) &&
+    eqProps('type', oldProps, newProps) &&
+    equals(
+      oldProps.selectedItems[oldProps.info.item.id],
+      newProps.selectedItems[newProps.info.item.id]
+    ) &&
+    oldProps.selectedOrderItems[oldProps.info.item.id] ===
+      newProps.selectedOrderItems[newProps.info.item.id]
+  );
 }
 
-export default memo(SelectItem, arePropsEqual);
+export const SelectItem = memo(_SelectItem, arePropsEqual);

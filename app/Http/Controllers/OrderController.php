@@ -2,41 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreOrderRequest;
+use App\Http\Requests\CreateOrdersRequest;
 use App\Http\Resources\OrderCollection;
 use App\Models\Log;
 use App\Models\Order;
-use Error;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class OrderController extends Controller
 {
-    /**
-     * Display all orders.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function viewAll(Request $request)
+    public function view_all(Request $request)
     {
         try {
-            $this->authorize('viewAll', Receipt::class);
-
             $sender = $request->user();
-            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->last_active = Carbon::now();
             $sender->save();
 
-            $orders = $sender->company->orders()->with(['partner', 'order_items'])->get();
+            $orders = $sender->company->orders()->get();
 
             Log::insert([
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $orders->count() . ' receipts',
+                'action' => 'Accessed '.$orders->count().' orders',
                 'occured_at' => date('Y-m-d H:i:s'),
             ]);
 
@@ -45,93 +38,92 @@ class OrderController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
-            throw new UnprocessableEntityHttpException();
+            throw new BadRequestException();
         }
     }
 
-    /**
-     * Upload an array of new orders.
-     *
-     * @param  \App\Http\Requests\StoreOrderRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreOrderRequest $request)
+    public function create_orders(CreateOrdersRequest $request)
     {
         try {
             $sender = $request->user();
-            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->last_active = Carbon::now();
             $sender->save();
 
             $company = $sender->company;
 
+            $newOrders = [];
             foreach ($request->data as $orderRequest) {
-                $partner = $company->partners()->firstWhere([
-                    'code' => $orderRequest['partnerCode'],
-                    'site_code' => $orderRequest['partnerSiteCode'],
-                ]);
-
-                if (!$partner) {
-                    throw new Error('Partner could not be found.');
-                }
-
                 $order = Order::create([
                     'company_id' => $company->id,
-                    'partner_id' => $partner->id,
-                    'order_date' => $orderRequest['orderDate'],
+                    'partner_id' => $orderRequest['partnerId'],
+                    'ordered_at' => $orderRequest['orderedAt'],
                 ]);
 
                 foreach ($orderRequest['items'] as $orderItem) {
-                    $order->order_items()->create([
+                    $order->orderItems()->create([
                         'article_number' => $orderItem['articleNumber'],
+                        'name' => $orderItem['name'],
                         'quantity' => $orderItem['quantity'],
                     ]);
                 }
+
+                array_push($newOrders, $order);
             }
 
             Log::insert([
                 'company_id' => $company->id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Uploaded ' . count($request->data) . ' new orders',
+                'action' => 'Uploaded '.count($request->data).' new orders',
                 'occured_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            return new OrderCollection($newOrders);
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) {
+                throw $e;
+            }
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function remove_order(int $id)
+    {
+        try {
+            $sender = request()->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $order = $sender->company->orders()->findOrFail($id);
+            $this->authorize('remove', $order);
+
+            $order->delete();
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Removed item '.$order->id,
+                'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+                || $e instanceof ModelNotFoundException
+            ) {
+                throw $e;
+            }
 
-            throw new UnprocessableEntityHttpException();
+            throw new BadRequestException();
         }
-    }
-
-    /**
-     * Delete an array of receipts
-     * 
-     */
-    public function delete(Request $request)
-    {
-        if (!Gate::allows('check-device-id')) {
-            throw new UnauthorizedHttpException(random_bytes(32));
-        }
-
-        $sender = $request->user();
-        $sender->last_active = date('Y-m-d H:i:s');
-        $sender->save();
-
-        $order_ids = json_decode($request->ids);
-
-        if (!is_array($order_ids) || !count($order_ids)) {
-            throw new UnprocessableEntityHttpException();
-        }
-
-        foreach ($order_ids as $id) {
-            $receipt = Order::findOrFail($id);
-            $this->authorize('delete', $receipt);
-        }
-
-        Order::destroy($order_ids);
     }
 }

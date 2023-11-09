@@ -12,10 +12,9 @@ class Receipt extends Model
     protected $fillable = [
         'company_id',
         'company_code',
+        'partner_id',
         'partner_code',
         'partner_site_code',
-        'ci_serial_number',
-        'ci_year_code',
         'serial_number',
         'year_code',
         'original_copies_printed',
@@ -45,12 +44,11 @@ class Receipt extends Model
         'fulfillment_date',
         'invoice_type',
         'paid_date',
-        'agent_code',
-        'agent_name',
-        'agent_phone_number',
+        'user_id',
+        'user_code',
+        'user_name',
+        'user_phone_number',
         'quantity',
-        'agent_name',
-        'agent_phone_number',
         'net_amount',
         'vat_amount',
         'gross_amount',
@@ -64,13 +62,18 @@ class Receipt extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function vat_amounts()
-    {
-        return $this->hasMany(VatAmount::class);
-    }
-
-    public function receipt_items()
+    public function items()
     {
         return $this->hasMany(ReceiptItem::class);
+    }
+
+    public function otherItems()
+    {
+        return $this->hasMany(ReceiptOtherItem::class);
+    }
+
+    public function vatAmounts()
+    {
+        return $this->hasMany(VatAmount::class);
     }
 }

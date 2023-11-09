@@ -2,103 +2,240 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePartnerListRequest;
+use App\Http\Requests\CreatePartnerListRequest;
+use App\Http\Requests\UpdatePartnerListRequest;
 use App\Http\Resources\PartnerListCollection;
+use App\Http\Resources\PartnerListResource;
 use App\Models\Log;
 use App\Models\Partner;
 use App\Models\PartnerList;
-use Error;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class PartnerListController extends Controller
 {
-    /**
-     * View all partner lists
-     */
-    public function viewAll(Request $request)
+    public function create_partner_list(CreatePartnerListRequest $request)
     {
         try {
-            $this->authorize('viewAll', Partner::class);
-
             $sender = $request->user();
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $partnerLists = $sender->company->partner_lists()->with('partners')->get();
+            $partnerList = PartnerList::create([
+                'company_id' => $sender->company->id,
+                'name' => $request->data['name'],
+            ]);
+
+            $partnerList->partners()->attach($request->data['partners']);
 
             Log::insert([
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $partnerLists->count() . ' partner lists',
-                'occured_at' => date('Y-m-d H:i:s'),
+                'action' => 'Created partner list '.$partnerList->id,
+                'occured_at' => Carbon::now(),
             ]);
 
-            return new PartnerListCollection($partnerLists);
+            return new PartnerListResource($partnerList->load('partners'));
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
-            throw new UnprocessableEntityHttpException();
+            throw new BadRequestException();
         }
     }
 
-    /**
-     * Delete previous partner lists and store the new array in the database
-     *
-     * @param  \Illuminate\Http\StorePartnerListRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StorePartnerListRequest $request)
+    public function view_all(Request $request)
     {
         try {
             $sender = $request->user();
             $sender->last_active = date('Y-m-d H:i:s');
             $sender->save();
 
-            $company = $sender->company;
-            $company->partner_lists()->delete();
-
-            foreach ($request->data as $partnerListRequest) {
-                $partnerList = PartnerList::create([
-                    'company_id' => $company->id,
-                    'name' => $partnerListRequest['name'],
-                ]);
-
-                foreach ($partnerListRequest['partners'] as $list) {
-                    $partner = $company->partners()->firstWhere([
-                        'code' => $list['code'],
-                        'site_code' => $list['siteCode'],
-                    ]);
-
-                    if (!$partner) {
-                        throw new Error('Partner could not be found.');
-                    }
-
-                    $partnerList->partners()->attach($partner);
-                }
-            }
+            $partnerLists = $sender->company->partnerLists()->get();
 
             Log::insert([
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Stored ' . count($request->data) . ' partner lists',
+                'action' => 'Accessed '.$partnerLists->count().' partners',
+                'occured_at' => Carbon::now(),
+            ]);
+
+            return new PartnerListCollection($partnerLists->load('partners'));
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) {
+                throw $e;
+            }
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function update_partner_list(UpdatePartnerListRequest $request, int $id)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->save();
+
+            $partnerList = $sender->company->partnerLists()->findOrFail($id);
+
+            if (! $partnerList) {
+                return response([
+                    'status' => 404,
+                    'codeName' => 'Not Found',
+                    'message' => 'The server cannot find the requested partner list.',
+                ], 404);
+            }
+
+            $this->authorize('update', $partnerList);
+
+            $partnerList->name = $request->data['name'];
+            $partnerList->save();
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Updated partner list '.$partnerList->id,
                 'occured_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            return new PartnerListResource($partnerList->refresh());
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
+            ) {
+                throw $e;
+            }
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function add_partner(Request $request, int $id, int $partnerId)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->save();
+
+            $partnerList = $sender->company->partnerLists()->findOrFail($id);
+            $this->authorize('add_partner', $partnerList);
+
+            $partner = $sender->company->partners()->findOrFail($partnerId);
+
+            $partnerList->partners()->syncWithoutDetaching($partnerId);
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Added partner '.$partner->id.' to partner list '.$partnerList->id,
+                'occured_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            return new PartnerListResource($partnerList->load('partners'));
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
+            ) {
+                throw $e;
+            }
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function remove_partner(Request $request, int $id, int $partnerId)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->save();
+
+            $partnerList = $sender->company->partnerLists()->findOrFail($id);
+            $this->authorize('remove_partner', $partnerList);
+
+            $partner = Partner::find($partnerId);
+            if (! $partner) {
+                return response([
+                    'status' => 404,
+                    'codeName' => 'Not Found',
+                    'message' => 'The server cannot find the requested partner.',
+                ], 404);
+            }
+
+            $partnerList->partners()->detach($partnerId);
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Removed partner '.$partner->id.' from partner list '.$partnerList->id,
+                'occured_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            return new PartnerListResource($partnerList->load('partners'));
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
+            ) {
+                throw $e;
+            }
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function remove_partner_list(int $id)
+    {
+        try {
+            $sender = request()->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $partnerList = $sender->company->partnerLists()->findOrFail($id);
+            $this->authorize('remove', $partnerList);
+
+            $partnerList->delete();
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Removed partner list '.$partnerList->id,
+                'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+                || $e instanceof ModelNotFoundException
+            ) {
+                throw $e;
+            }
 
-            throw new UnprocessableEntityHttpException();
+            throw new BadRequestException();
         }
     }
 }

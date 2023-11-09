@@ -14,10 +14,15 @@ class MasterKeyUsed extends Mailable
     use Queueable, SerializesModels;
 
     public $company_code;
+
     public $master_key_id;
+
     public $user_id;
+
     public $user_type;
+
     public $user_phone_number;
+
     public $user_key_id;
 
     /**

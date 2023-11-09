@@ -14,10 +14,12 @@ class PartnerListResource extends JsonResource
      */
     public function toArray($request)
     {
+        $partnerIds = array_map(fn ($p) => $p['id'], $this->whenLoaded('partners')->toArray() ?? []);
+
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'partners' => new PartnerListPartnerCollection($this->partners),
+            'partners' => $partnerIds,
             'createdAt' => $this->created_at->toDateTimeString(),
             'updatedAt' => $this->updated_at->toDateTimeString(),
         ];

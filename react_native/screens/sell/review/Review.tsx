@@ -1,241 +1,168 @@
+import { useAtomValue } from 'jotai';
+import { Suspense, useCallback, useState } from 'react';
 import {
-  add,
-  ascend,
-  defaultTo,
-  flatten,
-  keys,
-  map,
-  pathOr,
-  pipe,
-  prop,
-  reduce,
-  sortWith,
-  __,
-} from 'ramda';
-import { useEffect, useState } from 'react';
-import {
-  Alert,
   FlatList,
-  ListRenderItem,
-  ListRenderItemInfo,
   StyleSheet,
   View,
+  type ListRenderItem,
+  type ListRenderItemInfo,
 } from 'react-native';
-import { formatCurrency } from 'react-native-format-currency';
 
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { finalizeCurrentReceipt } from '../../../store/round-slice/round-api-actions';
-import { ExpirationItem, Item } from '../../../store/round-slice/round-slice-types';
-import { removeItemsFromStore } from '../../../store/stores-slice/stores-api-actions';
+import { reviewItemsAtom, type ReviewItem } from '../../../atoms/sellFlow';
+import { Loading } from '../../../components/Loading';
+import { Container } from '../../../components/container/Container';
+import { ErrorCard } from '../../../components/info-cards/ErrorCard';
+import { Button } from '../../../components/ui/Button';
+import { LabeledItem } from '../../../components/ui/LabeledItem';
+import { colors } from '../../../constants/colors';
+import { type ReviewProps } from '../../../navigators/screen-types';
+import { formatPrice } from '../../../utils/formatPrice';
+import { OtherItemSelection } from './OtherItemSelection';
+import { RegularItemSelection } from './RegularItemSelection';
+import { getReviewItemId } from './getReviewItemId';
+import { useReviewData } from './useReviewData';
 
-import ErrorCard from '../../../components/info-cards/ErrorCard';
-import Button from '../../../components/ui/Button';
-import LabeledItem from '../../../components/ui/LabeledItem';
-import colors from '../../../constants/colors';
-import fontSizes from '../../../constants/fontSizes';
-import { roundActions } from '../../../store/round-slice/round-slice';
-import { ReviewProps } from '../../screen-types';
-import ReceiptHeader from './ReceiptHeader';
-import ReceiptRow, { ReceiptRowProps } from './ReceiptRow';
+function SuspendedReview({ navigation }: ReviewProps) {
+  const {
+    isLoading,
+    discountedGrossAmount,
+    removeItemHandler,
+    removeOtherItemHandler,
+    saveReceiptError,
+    removeReceiptHandler,
+    canConfirm,
+    confirmReceiptHandler,
+  } = useReviewData(navigation);
 
-export default function Review({ navigation }: ReviewProps) {
-  const dispatch = useAppDispatch();
-  const formatPrice = (amount: number) => formatCurrency({ amount, code: 'HUF' })[0];
+  const reviewItems = useAtomValue(reviewItemsAtom);
 
-  const [saveReceiptError, setSaveReceiptError] = useState<string>('');
+  const [selectedRow, setSelectedRow] = useState<ReviewItem | null>(null);
 
-  const receiptRows = useAppSelector((state) => {
-    const { currentReceipt } = state.round;
-    const partner = state.partners.partners.find((p) => p.id === currentReceipt?.partnerId);
-    const priceList = partner?.priceList || {};
-    const receiptItems = pathOr<Item>({}, ['round', 'currentReceipt', 'items'], state);
+  const renderReceiptRow: ListRenderItem<ReviewItem> = useCallback(
+    (info: ListRenderItemInfo<ReviewItem>) => {
+      const reviewItemId = getReviewItemId(info.item);
+      const selectedRowId = getReviewItemId(selectedRow);
 
-    return pipe(
-      keys,
-      map((itemId) =>
-        pipe(
-          prop<Record<string, ExpirationItem>>(__, receiptItems),
-          keys,
-          map((expiresAt) => {
-            const item = state.items.data.find((itm) => itm.id === +itemId);
-            const priceListItem = priceList[item.id];
-            const netPrice = priceListItem?.netPrice || item.netPrice;
-            const netAmount = netPrice * receiptItems[itemId][expiresAt].quantity;
-            const vatRateNumeric = defaultTo(0, +item.vatRate);
-            const vatAmount = Math.round(netAmount * (vatRateNumeric / 100));
+      return info.item.type === 'item' ? (
+        <RegularItemSelection
+          selected={reviewItemId === selectedRowId}
+          item={info.item}
+          onSelect={(id: string | number) => {
+            setSelectedRow(
+              reviewItems?.find((row) => getReviewItemId(row) === id) ?? null
+            );
+          }}
+          onDelete={removeItemHandler}
+        />
+      ) : (
+        <OtherItemSelection
+          selected={reviewItemId === selectedRowId}
+          item={info.item}
+          onSelect={(id: string) => {
+            setSelectedRow(
+              reviewItems?.find((row) => getReviewItemId(row) === id) ?? null
+            );
+          }}
+          onDelete={removeOtherItemHandler}
+        />
+      );
+    },
+    [removeItemHandler, removeOtherItemHandler, reviewItems, selectedRow]
+  );
 
-            return {
-              id: item.id,
-              articleNumber: item.articleNumber,
-              name: item.name,
-              expiresAt,
-              quantity: receiptItems[itemId][expiresAt].quantity,
-              unitName: item.unitName,
-              grossAmount: netAmount + vatAmount,
-            };
-          })
-        )(itemId)
-      ),
-      flatten,
-      sortWith([ascend(prop('name')), ascend(prop('expiresAt'))])
-    )(receiptItems);
-  });
+  const confimButtonVariant = canConfirm ? 'ok' : 'disabled';
 
-  const grossAmount = reduce((acc, value) => add(prop('grossAmount', value), acc), 0, receiptRows);
-
-  const removeItemHandler = ({ id, expiresAt }: { id: number; expiresAt: string }) =>
-    dispatch(roundActions.removeItem({ id, expiresAt }));
-
-  useEffect(() => {
-    if (receiptRows?.length === 0) {
-      dispatch(roundActions.removeLastUnsentReceipt());
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Index' }],
-      });
-    }
-  }, [dispatch, navigation, receiptRows.length]);
-
-  const removeReceiptHandler = () => {
-    Alert.alert(
-      'Folyamat törlése',
-      'Ez a lépés törli a jelenlegi árulevételi munkamenetet és visszairányít a kezdőoldalra. Biztosan folytatni szeretné?',
-      [
-        { text: 'Mégse' },
-        {
-          text: 'Biztosan ezt szeretném',
-          onPress: () => {
-            dispatch(roundActions.removeLastUnsentReceipt());
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Index' }],
-            });
-          },
-        },
-      ]
-    );
-  };
-
-  const confirmReceiptHandler = async () => {
-    Alert.alert(
-      'Árulevétel véglegesítése',
-      'Ez a lépés számlakészítéssel jár, ezután már nem lesz lehetőség semmilyen módosításra. Biztosan folytatni szeretné?',
-      [
-        { text: 'Mégse' },
-        {
-          text: 'Biztosan ezt szeretném',
-          onPress: async () => {
-            try {
-              await dispatch(removeItemsFromStore());
-              await dispatch(finalizeCurrentReceipt());
-              navigation.reset({
-                index: 1,
-                routes: [{ name: 'Index' }, { name: 'Summary' }],
-              });
-            } catch (err) {
-              setSaveReceiptError(err.message);
-            }
-          },
-        },
-      ]
-    );
-  };
-
-  const renderReceiptRow: ListRenderItem<ReceiptRowProps['item']> = (
-    info: ListRenderItemInfo<ReceiptRowProps['item']>
-  ) => <ReceiptRow item={info.item} onRemoveItem={removeItemHandler} />;
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
-    <View style={styles.container}>
+    <Container>
       {!!saveReceiptError && (
         <View style={styles.error}>
           <ErrorCard>{saveReceiptError}</ErrorCard>
         </View>
       )}
+      <View style={styles.headerContainer}>
+        <View style={styles.headerButtonContainer}>
+          <Button
+            variant="ok"
+            onPress={() => {
+              navigation.navigate('SelectOtherItemsToSell');
+            }}
+          >
+            Extra tételek
+          </Button>
+        </View>
+      </View>
       <View style={styles.receiptContainer}>
         <FlatList
-          data={receiptRows}
-          ListHeaderComponent={ReceiptHeader}
+          data={reviewItems}
           renderItem={renderReceiptRow}
-          keyExtractor={(item) => `${item.id}-${item.expiresAt}`}
+          keyExtractor={getReviewItemId}
         />
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.grossAmountContainer}>
-          <LabeledItem label="Mindösszesen" text={formatPrice(grossAmount)} />
+          <LabeledItem
+            label="Mindösszesen"
+            text={formatPrice(discountedGrossAmount)}
+          />
         </View>
         <View style={styles.buttonsContainer}>
-          <Button variant="ok" onPress={confirmReceiptHandler}>
-            Véglegesítés
-          </Button>
           <Button variant="warning" onPress={removeReceiptHandler}>
             Elvetés
           </Button>
+          <Button variant={confimButtonVariant} onPress={confirmReceiptHandler}>
+            Véglegesítés
+          </Button>
         </View>
       </View>
-    </View>
+    </Container>
+  );
+}
+
+export function Review(props: ReviewProps) {
+  return (
+    <Suspense fallback={<Container />}>
+      <SuspendedReview {...props} />
+    </Suspense>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  buttonsContainer: {
+    alignItems: 'center',
     flex: 1,
-    backgroundColor: colors.background,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginHorizontal: '7%',
   },
   error: {
     marginTop: 30,
   },
-  title: {
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    textDecorationLine: 'underline',
-    textDecorationColor: 'white',
-  },
-  receiptContainer: {
-    flex: 1,
-    marginTop: 10,
-    marginHorizontal: '4%',
-  },
-  fieldContainer: {
-    marginTop: 5,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  sectionLabel: {
-    fontWeight: '700',
-    textDecorationLine: 'underline',
-    textDecorationColor: 'white',
-  },
-  itemLabel: {
-    fontWeight: '700',
-    marginRight: 5,
-  },
-  receiptText: {
-    color: 'white',
-    fontSize: fontSizes.input,
-  },
-  sectionBorder: {
-    borderColor: 'white',
-    borderWidth: 1,
-    marginVertical: 10,
-  },
   footerContainer: {
+    backgroundColor: colors.neutral,
+    borderTopColor: colors.white,
+    borderTopWidth: 2,
     height: 110,
     marginTop: 5,
-    backgroundColor: colors.neutral,
-    borderTopColor: 'white',
-    borderTopWidth: 2,
   },
   grossAmountContainer: {
     alignItems: 'flex-end',
     marginHorizontal: '7%',
     marginVertical: 10,
   },
-  buttonsContainer: {
-    flex: 1,
-    flexDirection: 'row',
+  headerButtonContainer: {
+    width: '40%',
+  },
+  headerContainer: {
+    alignItems: 'flex-end',
+    height: 70,
     marginHorizontal: '7%',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    marginTop: 10,
+  },
+  receiptContainer: {
+    flex: 1,
   },
 });

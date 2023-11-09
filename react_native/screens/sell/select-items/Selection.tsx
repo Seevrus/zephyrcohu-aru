@@ -1,46 +1,59 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { eqProps, pipe, replace, trim } from 'ramda';
-import { memo, useState } from 'react';
-import { ListRenderItemInfo, Pressable, StyleSheet, View } from 'react-native';
-import Input from '../../../components/ui/Input';
+import { equals, pipe, replace, trim } from 'ramda';
+import { memo } from 'react';
+import {
+  Pressable,
+  StyleSheet,
+  View,
+  type ListRenderItemInfo,
+} from 'react-native';
+
+import { format } from 'date-fns';
+import { Input } from '../../../components/ui/Input';
+import { type SellExpiration } from './useSelectItemsToSellData';
 
 type SelectionProps = {
-  info: ListRenderItemInfo<{
-    expiresAt: string;
-    quantity: number;
-  }>;
-  onQuantityModified: (expiresAt: string, newQuantity: number) => void;
+  info: ListRenderItemInfo<SellExpiration>;
+  quantity: number | null;
+  onQuantityModified: (
+    expirationId: number,
+    newQuantity: number | null
+  ) => void;
 };
 
-function Selection({ info, onQuantityModified }: SelectionProps) {
-  const [selectedQuantity, setSelectedQuantity] = useState<number>(null);
-
+function _Selection({ info, quantity, onQuantityModified }: SelectionProps) {
   const quantityHandler = (newQuantity: string) => {
-    const formattedQuantity = pipe(trim, replace(',', '.'), Number)(newQuantity);
+    const formattedQuantity = pipe(
+      trim,
+      replace(',', '.'),
+      Number
+    )(newQuantity);
     const nullIshFormattedQuantity =
-      Number.isNaN(formattedQuantity) || !formattedQuantity ? null : formattedQuantity;
+      Number.isNaN(formattedQuantity) || !formattedQuantity
+        ? null
+        : formattedQuantity;
 
     if (formattedQuantity < 0) {
-      setSelectedQuantity(null);
-      onQuantityModified(info.item.expiresAt, null);
-    } else if (formattedQuantity > info.item.quantity) {
-      const newSelectedQuantity = info.item.quantity === 0 ? null : info.item.quantity;
-      setSelectedQuantity(newSelectedQuantity);
-      onQuantityModified(info.item.expiresAt, newSelectedQuantity);
+      onQuantityModified(info.item.expirationId, null);
+    } else if (formattedQuantity > (info.item.quantity ?? 0)) {
+      const newSelectedQuantity =
+        info.item.quantity === 0 ? null : info.item.quantity;
+      onQuantityModified(info.item.expirationId, newSelectedQuantity ?? null);
     } else {
-      setSelectedQuantity(nullIshFormattedQuantity);
-      onQuantityModified(info.item.expiresAt, nullIshFormattedQuantity);
+      onQuantityModified(info.item.expirationId, nullIshFormattedQuantity);
     }
   };
 
   const label =
     info.item.expiresAt === 'Rendelés'
       ? info.item.expiresAt
-      : `${info.item.expiresAt} (${info.item.quantity})`;
+      : `${format(new Date(info.item.expiresAt), 'yyyy-MM')} (${
+          info.item.quantity
+        })`;
 
   return (
     <View style={styles.selectionContainer}>
-      <Pressable onPress={() => quantityHandler(String(selectedQuantity - 1))}>
+      <Pressable onPress={() => quantityHandler(String((quantity ?? 0) - 1))}>
         <MaterialIcons
           name="remove-circle-outline"
           size={40}
@@ -59,12 +72,12 @@ function Selection({ info, onQuantityModified }: SelectionProps) {
             contextMenuHidden: true,
             keyboardType: 'numeric',
             maxLength: 4,
-            value: String(selectedQuantity ?? ''),
+            value: String(quantity ?? ''),
             onChangeText: quantityHandler,
           }}
         />
       </View>
-      <Pressable onPress={() => quantityHandler(String(selectedQuantity + 1))}>
+      <Pressable onPress={() => quantityHandler(String((quantity ?? 0) + 1))}>
         <MaterialIcons
           name="add-circle-outline"
           size={40}
@@ -77,23 +90,19 @@ function Selection({ info, onQuantityModified }: SelectionProps) {
 }
 
 const styles = StyleSheet.create({
-  selectionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-  },
-  selectIcon: {
-    marginHorizontal: 30,
-    marginBottom: 5,
-  },
   quantityContainer: {
     height: 90,
     width: '50%',
   },
+  selectIcon: {
+    marginBottom: 5,
+    marginHorizontal: 30,
+  },
+  selectionContainer: {
+    alignItems: 'flex-end',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
 });
 
-function arePropsEqual(oldProps: SelectionProps, newProps: SelectionProps) {
-  return eqProps('info', oldProps, newProps);
-}
-
-export default memo(Selection, arePropsEqual);
+export const Selection = memo(_Selection, equals);

@@ -21,6 +21,8 @@ class PartnerLocationResource extends JsonResource
             'postalCode' => $this->postal_code,
             'city' => $this->city,
             'address' => $this->address,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
         ];
     }
 }

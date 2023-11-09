@@ -29,23 +29,13 @@ class Partner extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function partner_locations()
+    public function locations()
     {
         return $this->hasMany(PartnerLocation::class);
     }
 
-    public function partner_lists()
+    public function priceList()
     {
-        return $this->belongsToMany(PartnerList::class, 'partner_partner_list');
-    }
-
-    public function items()
-    {
-        return $this->belongsToMany(Item::class, 'price_lists')->withPivot('net_price');
-    }
-
-    public function orders()
-    {
-        return $this->hasMany(Order::class);
+        return $this->belongsTo(PriceList::class);
     }
 }

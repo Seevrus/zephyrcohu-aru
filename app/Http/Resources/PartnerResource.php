@@ -14,7 +14,7 @@ class PartnerResource extends JsonResource
      */
     public function toArray($request)
     {
-        $partner = [
+        return [
             'id' => $this->id,
             'code' => $this->code,
             'siteCode' => $this->site_code,
@@ -26,12 +26,10 @@ class PartnerResource extends JsonResource
             'bankAccount' => $this->bank_account,
             'phoneNumber' => $this->phone_number,
             'email' => $this->email,
-            'locations' => new PartnerLocationCollection($this->partner_locations),
-            'priceList' => new PriceListItemCollection($this->items),
+            'locations' => new PartnerLocationCollection($this->locations),
+            'priceList' => new PriceListResource($this->whenLoaded('priceList')),
             'createdAt' => $this->created_at->toDateTimeString(),
             'updatedAt' => $this->updated_at->toDateTimeString(),
         ];
-
-        return $partner;
     }
 }

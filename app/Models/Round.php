@@ -11,15 +11,13 @@ class Round extends Model
 
     protected $fillable = [
         'company_id',
-        'agent_code',
-        'agent_name',
-        'store_code',
-        'store_name',
+        'user_id',
+        'store_id',
         'partner_list_id',
-        'partner_list_name',
-        'round_at',
         'last_serial_number',
         'year_code',
+        'round_started',
+        'round_finished',
     ];
 
     public function company()

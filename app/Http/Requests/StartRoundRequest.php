@@ -3,8 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Hash;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class StartRoundRequest extends FormRequest
 {
@@ -15,10 +13,6 @@ class StartRoundRequest extends FormRequest
      */
     public function authorize()
     {
-        if (!Hash::check(request()->header('X-Device-Id'), $this->user()->device_id)) {
-            throw new UnauthorizedHttpException(random_bytes(32));
-        }
-
         return true;
     }
 
@@ -30,13 +24,10 @@ class StartRoundRequest extends FormRequest
     public function rules()
     {
         return [
-            'agentCode' => 'required|string|size:2',
-            'agentName' => 'required|string|max:50',
-            'storeCode' => 'required|string|size:4',
-            'storeName' => 'required|string|max:255',
-            'partnerListId' => 'required|integer|min:0',
-            'partnerListName' => 'required|string|max:255',
-            'roundAt' => 'required|date_format:Y-m-d',
+            'data' => 'required|array',
+            'data.storeId' => 'required|integer|min:0|exists:stores,id',
+            'data.partnerListId' => 'required|integer|min:0|exists:partner_lists,id',
+            'data.roundStarted' => 'required|date_format:Y-m-d',
         ];
     }
 }

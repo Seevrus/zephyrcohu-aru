@@ -1,4 +1,4 @@
-const fontSizes = {
+export const fontSizes = {
   title: 28,
   subtitle: 24,
   body: 20,
@@ -6,5 +6,3 @@ const fontSizes = {
   footer: 18,
   smallText: 16,
 };
-
-export default fontSizes;

@@ -2,30 +2,101 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreStoreRequest;
+use App\Http\Requests\CreateStoresRequest;
+use App\Http\Requests\UpdateStoreRequest;
 use App\Http\Resources\StoreCollection;
-use App\Http\Resources\StoreDetailsResource;
-use App\Models\Item;
+use App\Http\Resources\StoreResource;
 use App\Models\Log;
 use App\Models\Store;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class StoreController extends Controller
 {
-    /**
-     * View the list of stores
-     */
-    public function viewAll(Request $request)
+    public function create_stores(CreateStoresRequest $request)
     {
         try {
-            $this->authorize('viewAll', Store::class);
-
             $sender = $request->user();
-            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $company = $sender->company;
+
+            // additional validations
+            $existingMainStore = Store::firstWhere(['type' => 'P']);
+            $numberOfPrimaryStoresInRequest = 0;
+            foreach ($request->data as $storeRequest) {
+                if ($storeRequest['type'] === 'P') {
+                    if ($existingMainStore) {
+                        return response([
+                            'message' => 'Primary Store already exists ('.$existingMainStore->id.').',
+                        ], 422);
+                    }
+
+                    $numberOfPrimaryStoresInRequest += 1;
+                    if ($numberOfPrimaryStoresInRequest > 1) {
+                        return response([
+                            'message' => 'Request can contain only one primary store.',
+                        ], 422);
+                    }
+                }
+            }
+
+            $newStores = [];
+            foreach ($request->data as $storeRequest) {
+                $existingStore = Store::where([
+                    'code' => $storeRequest['code'],
+                ])->first();
+
+                if ($existingStore) {
+                    continue;
+                }
+
+                $store = Store::create([
+                    'company_id' => $company->id,
+                    'code' => $storeRequest['code'],
+                    'name' => $storeRequest['name'],
+                    'type' => $storeRequest['type'],
+                    'state' => 'I',
+                    'first_available_serial_number' => $storeRequest['firstAvailableSerialNumber'] ?? null,
+                    'last_available_serial_number' => $storeRequest['lastAvailableSerialNumber'] ?? null,
+                    'year_code' => $storeRequest['yearCode'] ?? null,
+                ]);
+
+                array_push($newStores, $store);
+            }
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Created '.count($newStores).' stores',
+                'occured_at' => Carbon::now(),
+            ]);
+
+            return new StoreCollection($newStores);
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) {
+                throw $e;
+            }
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function view_all(Request $request)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = Carbon::now();
             $sender->save();
 
             $stores = $sender->company->stores()->get();
@@ -34,8 +105,8 @@ class StoreController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $stores->count() . ' stores',
-                'occured_at' => date('Y-m-d H:i:s'),
+                'action' => 'Accessed '.$stores->count().' stores',
+                'occured_at' => Carbon::now(),
             ]);
 
             return new StoreCollection($stores);
@@ -43,105 +114,137 @@ class StoreController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
-            throw new UnprocessableEntityHttpException();
+            throw new BadRequestException();
         }
     }
 
-    /**
-     * Detailed view of a store
-     */
-    public function view(string $code)
-    {
-        try {
-            $store = Store::firstWhere('code', $code);
-            $this->authorize('view', $store);
-
-            $sender = request()->user();
-            $sender->last_active = date('Y-m-d H:i:s');
-            $sender->save();
-
-            $stores_with_items = $store->load('expirations.item');
-
-            Log::insert([
-                'company_id' => $sender->company_id,
-                'user_id' => $sender->id,
-                'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed store ' . $store->id,
-                'occured_at' => date('Y-m-d H:i:s'),
-            ]);
-
-            return new StoreDetailsResource($stores_with_items);
-        } catch (Exception $e) {
-            if (
-                $e instanceof UnauthorizedHttpException
-                || $e instanceof AuthorizationException
-            ) throw $e;
-
-            throw new UnprocessableEntityHttpException();
-        }
-    }
-
-    /**
-     * Delete previous stores and saves the new data.
-     *
-     * @param  \Illuminate\Http\StoreStoreRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreStoreRequest $request)
+    public function view(Request $request, int $id)
     {
         try {
             $sender = $request->user();
-            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->last_active = Carbon::now();
             $sender->save();
 
-            $company = $sender->company;
-            $company->stores()->delete();
-
-            foreach ($request->data as $storeRequest) {
-                $store = Store::create([
-                    'company_id' => $company->id,
-                    'code' => $storeRequest['code'],
-                    'name' => $storeRequest['name'],
-                    'first_available_serial_number' => $storeRequest['firstAvailableSerialNumber'],
-                    'last_available_serial_number' => $storeRequest['lastAvailableSerialNumber'],
-                    'year_code' => $storeRequest['yearCode'],
-                ]);
-
-                foreach ($storeRequest['items'] as $itemRequest) {
-                    $item = Item::firstWhere('article_number', $itemRequest['articleNumber']);
-
-                    foreach ($itemRequest['expirations'] as $itemExpirationRequest) {
-                        $formattedExpiration = date('Y-m-t', strtotime($itemExpirationRequest['expiresAt']));
-
-                        $expiration = $item->expirations()->where('expires_at', $formattedExpiration)->first();
-
-                        if (!$expiration) {
-                            $expiration = $item->expirations()->create([
-                                'expires_at' => $formattedExpiration,
-                            ]);
-                        }
-
-                        $store->expirations()->attach($expiration, ['quantity' => $itemExpirationRequest['quantity']]);
-                    }
-                }
-            }
+            $store = $sender->company->stores()->with('expirations')->findOrFail($id);
 
             Log::insert([
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Stored ' . count($request->data) . ' stores',
-                'occured_at' => date('Y-m-d H:i:s'),
+                'action' => 'Accessed store id '.$id,
+                'occured_at' => Carbon::now(),
+            ]);
+
+            return new StoreResource($store);
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
+            ) {
+                throw $e;
+            }
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function update_store(UpdateStoreRequest $request, int $id)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $store = $sender->company->stores()->findOrFail($id);
+
+            $this->authorize('update', $store);
+
+            if ($store->state !== 'I') {
+                return response([
+                    'message' => 'Store is currently not idle.',
+                ], 422);
+            }
+
+            if ($request->data['code'] ?? null) {
+                $store->code = $request->data['code'];
+            }
+            if ($request->data['name'] ?? null) {
+                $store->name = $request->data['name'];
+            }
+            if ($request->data['firstAvailableSerialNumber'] ?? null) {
+                $store->first_available_serial_number = $request->data['firstAvailableSerialNumber'];
+            }
+            if ($request->data['lastAvailableSerialNumber'] ?? null) {
+                $store->last_available_serial_number = $request->data['lastAvailableSerialNumber'];
+            }
+            if ($request->data['yearCode'] ?? null) {
+                $store->year_code = $request->data['yearCode'];
+            }
+
+            $store->save();
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Updated store '.$store->id,
+                'occured_at' => Carbon::now(),
+            ]);
+
+            return new StoreResource($store->refresh());
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+                || $e instanceof ModelNotFoundException
+            ) {
+                throw $e;
+            }
+
+            throw new BadRequestException();
+        }
+    }
+
+    public function remove_store(int $id)
+    {
+        try {
+            $sender = request()->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $store = $sender->company->stores()->findOrFail($id);
+            $this->authorize('remove', $store);
+
+            if ($store->state !== 'I') {
+                return response([
+                    'message' => 'Store is currently not idle.',
+                ], 422);
+            }
+
+            $store->delete();
+
+            Log::insert([
+                'company_id' => $sender->company_id,
+                'user_id' => $sender->id,
+                'token_id' => $sender->currentAccessToken()->id,
+                'action' => 'Removed store '.$store->id,
+                'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+                || $e instanceof ModelNotFoundException
+            ) {
+                throw $e;
+            }
 
-            throw new UnprocessableEntityHttpException();
+            throw new BadRequestException();
         }
     }
 }

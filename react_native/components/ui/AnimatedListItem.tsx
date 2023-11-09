@@ -1,30 +1,32 @@
 import { not } from 'ramda';
-import { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type PropsWithChildren,
+  type ReactNode,
+} from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import colors from '../../constants/colors';
-import fontSizes from '../../constants/fontSizes';
+import { colors } from '../../constants/colors';
+import { fontSizes } from '../../constants/fontSizes';
 
 type AnimatedListItemProps = {
-  id: number;
+  id: string | number;
   expandedInitially: boolean;
-  title: string;
+  title: string | ReactNode;
   height: number;
   backgroundColor: string;
-  onSelect?: (id: number) => void;
+  onSelect?: (id: string | number) => void;
 };
 
-const defaultProps = {
-  onSelect: () => {},
-};
-
-export default function AnimatedListItem({
+export function AnimatedListItem({
   id,
   expandedInitially,
   title,
   height,
   backgroundColor,
-  onSelect,
+  onSelect = () => {},
   children,
 }: PropsWithChildren<AnimatedListItemProps>) {
   const [expanded, setExpanded] = useState<boolean>(expandedInitially);
@@ -51,10 +53,17 @@ export default function AnimatedListItem({
     <View style={styles.container}>
       <Pressable
         onPress={itemPressHandler}
-        style={({ pressed }) => [styles.item, backgroundStyle, pressed && { opacity: 0.75 }]}
+        style={({ pressed }) => [
+          styles.item,
+          backgroundStyle,
+          pressed && { opacity: 0.75 },
+        ]}
       >
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>{title}</Text>
+          {typeof title === 'string' && (
+            <Text style={styles.title}>{title}</Text>
+          )}
+          {typeof title !== 'string' && title}
         </View>
       </Pressable>
       <Animated.View style={[styles.childContainer, { height: heightValue }]}>
@@ -63,30 +72,29 @@ export default function AnimatedListItem({
     </View>
   );
 }
-AnimatedListItem.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
+  childContainer: {
+    backgroundColor: colors.neutral,
+  },
   container: {
+    borderRadius: 10,
     flex: 1,
     marginHorizontal: '7%',
     marginVertical: 10,
-    borderRadius: 10,
     overflow: 'hidden',
   },
   item: {
     justifyContent: 'flex-start',
   },
-  titleContainer: {
-    padding: 10,
-  },
   title: {
-    color: 'white',
-    fontFamily: 'Muli',
+    color: colors.white,
+    fontFamily: 'Nunito-Sans',
     fontSize: fontSizes.body,
     fontWeight: 'bold',
     marginRight: '18%',
   },
-  childContainer: {
-    backgroundColor: colors.neutral,
+  titleContainer: {
+    padding: 10,
   },
 });

@@ -1,57 +1,144 @@
+import { useNetInfo } from '@react-native-community/netinfo';
 import * as Print from 'expo-print';
+import { useAtom } from 'jotai';
+import { isNotNil, prop } from 'ramda';
+import { useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useAppDispatch } from '../../store/hooks';
-import { PartnerDetails } from '../../store/partners-slice/partners-slice-types';
-import { increaseOriginalCopiesPrinted } from '../../store/round-slice/round-api-actions';
-import { ReceiptRequestItem } from '../../store/round-slice/round-slice-types';
-
-import colors from '../../constants/colors';
-import fontSizes from '../../constants/fontSizes';
-import Button from '../ui/Button';
-import createReceiptHtml from './createReceiptHtml';
+import { useUpdateReceipts } from '../../api/mutations/useUpdateReceipts';
+import { useCheckToken } from '../../api/queries/useCheckToken';
+import { type Partner } from '../../api/response-mappers/mapPartnersResponse';
+import { receiptsAtom, type ContextReceipt } from '../../atoms/receipts';
+import { colors } from '../../constants/colors';
+import { fontSizes } from '../../constants/fontSizes';
+import { Loading } from '../Loading';
+import { Button } from '../ui/Button';
+import { createReceiptHtml } from './createReceiptHtml';
 
 type PrintSectionProps = {
-  partner: PartnerDetails;
-  receipt: ReceiptRequestItem;
+  partner: Partner | undefined;
+  receipt: ContextReceipt | undefined;
 };
 
-export default function PrintSection({ partner, receipt }: PrintSectionProps) {
-  const dispatch = useAppDispatch();
-  const canPrintOriginalCopy = partner.invoiceCopies > receipt.originalCopiesPrinted;
+export function PrintSection({ partner, receipt }: PrintSectionProps) {
+  const { isInternetReachable } = useNetInfo();
+  const { data: user, isPending: isUserPending } = useCheckToken();
+
+  const {
+    mutateAsync: updateReceiptsAPI,
+    isPending: isUpdateReceiptsAPIPending,
+  } = useUpdateReceipts();
+
+  const [receipts, setReceipts] = useAtom(receiptsAtom);
+
+  const updateNumberOfPrintedCopies = useCallback(async () => {
+    if (!!partner && !!receipt) {
+      let updatedReceipts = receipts.map((rcpt) => {
+        if (rcpt.id !== receipt.id) {
+          return rcpt;
+        }
+
+        return {
+          ...rcpt,
+          originalCopiesPrinted: (rcpt.originalCopiesPrinted ?? 0) + 1,
+          shouldBeUpdated: true,
+        };
+      });
+
+      if (isInternetReachable === true) {
+        const updateReceiptsResult = await updateReceiptsAPI(
+          updatedReceipts.filter(prop('shouldBeUpdated'))
+        );
+
+        updatedReceipts = receipts.map((receipt) => {
+          const updateReceiptResult = updateReceiptsResult.find(
+            (result) => result.id === receipt.id
+          );
+
+          if (!updateReceiptResult) {
+            return receipt;
+          }
+
+          return {
+            ...receipt,
+            originalCopiesPrinted: updateReceiptResult.originalCopiesPrinted,
+            shouldBeUpdated: false,
+          };
+        });
+      }
+
+      await setReceipts(updatedReceipts);
+    }
+  }, [
+    isInternetReachable,
+    partner,
+    receipt,
+    receipts,
+    setReceipts,
+    updateReceiptsAPI,
+  ]);
+
+  const [updateProgressMessage, setUpdateProgressMessage] =
+    useState<string>('');
+
+  const canPrint = !!user && !!receipt;
+
+  const canPrintOriginalCopy =
+    (partner?.invoiceCopies ?? 0) > (receipt?.originalCopiesPrinted ?? 0);
+
+  const printButtonVariant = canPrint ? 'ok' : 'disabled';
 
   const printButtonHandler = async () => {
-    await Print.printAsync({
-      html: createReceiptHtml({ receipt, partner }),
-    });
+    if (canPrintOriginalCopy && isNotNil(receipt)) {
+      setUpdateProgressMessage('Számla frissítése folyamatban...');
+      await updateNumberOfPrintedCopies();
+      setUpdateProgressMessage('');
+    }
 
-    if (canPrintOriginalCopy) {
-      dispatch(increaseOriginalCopiesPrinted(receipt.serialNumber));
+    if (!!partner && !!receipt) {
+      await Print.printAsync({
+        html: createReceiptHtml({
+          user,
+          receipt,
+          partner,
+        }),
+      });
     }
   };
+
+  if (isUserPending || isUpdateReceiptsAPIPending || !!updateProgressMessage) {
+    return <Loading message={updateProgressMessage} />;
+  }
 
   return (
     <>
       <Text style={styles.text}>
         Az eredeti számla formátuma:{' '}
         <Text style={styles.numberOfReceipts}>
-          {partner.invoiceType === 'E' ? 'elektronikus' : 'papír alapú'}
+          {partner?.invoiceType === 'E' ? 'elektronikus' : 'papír alapú'}
         </Text>
         .
       </Text>
       {canPrintOriginalCopy ? (
         <Text style={styles.text}>
-          A számlát <Text style={styles.numberOfReceipts}>{partner.invoiceCopies}</Text> eredeti
-          példányban van lehetőség kinyomtatni. Ebből eddig{' '}
-          <Text style={styles.numberOfReceipts}>{receipt.originalCopiesPrinted}</Text> példány
-          került nyomtatásra.
+          A számlát{' '}
+          <Text style={styles.numberOfReceipts}>{partner?.invoiceCopies}</Text>{' '}
+          eredeti példányban van lehetőség kinyomtatni. Ebből eddig{' '}
+          <Text style={styles.numberOfReceipts}>
+            {receipt?.originalCopiesPrinted}
+          </Text>{' '}
+          példány került nyomtatásra.
         </Text>
       ) : (
-        <Text style={styles.text}>Az alábbi gombra kattintva számlamásolat nyomtatható.</Text>
+        <Text style={styles.text}>
+          Az alábbi gombra kattintva számlamásolat nyomtatható.
+        </Text>
       )}
       <View style={styles.buttonContainer}>
-        <Button variant="ok" onPress={printButtonHandler}>
-          {canPrintOriginalCopy ? 'Eredeti példány nyomtatása' : 'Másolat nyomtatása'}
+        <Button variant={printButtonVariant} onPress={printButtonHandler}>
+          {canPrintOriginalCopy
+            ? 'Eredeti példány nyomtatása'
+            : 'Másolat nyomtatása'}
         </Button>
       </View>
     </>
@@ -59,18 +146,18 @@ export default function PrintSection({ partner, receipt }: PrintSectionProps) {
 }
 
 const styles = StyleSheet.create({
-  text: {
-    color: 'white',
-    fontFamily: 'Muli',
-    fontSize: fontSizes.body,
+  buttonContainer: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 50,
   },
   numberOfReceipts: {
     color: colors.ok,
     fontWeight: '700',
   },
-  buttonContainer: {
-    marginTop: 50,
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  text: {
+    color: colors.white,
+    fontFamily: 'Nunito-Sans',
+    fontSize: fontSizes.body,
   },
 });

@@ -1,20 +1,29 @@
-import { ReactNode } from 'react';
-import { GestureResponderEvent, Pressable, StyleSheet, Text, View } from 'react-native';
+import { type PropsWithChildren } from 'react';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  type GestureResponderEvent,
+} from 'react-native';
 
-import colors from '../../constants/colors';
-import fontSizes from '../../constants/fontSizes';
+import { colors } from '../../constants/colors';
+import { fontSizes } from '../../constants/fontSizes';
 
 type ButtonProps = {
   variant: 'neutral' | 'ok' | 'warning' | 'error' | 'disabled';
   onPress?: (event: GestureResponderEvent) => void;
-  children: ReactNode;
 };
 
 const defaultProps = {
   onPress: () => {},
 };
 
-export default function Button({ variant, onPress, children }: ButtonProps) {
+export function Button({
+  variant,
+  onPress,
+  children,
+}: PropsWithChildren<ButtonProps>) {
   const buttonVariants = {
     neutral: colors.neutral,
     ok: colors.ok,
@@ -32,6 +41,7 @@ export default function Button({ variant, onPress, children }: ButtonProps) {
     ok: colors.okRipple,
     warning: colors.warningRipple,
     error: colors.errorRipple,
+    disabled: undefined,
   };
 
   return (
@@ -50,21 +60,21 @@ export default function Button({ variant, onPress, children }: ButtonProps) {
 Button.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
-  container: {
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
   buttonContainer: {
-    height: 50,
-    elevation: 2,
-    justifyContent: 'center',
     alignItems: 'center',
+    elevation: 2,
+    height: 50,
+    justifyContent: 'center',
     paddingHorizontal: 10,
   },
   buttonText: {
-    color: 'white',
-    fontFamily: 'Muli',
+    color: colors.white,
+    fontFamily: 'Nunito-Sans',
     fontSize: fontSizes.input,
     fontWeight: 'bold',
+  },
+  container: {
+    borderRadius: 8,
+    overflow: 'hidden',
   },
 });

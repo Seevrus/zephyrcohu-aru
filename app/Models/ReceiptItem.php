@@ -10,6 +10,7 @@ class ReceiptItem extends Model
     use HasFactory;
 
     protected $fillable = [
+        'item_id',
         'code',
         'cn_code',
         'article_number',

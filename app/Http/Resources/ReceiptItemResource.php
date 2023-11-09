@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ReceiptItemResource extends JsonResource
@@ -15,13 +16,15 @@ class ReceiptItemResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id' => $this->item_id,
             'code' => $this->code,
             'CNCode' => $this->cn_code,
             'articleNumber' => $this->article_number,
-            'expiresAt' => date('Y-m', strtotime($this->expires_at)),
+            'expiresAt' => Carbon::createFromFormat('Y-m-d H:i:s', $this->expires_at),
             'name' => $this->name,
             'quantity' => $this->quantity,
             'unitName' => $this->unit_name,
+            'discountName' => $this->discount_name,
             'netPrice' => $this->net_price,
             'netAmount' => $this->net_amount,
             'vatRate' => $this->vat_rate,

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ReceiptResource extends JsonResource
@@ -16,11 +17,11 @@ class ReceiptResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'companyId' => $this->company_id,
             'companyCode' => $this->company_code,
+            'partnerId' => $this->partner_id,
             'partnerCode' => $this->partner_code,
             'partnerSiteCode' => $this->partner_site_code,
-            'CISerialNumber' => $this->ci_serial_number,
-            'CIYearCode' => $this->ci_year_code,
             'serialNumber' => $this->serial_number,
             'yearCode' => $this->year_code,
             'originalCopiesPrinted' => $this->original_copies_printed,
@@ -54,19 +55,24 @@ class ReceiptResource extends JsonResource
             'fulfillmentDate' => $this->fulfillment_date,
             'invoiceType' => $this->invoice_type,
             'paidDate' => $this->paid_date,
-            'agent' => [
-                'code' => $this->agent_code,
-                'name' => $this->agent_name,
-                'phoneNumber' => $this->agent_phone_number,
+            'user' => [
+                'id' => $this->user_id,
+                'code' => $this->user_code,
+                'name' => $this->user_name,
+                'phoneNumber' => $this->user_phone_number,
             ],
-            'items' => new ReceiptItemCollection($this->receipt_items),
+            'items' => new ReceiptItemCollection($this->items),
+            'otherItems' => new ReceiptOtherItemCollection($this->otherItems),
             'quantity' => $this->quantity,
             'netAmount' => $this->net_amount,
             'vatAmount' => $this->vat_amount,
             'grossAmount' => $this->gross_amount,
-            'vatAmounts' => new VatAmountCollection($this->vat_amounts),
+            'vatAmounts' => new VatAmountCollection($this->vatAmounts),
             'roundAmount' => $this->round_amount,
             'roundedAmount' => $this->rounded_amount,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
+            'lastDownloadedAt' => $this->last_downloaded_at ? Carbon::createFromFormat('Y-m-d H:i:s', $this->last_downloaded_at) : null,
         ];
     }
 }

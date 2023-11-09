@@ -18,6 +18,7 @@ class ItemResource extends JsonResource
             'id' => $this->id,
             'CNCode' => $this->cn_code,
             'articleNumber' => $this->article_number,
+            'barcode' => $this->barcode,
             'name' => $this->name,
             'shortName' => $this->short_name,
             'category' => $this->category,
@@ -25,8 +26,10 @@ class ItemResource extends JsonResource
             'productCatalogCode' => $this->product_catalog_code,
             'vatRate' => $this->vat_rate,
             'netPrice' => $this->net_price,
-            'createdAt' => $this->created_at->toDateTimeString(),
-            'updatedAt' => $this->updated_at->toDateTimeString(),
+            'expirations' => new ExpirationCollection($this->expirations),
+            'discounts' => new DiscountCollection($this->discounts),
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
         ];
     }
 }

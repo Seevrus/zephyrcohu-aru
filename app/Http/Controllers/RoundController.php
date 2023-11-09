@@ -8,84 +8,94 @@ use App\Http\Resources\RoundCollection;
 use App\Http\Resources\RoundResource;
 use App\Models\Log;
 use App\Models\Round;
+use App\Models\Store;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
-
-function deleteOldRounds()
-{
-    DB::table('rounds')->where(
-        'round_at',
-        '<',
-        date('Y-m-d H:i:s', time() - 7 * 24 * 60 * 60)
-    )->delete();
-}
 
 class RoundController extends Controller
 {
-    /**
-     * View the list of rounds
-     */
-    public function viewAll(Request $request)
+    public function view_all(Request $request)
     {
         try {
-            $this->authorize('viewAll', Round::class);
-
             $sender = $request->user();
-            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->last_active = Carbon::now();
             $sender->save();
-            deleteOldRounds();
 
-            $rounds = $sender->company->rounds;
+            if (in_array('I', $sender->roleList())) {
+                $rounds = $sender->company->rounds;
+            } else {
+                $rounds = $sender->company->rounds()->where(['user_id' => $sender->id])->latest()->take(10)->get();
+            }
 
             return new RoundCollection($rounds);
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
-            throw new UnprocessableEntityHttpException();
+            throw new BadRequestException();
         }
     }
 
-    /**
-     * Start a new round
-     */
-    public function start(StartRoundRequest $request)
+    public function start_round(StartRoundRequest $request)
     {
         try {
             $sender = $request->user();
-            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->last_active = Carbon::now();
             $sender->save();
-            deleteOldRounds();
 
-            $company_id = $sender->company_id;
+            $company = $sender->company;
+            $storeId = $request->data['storeId'];
 
-            $round = Round::updateOrCreate(
-                [
-                    'company_id' => $company_id,
-                    'agent_code' => $request->agentCode,
-                    'store_code' => $request->storeCode,
-                    'partner_list_id' => $request->partnerListId,
-                    'round_at' => $request->roundAt,
-                ],
-                [
-                    'agent_name' => $request->agentName,
-                    'store_name' => $request->storeName,
-                    'partner_list_name' => $request->partnerListName,
-                ]
-            );
+            if ($sender->rounds()->whereNull('round_finished')->first()) {
+                return response([
+                    'message' => 'User has already started a round.',
+                ], 422);
+            }
+
+            $store = Store::findOrFail($storeId);
+
+            if ($store->type === 'P') {
+                return response([
+                    'message' => 'Cannot start round with the primary store.',
+                ], 422);
+            }
+
+            if ($store->state !== 'I') {
+                return response([
+                    'message' => 'Store is not idle.',
+                ], 422);
+            }
+
+            $store->state = 'R';
+            $store->user_id = $sender->id;
+            $store->save();
+
+            $sender->state = 'R';
+            $sender->save();
+
+            $round = Round::create([
+                'company_id' => $company->id,
+                'user_id' => $sender->id,
+                'store_id' => $storeId,
+                'partner_list_id' => $request->data['partnerListId'],
+                'round_started' => Carbon::createFromFormat('Y-m-d', $request->data['roundStarted'])->setHour(6)->setMinute(0)->setSecond(0),
+            ]);
 
             Log::insert([
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
                 'action' => 'Started round ' . $round->id,
-                'occured_at' => date('Y-m-d H:i:s'),
+                'occured_at' => Carbon::now(),
             ]);
 
             return new RoundResource($round);
@@ -93,36 +103,50 @@ class RoundController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+            ) {
+                throw $e;
+            }
 
-            throw new UnprocessableEntityHttpException();
+            throw new BadRequestException();
         }
     }
 
-    /**
-     * Finish a round
-     */
-    public function finish(FinishRoundRequest $request)
+    public function finish_round(FinishRoundRequest $request)
     {
         try {
             $sender = $request->user();
-            $sender->last_active = date('Y-m-d H:i:s');
+            $sender->last_active = Carbon::now();
             $sender->save();
-            deleteOldRounds();
 
-            $round = $sender->company->rounds->find($request->id);
+            $round = $sender->rounds()->findOrFail($request->data['roundId']);
+
+            if ($round->round_finished) {
+                return response([
+                    'message' => 'Round has already been finished.',
+                ], 422);
+            }
+
+            $store = $sender->store;
+            $store->state = 'I';
+            $store->user_id = null;
+            $store->first_available_serial_number = $request->data['lastSerialNumber'] + 1;
+            $store->save();
+
+            $sender->state = 'I';
+            $sender->save();
 
             $round->update([
-                'last_serial_number' => $request->lastSerialNumber,
-                'year_code' => $request->yearCode,
+                'last_serial_number' => $request->data['lastSerialNumber'],
+                'year_code' => $request->data['yearCode'],
+                'round_finished' => Carbon::now(),
             ]);
 
             Log::insert([
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Finished round ' . $request->id,
-                'occured_at' => date('Y-m-d H:i:s'),
+                'action' => 'Finished round ' . $round->id,
+                'occured_at' => Carbon::now(),
             ]);
 
             return new RoundResource($round);
@@ -130,9 +154,12 @@ class RoundController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) throw $e;
+                || $e instanceof ModelNotFoundException
+            ) {
+                throw $e;
+            }
 
-            throw new UnprocessableEntityHttpException();
+            throw new BadRequestException();
         }
     }
 }

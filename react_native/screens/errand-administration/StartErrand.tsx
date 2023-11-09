@@ -1,202 +1,175 @@
-import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import {
+  DateTimePickerAndroid,
+  type DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
 import { useNetInfo } from '@react-native-community/netinfo';
+import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { isNil } from 'ramda';
-import { useCallback, useEffect, useState } from 'react';
+import { useAtom, useAtomValue } from 'jotai';
+import { isNotNil } from 'ramda';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import useToken from '../../hooks/useToken';
+import { useStartRound } from '../../api/mutations/useStartRound';
+import { fetchActiveRound } from '../../api/queries/useActiveRound';
+import { fetchItems } from '../../api/queries/useItems';
+import { fetchOtherItems } from '../../api/queries/useOtherItems';
+import {
+  fetchPartnerLists,
+  usePartnerLists,
+} from '../../api/queries/usePartnerLists';
+import { fetchPartners } from '../../api/queries/usePartners';
+import { fetchPriceLists } from '../../api/queries/usePriceLists';
+import { fetchStoreDetails } from '../../api/queries/useStoreDetails';
+import { fetchStores, useStores } from '../../api/queries/useStores';
+import { selectedStoreAtom } from '../../atoms/storage';
+import { tokenAtom } from '../../atoms/token';
+import { Loading } from '../../components/Loading';
+import { Container } from '../../components/container/Container';
+import { ErrorCard } from '../../components/info-cards/ErrorCard';
+import { Button } from '../../components/ui/Button';
+import { Dropdown } from '../../components/ui/Dropdown';
+import { Input } from '../../components/ui/Input';
+import { type StartErrandProps } from '../../navigators/screen-types';
 
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { fetchPartnerList, fetchPartners } from '../../store/partners-slice/partners-api-actions';
-import { fetchStore, fetchStoreList } from '../../store/stores-slice/stores-api-actions';
-
-import ErrorCard from '../../components/info-cards/ErrorCard';
-import Loading from '../../components/Loading';
-import Button from '../../components/ui/Button';
-import Dropdown from '../../components/ui/Dropdown';
-import Input from '../../components/ui/Input';
-import colors from '../../constants/colors';
-import { fetchAgents } from '../../store/agents-slice/agents-api-actions';
-import { fetchItems } from '../../store/items-slice/items-api-actions';
-import { endRoundApi, initializeRound } from '../../store/round-slice/round-api-actions';
-import { StartErrandProps } from '../screen-types';
-
-export default function StartErrand({ navigation }: StartErrandProps) {
-  const dispatch = useAppDispatch();
+function SuspendedStartErrand({ navigation }: StartErrandProps) {
   const { isInternetReachable } = useNetInfo();
-  const { deviceId, token, credentialsAvailable, tokenStorageError } = useToken();
+  const {
+    data: partnerLists,
+    isFetching: isPartnersListsFetching,
+    isPending: isPartnerListsPending,
+  } = usePartnerLists();
+  const queryClient = useQueryClient();
+  const { mutateAsync: startRound, isPending: isStartRoundPending } =
+    useStartRound();
+  const {
+    data: stores,
+    isFetching: isStoresFetching,
+    isPending: isStoresPending,
+  } = useStores();
 
-  const agents = useAppSelector((state) => state.agents.data);
-  const currentAgentId = useAppSelector((state) => state.round.agentId);
-  const [agentId, setAgentId] = useState<number>(currentAgentId ?? -1);
+  const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
+  const [, setSelectedStore] = useAtom(selectedStoreAtom);
 
-  const storeList = useAppSelector((state) => state.stores.storeList);
-  const currentStoreId = useAppSelector((state) => state.round.storeId);
-  const [storeId, setStoreId] = useState<number>(currentStoreId ?? -1);
+  const [storeId, setStoreId] = useState<number | null>(null);
+  const [partnerListId, setPartnerListId] = useState<number | null>(null);
+  const [date, setDate] = useState<Date>(new Date());
 
-  const partnerLists = useAppSelector((state) => state.partners.partnerLists);
-  const currentPartnerListId = useAppSelector((state) => state.round.partnerListId);
-  const [partnerListId, setPartnerListId] = useState<number>(currentPartnerListId ?? -1);
-
-  const currentDate = useAppSelector((state) => state.round.date);
-  const [date, setDate] = useState<Date>(new Date(currentDate ?? Date.now()));
-
-  const roundId = useAppSelector((state) => state.round.roundId);
-
-  const [loading, setLoading] = useState<boolean>(true);
-  const [fetching, setFetching] = useState<boolean>(false);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
-  const [roundDataError, setRoundDataError] = useState<string>('');
-  const [confirmRoundError, setConfirmRoundError] = useState<string>('');
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    if (isInternetReachable === false || tokenStorageError) {
+    if (isInternetReachable === false || isTokenExpired || isPasswordExpired) {
       navigation.pop();
     }
-  }, [isInternetReachable, navigation, tokenStorageError]);
-
-  const fetchAgentsData = useCallback(async () => {
-    try {
-      await dispatch(fetchAgents({ deviceId, token }));
-    } catch (err) {
-      setRoundDataError(err.message);
-    }
-  }, [deviceId, dispatch, token]);
-
-  const fetchStoreData = useCallback(async () => {
-    try {
-      await dispatch(fetchStoreList({ deviceId, token }));
-    } catch (err) {
-      setRoundDataError(err.message);
-    }
-  }, [deviceId, dispatch, token]);
-
-  const fetchPartnerListData = useCallback(async () => {
-    try {
-      await dispatch(fetchPartnerList({ deviceId, token }));
-    } catch (err) {
-      setRoundDataError(err.message);
-    }
-  }, [deviceId, dispatch, token]);
-
-  const fetchErrandData = async () => {
-    setFetching(true);
-    await fetchAgentsData();
-    await fetchStoreData();
-    await fetchPartnerListData();
-    setFetching(false);
-  };
-
-  useEffect(() => {
-    if (credentialsAvailable && !roundDataError && isNil(agents)) {
-      fetchAgentsData();
-    }
-  }, [agents, credentialsAvailable, fetchAgentsData, roundDataError]);
-
-  useEffect(() => {
-    if (credentialsAvailable && !roundDataError && isNil(storeList)) {
-      fetchStoreData();
-    }
-  }, [credentialsAvailable, fetchStoreData, roundDataError, storeList]);
-
-  useEffect(() => {
-    if (credentialsAvailable && !roundDataError && isNil(partnerLists)) {
-      fetchPartnerListData();
-    }
-  }, [credentialsAvailable, fetchPartnerListData, partnerLists, roundDataError]);
-
-  useEffect(() => {
-    if (agents && storeList && partnerLists) {
-      setLoading(false);
-    }
-  }, [agents, partnerLists, storeList]);
+  }, [isInternetReachable, isPasswordExpired, isTokenExpired, navigation]);
 
   const confirmRoundHandler = async () => {
-    setLoading(true);
-    setLoadingMessage('Körindításhoz szükséges adatok letöltése folyamatban...');
+    if (isNotNil(storeId) && isNotNil(partnerListId) && token) {
+      setLoadingMessage('Körindítás folyamatban...');
 
-    const selectedAgent = agents.find((a) => a.id === agentId);
-    const selectedStore = storeList.find((s) => s.id === storeId);
-    const selectedPartnerList = partnerLists.find((pl) => pl.id === partnerListId);
-
-    try {
-      if (roundId) {
-        await dispatch(endRoundApi({ deviceId, token, roundId }));
-      }
-
-      await dispatch(fetchItems({ deviceId, token }));
-      await dispatch(fetchPartners({ deviceId, token }));
-      const fetchedStore = await dispatch(
-        fetchStore({ deviceId, token, code: selectedStore.code })
-      ).unwrap();
-
-      await dispatch(
-        initializeRound({
-          deviceId,
-          token,
-          agentId,
-          agentCode: selectedAgent.code,
-          agentName: selectedAgent.name,
-          storeId: selectedStore.id,
-          storeCode: selectedStore.code,
-          storeName: selectedStore.name,
+      try {
+        await startRound({
+          storeId,
           partnerListId,
-          partnerListName: selectedPartnerList.name,
-          date: format(date, 'yyyy-MM-dd'),
-          nextAvailableSerialNumber: fetchedStore.firstAvailableSerialNumber,
-        })
-      );
+          roundStarted: format(date, 'yyyy-MM-dd'),
+        });
 
-      navigation.pop();
-    } catch (err) {
-      setLoading(false);
-      setLoadingMessage('');
-      setConfirmRoundError(err.message);
+        await queryClient.fetchQuery({
+          queryKey: ['active-round'],
+          queryFn: fetchActiveRound(token),
+        });
+        await queryClient.invalidateQueries({
+          queryKey: ['check-token'],
+          refetchType: 'all',
+        });
+        await queryClient.fetchQuery({
+          queryKey: ['items'],
+          queryFn: fetchItems(token),
+        });
+        await queryClient.fetchQuery({
+          queryKey: ['other-items'],
+          queryFn: fetchOtherItems(token),
+        });
+        await queryClient.fetchQuery({
+          queryKey: ['partner-lists'],
+          queryFn: fetchPartnerLists(token),
+        });
+        await queryClient.fetchQuery({
+          queryKey: ['partners'],
+          queryFn: fetchPartners(token),
+        });
+        await queryClient.fetchQuery({
+          queryKey: ['price-lists'],
+          queryFn: fetchPriceLists(token),
+        });
+
+        const storeDetails = await queryClient.fetchQuery({
+          queryKey: ['store-details', storeId],
+          queryFn: fetchStoreDetails(token, storeId),
+        });
+        await setSelectedStore(storeDetails);
+
+        await queryClient.fetchQuery({
+          queryKey: ['stores'],
+          queryFn: fetchStores(token),
+        });
+
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Index' }],
+        });
+      } catch (error) {
+        setLoadingMessage('');
+        setError(error.message);
+      }
     }
   };
 
-  if (fetching || loading) {
-    return <Loading message={loadingMessage} />;
-  }
+  const refreshHandler = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
+    queryClient.invalidateQueries({ queryKey: ['stores'] });
+  }, [queryClient]);
 
-  const mapItemToOption = (item) => ({
-    key: String(item.id),
-    value: item.name,
-  });
+  const displayStores = useMemo(
+    () =>
+      (stores ?? [])
+        .filter((store) => store.type !== 'P' && store.state === 'I')
+        .map((store) => ({
+          key: String(store.id),
+          value: store.name,
+        }))
+        .sort((storeA, storeB) =>
+          storeA.value.localeCompare(storeB.value, 'HU-hu')
+        ),
+    [stores]
+  );
 
-  const displayNames = (agents ?? []).map(mapItemToOption);
-  const defaultName = displayNames.find((option) => +option.key === currentAgentId);
-
-  const selectAgentHandler = (key: string) => {
-    setAgentId(+key);
-  };
-
-  const displayStores = (storeList ?? []).map((store) => ({
-    key: String(store.id),
-    value: store.name,
-  }));
-  const defaultStore = displayStores.find((option) => +option.key === currentStoreId);
-
-  const selectStoreHandler = (key: string) => {
+  const selectStoreHandler = useCallback((key: string) => {
     setStoreId(+key);
-  };
+  }, []);
 
-  const displayPartners = (partnerLists ?? []).map((partnerList) => ({
-    key: String(partnerList.id),
-    value: partnerList.name,
-  }));
-  const defaultPartners = displayPartners.find((option) => +option.key === currentPartnerListId);
+  const displayPartnerLists = useMemo(
+    () =>
+      (partnerLists ?? []).map((partnerList) => ({
+        key: String(partnerList.id),
+        value: partnerList.name,
+      })),
+    [partnerLists]
+  );
 
-  const selectPartnerListHandler = (key: string) => {
+  const selectPartnerListHandler = useCallback((key: string) => {
     setPartnerListId(+key);
-  };
+  }, []);
 
-  const selectDateHandler = (_, selectedDate: Date) => {
-    setDate(selectedDate);
-  };
+  const selectDateHandler = useCallback(
+    (_: DateTimePickerEvent, selectedDate: Date | undefined) => {
+      setDate(selectedDate ?? new Date());
+    },
+    []
+  );
 
-  const showDatePicker = () => {
+  const showDatePicker = useCallback(() => {
     DateTimePickerAndroid.open({
       value: date,
       onChange: selectDateHandler,
@@ -204,86 +177,90 @@ export default function StartErrand({ navigation }: StartErrandProps) {
       is24Hour: true,
       minimumDate: new Date(),
     });
-  };
+  }, [date, selectDateHandler]);
 
-  const confirmButtonvariant =
-    agentId > -1 && storeId > -1 && partnerListId > -1 ? 'ok' : 'disabled';
+  const confirmButtonVariant =
+    isNotNil(storeId) && isNotNil(partnerListId) && !!token ? 'ok' : 'disabled';
+
+  if (
+    isPartnersListsFetching ||
+    isPartnerListsPending ||
+    isStartRoundPending ||
+    isStoresFetching ||
+    isStoresPending ||
+    !!loadingMessage
+  ) {
+    return <Loading message={loadingMessage} />;
+  }
 
   return (
-    <View style={styles.container}>
-      {!!roundDataError && (
+    <Container>
+      {!!error && (
         <View style={styles.error}>
-          <ErrorCard>{roundDataError}</ErrorCard>
+          <ErrorCard>{error}</ErrorCard>
         </View>
       )}
-      {!!confirmRoundError && (
-        <View style={styles.error}>
-          <ErrorCard>{confirmRoundError}</ErrorCard>
-        </View>
-      )}
-      <View style={styles.inputContainer}>
-        <Dropdown
-          label="Felhasználó"
-          data={displayNames}
-          defaultOption={defaultName}
-          onSelect={selectAgentHandler}
-        />
-      </View>
       <View style={styles.inputContainer}>
         <Dropdown
           label="Raktár"
           data={displayStores}
-          defaultOption={defaultStore}
           onSelect={selectStoreHandler}
         />
       </View>
       <View style={styles.inputContainer}>
         <Dropdown
           label="Partnerlista"
-          data={displayPartners}
-          defaultOption={defaultPartners}
+          data={displayPartnerLists}
           onSelect={selectPartnerListHandler}
         />
       </View>
       <View style={styles.dateContainer}>
         <Pressable onPress={showDatePicker} style={styles.dateInnerContainer}>
-          <Input label="Dátum" config={{ editable: false, value: format(date, 'yyyy-MM-dd') }} />
+          <Input
+            label="Dátum"
+            variant="input"
+            config={{ editable: false, value: format(date, 'yyyy-MM-dd') }}
+          />
         </Pressable>
       </View>
       <View style={styles.buttonContainer}>
-        <Button variant={confirmButtonvariant} onPress={confirmRoundHandler}>
+        <Button variant={confirmButtonVariant} onPress={confirmRoundHandler}>
           Kör indítása
         </Button>
-        <Button variant="warning" onPress={fetchErrandData}>
+        <Button variant="warning" onPress={refreshHandler}>
           Adatok frissítése
         </Button>
       </View>
-    </View>
+    </Container>
+  );
+}
+
+export function StartErrand(props: StartErrandProps) {
+  return (
+    <Suspense fallback={<Container />}>
+      <SuspendedStartErrand {...props} />
+    </Suspense>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
+  buttonContainer: {
+    alignItems: 'center',
+    height: 150,
+    justifyContent: 'space-between',
+    marginTop: 30,
+  },
+  dateContainer: {
+    marginHorizontal: '7%',
+    marginTop: 20,
+  },
+  dateInnerContainer: {
+    height: 90,
   },
   error: {
     marginTop: 30,
   },
   inputContainer: {
     marginTop: 20,
-  },
-  dateContainer: {
-    marginTop: 20,
-    marginHorizontal: '7%',
-  },
-  dateInnerContainer: {
-    height: 90,
-  },
-  buttonContainer: {
-    marginTop: 30,
-    height: 150,
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
 });

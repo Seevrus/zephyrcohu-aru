@@ -46,7 +46,7 @@ return [
     |
     */
 
-    'expiration' => null,
+    'expiration' => 1500,
 
     /*
     |--------------------------------------------------------------------------
@@ -63,5 +63,7 @@ return [
         'verify_csrf_token' => App\Http\Middleware\VerifyCsrfToken::class,
         'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
     ],
+
+    'token_prefix' => 'boreal_',
 
 ];

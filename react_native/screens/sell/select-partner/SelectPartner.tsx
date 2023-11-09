@@ -1,118 +1,106 @@
-import { filter, pipe, take } from 'ramda';
-import { useEffect, useState } from 'react';
-import { FlatList, ListRenderItem, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useNetInfo } from '@react-native-community/netinfo';
+import { Suspense } from 'react';
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  View,
+  type ListRenderItem,
+  type ListRenderItemInfo,
+} from 'react-native';
 
-import usePartners from '../../../hooks/usePartners';
+import { type Partners } from '../../../api/response-mappers/mapPartnersResponse';
+import { Loading } from '../../../components/Loading';
+import { Container } from '../../../components/container/Container';
+import { Input } from '../../../components/ui/Input';
+import { type SelectPartnerProps } from '../../../navigators/screen-types';
+import { Selection } from './Selection';
+import { useSelectPartnerData } from './useSelectPartnerData';
 
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { PartnerDetails } from '../../../store/partners-slice/partners-slice-types';
-import { roundActions } from '../../../store/round-slice/round-slice';
+function SuspendedSelectPartner({ route, navigation }: SelectPartnerProps) {
+  const { isInternetReachable } = useNetInfo();
 
-import Input from '../../../components/ui/Input';
-import colors from '../../../constants/colors';
-import { SelectPartnerProps } from '../../screen-types';
-import Selection from './Selection';
+  const {
+    isLoading,
+    onSearch,
+    partners,
+    selectedPartner,
+    selectPartnerHandler,
+    confirmPartnerHandler,
+  } = useSelectPartnerData({ route, navigation });
 
-const NUM_PARTNERS_SHOWN = 10;
-
-export default function SelectPartnerFromAll({ route, navigation }: SelectPartnerProps) {
-  const dispatch = useAppDispatch();
-
-  const partnerListType = route.params.partners;
-  const partners = usePartners(partnerListType);
-  const [partnersShown, setPartnersShown] = useState<PartnerDetails[]>(
-    take<PartnerDetails>(NUM_PARTNERS_SHOWN, partners)
-  );
-
-  const currentReceipt = useAppSelector((state) => state.round.currentReceipt);
-  const lastPartnerId = useAppSelector((state) => state.round.currentReceipt?.partnerId);
-  const [selectedPartnerId, setSelectedPartnerId] = useState(lastPartnerId);
-
-  useEffect(() => {
-    if (!currentReceipt) {
-      dispatch(roundActions.addNewReceipt());
-    }
-  }, [currentReceipt, dispatch]);
-
-  const searchInputHandler = (inputValue: string) => {
-    setPartnersShown(
-      pipe(
-        filter<PartnerDetails>((partner) => {
-          const needle = inputValue.toLocaleLowerCase();
-          const haystack = Object.values(partner.locations)
-            .map((location) => `${location.name}${location.city}${location.address}`)
-            .join('');
-
-          return haystack.toLocaleLowerCase().includes(needle);
-        }),
-        take<PartnerDetails>(NUM_PARTNERS_SHOWN)
-      )(partners)
-    );
-  };
-
-  const selectPartnerHandler = (id: number) => {
-    setSelectedPartnerId(id);
-  };
-
-  const confirmPartnerHandler = (id: number) => {
-    dispatch(roundActions.selectPartner(id));
-    navigation.navigate('SelectItems');
-  };
-
-  const renderPartner: ListRenderItem<PartnerDetails> = (
-    info: ListRenderItemInfo<PartnerDetails>
+  const renderPartner: ListRenderItem<Partners[number]> = (
+    info: ListRenderItemInfo<Partners[number]>
   ) => (
     <Selection
-      info={info}
-      selected={info.item.id === selectedPartnerId}
+      item={info.item}
+      selected={info.item.id === selectedPartner?.id}
       onSelect={selectPartnerHandler}
       onConfirmSelection={confirmPartnerHandler}
     />
   );
 
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
-    <View style={styles.container}>
+    <Container>
       <View style={styles.headerContainer}>
         <View style={styles.searchInputContainer}>
           <Input
             label="Keresés"
             labelPosition="left"
             config={{
-              onChangeText: searchInputHandler,
+              onChangeText: onSearch,
             }}
           />
+          <Pressable
+            onPress={() => {
+              if (isInternetReachable) {
+                navigation.navigate('SearchPartnerNavForm');
+              } else {
+                navigation.navigate('AddPartnerForm');
+              }
+            }}
+          >
+            <MaterialIcons name="add-circle-outline" size={40} color="white" />
+          </Pressable>
         </View>
       </View>
       <View style={styles.listContainer}>
         <FlatList
-          data={partnersShown}
+          key="select-partner-list"
+          data={partners}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderPartner}
         />
       </View>
-    </View>
+    </Container>
+  );
+}
+
+export function SelectPartner(props: SelectPartnerProps) {
+  return (
+    <Suspense fallback={<Container />}>
+      <SuspendedSelectPartner {...props} />
+    </Suspense>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
   headerContainer: {
     height: 65,
     marginVertical: 10,
   },
-  buttonContainer: {
-    flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  searchInputContainer: {
-    flex: 1,
-    marginHorizontal: '7%',
-  },
   listContainer: {
     flex: 1,
+  },
+  searchInputContainer: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    marginHorizontal: '7%',
   },
 });

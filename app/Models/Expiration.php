@@ -11,6 +11,7 @@ class Expiration extends Model
 
     protected $fillable = [
         'item_id',
+        'barcode',
         'expires_at',
     ];
 
@@ -21,6 +22,10 @@ class Expiration extends Model
 
     public function stores()
     {
-        return $this->belongsToMany(Store::class)->withPivot('quantity');
+        return $this
+            ->belongsToMany(Store::class)
+            ->using(ExpirationStore::class)
+            ->withPivot('quantity')
+            ->withTimestamps();
     }
 }

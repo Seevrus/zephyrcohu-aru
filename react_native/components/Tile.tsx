@@ -1,18 +1,18 @@
-import { FC } from 'react';
+import { type FunctionComponent } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { SvgProps } from 'react-native-svg';
 
-import colors from '../constants/colors';
-import fontSizes from '../constants/fontSizes';
+import { colors } from '../constants/colors';
+import { fontSizes } from '../constants/fontSizes';
 
-type TileProps = {
+export type TileT = {
+  id: string;
   title: string;
-  Icon: FC<SvgProps>;
+  Icon: FunctionComponent;
   variant: 'ok' | 'warning' | 'disabled' | 'neutral';
   onPress: () => void;
 };
 
-export default function Tile({ title, Icon, variant, onPress }: TileProps) {
+export function Tile({ id, title, Icon, variant, onPress }: TileT) {
   const tileColors = {
     ok: colors.ok,
     warning: colors.warning,
@@ -32,7 +32,7 @@ export default function Tile({ title, Icon, variant, onPress }: TileProps) {
   };
 
   return (
-    <View style={styles.container}>
+    <View key={id} style={styles.container}>
       <Pressable
         style={[styles.tile, tileStyle]}
         android_ripple={{
@@ -40,11 +40,11 @@ export default function Tile({ title, Icon, variant, onPress }: TileProps) {
         }}
         onPress={onPress}
       >
+        <View style={styles.iconContainer}>
+          <Icon />
+        </View>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>{title}</Text>
-        </View>
-        <View style={styles.iconContainer}>
-          <Icon width={80} height={80} color="white" />
         </View>
       </Pressable>
     </View>
@@ -53,32 +53,34 @@ export default function Tile({ title, Icon, variant, onPress }: TileProps) {
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
+    borderRadius: 10,
     flex: 1,
-    height: 180,
     justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 40,
-    borderRadius: 10,
-  },
-  tile: {
-    flex: 1,
-    width: '80%',
-    paddingTop: 20,
-    borderRadius: 10,
-  },
-  titleContainer: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  title: {
-    color: 'white',
-    fontFamily: 'Muli',
-    fontSize: fontSizes.body,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    marginTop: 20,
   },
   iconContainer: {
-    flex: 1.5,
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    width: '20%',
+  },
+  tile: {
+    borderRadius: 10,
+    flex: 1,
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    width: '90%',
+  },
+  title: {
+    color: colors.white,
+    fontFamily: 'Nunito-Sans',
+    fontSize: fontSizes.body,
+    fontWeight: 'bold',
+  },
+  titleContainer: {
+    alignItems: 'flex-start',
+    flex: 1,
+    justifyContent: 'center',
   },
 });
