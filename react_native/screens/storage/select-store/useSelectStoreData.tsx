@@ -1,5 +1,6 @@
 import { FontAwesome5 } from '@expo/vector-icons';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAtom, useAtomValue } from 'jotai';
 import {
   allPass,
@@ -23,7 +24,6 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSelectStore } from '../../../api/mutations/useSelectStore';
 import { fetchStoreDetails } from '../../../api/queries/useStoreDetails';
 import { useStores } from '../../../api/queries/useStores';
-import { queryClient } from '../../../api/queryClient';
 import { type StoreDetailsResponseData } from '../../../api/response-types/StoreDetailsResponseType';
 import { type StoreType } from '../../../api/response-types/common/StoreType';
 import {
@@ -38,6 +38,8 @@ import { type StackParams } from '../../../navigators/screen-types';
 export function useSelectStoreData(
   navigation: NativeStackNavigationProp<StackParams, 'SelectStore', undefined>
 ) {
+  const queryClient = useQueryClient();
+
   const { mutateAsync: selectStore } = useSelectStore();
   const { isPending: isStoresPending, data: stores } = useStores();
   const { token } = useAtomValue(tokenAtom);
@@ -113,6 +115,7 @@ export function useSelectStoreData(
   }, [
     navigation,
     primaryStoreId,
+    queryClient,
     selectStore,
     selectedStoreId,
     setPrimaryStore,

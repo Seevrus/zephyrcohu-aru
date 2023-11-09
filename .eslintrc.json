@@ -1,6 +1,7 @@
 {
   "env": {
     "es2024": true,
+    "jest/globals": true,
     "node": true,
     "react-native/react-native": true
   },
@@ -169,6 +170,11 @@
         "sonarjs/no-duplicate-string": "off",
         "unicorn/numeric-separators-style": "off"
       }
+    },
+    {
+      "files": ["**/*.test.ts?(x)"],
+      "extends": ["plugin:jest/recommended", "plugin:testing-library/react"],
+      "plugins": ["jest", "testing-library"]
     }
   ]
 }

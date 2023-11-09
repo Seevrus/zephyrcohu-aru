@@ -4,13 +4,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addEventListener as NetInfoAddEventListener } from '@react-native-community/netinfo';
 import { NavigationContainer } from '@react-navigation/native';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
-import { onlineManager } from '@tanstack/react-query';
+import {
+  QueryClient,
+  keepPreviousData,
+  onlineManager,
+} from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import { Provider as AtomsProvider } from 'jotai/react';
 
-import { queryClient } from './react_native/api/queryClient';
 import { Loading } from './react_native/components/Loading';
 import { MainStack } from './react_native/navigators/MainStack';
 
@@ -23,6 +26,16 @@ onlineManager.setEventListener((setOnline) =>
     setOnline(!!state.isConnected);
   })
 );
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      placeholderData: keepPreviousData,
+      staleTime: Number.POSITIVE_INFINITY,
+      retry: 3,
+    },
+  },
+});
 
 export default function App() {
   const [fontsLoaded] = useFonts({
