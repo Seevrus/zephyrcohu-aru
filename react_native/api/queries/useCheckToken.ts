@@ -36,6 +36,17 @@ export function useCheckToken() {
           }
         );
 
+        const isPasswordExpired = response.data.token.abilities.includes(
+          'password' as never
+        );
+
+        if (isPasswordExpired) {
+          await setStoredToken(async (prevToken) => ({
+            ...(await prevToken),
+            isPasswordExpired: true,
+          }));
+        }
+
         return mapCheckTokenResponse(response.data);
       } catch (error) {
         if (isAxiosError(error)) {

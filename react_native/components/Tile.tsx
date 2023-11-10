@@ -32,8 +32,9 @@ export function Tile({ id, title, Icon, variant, onPress }: TileT) {
   };
 
   return (
-    <View key={id} style={styles.container}>
+    <View key={id} testID="tile" style={styles.container}>
       <Pressable
+        testID="tile-button"
         style={[styles.tile, tileStyle]}
         android_ripple={{
           color: rippleColors[variant],

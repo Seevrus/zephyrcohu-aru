@@ -174,7 +174,11 @@
     {
       "files": ["**/*.test.ts?(x)"],
       "extends": ["plugin:jest/recommended", "plugin:testing-library/react"],
-      "plugins": ["jest", "testing-library"]
+      "plugins": ["jest", "testing-library"],
+      "rules": {
+        "react-hooks/rules-of-hooks": "off",
+        "sonarjs/no-duplicate-string": "off"
+      }
     }
   ]
 }
