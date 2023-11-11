@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NunitoSans_400Regular } from '@expo-google-fonts/nunito-sans';
 import { Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto';
 import { NavigationContainer } from '@react-navigation/native';
@@ -12,10 +13,15 @@ import {
 } from '@tanstack/react-query';
 import { render } from '@testing-library/react-native';
 import { useFonts } from 'expo-font';
+import { type WritableAtom } from 'jotai';
+import { Provider as AtomsProvider } from 'jotai/react';
+import { useHydrateAtoms } from 'jotai/utils';
 import { type HttpHandler } from 'msw';
 import { setupServer } from 'msw/node';
-import { type FunctionComponent } from 'react';
+import { mergeRight, values } from 'ramda';
+import { type FunctionComponent, type PropsWithChildren } from 'react';
 
+import { receiptsAtom } from '../atoms/receipts';
 import { Loading } from '../components/Loading';
 import { colors } from '../constants/colors';
 import { fontSizes } from '../constants/fontSizes';
@@ -31,13 +37,41 @@ export const testQueryClient = new QueryClient({
   },
 });
 
+type InitialAtomValue = [WritableAtom<any, any, any>, any];
+export type InitialAtoms = Record<string, InitialAtomValue>;
+
+function HydrateAtoms({
+  initialValues,
+  children,
+}: PropsWithChildren<{ initialValues?: InitialAtomValue[] }>) {
+  useHydrateAtoms(initialValues ?? []);
+  return children;
+}
+
 export function renderStack(
   screens: {
     name: string;
     component: FunctionComponent;
     options?: NativeStackNavigationOptions;
-  }[]
+  }[],
+  initialAtoms?: InitialAtoms
 ) {
+  const defaultAtoms: InitialAtoms = { receipts: [receiptsAtom, []] };
+  const initialAtomValues = values(
+    mergeRight(defaultAtoms, initialAtoms ?? {})
+  );
+
+  function TestAtomsProvider({
+    initialValues,
+    children,
+  }: PropsWithChildren<{ initialValues?: InitialAtomValue[] }>) {
+    return (
+      <AtomsProvider>
+        <HydrateAtoms initialValues={initialValues}>{children}</HydrateAtoms>
+      </AtomsProvider>
+    );
+  }
+
   const Stack = createNativeStackNavigator();
 
   function TestApp() {
@@ -53,30 +87,32 @@ export function renderStack(
 
     return (
       <QueryClientProvider client={testQueryClient}>
-        <NavigationContainer>
-          <Stack.Navigator
-            screenOptions={{
-              headerStyle: {
-                backgroundColor: colors.neutral,
-              },
-              headerTitleAlign: 'center',
-              headerTitleStyle: {
-                fontFamily: 'Roboto-Bold',
-                fontSize: fontSizes.title,
-              },
-              headerTintColor: 'white',
-            }}
-          >
-            {screens.map((screen) => (
-              <Stack.Screen
-                key={screen.name}
-                name={screen.name}
-                component={screen.component}
-                options={screen.options}
-              />
-            ))}
-          </Stack.Navigator>
-        </NavigationContainer>
+        <TestAtomsProvider initialValues={initialAtomValues}>
+          <NavigationContainer>
+            <Stack.Navigator
+              screenOptions={{
+                headerStyle: {
+                  backgroundColor: colors.neutral,
+                },
+                headerTitleAlign: 'center',
+                headerTitleStyle: {
+                  fontFamily: 'Roboto-Bold',
+                  fontSize: fontSizes.title,
+                },
+                headerTintColor: 'white',
+              }}
+            >
+              {screens.map((screen) => (
+                <Stack.Screen
+                  key={screen.name}
+                  name={screen.name}
+                  component={screen.component}
+                  options={screen.options}
+                />
+              ))}
+            </Stack.Navigator>
+          </NavigationContainer>
+        </TestAtomsProvider>
       </QueryClientProvider>
     );
   }

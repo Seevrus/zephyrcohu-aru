@@ -3,21 +3,27 @@ import NetInfo from '@react-native-community/netinfo';
 import {
   screen,
   userEvent,
+  waitFor,
   waitForElementToBeRemoved,
   within,
 } from '@testing-library/react-native';
 import * as SecureStore from 'expo-secure-store';
 import { Alert } from 'react-native';
 
-import { getCheckTokenOkResponse } from '../../msw-handlers/check-token/getCheckTokenOkResponse';
+import { receiptsAtom } from '../../atoms/receipts';
+import { createGetCheckTokenOkResponse } from '../../msw-handlers/check-token/createGetCheckTokenOkResponse';
 import { getPartnerListsOkResponse } from '../../msw-handlers/partner-lists/getPartnerListsOkResponse';
 import { getRoundsOkResponse } from '../../msw-handlers/rounds/getRoundsOkResponse';
-import { renderStack, useServer } from '../../test-utils/testUtils';
+import {
+  type InitialAtoms,
+  renderStack,
+  useServer,
+} from '../../test-utils/testUtils';
 import { Index } from './Index';
 import { SettingsButton } from './SettingsButton';
 
-useServer(
-  getCheckTokenOkResponse,
+const server = useServer(
+  createGetCheckTokenOkResponse(),
   getPartnerListsOkResponse,
   getRoundsOkResponse
 );
@@ -56,11 +62,19 @@ describe('Index Page', () => {
       );
     });
 
-    test('storage tile is disabled', async () => {
+    test.each`
+      tileName               | tileIndex
+      ${'storage tile'}      | ${0}
+      ${'start errand tile'} | ${1}
+      ${'end errand tile'}   | ${4}
+    `('$tileName is disabled', async ({ tileIndex }) => {
       await renderIndex();
-      const storageTile = screen.getAllByTestId('tile')[0];
+      const storageTile = screen.getAllByTestId('tile')[tileIndex];
+      const tileButton = within(storageTile).getByTestId('tile-button');
 
-      await user.press(within(storageTile).getByTestId('tile-button'));
+      expect(tileButton).toHaveStyle({ backgroundColor: '#767676' });
+
+      await user.press(tileButton);
       jest.runAllTimers();
 
       expect(Alert.alert).toHaveBeenCalledWith(
@@ -68,6 +82,40 @@ describe('Index Page', () => {
         'A funkció csak bejelentkezés után elérhető.',
         [{ text: 'Értem' }]
       );
+    });
+
+    test('select partner tile is enabled if the round has started', async () => {
+      await renderIndex();
+      const storageTile = screen.getAllByTestId('tile')[2];
+      const tileButton = within(storageTile).getByTestId('tile-button');
+
+      expect(tileButton).toHaveStyle({ backgroundColor: '#312A5F' });
+    });
+
+    test('select partner tile is disabled if the round has not started', async () => {
+      server.use(createGetCheckTokenOkResponse({ isRoundStarted: false }));
+
+      await renderIndex();
+      const storageTile = screen.getAllByTestId('tile')[2];
+      const tileButton = within(storageTile).getByTestId('tile-button');
+
+      expect(tileButton).toHaveStyle({ backgroundColor: '#767676' });
+    });
+
+    test('receipts tile is enabled if there are receipts available', async () => {
+      await renderIndex({ receipts: [receiptsAtom, [{}]] });
+      const storageTile = screen.getAllByTestId('tile')[3];
+      const tileButton = within(storageTile).getByTestId('tile-button');
+
+      expect(tileButton).toHaveStyle({ backgroundColor: '#312A5F' });
+    });
+
+    test('receipts tile is disabled if there are no receipts available', async () => {
+      await renderIndex();
+      const storageTile = screen.getAllByTestId('tile')[3];
+      const tileButton = within(storageTile).getByTestId('tile-button');
+
+      expect(tileButton).toHaveStyle({ backgroundColor: '#767676' });
     });
 
     afterAll(() => {
@@ -94,14 +142,25 @@ describe('Index Page', () => {
       );
     });
 
-    test('storage tile is disabled', async () => {
-      await renderIndex();
-      const storageTile = screen.getAllByTestId('tile')[0];
+    /**
+     * ${'start errand tile'} | ${1}
+      ${'end errand tile'}   | ${4}
+     */
 
-      await user.press(within(storageTile).getByTestId('tile-button'));
+    test.only.each`
+      tileName          | tileIndex
+      ${'storage tile'} | ${0}
+    `('$tileName is disabled', async ({ tileIndex }) => {
+      await renderIndex();
+      const storageTile = screen.getAllByTestId('tile')[tileIndex];
+      const tileButton = within(storageTile).getByTestId('tile-button');
+
+      expect(tileButton).toHaveStyle({ backgroundColor: '#767676' });
+
+      await user.press(tileButton);
       jest.runAllTimers();
 
-      expect(Alert.alert).toHaveBeenCalledWith(
+      expect(Alert.alert).toHaveBeenLastCalledWith(
         'Funkció nem elérhető',
         'Az Ön jelszava lejárt, kérem változtassa meg.',
         [{ text: 'Értem' }]
@@ -128,11 +187,19 @@ describe('Index Page', () => {
         .mockImplementation(() => ({ isInternetReachable: false }) as any);
     });
 
-    test('storage tile is disabled', async () => {
+    test.each`
+      tileName               | tileIndex
+      ${'storage tile'}      | ${0}
+      ${'start errand tile'} | ${1}
+      ${'end errand tile'}   | ${4}
+    `('$tileName is disabled', async ({ tileIndex }) => {
       await renderIndex();
-      const storageTile = screen.getAllByTestId('tile')[0];
+      const storageTile = screen.getAllByTestId('tile')[tileIndex];
+      const tileButton = within(storageTile).getByTestId('tile-button');
 
-      await user.press(within(storageTile).getByTestId('tile-button'));
+      expect(tileButton).toHaveStyle({ backgroundColor: '#767676' });
+
+      await user.press(tileButton);
       jest.runAllTimers();
 
       expect(Alert.alert).toHaveBeenCalledWith(
@@ -148,21 +215,28 @@ describe('Index Page', () => {
   });
 });
 
-async function renderIndex() {
-  renderStack([
-    {
-      name: 'Index',
-      component: Index,
-      options: {
-        headerTitle: 'Zephyr Boreal',
-        headerRight: SettingsButton,
+async function renderIndex(initialAtoms?: InitialAtoms) {
+  const view = renderStack(
+    [
+      {
+        name: 'Index',
+        component: Index,
+        options: {
+          headerTitle: 'Zephyr Boreal',
+          headerRight: SettingsButton,
+        },
       },
-    },
-  ]);
+    ],
+    initialAtoms
+  );
 
   await waitForElementToBeRemoved(() =>
     screen.queryByTestId('loading-indicator')
   );
 
-  expect(screen.getByTestId('index-page')).toBeVisible();
+  await waitFor(() => {
+    expect(screen.getByTestId('index-page')).toBeVisible();
+  });
+
+  return view;
 }

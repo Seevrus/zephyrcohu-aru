@@ -3,14 +3,19 @@ import { http, HttpResponse } from 'msw';
 
 import env from '../../env.json';
 
-export const getCheckTokenOkResponse = http.get(
-  `${env.api_url}/users/check-token`,
-  () =>
+export function createGetCheckTokenOkResponse({
+  isRoundStarted = true,
+  isPasswordExpired = false,
+}: {
+  isPasswordExpired?: boolean;
+  isRoundStarted?: boolean;
+} = {}) {
+  return http.get(`${env.api_url}/users/check-token`, () =>
     HttpResponse.json({
       id: 1,
       code: '01',
       userName: 'fteszt',
-      state: 'R',
+      state: isRoundStarted ? 'R' : 'I',
       name: 'Teszt Felhasználó',
       company: {
         id: 1,
@@ -29,15 +34,16 @@ export const getCheckTokenOkResponse = http.get(
       },
       phoneNumber: '+36301234567',
       roles: ['A'],
-      storeId: null,
+      storeId: isRoundStarted ? 2 : null,
       createdAt: '2023-05-18T20:18:34.000000Z',
       updatedAt: '2023-11-10T20:18:06.000000Z',
       lastActive: '2023-11-10T20:18:06.000000Z',
       token: {
         tokenType: 'Bearer',
         accessToken: 'abc123',
-        abilities: ['AM', 'I', 'A'],
+        abilities: isPasswordExpired ? ['password'] : ['AM', 'I', 'A'],
         expiresAt: addDays(new Date(), 1),
       },
     })
-);
+  );
+}
