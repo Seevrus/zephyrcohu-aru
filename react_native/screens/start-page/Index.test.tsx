@@ -8,7 +8,6 @@ import {
   within,
 } from '@testing-library/react-native';
 import * as SecureStore from 'expo-secure-store';
-import { Alert } from 'react-native';
 
 import { receiptsAtom } from '../../atoms/receipts';
 import { createGetCheckTokenOkResponse } from '../../msw-handlers/check-token/createGetCheckTokenOkResponse';
@@ -30,10 +29,6 @@ const server = useServer(
 
 describe('Index Page', () => {
   const user = userEvent.setup();
-
-  beforeAll(() => {
-    jest.spyOn(Alert, 'alert');
-  });
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -80,10 +75,12 @@ describe('Index Page', () => {
       await user.press(tileButton);
       jest.runAllTimers();
 
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Funkció nem elérhető',
-        'A funkció csak bejelentkezés után elérhető.',
-        [{ text: 'Értem' }]
+      expect(screen.getByTestId('boreal-alert')).toBeVisible();
+      expect(screen.getByTestId('boreal-alert-title')).toHaveTextContent(
+        'Funkció nem elérhető'
+      );
+      expect(screen.getByTestId('boreal-alert-message')).toHaveTextContent(
+        'A funkció csak bejelentkezés után elérhető.'
       );
     });
 
@@ -155,10 +152,12 @@ describe('Index Page', () => {
       await user.press(tileButton);
       jest.runAllTimers();
 
-      expect(Alert.alert).toHaveBeenLastCalledWith(
-        'Funkció nem elérhető',
-        'Az Ön jelszava lejárt, kérem változtassa meg.',
-        [{ text: 'Értem' }]
+      expect(screen.getByTestId('boreal-alert')).toBeVisible();
+      expect(screen.getByTestId('boreal-alert-title')).toHaveTextContent(
+        'Funkció nem elérhető'
+      );
+      expect(screen.getByTestId('boreal-alert-message')).toHaveTextContent(
+        'Az Ön jelszava lejárt, kérem változtassa meg.'
       );
     });
 
@@ -239,10 +238,12 @@ describe('Index Page', () => {
       await user.press(tileButton);
       jest.runAllTimers();
 
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Funkció nem elérhető',
-        'A funkció csak online érhető el.',
-        [{ text: 'Értem' }]
+      expect(screen.getByTestId('boreal-alert')).toBeVisible();
+      expect(screen.getByTestId('boreal-alert-title')).toHaveTextContent(
+        'Funkció nem elérhető'
+      );
+      expect(screen.getByTestId('boreal-alert-message')).toHaveTextContent(
+        'A funkció csak online érhető el.'
       );
     });
 

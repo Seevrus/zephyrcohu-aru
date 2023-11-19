@@ -4,13 +4,14 @@ import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAtomValue } from 'jotai';
 import { loadable } from 'jotai/utils';
 import { isNil } from 'ramda';
-import { Alert } from 'react-native';
+import { useState } from 'react';
 
 import { useCheckToken } from '../api/queries/useCheckToken';
 import { numberOfReceiptsAtom } from '../atoms/receipts';
 import { selectedPartnerAtom } from '../atoms/sellFlow';
 import { isStorageSavedToApiAtom } from '../atoms/storageFlow';
 import { type TileT } from '../components/Tile';
+import { type AlertButton } from '../components/alert/Alert';
 import { PartnerList, type StackParams } from '../navigators/screen-types';
 import { useIsSelectedPartnerForSellOnCurrentPartnerList } from './sell/useIsSelectedPartnerForSellOnCurrentPartnerList';
 import {
@@ -24,7 +25,19 @@ import {
 
 const FEATURE_NOT_AVAILABLE = 'Funkció nem elérhető';
 
-export function useTiles(): TileT[] | undefined {
+type UseTilesData = {
+  alert: {
+    isAlertVisible: boolean;
+    alertTitle: string;
+    alertMessage: string | null;
+    cancelButton: AlertButton | null;
+    confirmButton: AlertButton | null;
+    onBackdropPress: () => void;
+  };
+  tiles: TileT[];
+};
+
+export function useTiles(): UseTilesData | undefined {
   const { data: user } = useCheckToken();
   const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
   const numberOfReceipts = useAtomValue(loadable(numberOfReceiptsAtom));
@@ -47,108 +60,159 @@ export function useTiles(): TileT[] | undefined {
     endErrandTileMessage,
   } = useTileStates();
 
+  const [isAlertVisible, setIsAlertVisible] = useState<boolean>(false);
+  const [alertTitle, setAlertTitle] = useState<string>('');
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [cancelButton, setCancelButton] = useState<AlertButton | null>(null);
+  const [confirmButton, setConfirmButton] = useState<AlertButton | null>(null);
+
+  const resetAlertHandler = () => {
+    setIsAlertVisible(false);
+    setAlertTitle('');
+    setAlertMessage(null);
+    setCancelButton(null);
+    setConfirmButton(null);
+  };
+
   if (numberOfReceipts.state === 'hasData') {
-    return [
-      {
-        id: 't0',
-        title: 'Rakodás',
-        Icon: () => <FontAwesome5 name="truck" size={40} color="white" />,
-        variant: storageTileState,
-        onPress: () => {
-          if (storageTileState === StorageTileState.Disabled) {
-            Alert.alert(FEATURE_NOT_AVAILABLE, storageTileMessage, [
-              { text: 'Értem' },
-            ]);
-          } else if (isNil(user?.storeId)) {
-            navigation.navigate('SelectStore');
-          } else if (isStorageSavedToApi) {
-            navigation.navigate('StorageChangesSummary');
-          } else {
-            navigation.navigate('SelectItemsFromStore');
-          }
-        },
+    return {
+      alert: {
+        isAlertVisible,
+        alertTitle,
+        alertMessage,
+        cancelButton,
+        confirmButton,
+        onBackdropPress: resetAlertHandler,
       },
-      {
-        id: 't1',
-        title: 'Kör indítása',
-        Icon: () => <FontAwesome5 name="play" size={40} color="white" />,
-        variant: startErrandTileState,
-        onPress: () => {
-          if (startErrandTileState === StartErrandTileState.Disabled) {
-            Alert.alert(FEATURE_NOT_AVAILABLE, startErrandTileMessage, [
-              { text: 'Értem' },
-            ]);
-          } else {
-            navigation.navigate('StartErrand');
-          }
+      tiles: [
+        {
+          id: 't0',
+          title: 'Rakodás',
+          Icon: () => <FontAwesome5 name="truck" size={40} color="white" />,
+          variant: storageTileState,
+          onPress: () => {
+            if (storageTileState === StorageTileState.Disabled) {
+              setIsAlertVisible(true);
+              setAlertTitle(FEATURE_NOT_AVAILABLE);
+              setAlertMessage(storageTileMessage);
+              setCancelButton({
+                text: 'Értem',
+                variant: 'neutral',
+                onPress: resetAlertHandler,
+              });
+            } else if (isNil(user?.storeId)) {
+              navigation.navigate('SelectStore');
+            } else if (isStorageSavedToApi) {
+              navigation.navigate('StorageChangesSummary');
+            } else {
+              navigation.navigate('SelectItemsFromStore');
+            }
+          },
         },
-      },
-      {
-        id: 't2',
-        title: 'Árulevétel',
-        Icon: () => (
-          <MaterialCommunityIcons
-            name="cart-arrow-right"
-            size={45}
-            color="white"
-          />
-        ),
-        variant: selectPartnerTileState,
-        onPress: () => {
-          if (selectPartnerTileState === SelectPartnerTileState.Disabled) {
-            Alert.alert(FEATURE_NOT_AVAILABLE, selectPartnerTileMessage, [
-              { text: 'Értem' },
-            ]);
-          } else if (isPartnerSelectedInSell) {
-            navigation.navigate('SelectItemsToSell');
-          } else {
-            const partnerScreen =
-              isSelectedPartnerOnCurrentPartnerList === undefined ||
-              isSelectedPartnerOnCurrentPartnerList === true
-                ? 'SelectPartnerFromStore'
-                : 'SelectPartnerFromAll';
-            navigation.navigate('SelectPartner', {
-              screen: partnerScreen,
-              params: {
-                partners:
-                  partnerScreen === 'SelectPartnerFromStore'
-                    ? PartnerList.STORE
-                    : PartnerList.ALL,
-              },
-            });
-          }
+        {
+          id: 't1',
+          title: 'Kör indítása',
+          Icon: () => <FontAwesome5 name="play" size={40} color="white" />,
+          variant: startErrandTileState,
+          onPress: () => {
+            if (startErrandTileState === StartErrandTileState.Disabled) {
+              setIsAlertVisible(true);
+              setAlertTitle(FEATURE_NOT_AVAILABLE);
+              setAlertMessage(startErrandTileMessage);
+              setCancelButton({
+                text: 'Értem',
+                variant: 'neutral',
+                onPress: resetAlertHandler,
+              });
+            } else {
+              navigation.navigate('StartErrand');
+            }
+          },
         },
-      },
-      {
-        id: 't3',
-        title: `Bizonylatok (${numberOfReceipts.data})`,
-        Icon: () => <FontAwesome5 name="receipt" size={40} color="white" />,
-        variant: receiptsTileState,
-        onPress: () => {
-          if (receiptsTileState === ReceiptsTileState.Disabled) {
-            Alert.alert(FEATURE_NOT_AVAILABLE, receiptsTileMessage, [
-              { text: 'Értem' },
-            ]);
-          } else {
-            navigation.navigate('ReceiptList');
-          }
+        {
+          id: 't2',
+          title: 'Árulevétel',
+          Icon: () => (
+            <MaterialCommunityIcons
+              name="cart-arrow-right"
+              size={45}
+              color="white"
+            />
+          ),
+          variant: selectPartnerTileState,
+          onPress: () => {
+            if (selectPartnerTileState === SelectPartnerTileState.Disabled) {
+              setIsAlertVisible(true);
+              setAlertTitle(FEATURE_NOT_AVAILABLE);
+              setAlertMessage(selectPartnerTileMessage);
+              setCancelButton({
+                text: 'Értem',
+                variant: 'neutral',
+                onPress: resetAlertHandler,
+              });
+            } else if (isPartnerSelectedInSell) {
+              navigation.navigate('SelectItemsToSell');
+            } else {
+              const partnerScreen =
+                isSelectedPartnerOnCurrentPartnerList === undefined ||
+                isSelectedPartnerOnCurrentPartnerList === true
+                  ? 'SelectPartnerFromStore'
+                  : 'SelectPartnerFromAll';
+              navigation.navigate('SelectPartner', {
+                screen: partnerScreen,
+                params: {
+                  partners:
+                    partnerScreen === 'SelectPartnerFromStore'
+                      ? PartnerList.STORE
+                      : PartnerList.ALL,
+                },
+              });
+            }
+          },
         },
-      },
-      {
-        id: 't4',
-        title: 'Kör zárása',
-        Icon: () => <FontAwesome5 name="stop-circle" size={40} color="white" />,
-        variant: endErrandTileState,
-        onPress: () => {
-          if (endErrandTileState === EndErrandTileState.Disabled) {
-            Alert.alert(FEATURE_NOT_AVAILABLE, endErrandTileMessage, [
-              { text: 'Értem' },
-            ]);
-          } else {
-            navigation.navigate('EndErrand');
-          }
+        {
+          id: 't3',
+          title: `Bizonylatok (${numberOfReceipts.data})`,
+          Icon: () => <FontAwesome5 name="receipt" size={40} color="white" />,
+          variant: receiptsTileState,
+          onPress: () => {
+            if (receiptsTileState === ReceiptsTileState.Disabled) {
+              setIsAlertVisible(true);
+              setAlertTitle(FEATURE_NOT_AVAILABLE);
+              setAlertMessage(receiptsTileMessage);
+              setCancelButton({
+                text: 'Értem',
+                variant: 'neutral',
+                onPress: resetAlertHandler,
+              });
+            } else {
+              navigation.navigate('ReceiptList');
+            }
+          },
         },
-      },
-    ];
+        {
+          id: 't4',
+          title: 'Kör zárása',
+          Icon: () => (
+            <FontAwesome5 name="stop-circle" size={40} color="white" />
+          ),
+          variant: endErrandTileState,
+          onPress: () => {
+            if (endErrandTileState === EndErrandTileState.Disabled) {
+              setIsAlertVisible(true);
+              setAlertTitle(FEATURE_NOT_AVAILABLE);
+              setAlertMessage(endErrandTileMessage);
+              setCancelButton({
+                text: 'Értem',
+                variant: 'neutral',
+                onPress: resetAlertHandler,
+              });
+            } else {
+              navigation.navigate('EndErrand');
+            }
+          },
+        },
+      ],
+    };
   }
 }

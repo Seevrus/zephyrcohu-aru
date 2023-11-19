@@ -10,7 +10,7 @@ import {
 import { colors } from '../../constants/colors';
 import { fontSizes } from '../../constants/fontSizes';
 
-type ButtonProps = {
+export type ButtonProps = {
   variant: 'neutral' | 'ok' | 'warning' | 'error' | 'disabled';
   onPress?: (event: GestureResponderEvent) => void;
 };
