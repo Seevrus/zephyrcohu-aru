@@ -79,7 +79,8 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     alignItems: 'flex-end',
-    alignSelf: 'flex-end',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
     width: '100%',
   },
   container: {

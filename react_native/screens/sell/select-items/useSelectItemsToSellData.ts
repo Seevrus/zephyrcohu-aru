@@ -22,7 +22,6 @@ import {
   values,
 } from 'ramda';
 import { useCallback, useMemo, useState } from 'react';
-import { Alert } from 'react-native';
 
 import { loadable } from 'jotai/utils';
 import { useItems } from '../../../api/queries/useItems';
@@ -39,6 +38,7 @@ import {
   selectedPartnerAtom,
 } from '../../../atoms/sellFlow';
 import { selectedStoreAtom } from '../../../atoms/storage';
+import { type AlertButton } from '../../../components/alert/Alert';
 import { useCurrentPriceList } from '../../../hooks/sell/useCurrentPriceList';
 import { useResetSellFlow } from '../../../hooks/sell/useResetSellFlow';
 import { type StackParams } from '../../../navigators/screen-types';
@@ -97,6 +97,18 @@ export function useSelectItemsToSellData(
     searchTerm: '',
     barCode: '',
   });
+
+  const [isAlertVisible, setIsAlertVisible] = useState<boolean>(false);
+  const [alertTitle, setAlertTitle] = useState<string>('');
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [confirmButton, setConfirmButton] = useState<AlertButton | null>(null);
+
+  const resetAlertHandler = useCallback(() => {
+    setIsAlertVisible(false);
+    setAlertTitle('');
+    setAlertMessage(null);
+    setConfirmButton(null);
+  }, []);
 
   const storageExpirations = useMemo(() => {
     const expirations: Record<number, Record<number, number>> = {};
@@ -289,22 +301,20 @@ export function useSelectItemsToSellData(
     ) => {
       event.preventDefault();
 
-      Alert.alert(
-        'Megerősítés szükséges',
-        'Biztosan ki szeretne lépni? A folyamat a partnerválasztástól indul újra!',
-        [
-          { text: 'Mégsem' },
-          {
-            text: 'Igen',
-            style: 'destructive',
-            onPress: async () => {
-              setIsLoading(true);
-              await resetSellFlow();
-              navigation.dispatch(event.data.action);
-            },
-          },
-        ]
+      setIsAlertVisible(true);
+      setAlertTitle('Megerősítés szükséges');
+      setAlertMessage(
+        'Biztosan ki szeretne lépni? A folyamat a partnerválasztástól indul újra!'
       );
+      setConfirmButton({
+        text: 'Igen',
+        variant: 'warning',
+        onPress: async () => {
+          setIsLoading(true);
+          await resetSellFlow();
+          navigation.dispatch(event.data.action);
+        },
+      });
     },
     [navigation, resetSellFlow]
   );
@@ -417,5 +427,12 @@ export function useSelectItemsToSellData(
     grossOrderTotal,
     canConfirmItems,
     confirmItemsHandler,
+    alert: {
+      isAlertVisible,
+      alertTitle,
+      alertMessage,
+      alertConfirmButton: confirmButton,
+      resetAlertHandler,
+    },
   };
 }

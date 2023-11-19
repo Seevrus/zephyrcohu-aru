@@ -73,7 +73,6 @@ function SuspendedIndex() {
           message={alert.alertMessage}
           buttons={{
             cancel: alert.cancelButton,
-            confirm: alert.confirmButton,
           }}
           onBackdropPress={alert.onBackdropPress}
         />

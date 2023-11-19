@@ -12,6 +12,7 @@ import {
 
 import { selectedItemsAtom } from '../../../atoms/sellFlow';
 import { Loading } from '../../../components/Loading';
+import { Alert } from '../../../components/alert/Alert';
 import { Container } from '../../../components/container/Container';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
@@ -47,6 +48,7 @@ function SuspendedSelectItemsToSell({
     grossOrderTotal,
     canConfirmItems,
     confirmItemsHandler,
+    alert,
   } = useSelectItemsToSellData(navigation);
 
   useEffect(() => {
@@ -154,6 +156,20 @@ function SuspendedSelectItemsToSell({
           </Button>
         </View>
       </View>
+      <Alert
+        visible={alert.isAlertVisible}
+        title={alert.alertTitle}
+        message={alert.alertMessage}
+        buttons={{
+          cancel: {
+            text: 'Mégsem',
+            variant: 'neutral',
+            onPress: alert.resetAlertHandler,
+          },
+          confirm: alert.alertConfirmButton,
+        }}
+        onBackdropPress={alert.resetAlertHandler}
+      />
     </Container>
   );
 }

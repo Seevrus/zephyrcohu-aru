@@ -1,7 +1,6 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import {
-  Alert,
   FlatList,
   StyleSheet,
   View,
@@ -10,6 +9,7 @@ import {
 
 import { type StorageListItem } from '../../../atoms/storageFlow';
 import { Loading } from '../../../components/Loading';
+import { Alert } from '../../../components/alert/Alert';
 import { Container } from '../../../components/container/Container';
 import { ErrorCard } from '../../../components/info-cards/ErrorCard';
 import { TextCard } from '../../../components/info-cards/TextCard';
@@ -29,6 +29,8 @@ function SuspendedReviewStorageChanges({
   const { isLoading, isError, changedItems, handleSendChanges } =
     useReviewStorageChangesData(navigation);
 
+  const [isAlertVisible, setIsAlertVisible] = useState<boolean>(false);
+
   if (isLoading) {
     return <Loading />;
   }
@@ -38,17 +40,7 @@ function SuspendedReviewStorageChanges({
   );
 
   const confirmStorageChanges = () => {
-    Alert.alert(
-      'Rakodás véglegesítése',
-      'A készülék szinkronizálja az adatokat a szerverrel és zárja a rakodási folyamatot.',
-      [
-        { text: 'Mégse' },
-        {
-          text: 'Folytatás',
-          onPress: handleSendChanges,
-        },
-      ]
-    );
+    setIsAlertVisible(true);
   };
 
   const confirmButtonVariant = isInternetReachable ? 'ok' : 'disabled';
@@ -84,6 +76,28 @@ function SuspendedReviewStorageChanges({
           </Button>
         </View>
       </View>
+      <Alert
+        visible={isAlertVisible}
+        title="Rakodás véglegesítése"
+        message="A készülék szinkronizálja az adatokat a szerverrel és zárja a rakodási folyamatot."
+        buttons={{
+          cancel: {
+            text: 'Mégsem',
+            variant: 'neutral',
+            onPress: () => {
+              setIsAlertVisible(false);
+            },
+          },
+          confirm: {
+            text: 'Folytatás',
+            variant: 'warning',
+            onPress: handleSendChanges,
+          },
+        }}
+        onBackdropPress={() => {
+          setIsAlertVisible(false);
+        }}
+      />
     </Container>
   );
 }

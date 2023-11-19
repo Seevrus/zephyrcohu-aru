@@ -4,7 +4,7 @@ import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAtomValue } from 'jotai';
 import { loadable } from 'jotai/utils';
 import { isNil } from 'ramda';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useCheckToken } from '../api/queries/useCheckToken';
 import { numberOfReceiptsAtom } from '../atoms/receipts';
@@ -31,7 +31,6 @@ type UseTilesData = {
     alertTitle: string;
     alertMessage: string | null;
     cancelButton: AlertButton | null;
-    confirmButton: AlertButton | null;
     onBackdropPress: () => void;
   };
   tiles: TileT[];
@@ -64,15 +63,13 @@ export function useTiles(): UseTilesData | undefined {
   const [alertTitle, setAlertTitle] = useState<string>('');
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [cancelButton, setCancelButton] = useState<AlertButton | null>(null);
-  const [confirmButton, setConfirmButton] = useState<AlertButton | null>(null);
 
-  const resetAlertHandler = () => {
+  const resetAlertHandler = useCallback(() => {
     setIsAlertVisible(false);
     setAlertTitle('');
     setAlertMessage(null);
     setCancelButton(null);
-    setConfirmButton(null);
-  };
+  }, []);
 
   if (numberOfReceipts.state === 'hasData') {
     return {
@@ -81,7 +78,6 @@ export function useTiles(): UseTilesData | undefined {
         alertTitle,
         alertMessage,
         cancelButton,
-        confirmButton,
         onBackdropPress: resetAlertHandler,
       },
       tiles: [
