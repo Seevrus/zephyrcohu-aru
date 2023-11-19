@@ -50,16 +50,19 @@ describe('Index Page', () => {
   });
 
   describe('if the token is expired', () => {
-    const mockedSecureStore = jest.mocked(SecureStore);
-
-    beforeAll(() => {
-      mockedSecureStore.getItemAsync.mockResolvedValue(
+    beforeAll(async () => {
+      await SecureStore.setItemAsync(
+        'boreal-token',
         JSON.stringify({
           token: 'abc123',
           isPasswordExpired: false,
           expiresAt: '1900-01-01 00:00:00',
         })
       );
+    });
+
+    afterAll(async () => {
+      await SecureStore.deleteItemAsync('boreal-token');
     });
 
     test.each`
@@ -117,39 +120,31 @@ describe('Index Page', () => {
 
       expect(tileButton).toHaveStyle({ backgroundColor: '#767676' });
     });
-
-    afterAll(() => {
-      mockedSecureStore.getItemAsync.mockResolvedValue(
-        JSON.stringify({
-          token: 'abc123',
-          isPasswordExpired: false,
-          expiresAt: '2100-01-01 00:00:00',
-        })
-      );
-    });
   });
 
   describe('if the password is expired', () => {
-    const mockedSecureStore = jest.mocked(SecureStore);
-
-    beforeAll(() => {
-      mockedSecureStore.getItemAsync.mockResolvedValue(
+    beforeAll(async () => {
+      await SecureStore.setItemAsync(
+        'boreal-token',
         JSON.stringify({
           token: 'abc123',
-          isPasswordExpired: true,
-          expiresAt: '2100-01-01 00:00:00',
+          isPasswordExpired: false,
+          expiresAt: '2999-12-31 23:59:59',
         })
       );
+
+      server.use(createGetCheckTokenOkResponse({ isPasswordExpired: true }));
     });
 
-    /**
-     * ${'start errand tile'} | ${1}
-      ${'end errand tile'}   | ${4}
-     */
+    afterAll(async () => {
+      await SecureStore.deleteItemAsync('boreal-token');
+    });
 
-    test.only.each`
-      tileName          | tileIndex
-      ${'storage tile'} | ${0}
+    test.each`
+      tileName               | tileIndex
+      ${'storage tile'}      | ${0}
+      ${'start errand tile'} | ${1}
+      ${'end errand tile'}   | ${4}
     `('$tileName is disabled', async ({ tileIndex }) => {
       await renderIndex();
       const storageTile = screen.getAllByTestId('tile')[tileIndex];
@@ -167,24 +162,66 @@ describe('Index Page', () => {
       );
     });
 
-    afterAll(() => {
-      mockedSecureStore.getItemAsync.mockResolvedValue(
-        JSON.stringify({
-          token: 'abc123',
-          isPasswordExpired: false,
-          expiresAt: '2100-01-01 00:00:00',
-        })
-      );
+    test('select partner tile is enabled if the round has started', async () => {
+      await renderIndex();
+      const storageTile = screen.getAllByTestId('tile')[2];
+      const tileButton = within(storageTile).getByTestId('tile-button');
+
+      expect(tileButton).toHaveStyle({ backgroundColor: '#312A5F' });
+    });
+
+    test('select partner tile is disabled if the round has not started', async () => {
+      server.use(createGetCheckTokenOkResponse({ isRoundStarted: false }));
+
+      await renderIndex();
+      const storageTile = screen.getAllByTestId('tile')[2];
+      const tileButton = within(storageTile).getByTestId('tile-button');
+
+      expect(tileButton).toHaveStyle({ backgroundColor: '#767676' });
+    });
+
+    test('receipts tile is enabled if there are receipts available', async () => {
+      await renderIndex({ receipts: [receiptsAtom, [{}]] });
+      const storageTile = screen.getAllByTestId('tile')[3];
+      const tileButton = within(storageTile).getByTestId('tile-button');
+
+      expect(tileButton).toHaveStyle({ backgroundColor: '#312A5F' });
+    });
+
+    test('receipts tile is disabled if there are no receipts available', async () => {
+      await renderIndex();
+      const storageTile = screen.getAllByTestId('tile')[3];
+      const tileButton = within(storageTile).getByTestId('tile-button');
+
+      expect(tileButton).toHaveStyle({ backgroundColor: '#767676' });
     });
   });
 
   describe('if the internet is not reachable', () => {
     let netInfoSpy: jest.SpyInstance;
 
-    beforeAll(() => {
+    beforeAll(async () => {
       netInfoSpy = jest
         .spyOn(NetInfo, 'useNetInfo')
         .mockImplementation(() => ({ isInternetReachable: false }) as any);
+
+      await SecureStore.setItemAsync(
+        'boreal-token',
+        JSON.stringify({
+          token: 'abc123',
+          isPasswordExpired: false,
+          expiresAt: '2999-12-31 23:59:59',
+        })
+      );
+    });
+
+    afterEach(() => {
+      netInfoSpy.mockClear();
+    });
+
+    afterAll(async () => {
+      netInfoSpy.mockClear();
+      await SecureStore.deleteItemAsync('boreal-token');
     });
 
     test.each`
@@ -209,8 +246,51 @@ describe('Index Page', () => {
       );
     });
 
-    afterAll(() => {
-      netInfoSpy.mockClear();
+    test('select partner tile is enabled if the round has started', async () => {
+      // This is needed to get check token / user data because without that the round is not considered as started and the tile will be disabled
+      netInfoSpy = jest
+        .spyOn(NetInfo, 'useNetInfo')
+        .mockImplementation(() => ({ isInternetReachable: true }) as any);
+
+      await renderIndex();
+      const storageTile = screen.getAllByTestId('tile')[2];
+      const tileButton = within(storageTile).getByTestId('tile-button');
+
+      expect(tileButton).toHaveStyle({ backgroundColor: '#312A5F' });
+
+      netInfoSpy = jest
+        .spyOn(NetInfo, 'useNetInfo')
+        .mockImplementation(() => ({ isInternetReachable: false }) as any);
+
+      await renderIndex();
+
+      expect(tileButton).toHaveStyle({ backgroundColor: '#312A5F' });
+    });
+
+    test('select partner tile is disabled if the round has not started', async () => {
+      server.use(createGetCheckTokenOkResponse({ isRoundStarted: false }));
+
+      await renderIndex();
+      const storageTile = screen.getAllByTestId('tile')[2];
+      const tileButton = within(storageTile).getByTestId('tile-button');
+
+      expect(tileButton).toHaveStyle({ backgroundColor: '#767676' });
+    });
+
+    test('receipts tile is enabled if there are receipts available', async () => {
+      await renderIndex({ receipts: [receiptsAtom, [{}]] });
+      const storageTile = screen.getAllByTestId('tile')[3];
+      const tileButton = within(storageTile).getByTestId('tile-button');
+
+      expect(tileButton).toHaveStyle({ backgroundColor: '#312A5F' });
+    });
+
+    test('receipts tile is disabled if there are no receipts available', async () => {
+      await renderIndex();
+      const storageTile = screen.getAllByTestId('tile')[3];
+      const tileButton = within(storageTile).getByTestId('tile-button');
+
+      expect(tileButton).toHaveStyle({ backgroundColor: '#767676' });
     });
   });
 });
