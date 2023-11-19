@@ -35,7 +35,7 @@ export enum EndErrandTileState {
 }
 
 export function useTileStates() {
-  const { data: user, isPending: isUserFetching } = useCheckToken();
+  const { data: user, isFetching: isUserFetching } = useCheckToken();
   const isFocused = useIsFocused();
   const { isInternetReachable } = useNetInfo();
   const loadableNumberOfReceipts = useAtomValue(loadable(numberOfReceiptsAtom));

@@ -15,7 +15,11 @@ const defaultProps = {
 export function Loading({ message }: LoadingProps) {
   return (
     <Container style={styles.centeredContainer}>
-      <ActivityIndicator size="large" color={colors.blue200} />
+      <ActivityIndicator
+        testID="loading-indicator"
+        size="large"
+        color={colors.blue200}
+      />
       <View style={styles.messageContainer}>
         <Text style={styles.message}>{message}</Text>
       </View>

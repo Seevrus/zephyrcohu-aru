@@ -43,7 +43,7 @@ function SuspendedIndex() {
   }
 
   return (
-    <View style={styles.container}>
+    <View testID="index-page" style={styles.container}>
       {!isInternetReachable && (
         <View style={styles.textCardContainer}>
           <TextCard>

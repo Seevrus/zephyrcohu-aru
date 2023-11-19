@@ -1,5 +1,5 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
 import { useAtom, useAtomValue } from 'jotai';
 
@@ -9,7 +9,6 @@ import {
   tokenAtom,
 } from '../../atoms/token';
 import env from '../../env.json';
-import { queryClient } from '../queryClient';
 import {
   mapCheckTokenResponse,
   type CheckToken,
@@ -18,6 +17,7 @@ import { type LoginResponse } from '../response-types/LoginResponseType';
 
 export function useCheckToken() {
   const { isInternetReachable } = useNetInfo();
+  const queryClient = useQueryClient();
 
   const [, setStoredToken] = useAtom(storedTokenAtom);
   const { token } = useAtomValue(tokenAtom);
@@ -35,6 +35,17 @@ export function useCheckToken() {
             },
           }
         );
+
+        const isPasswordExpired = response.data.token.abilities.includes(
+          'password' as never
+        );
+
+        if (isPasswordExpired) {
+          await setStoredToken(async (prevToken) => ({
+            ...(await prevToken),
+            isPasswordExpired: true,
+          }));
+        }
 
         return mapCheckTokenResponse(response.data);
       } catch (error) {

@@ -1,9 +1,9 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useAtom, useAtomValue } from 'jotai';
 import { useCallback, useMemo } from 'react';
 
 import { useFinishRound } from '../../api/mutations/useFinishRound';
 import { useActiveRound } from '../../api/queries/useActiveRound';
-import { queryClient } from '../../api/queryClient';
 import { currentOrderAtom, ordersAtom } from '../../atoms/orders';
 import {
   currentReceiptAtom,
@@ -14,6 +14,8 @@ import { selectedStoreAtom } from '../../atoms/storage';
 import { useResetSellFlow } from '../../hooks/sell/useResetSellFlow';
 
 export function useEndErrand() {
+  const queryClient = useQueryClient();
+
   const { isPending: isActiveRoundPending, data: activeRound } =
     useActiveRound();
   const { mutateAsync: finishRoundAPI } = useFinishRound();
@@ -67,6 +69,7 @@ export function useEndErrand() {
     activeRound,
     finishRoundAPI,
     numberOfReceipts,
+    queryClient,
     receipts,
     resetSellFlow,
     selectedStoreCurrentState,

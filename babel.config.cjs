@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/prefer-module
 module.exports = function (api) {
   api.cache(true);
   return {
