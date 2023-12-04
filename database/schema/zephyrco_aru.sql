@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2023. Nov 02. 07:30
+-- Létrehozás ideje: 2023. Dec 04. 18:38
 -- Kiszolgáló verziója: 10.4.27-MariaDB
 -- PHP verzió: 8.0.25
 
