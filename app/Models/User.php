@@ -18,7 +18,7 @@ class User extends Authenticatable
         'name',
         'phone_number',
         'attempts',
-        'created_at'
+        'created_at',
     ];
 
     public function company()

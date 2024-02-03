@@ -24,6 +24,7 @@ class ChangePasswordRequest extends FormRequest
     public function rules()
     {
         return [
+            'userName' => 'exists:users,user_name',
             'password' => 'required|string|regex:/^([a-zA-Z0-9]){10}$/',
         ];
     }

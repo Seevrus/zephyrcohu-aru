@@ -26,6 +26,7 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'code' => $this->code,
             'userName' => $this->user_name,
+            'locked' => $this->attempts > 2 ? 1 : 0,
             'state' => $this->state,
             'name' => $this->name,
             'company' => new CompanyResource($this->whenLoaded('company')),

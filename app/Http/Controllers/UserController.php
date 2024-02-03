@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\LockedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class UserController extends Controller
@@ -79,7 +80,7 @@ class UserController extends Controller
                 'company_id' => $company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Created user ' . $user_name,
+                'action' => 'Created user '.$user_name,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -110,7 +111,7 @@ class UserController extends Controller
                 'user_name' => $request->userName,
             ]);
 
-            if (!$user) {
+            if (! $user) {
                 throw new UnauthorizedHttpException(random_bytes(32));
             }
 
@@ -124,7 +125,7 @@ class UserController extends Controller
 
             $password = $user->passwords()->orderBy('set_time', 'desc')->first();
 
-            if (!Hash::check($request->password, $password->password)) {
+            if (! Hash::check($request->password, $password->password)) {
                 Log::insert([
                     'company_id' => $user->company_id,
                     'user_id' => $user->id,
@@ -223,10 +224,33 @@ class UserController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $oldPasswordIds = $sender->passwords()->limit(100)->offset(10)->pluck('id');
+            $senderRoles = array_map(
+                fn ($role) => $role['role'],
+                $sender->roles->toArray()
+            );
+
+            $isSenderAdmin = in_array('AM', $senderRoles);
+
+            if ($request->userName && ! $isSenderAdmin) {
+                throw new UnauthorizedHttpException(random_bytes(32));
+            }
+
+            if ($isSenderAdmin && $request->userName) {
+                $subjectOfChange = User::firstWhere([
+                    'user_name' => $request->userName,
+                ]);
+
+                if (! $subjectOfChange) {
+                    throw new NotFoundHttpException();
+                }
+            } else {
+                $subjectOfChange = $sender;
+            }
+
+            $oldPasswordIds = $subjectOfChange->passwords()->limit(100)->offset(10)->pluck('id');
             UserPassword::whereIn('id', $oldPasswordIds)->delete();
 
-            $previousPasswords = $sender->passwords;
+            $previousPasswords = $subjectOfChange->passwords;
             $newPassword = $request->password;
 
             foreach ($previousPasswords as $previousPassword) {
@@ -239,25 +263,25 @@ class UserController extends Controller
                 }
             }
 
-            $sender->attempts = 0;
-            $sender->tokens()->delete();
-            $sender->passwords()->create([
+            $subjectOfChange->attempts = 0;
+            $subjectOfChange->tokens()->delete();
+            $subjectOfChange->passwords()->create([
                 'password' => Hash::make($newPassword),
                 'is_generated' => 0,
                 'set_time' => Carbon::now(),
             ]);
-            $sender->save();
+            $subjectOfChange->save();
 
-            $roles = array_map(
+            $subjectRoles = array_map(
                 fn ($role) => $role['role'],
-                $sender->roles->toArray()
+                $subjectOfChange->roles->toArray()
             );
-            $token = $sender->createToken('boreal', $roles);
+            $token = $subjectOfChange->createToken('boreal', $subjectRoles);
             $tokenExpiration = Carbon::now()->addHours(25)->toDateTimeString();
 
             Log::insert([
-                'company_id' => $sender->company_id,
-                'user_id' => $sender->id,
+                'company_id' => $subjectOfChange->company_id,
+                'user_id' => $subjectOfChange->id,
                 'token_id' => 0,
                 'action' => 'Changed password',
                 'occured_at' => Carbon::now(),
@@ -265,7 +289,7 @@ class UserController extends Controller
 
             $userResource = new UserResource($sender->load('company'));
 
-            return array_merge(
+            return $sender->id === $subjectOfChange->id ? array_merge(
                 $userResource->toArray(0),
                 [
                     'token' => [
@@ -275,8 +299,15 @@ class UserController extends Controller
                         'expiresAt' => $tokenExpiration,
                     ],
                 ]
-            );
+            ) : $userResource;
         } catch (Exception $e) {
+            if (
+                $e instanceof NotFoundHttpException
+                || $e instanceof UnauthorizedHttpException
+            ) {
+                throw $e;
+            }
+
             throw new BadRequestException();
         }
     }
@@ -294,7 +325,7 @@ class UserController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $companyUsers->count() . ' users',
+                'action' => 'Accessed '.$companyUsers->count().' users',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -320,7 +351,7 @@ class UserController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed user ' . $user->id,
+                'action' => 'Removed user '.$user->id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {

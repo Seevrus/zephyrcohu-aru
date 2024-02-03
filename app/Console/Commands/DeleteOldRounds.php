@@ -30,7 +30,7 @@ class DeleteOldRounds extends Command
     public function handle()
     {
         Log::where('occured_at', '<', date('Y-m-d H:i:s', time() - 30 * 24 * 60 * 60))
-          ->delete();
+            ->delete();
 
         Round::where('round_finished', '<', date('Y-m-d H:i:s', time() - 30 * 24 * 60 * 60))->delete();
 
