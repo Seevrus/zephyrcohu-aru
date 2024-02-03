@@ -17,6 +17,7 @@ class User extends Authenticatable
         'state',
         'name',
         'phone_number',
+        'attempts',
         'created_at'
     ];
 

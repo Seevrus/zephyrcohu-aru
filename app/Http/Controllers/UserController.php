@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpKernel\Exception\LockedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class UserController extends Controller
@@ -28,7 +29,7 @@ class UserController extends Controller
 
     private function generate_code($length)
     {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._+#%@-';
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $code = '';
 
         for ($i = 0; $i < $length; $i++) {
@@ -58,7 +59,6 @@ class UserController extends Controller
                 'state' => 'I',
                 'phone_number' => $request->phoneNumber ?? null,
                 'created_at' => Carbon::now(),
-
             ]);
 
             foreach ($request->roles as $role) {
@@ -114,8 +114,13 @@ class UserController extends Controller
                 throw new UnauthorizedHttpException(random_bytes(32));
             }
 
+            $currentAttempts = $user->attempts;
             $user->last_active = Carbon::now();
             $user->save();
+
+            if ($currentAttempts > 2) {
+                throw new LockedHttpException();
+            }
 
             $password = $user->passwords()->orderBy('set_time', 'desc')->first();
 
@@ -127,6 +132,9 @@ class UserController extends Controller
                     'action' => 'Tried to log in with a wrong password',
                     'occured_at' => Carbon::now(),
                 ]);
+
+                $user->attempts = $currentAttempts + 1;
+                $user->save();
 
                 throw new UnauthorizedHttpException(random_bytes(32));
             }

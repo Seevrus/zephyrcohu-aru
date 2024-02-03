@@ -7,6 +7,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\LockedHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -60,6 +61,10 @@ class Handler extends ExceptionHandler
             return $this->bad_request();
         });
 
+        $this->renderable(function (LockedHttpException $e) {
+            return $this->locked();
+        });
+
         $this->renderable(function (MethodNotAllowedHttpException $e) {
             return $this->method_not_allowed();
         });
@@ -69,7 +74,7 @@ class Handler extends ExceptionHandler
         });
 
         $this->renderable(function (UnauthorizedHttpException $e) {
-            return $this->unathorized();
+            return $this->unauthorized();
         });
 
         $this->renderable(function (UnsupportedMediaTypeHttpException $e) {

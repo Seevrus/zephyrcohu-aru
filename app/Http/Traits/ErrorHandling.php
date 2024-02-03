@@ -15,11 +15,11 @@ trait ErrorHandling
         return response($response, 400);
     }
 
-    public function unathorized()
+    public function unauthorized()
     {
         $response = [
             'status' => 401,
-            'codeName' => 'Unathorized',
+            'codeName' => 'Unauthorized',
             'message' => 'The client must authenticate itself to get the requested response.',
         ];
 
@@ -68,6 +68,17 @@ trait ErrorHandling
         ];
 
         return response($response, 415);
+    }
+
+    public function locked()
+    {
+        $response = [
+            'status' => 423,
+            'codeName' => 'Locked',
+            'message' => 'The resource that is being accessed is locked.',
+        ];
+
+        return response($response, 404);
     }
 
     public function too_many_requests()
