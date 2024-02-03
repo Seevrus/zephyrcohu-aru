@@ -86,12 +86,11 @@ export function useSelectPartnerData({
             (partner) => !!currentPartnerList?.partners?.includes(partner.id)
           )
         ),
-        sort<Partner>(
-          (partner1, partner2) =>
-            partner1.locations?.D?.name.localeCompare(
-              partner2.locations?.D?.name,
-              'HU-hu'
-            )
+        sort<Partner>((partner1, partner2) =>
+          partner1.locations?.D?.name.localeCompare(
+            partner2.locations?.D?.name,
+            'HU-hu'
+          )
         ),
         when<Partners, Partners>(
           () => !!searchInputValue,

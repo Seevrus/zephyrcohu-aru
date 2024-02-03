@@ -4,14 +4,20 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { colors } from '../../constants/colors';
 
 type ContainerProps = {
+  testID?: string;
   style?: StyleProp<ViewStyle>;
 };
 
 export function Container({
+  testID,
   style,
   children,
 }: PropsWithChildren<ContainerProps>) {
-  return <View style={[style, styles.container]}>{children}</View>;
+  return (
+    <View testID={testID} style={[style, styles.container]}>
+      {children}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

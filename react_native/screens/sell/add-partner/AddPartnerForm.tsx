@@ -2,11 +2,12 @@ import { type EventArg } from '@react-navigation/native';
 import { useAtom } from 'jotai';
 import { isEmpty } from 'ramda';
 import { Suspense, useCallback, useEffect, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { currentReceiptAtom } from '../../../atoms/receipts';
 import { maxNewPartnerIdInUseAtom } from '../../../atoms/sellFlow';
 import { Loading } from '../../../components/Loading';
+import { Alert } from '../../../components/alert/Alert';
 import { TextCard } from '../../../components/info-cards/TextCard';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
@@ -59,6 +60,14 @@ function SuspendedAddPartnerForm({
 
   const [formError, setFormError] = useState<Partial<FormErrors>>({});
 
+  const [isAlertVisible, setIsAlertVisible] = useState<boolean>(false);
+  const [goBackAction, setGoBackAction] = useState<{
+    type: string;
+    payload?: object;
+    source?: string;
+    target?: string;
+  } | null>(null);
+
   const handleGoBack = useCallback(
     (
       event: EventArg<
@@ -76,22 +85,10 @@ function SuspendedAddPartnerForm({
     ) => {
       event.preventDefault();
 
-      Alert.alert(
-        'Megerősítés szükséges',
-        'Biztosan vissza szeretne lépni? A megadott adatok nem kerülnek mentésre!',
-        [
-          { text: 'Mégsem' },
-          {
-            text: 'Igen',
-            style: 'destructive',
-            onPress: async () => {
-              navigation.dispatch(event.data.action);
-            },
-          },
-        ]
-      );
+      setIsAlertVisible(true);
+      setGoBackAction(event.data.action);
     },
-    [navigation]
+    []
   );
 
   useEffect(() => {
@@ -299,6 +296,27 @@ function SuspendedAddPartnerForm({
           </View>
         </View>
       </View>
+      <Alert
+        visible={isAlertVisible}
+        title="Megerősítés szükséges"
+        message="Biztosan vissza szeretne lépni? A megadott adatok nem kerülnek mentésre!"
+        buttons={{
+          cancel: {
+            text: 'Mégsem',
+            variant: 'neutral',
+            onPress: () => setIsAlertVisible(false),
+          },
+          confirm: {
+            text: 'Igen',
+            variant: 'warning',
+            onPress: () => {
+              setIsAlertVisible(false);
+              goBackAction && navigation.dispatch(goBackAction);
+            },
+          },
+        }}
+        onBackdropPress={() => setIsAlertVisible(false)}
+      />
     </ScrollView>
   );
 }

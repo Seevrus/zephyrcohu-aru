@@ -4,7 +4,6 @@ import { add, format, parseISO } from 'date-fns';
 import { useAtom, useAtomValue } from 'jotai';
 import { and, dissoc, dissocPath, isEmpty, reduce } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert } from 'react-native';
 
 import { useSellSelectedItems } from '../../../api/mutations/useSellSelectedItems';
 import { useActiveRound } from '../../../api/queries/useActiveRound';
@@ -27,6 +26,7 @@ import {
 } from '../../../atoms/sellFlow';
 import { selectedStoreAtom } from '../../../atoms/storage';
 import { tokenAtom } from '../../../atoms/token';
+import { type AlertButton } from '../../../components/alert/Alert';
 import { useCurrentPriceList } from '../../../hooks/sell/useCurrentPriceList';
 import { useResetSellFlow } from '../../../hooks/sell/useResetSellFlow';
 import { type StackParams } from '../../../navigators/screen-types';
@@ -64,6 +64,18 @@ export function useReviewData(
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [saveReceiptError, setSaveReceiptError] = useState<string>('');
+
+  const [isAlertVisible, setIsAlertVisible] = useState<boolean>(false);
+  const [alertTitle, setAlertTitle] = useState<string>('');
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [confirmButton, setConfirmButton] = useState<AlertButton | null>(null);
+
+  const resetAlertHandler = useCallback(() => {
+    setIsAlertVisible(false);
+    setAlertTitle('');
+    setAlertMessage(null);
+    setConfirmButton(null);
+  }, []);
 
   const discountedGrossAmount = useMemo(
     () =>
@@ -336,51 +348,49 @@ export function useReviewData(
   ]);
 
   const removeReceiptHandler = useCallback(() => {
-    Alert.alert(
-      'Folyamat törlése',
-      'Ez a lépés törli a jelenlegi árulevételi munkamenetet és visszairányít a kezdőoldalra. Biztosan folytatni szeretné?',
-      [
-        { text: 'Mégse' },
-        {
-          text: 'Biztosan ezt szeretném',
-          onPress: async () => {
-            setIsLoading(true);
-            resetSellFlow();
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Index' }],
-            });
-          },
-        },
-      ]
+    setIsAlertVisible(true);
+    setAlertTitle('Folyamat törlése');
+    setAlertMessage(
+      'Ez a lépés törli a jelenlegi árulevételi munkamenetet és visszairányít a kezdőoldalra. Biztosan folytatni szeretné?'
     );
+    setConfirmButton({
+      text: 'Biztosan ezt szeretném',
+      variant: 'warning',
+      onPress: async () => {
+        setIsLoading(true);
+        await resetSellFlow();
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Index' }],
+        });
+      },
+    });
   }, [navigation, resetSellFlow]);
 
   const confirmReceiptHandler = useCallback(() => {
-    Alert.alert(
-      'Árulevétel véglegesítése',
-      'Ez a lépés számlakészítéssel jár, ezután már nem lesz lehetőség semmilyen módosításra. Biztosan folytatni szeretné?',
-      [
-        { text: 'Mégse' },
-        {
-          text: 'Biztosan ezt szeretném',
-          onPress: async () => {
-            try {
-              setSaveReceiptError('');
-              setIsLoading(true);
-              await finishReview();
-              navigation.reset({
-                index: 1,
-                routes: [{ name: 'Index' }, { name: 'Summary' }],
-              });
-            } catch (error) {
-              setSaveReceiptError(error.message);
-              setIsLoading(false);
-            }
-          },
-        },
-      ]
+    setIsAlertVisible(true);
+    setAlertTitle('Árulevétel véglegesítése');
+    setAlertMessage(
+      'Ez a lépés számlakészítéssel jár, ezután már nem lesz lehetőség semmilyen módosításra. Biztosan folytatni szeretné?'
     );
+    setConfirmButton({
+      text: 'Biztosan ezt szeretném',
+      variant: 'warning',
+      onPress: async () => {
+        try {
+          setSaveReceiptError('');
+          setIsLoading(true);
+          await finishReview();
+          navigation.reset({
+            index: 1,
+            routes: [{ name: 'Index' }, { name: 'Summary' }],
+          });
+        } catch (error) {
+          setSaveReceiptError(error.message);
+          setIsLoading(false);
+        }
+      },
+    });
   }, [finishReview, navigation]);
 
   return {
@@ -392,5 +402,12 @@ export function useReviewData(
     removeReceiptHandler,
     canConfirm: !!activeRound && !!currentReceipt && !!token && !!user,
     confirmReceiptHandler,
+    alert: {
+      isAlertVisible,
+      alertTitle,
+      alertMessage,
+      alertConfirmButton: confirmButton,
+      resetAlertHandler,
+    },
   };
 }

@@ -24,8 +24,8 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'code' => $this->code,
             'userName' => $this->user_name,
+            'locked' => $this->attempts > 2 ? 1 : 0,
             'state' => $this->state,
             'name' => $this->name,
             'company' => new CompanyResource($this->whenLoaded('company')),
@@ -34,7 +34,7 @@ class UserResource extends JsonResource
             'storeId' => $this->store?->id,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
-            'lastActive' => Carbon::createFromFormat('Y-m-d H:i:s', $this->last_active),
+            'lastActive' => is_null($this->last_active) ? null : Carbon::createFromFormat('Y-m-d H:i:s', $this->last_active),
         ];
     }
 }

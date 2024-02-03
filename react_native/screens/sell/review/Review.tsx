@@ -21,6 +21,7 @@ import { OtherItemSelection } from './OtherItemSelection';
 import { RegularItemSelection } from './RegularItemSelection';
 import { getReviewItemId } from './getReviewItemId';
 import { useReviewData } from './useReviewData';
+import { Alert } from '../../../components/alert/Alert';
 
 function SuspendedReview({ navigation }: ReviewProps) {
   const {
@@ -32,6 +33,7 @@ function SuspendedReview({ navigation }: ReviewProps) {
     removeReceiptHandler,
     canConfirm,
     confirmReceiptHandler,
+    alert,
   } = useReviewData(navigation);
 
   const reviewItems = useAtomValue(reviewItemsAtom);
@@ -118,6 +120,20 @@ function SuspendedReview({ navigation }: ReviewProps) {
           </Button>
         </View>
       </View>
+      <Alert
+        visible={alert.isAlertVisible}
+        title={alert.alertTitle}
+        message={alert.alertMessage}
+        buttons={{
+          cancel: {
+            text: 'Mégsem',
+            variant: 'neutral',
+            onPress: alert.resetAlertHandler,
+          },
+          confirm: alert.alertConfirmButton,
+        }}
+        onBackdropPress={alert.resetAlertHandler}
+      />
     </Container>
   );
 }

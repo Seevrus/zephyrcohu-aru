@@ -14,9 +14,9 @@ import { useCheckToken } from '../../api/queries/useCheckToken';
 import { tokenAtom } from '../../atoms/token';
 import { Loading } from '../../components/Loading';
 import { Tile, type TileT } from '../../components/Tile';
+import { Alert } from '../../components/alert/Alert';
 import { Container } from '../../components/container/Container';
 import { TextCard } from '../../components/info-cards/TextCard';
-import { colors } from '../../constants/colors';
 import { useTiles } from '../../hooks/useTiles';
 
 function SuspendedIndex() {
@@ -24,7 +24,7 @@ function SuspendedIndex() {
   const { isInternetReachable } = useNetInfo();
   const token = useAtomValue(loadable(tokenAtom));
 
-  const tiles = useTiles();
+  const { alert, tiles } = useTiles() || {};
 
   const renderTile: ListRenderItem<TileT> = (
     info: ListRenderItemInfo<TileT>
@@ -43,7 +43,7 @@ function SuspendedIndex() {
   }
 
   return (
-    <View testID="index-page" style={styles.container}>
+    <Container testID="index-page" style={styles.container}>
       {!isInternetReachable && (
         <View style={styles.textCardContainer}>
           <TextCard>
@@ -66,7 +66,18 @@ function SuspendedIndex() {
         keyExtractor={(tile) => tile.id}
         renderItem={renderTile}
       />
-    </View>
+      {alert ? (
+        <Alert
+          visible={alert.isAlertVisible}
+          title={alert.alertTitle}
+          message={alert.alertMessage}
+          buttons={{
+            cancel: alert.cancelButton,
+          }}
+          onBackdropPress={alert.onBackdropPress}
+        />
+      ) : null}
+    </Container>
   );
 }
 
@@ -80,8 +91,6 @@ export function Index() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.background,
-    flex: 1,
     paddingBottom: 30,
   },
   textCardContainer: {

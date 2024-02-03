@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "1bc5f360-8f72-4d19-8980-4cd817dba4ed",
+		"_postman_id": "e73bb862-10a7-4388-ae40-c8173b4e01c4",
 		"name": "Zephyr ARU",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "14197538"
@@ -194,7 +194,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"partnerId\": 15,\r\n            \"orderedAt\": \"2023-08-27 11:30:12\",\r\n            \"items\": [\r\n                {\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 394\r\n                },\r\n                {\r\n                    \"articleNumber\": \"0000_02\",\r\n                    \"name\": \"Második Jégkrém\",\r\n                    \"quantity\": 42\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"partnerId\": 15,\r\n            \"orderedAt\": \"2023-11-07 19:21:14\",\r\n            \"items\": [\r\n                {\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 5\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -711,7 +711,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"name\": \"Test Partner List\",\r\n        \"partners\": [\r\n            15\r\n        ]\r\n    }\r\n}",
+							"raw": "{\r\n    \"data\": {\r\n        \"name\": \"Test Partner List\",\r\n        \"partners\": [\r\n            1\r\n        ]\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -938,7 +938,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"name\": \"Első és egyetlen teszt árjegyzék\",\r\n        \"items\": [\r\n            {\r\n                \"itemId\": 31,\r\n                \"netPrice\": 899\r\n            },\r\n            {\r\n                \"itemId\": 32,\r\n                \"netPrice\": 899\r\n            },\r\n            {\r\n                \"itemId\": 34,\r\n                \"netPrice\": 899\r\n            },\r\n            {\r\n                \"itemId\": 40,\r\n                \"netPrice\": 899\r\n            },\r\n            {\r\n                \"itemId\": 45,\r\n                \"netPrice\": 899\r\n            }\r\n        ]\r\n    }\r\n}",
+							"raw": "{\r\n    \"data\": {\r\n        \"name\": \"Első és egyetlen teszt árjegyzék\",\r\n        \"items\": [\r\n            {\r\n                \"itemId\": 1,\r\n                \"netPrice\": 899\r\n            },\r\n            {\r\n                \"itemId\": 2,\r\n                \"netPrice\": 899\r\n            },\r\n            {\r\n                \"itemId\": 4,\r\n                \"netPrice\": 899\r\n            },\r\n            {\r\n                \"itemId\": 10,\r\n                \"netPrice\": 899\r\n            },\r\n            {\r\n                \"itemId\": 15,\r\n                \"netPrice\": 899\r\n            }\r\n        ]\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1224,7 +1224,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"partnerId\": 15,\r\n            \"partnerCode\": \"000002\",\r\n            \"partnerSiteCode\": \"0001\",\r\n            \"serialNumber\": 20001,\r\n            \"yearCode\": 23,\r\n            \"originalCopiesPrinted\": 0,\r\n            \"vendor\": {\r\n                \"name\": \"Szlartibartfaszt és Társa\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"8445\",\r\n                \"city\": \"Városlőd\",\r\n                \"address\": \"Rózsa u. 42.\",\r\n                \"felir\": \"XY1234567\",\r\n                \"iban\": \"HU88\",\r\n                \"bankAccount\": \"12345678-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-23\"\r\n            },\r\n            \"buyer\": {\r\n                \"name\": \"Test Name C2\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"1234\",\r\n                \"city\": \"Test City\",\r\n                \"address\": \"Test Address 42. 1. 789B\",\r\n                \"deliveryName\": \"Test Name D2\",\r\n                \"deliveryCountry\": \"HU\",\r\n                \"deliveryPostalCode\": \"4321\",\r\n                \"deliveryCity\": \"Test Town\",\r\n                \"deliveryAddress\": \"Test Address 25C\",\r\n                \"iban\": \"AB12\",\r\n                \"bankAccount\": \"11111111-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-12\"\r\n            },\r\n            \"invoiceDate\": \"2023-08-29\",\r\n            \"fulfillmentDate\": \"2023-09-01\",\r\n            \"invoiceType\": \"E\",\r\n            \"paidDate\": \"2023-09-01\",\r\n            \"items\": [\r\n                {\r\n                    \"id\": 31,\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"expiresAt\": \"2023-12\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 10,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 9990,\r\n                    \"vatRate\": \"AM\",\r\n                    \"vatAmount\": 0,\r\n                    \"grossAmount\": 9990\r\n                }\r\n            ],\r\n            \"otherItems\": [\r\n                {\r\n                    \"id\": 1,\r\n                    \"articleNumber\": \"9999_01\",\r\n                    \"name\": \"Utólag adott visszatérítés\",\r\n                    \"quantity\": 1,\r\n                    \"unitName\": \"db.\",\r\n                    \"netPrice\": -100,\r\n                    \"netAmount\": -100,\r\n                    \"vatRate\": \"27\",\r\n                    \"vatAmount\": -27,\r\n                    \"grossAmount\": -127\r\n                }\r\n            ],\r\n            \"quantity\": 10,\r\n            \"netAmount\": 9990,\r\n            \"vatAmount\": 0,\r\n            \"grossAmount\": 9990,\r\n            \"vatAmounts\": [\r\n                {\r\n                    \"vatRate\": \"AM\",\r\n                    \"netAmount\": 9990,\r\n                    \"vatAmount\": 0,\r\n                    \"grossAmount\": 9990\r\n                }\r\n            ],\r\n            \"roundAmount\": 0,\r\n            \"roundedAmount\": 9990\r\n        },\r\n        {\r\n            \"partnerId\": 15,\r\n            \"partnerCode\": \"000002\",\r\n            \"partnerSiteCode\": \"0001\",\r\n            \"serialNumber\": 20002,\r\n            \"yearCode\": 23,\r\n            \"originalCopiesPrinted\": 0,\r\n            \"vendor\": {\r\n                \"name\": \"Szlartibartfaszt és Társa\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"8445\",\r\n                \"city\": \"Városlőd\",\r\n                \"address\": \"Rózsa u. 42.\",\r\n                \"felir\": \"XY1234567\",\r\n                \"iban\": \"HU88\",\r\n                \"bankAccount\": \"12345678-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-23\"\r\n            },\r\n            \"buyer\": {\r\n                \"name\": \"Test Name C2\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"1234\",\r\n                \"city\": \"Test City\",\r\n                \"address\": \"Test Address 42. 1. 789B\",\r\n                \"deliveryName\": \"Test Name D2\",\r\n                \"deliveryCountry\": \"HU\",\r\n                \"deliveryPostalCode\": \"4321\",\r\n                \"deliveryCity\": \"Test Town\",\r\n                \"deliveryAddress\": \"Test Address 25C\",\r\n                \"iban\": \"AB12\",\r\n                \"bankAccount\": \"11111111-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-12\"\r\n            },\r\n            \"invoiceDate\": \"2023-08-29\",\r\n            \"fulfillmentDate\": \"2023-09-01\",\r\n            \"invoiceType\": \"E\",\r\n            \"paidDate\": \"2023-09-01\",\r\n            \"items\": [\r\n                {\r\n                    \"id\": 31,\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"expiresAt\": \"2023-12\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 10,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 9990,\r\n                    \"vatRate\": \"AM\",\r\n                    \"vatAmount\": 0,\r\n                    \"grossAmount\": 9990\r\n                }\r\n            ],\r\n            \"quantity\": 10,\r\n            \"netAmount\": 9990,\r\n            \"vatAmount\": 0,\r\n            \"grossAmount\": 9990,\r\n            \"vatAmounts\": [\r\n                {\r\n                    \"vatRate\": \"AM\",\r\n                    \"netAmount\": 9990,\r\n                    \"vatAmount\": 0,\r\n                    \"grossAmount\": 9990\r\n                }\r\n            ],\r\n            \"roundAmount\": 0,\r\n            \"roundedAmount\": 9990\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"partnerId\": 15,\r\n            \"partnerCode\": \"000002\",\r\n            \"partnerSiteCode\": \"0001\",\r\n            \"buyer\": {\r\n                \"id\": 15,\r\n                \"name\": \"Test Name C2\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"1234\",\r\n                \"city\": \"Test City\",\r\n                \"address\": \"Test Address 42. 1. 789B\",\r\n                \"deliveryName\": \"Test Name D2\",\r\n                \"deliveryCountry\": \"HU\",\r\n                \"deliveryPostalCode\": \"4321\",\r\n                \"deliveryCity\": \"Test Town\",\r\n                \"deliveryAddress\": \"Test Address 25C\",\r\n                \"iban\": \"AB12\",\r\n                \"bankAccount\": \"11111111-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-12\"\r\n            },\r\n            \"paymentDays\": 30,\r\n            \"invoiceType\": \"P\",\r\n            \"items\": [\r\n                {\r\n                    \"id\": 31,\r\n                    \"expirationId\": 25,\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"expiresAt\": \"2024-02\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 1,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 4995,\r\n                    \"vatRate\": \"27\",\r\n                    \"vatAmount\": 1349,\r\n                    \"grossAmount\": 6344\r\n                },\r\n                {\r\n                    \"id\": 31,\r\n                    \"expirationId\": 25,\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"expiresAt\": \"2024-02\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 2,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 1798,\r\n                    \"vatRate\": \"27\",\r\n                    \"vatAmount\": 485,\r\n                    \"grossAmount\": 2283,\r\n                    \"discountName\": \"100 Ft kedvezmény\"\r\n                },\r\n                {\r\n                    \"id\": 31,\r\n                    \"expirationId\": 25,\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"expiresAt\": \"2024-02\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 2,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 2598,\r\n                    \"vatRate\": \"27\",\r\n                    \"vatAmount\": 701,\r\n                    \"grossAmount\": 3299,\r\n                    \"discountName\": \"Tetszőleges kedvezmény\"\r\n                }\r\n            ],\r\n            \"isSent\": false,\r\n            \"shouldBeUpdated\": false,\r\n            \"serialNumber\": 20000,\r\n            \"yearCode\": 23,\r\n            \"originalCopiesPrinted\": 0,\r\n            \"vendor\": {\r\n                \"name\": \"Szlartibartfaszt és Társa\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"8145\",\r\n                \"city\": \"Nádasladány\",\r\n                \"address\": \"Kastély út 5.\",\r\n                \"felir\": \"XY1234567\",\r\n                \"iban\": \"HU88\",\r\n                \"bankAccount\": \"12345678-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-23\"\r\n            },\r\n            \"invoiceDate\": \"2023-11-07\",\r\n            \"fulfillmentDate\": \"2023-12-07\",\r\n            \"paidDate\": \"2023-12-07\",\r\n            \"quantity\": 5,\r\n            \"netAmount\": 5395,\r\n            \"vatAmount\": 1456,\r\n            \"grossAmount\": 6851,\r\n            \"vatAmounts\": [\r\n                {\r\n                    \"vatRate\": \"27\",\r\n                    \"netAmount\": 5395,\r\n                    \"vatAmount\": 1456,\r\n                    \"grossAmount\": 6851\r\n                }\r\n            ],\r\n            \"roundAmount\": -1,\r\n            \"roundedAmount\": 6850\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1528,7 +1528,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"storeId\": 1,\r\n        \"changes\": [\r\n            {\r\n                \"expirationId\": 24,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 25,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 27,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 28,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 29,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 30,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 31,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 32,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 33,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 34,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 35,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 36,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 37,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 38,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 39,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 40,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 41,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 42,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 43,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 44,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 45,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 46,\r\n                \"quantityChange\": 100\r\n            }\r\n        ]\r\n    }\r\n}",
+							"raw": "{\r\n    \"data\": {\r\n        \"storeId\": 1,\r\n        \"changes\": [\r\n            {\r\n                \"expirationId\": 1,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 2,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 3,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 5,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 6,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 7,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 8,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 9,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 10,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 11,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 12,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 13,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 14,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 15,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 16,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 17,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 18,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 19,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 20,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 21,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 22,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 23,\r\n                \"quantityChange\": 100\r\n            }\r\n        ]\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1614,7 +1614,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"primaryStoreId\": 1,\r\n        \"changes\": [\r\n            {\r\n                \"expirationId\": 24,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 25,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 27,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 28,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 29,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 30,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 31,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 32,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 33,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 34,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 35,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 36,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 37,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 38,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 39,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 40,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 41,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 42,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 43,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 44,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 45,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 46,\r\n                \"quantityChange\": 10\r\n            }\r\n        ]\r\n    }\r\n}",
+							"raw": "{\r\n    \"data\": {\r\n        \"primaryStoreId\": 1,\r\n        \"changes\": [\r\n            {\r\n                \"expirationId\": 1,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 2,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 3,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 4,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 5,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 6,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 7,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 8,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 9,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 10,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 11,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 12,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 13,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 14,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 15,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 16,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 17,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 18,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 19,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 20,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 21,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 22,\r\n                \"quantityChange\": 10\r\n            }\r\n        ]\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1932,7 +1932,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userName\": \"ztill\",\r\n    \"password\": \"jelszo\"\r\n}",
+							"raw": "{\r\n    \"userName\": \"ztill\",\r\n    \"password\": \"password01\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2009,7 +2009,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"password\": \"W4y4l4a4j4b+boreal\"\r\n}",
+							"raw": "{\r\n    \"password\": \"password01\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2070,7 +2070,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "43|GU3EzjvDmYIMVAVJeytrPRXBmEWPkgyFd1RrF2Oy",
+									"value": "{{token}}",
 									"type": "string"
 								}
 							]
@@ -2085,7 +2085,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"code\": \"02\",\r\n    \"userName\": \"ztill_tester\",\r\n    \"name\": \"Till Zoltán\",\r\n    \"phoneNumber\": \"+36304969025\",\r\n    \"roles\": [\r\n        \"A\"\r\n    ]\r\n}",
+							"raw": "{\r\n    \"userName\": \"ztill_tester\",\r\n    \"name\": \"Till Zoltán\",\r\n    \"phoneNumber\": \"+36304969025\",\r\n    \"roles\": [\r\n        \"A\"\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2112,32 +2112,36 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "43|GU3EzjvDmYIMVAVJeytrPRXBmEWPkgyFd1RrF2Oy",
+									"value": "{{token}}",
 									"type": "string"
 								}
 							]
 						},
-						"method": "DELETE",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
-							},
-							{
-								"key": "X-Device-Id",
-								"value": "{{integra_device_id}}",
-								"type": "text"
 							}
 						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"ztill\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{zephyr_aru_url}}/users/6",
+							"raw": "{{zephyr_aru_url}}/users/delete",
 							"host": [
 								"{{zephyr_aru_url}}"
 							],
 							"path": [
 								"users",
-								"6"
+								"delete"
 							]
 						}
 					},
@@ -2199,7 +2203,7 @@
 								}
 							]
 						},
-						"method": "DELETE",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Accept",
@@ -2217,13 +2221,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{zephyr_aru_url}}/users/roles",
+							"raw": "{{zephyr_aru_url}}/users/roles/delete",
 							"host": [
 								"{{zephyr_aru_url}}"
 							],
 							"path": [
 								"users",
-								"roles"
+								"roles",
+								"delete"
 							]
 						}
 					},

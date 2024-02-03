@@ -12,12 +12,12 @@ class User extends Authenticatable
 
     protected $fillable = [
         'company_id',
-        'code',
         'user_name',
         'state',
         'name',
         'phone_number',
-        'created_at'
+        'attempts',
+        'created_at',
     ];
 
     public function company()
