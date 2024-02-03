@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(UserRoleController::class)->prefix('users/roles')->group(function () {
     Route::post('/', 'add_user_role')->middleware(['auth:sanctum', 'ability:AM']);
-    Route::delete('/', 'remove_user_role')->middleware(['auth:sanctum', 'ability:AM']);
+    Route::post('/delete', 'delete_user_role')->middleware(['auth:sanctum', 'ability:AM']);
 });
 
 Route::controller(UserController::class)->prefix('users')->group(function () {

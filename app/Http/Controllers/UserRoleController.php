@@ -55,7 +55,7 @@ class UserRoleController extends Controller
         }
     }
 
-    public function remove_user_role(RemoveUserRoleRequest $request)
+    public function delete_user_role(RemoveUserRoleRequest $request)
     {
         try {
             $sender = request()->user();
