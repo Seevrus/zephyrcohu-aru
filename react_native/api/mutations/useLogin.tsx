@@ -38,10 +38,18 @@ export function useLogin() {
         if (isAxiosError(error)) {
           // eslint-disable-next-line no-console
           console.log('useLogin:', error.response?.data);
+
+          if (error?.response?.status === 401) {
+            throw new Error('Hibás felhasználónév / jelszó!');
+          }
+          if (error?.response?.status === 423) {
+            throw new Error(
+              'Túl sok sikertelen bejelentkezési kísérlet miatt a felhasználót zároltuk.'
+            );
+          }
         }
-        throw isAxiosError(error) && error?.response?.status === 401
-          ? new Error('Hibás felhasználónév / jelszó!')
-          : new Error('Váratlan hiba lépett fel a bejelentkezés során.');
+
+        throw new Error('Váratlan hiba lépett fel a bejelentkezés során.');
       }
     },
     onSuccess: async () => {

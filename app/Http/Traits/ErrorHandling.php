@@ -78,7 +78,7 @@ trait ErrorHandling
             'message' => 'The resource that is being accessed is locked.',
         ];
 
-        return response($response, 404);
+        return response($response, 423);
     }
 
     public function too_many_requests()
