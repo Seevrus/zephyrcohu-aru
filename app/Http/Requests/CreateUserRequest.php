@@ -24,7 +24,6 @@ class CreateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required|string|size:2|unique:users,code',
             'userName' => 'required|string|unique:users,user_name',
             'name' => 'required|string',
             'phoneNumber' => 'regex:/^\+36[237]0\d{7}/',

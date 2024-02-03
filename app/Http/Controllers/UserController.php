@@ -54,7 +54,6 @@ class UserController extends Controller
 
             $new_user = User::create([
                 'company_id' => $company_id,
-                'code' => $request->code,
                 'user_name' => $user_name,
                 'name' => $request->name,
                 'state' => 'I',
