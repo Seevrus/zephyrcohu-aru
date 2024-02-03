@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2023. Dec 04. 18:38
--- Kiszolgáló verziója: 10.4.27-MariaDB
--- PHP verzió: 8.0.25
+-- Létrehozás ideje: 2024. Feb 03. 09:38
+-- Kiszolgáló verziója: 10.4.32-MariaDB
+-- PHP verzió: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -465,11 +465,11 @@ CREATE TABLE `stores` (
 CREATE TABLE `users` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `company_id` bigint(20) UNSIGNED NOT NULL,
-  `code` varchar(255) NOT NULL,
   `user_name` varchar(255) NOT NULL,
   `state` varchar(1) NOT NULL DEFAULT 'I',
   `name` varchar(255) NOT NULL,
   `phone_number` varchar(255) DEFAULT NULL,
+  `attempts` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `last_active` timestamp NULL DEFAULT NULL
@@ -696,7 +696,6 @@ ALTER TABLE `stores`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `users_code_unique` (`code`),
   ADD KEY `users_company_id_foreign` (`company_id`);
 
 --
