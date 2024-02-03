@@ -179,6 +179,7 @@ class UserController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+                || $e instanceof LockedHttpException
             ) {
                 throw $e;
             }
@@ -238,6 +239,7 @@ class UserController extends Controller
                 }
             }
 
+            $sender->attempts = 0;
             $sender->tokens()->delete();
             $sender->passwords()->create([
                 'password' => Hash::make($newPassword),
