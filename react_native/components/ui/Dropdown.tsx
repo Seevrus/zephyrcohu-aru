@@ -45,7 +45,7 @@ export function Dropdown({
         defaultOption={defaultOption}
         save="key"
         setSelected={onSelect}
-        fontFamily="Muli"
+        fontFamily="Nunito-Sans"
         placeholder="Kérem válasszon..."
         searchPlaceholder=" "
         notFoundText="Nem található."
