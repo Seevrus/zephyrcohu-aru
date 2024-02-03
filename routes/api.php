@@ -45,7 +45,7 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
     Route::get('/', 'view_all')
         ->middleware(['auth:sanctum', 'ability:AM']);
 
-    Route::delete('/{id}', 'remove')
+    Route::post('/delete', 'delete')
         ->middleware(['auth:sanctum', 'ability:AM']);
 });
 

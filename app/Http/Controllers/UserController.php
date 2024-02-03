@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\CreateUserRequest;
+use App\Http\Requests\DeleteUserRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
@@ -79,7 +80,7 @@ class UserController extends Controller
                 'company_id' => $company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Created user '.$user_name,
+                'action' => 'Created user ' . $user_name,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -110,7 +111,7 @@ class UserController extends Controller
                 'user_name' => $request->userName,
             ]);
 
-            if (! $user) {
+            if (!$user) {
                 throw new UnauthorizedHttpException(random_bytes(32));
             }
 
@@ -124,7 +125,7 @@ class UserController extends Controller
 
             $password = $user->passwords()->orderBy('set_time', 'desc')->first();
 
-            if (! Hash::check($request->password, $password->password)) {
+            if (!Hash::check($request->password, $password->password)) {
                 Log::insert([
                     'company_id' => $user->company_id,
                     'user_id' => $user->id,
@@ -230,7 +231,7 @@ class UserController extends Controller
 
             $isSenderAdmin = in_array('AM', $senderRoles);
 
-            if ($request->userName && ! $isSenderAdmin) {
+            if ($request->userName && !$isSenderAdmin) {
                 throw new UnauthorizedHttpException(random_bytes(32));
             }
 
@@ -239,7 +240,7 @@ class UserController extends Controller
                     'user_name' => $request->userName,
                 ]);
 
-                if (! $subjectOfChange) {
+                if (!$subjectOfChange) {
                     throw new NotFoundHttpException();
                 }
             } else {
@@ -324,7 +325,7 @@ class UserController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed '.$companyUsers->count().' users',
+                'action' => 'Accessed ' . $companyUsers->count() . ' users',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -334,15 +335,21 @@ class UserController extends Controller
         }
     }
 
-    public function remove(int $id)
+    public function delete(DeleteUserRequest $request)
     {
         try {
             $sender = request()->user();
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $user = $sender->company->users()->findOrFail($id);
+            $user = User::firstWhere([
+                'user_name' => $request->userName,
+            ]);
             $this->authorize('remove', $user);
+
+            if ($sender->id === $user->id) {
+                throw new UnauthorizedHttpException(random_bytes(32));
+            }
 
             $user->delete();
 
@@ -350,7 +357,7 @@ class UserController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed user '.$user->id,
+                'action' => 'Removed user ' . $user->id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {
