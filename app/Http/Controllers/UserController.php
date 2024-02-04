@@ -140,6 +140,7 @@ class UserController extends Controller
                 throw new UnauthorizedHttpException(random_bytes(32));
             }
 
+            $user->attempts = 0;
             $user->tokens()->delete();
             $passwordSetTime = new Carbon($password->set_time);
             $isPasswordExpired = $passwordSetTime->diffInSeconds(Carbon::now()) > $this->password_max_lifetime;
@@ -163,6 +164,7 @@ class UserController extends Controller
                 'occured_at' => Carbon::now(),
             ]);
 
+            $user->save();
             $userResource = new UserResource($user->load('company'));
 
             return array_merge(
