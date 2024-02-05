@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AddUserRoleRequest;
 use App\Http\Requests\RemoveUserRoleRequest;
+use App\Http\Resources\UserRoleCollection;
 use App\Models\UserRole;
 use Carbon\Carbon;
 use Exception;
@@ -25,7 +26,7 @@ class UserRoleController extends Controller
                 'user_name' => $request->userName,
             ]);
 
-            if (! $user) {
+            if (!$user) {
                 throw new ModelNotFoundException();
             }
 
@@ -36,12 +37,14 @@ class UserRoleController extends Controller
             $existingRoles = $user->roles->pluck('role')->toArray();
 
             foreach ($request->roles as $role) {
-                if (! array_search($role, $existingRoles)) {
+                if (array_search($role, $existingRoles) === false) {
                     $user->roles()->save(
                         new UserRole(['role' => $role])
                     );
                 }
             }
+
+            return new UserRoleCollection($user->fresh()->roles);
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
@@ -66,7 +69,7 @@ class UserRoleController extends Controller
                 'user_name' => $request->userName,
             ]);
 
-            if (! $user) {
+            if (!$user) {
                 throw new ModelNotFoundException();
             }
 
@@ -75,6 +78,8 @@ class UserRoleController extends Controller
             }
 
             UserRole::where(['user_id' => $user->id])->whereIn('role', $request->roles)->delete();
+
+            return new UserRoleCollection($user->fresh()->roles);
         } catch (Exception $e) {
             if (
                 $e instanceof UnauthorizedHttpException
