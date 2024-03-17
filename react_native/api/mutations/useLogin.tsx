@@ -31,8 +31,6 @@ export function useLogin() {
           expiresAt: response.token.expiresAt,
         });
 
-        console.log('response token:', response.token.accessToken);
-
         return response;
       } catch (error) {
         if (isAxiosError(error)) {

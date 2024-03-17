@@ -257,7 +257,7 @@ export function useSelectItemsToSellData(
 
         const areAllQuantitiesZero = pipe(
           values,
-          all(anyPass([equals(0), isNil]))
+          all(anyPass([equals(0), isNil<number>]))
         )(itemsWithNewQuantity[id]);
 
         if (areAllQuantitiesZero) {
