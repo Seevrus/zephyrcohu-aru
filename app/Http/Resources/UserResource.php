@@ -34,7 +34,7 @@ class UserResource extends JsonResource
             'storeId' => $this->store?->id,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
-            'lastActive' => is_null($this->last_active) ? null : Carbon::createFromFormat('Y-m-d H:i:s', $this->last_active),
+            'lastActive' => is_null($this->last_active) ? null : $this->last_active,
         ];
     }
 }
