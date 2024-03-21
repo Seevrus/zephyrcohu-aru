@@ -1,6 +1,9 @@
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
+import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
+import * as Sharing from 'expo-sharing';
 import { useAtomValue } from 'jotai';
 import { loadable } from 'jotai/utils';
 import { isNil } from 'ramda';
@@ -205,6 +208,105 @@ export function useTiles(): UseTilesData | undefined {
               });
             } else {
               navigation.navigate('EndErrand');
+            }
+          },
+        },
+        {
+          id: 't5',
+          title: 'Teszt média',
+          Icon: () => (
+            <MaterialCommunityIcons name="printer" size={45} color="white" />
+          ),
+          variant: 'ok',
+          async onPress() {
+            const albumName = 'boreal_print';
+            const fileDirectory = FileSystem.documentDirectory + albumName;
+            const fileName = `${fileDirectory}/print_test.txt`;
+            const testFileString = `  Zery egy nagyon szép ember, fején egy új fejhallgatóvel.  `;
+
+            const directoryInfo = await FileSystem.getInfoAsync(fileDirectory);
+            if (!directoryInfo.exists) {
+              await FileSystem.makeDirectoryAsync(fileDirectory, {
+                intermediates: true,
+              });
+            }
+
+            const permission = await MediaLibrary.requestPermissionsAsync();
+
+            if (FileSystem.documentDirectory !== null && permission.granted) {
+              try {
+                await FileSystem.writeAsStringAsync(fileName, testFileString, {
+                  encoding: FileSystem.EncodingType.UTF8,
+                });
+
+                const asset = await MediaLibrary.createAssetAsync(fileName);
+                const album = await MediaLibrary.getAlbumAsync(albumName);
+
+                await (album
+                  ? MediaLibrary.addAssetsToAlbumAsync([asset], album, false)
+                  : MediaLibrary.createAlbumAsync(albumName, asset, false));
+              } catch (error) {
+                console.error('MediaLibrary.createAssetAsync failed', error);
+              }
+            } else {
+              console.log('Hozzáférés megtagadva');
+            }
+          },
+        },
+        {
+          id: 't6',
+          title: 'Teszt megosztás',
+          Icon: () => (
+            <MaterialCommunityIcons name="printer" size={45} color="white" />
+          ),
+          variant: 'ok',
+          async onPress() {
+            const directoryName = FileSystem.documentDirectory + 'boreal_print';
+            const fileName = `${directoryName}/print_test.txt`;
+            const testFileString = `  Zery egy nagyon szép ember, fején egy új fejhallgatóvel.  `;
+
+            const directoryInfo = await FileSystem.getInfoAsync(directoryName);
+            if (!directoryInfo.exists) {
+              await FileSystem.makeDirectoryAsync(directoryName, {
+                intermediates: true,
+              });
+            }
+
+            await FileSystem.writeAsStringAsync(fileName, testFileString, {
+              encoding: FileSystem.EncodingType.UTF8,
+            });
+
+            await Sharing.shareAsync(fileName, { mimeType: 'text/plain' });
+          },
+        },
+        {
+          id: 't7',
+          title: 'Teszt engedélyes',
+          Icon: () => (
+            <MaterialCommunityIcons name="printer" size={45} color="white" />
+          ),
+          variant: 'ok',
+          async onPress() {
+            const documentsDirectory =
+              FileSystem.StorageAccessFramework.getUriForDirectoryInRoot(
+                'Documents'
+              );
+
+            const borealDirectory = documentsDirectory + '/Boreal';
+
+            const permissions =
+              await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(
+                borealDirectory
+              );
+
+            if (permissions.granted) {
+              const testFileString = `  Zery egy nagyon szép ember, fején egy új fejhallgatóvel.  `;
+
+              await FileSystem.StorageAccessFramework.writeAsStringAsync(
+                borealDirectory + '/print.txt',
+                testFileString,
+                { encoding: FileSystem.EncodingType.UTF8 }
+              );
             }
           },
         },
