@@ -221,8 +221,38 @@ export function useTiles(): UseTilesData | undefined {
           async onPress() {
             const albumName = 'boreal_print';
             const fileDirectory = FileSystem.documentDirectory + albumName;
-            const fileName = `${fileDirectory}/print_test.txt`;
-            const testFileString = `  Zery egy nagyon szép ember, fején egy új fejhallgatóvel.  `;
+            const imageExtension = '.jpg';
+            const fileName = `${fileDirectory}/print_test`;
+            const testFileString = `111111111122222222223333333333444444444455555555556666666666777777777
+
+  RAKJEGYZÉK | 2023.09.20.
+  ------------------------
+  Rakodta: 0032 Valkó Béla
+  Raktár : 0002 LXW-777 hûtõautó
+  
+  SSz. Cikk__ Lejárat                      Menny. Mennyiségek______  
+  Megnevezés______________________________ egység Kezdõ Mozgás Kész_
+  ------------------------------------------------------------------
+  001. ****6* ****.**  
+  *************************************40* ****6* ***5* ****6* ***5*
+  ------------------------------------------------------------------
+  002. 000021 2024.05  
+  Pandó pálcikás                           karton    10     +7    17
+  ------------------------------------------------------------------
+  003. 000033 2024.11  
+  Mogyorós családi                         karton    10      0    10
+  ------------------------------------------------------------------
+  004. 000042 2023.12  
+  Vaníliás családi                         karton    30     -3    27
+  ------------------------------------------------------------------
+  Összesen (rakodva 2 termék)                        50     +7
+                                                            -3    54
+  ==================================================================
+  
+  
+                      --------------------      --------------------
+                                   rakodta               ellenõrizte 
+  |> 2023.09.20. | 0032 | 0002 <|-----------------------------------`;
 
             const directoryInfo = await FileSystem.getInfoAsync(fileDirectory);
             if (!directoryInfo.exists) {
@@ -235,11 +265,17 @@ export function useTiles(): UseTilesData | undefined {
 
             if (FileSystem.documentDirectory !== null && permission.granted) {
               try {
-                await FileSystem.writeAsStringAsync(fileName, testFileString, {
-                  encoding: FileSystem.EncodingType.UTF8,
-                });
+                await FileSystem.writeAsStringAsync(
+                  fileName + imageExtension,
+                  testFileString,
+                  {
+                    encoding: FileSystem.EncodingType.UTF8,
+                  }
+                );
 
-                const asset = await MediaLibrary.createAssetAsync(fileName);
+                const asset = await MediaLibrary.createAssetAsync(
+                  fileName + imageExtension
+                );
                 const album = await MediaLibrary.getAlbumAsync(albumName);
 
                 await (album
@@ -279,7 +315,7 @@ export function useTiles(): UseTilesData | undefined {
             await Sharing.shareAsync(fileName, { mimeType: 'text/plain' });
           },
         },
-        {
+        /* {
           id: 't7',
           title: 'Teszt engedélyes',
           Icon: () => (
@@ -292,24 +328,37 @@ export function useTiles(): UseTilesData | undefined {
                 'Documents'
               );
 
+            console.log(documentsDirectory);
+
             const borealDirectory = documentsDirectory + '/Boreal';
+
+            console.log(borealDirectory);
 
             const permissions =
               await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(
                 borealDirectory
               );
 
-            if (permissions.granted) {
-              const testFileString = `  Zery egy nagyon szép ember, fején egy új fejhallgatóvel.  `;
+            console.log(permissions);
 
-              await FileSystem.StorageAccessFramework.writeAsStringAsync(
-                borealDirectory + '/print.txt',
-                testFileString,
-                { encoding: FileSystem.EncodingType.UTF8 }
-              );
+            if (permissions.granted) {
+              const borealDirectoryContent =
+                await FileSystem.StorageAccessFramework.readDirectoryAsync(
+                  permissions.directoryUri
+                );
+
+              console.log(borealDirectoryContent);
+
+              // const testFileString = `  Zery egy nagyon szép ember, fején egy új fejhallgatóvel.  `;
+
+              // await FileSystem.StorageAccessFramework.writeAsStringAsync(
+              //   borealDirectory + '/print.txt',
+              //   testFileString,
+              //   { encoding: FileSystem.EncodingType.UTF8 }
+              // );
             }
           },
-        },
+        }, */
       ],
     };
   }
