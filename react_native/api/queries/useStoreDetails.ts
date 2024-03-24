@@ -12,7 +12,10 @@ import {
 } from '../response-types/StoreDetailsResponseType';
 import { useCheckToken } from './useCheckToken';
 
-export function useStoreDetails(storeId: number | undefined, enabled = true) {
+export function useStoreDetails(
+  storeId: number | null | undefined,
+  enabled = true
+) {
   const { isInternetReachable } = useNetInfo();
   const { isSuccess: isCheckTokenSuccess } = useCheckToken();
   const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);

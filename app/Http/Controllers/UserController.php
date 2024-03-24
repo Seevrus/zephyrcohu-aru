@@ -165,7 +165,7 @@ class UserController extends Controller
             ]);
 
             $user->save();
-            $userResource = new UserResource($user->load('company'));
+            $userResource = new UserResource($user->load('company', 'rounds'));
 
             return array_merge(
                 $userResource->toArray(0),

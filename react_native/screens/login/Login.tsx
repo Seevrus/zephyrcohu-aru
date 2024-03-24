@@ -50,7 +50,10 @@ export function Login({ navigation }: LoginProps) {
 
     try {
       setIsLoading(true);
-      await login.mutateAsync({ userName, password });
+      await login.mutateAsync({
+        userName: userName.trim(),
+        password: password.trim(),
+      });
       navigation.reset({
         index: 0,
         routes: [{ name: 'Index' }],
