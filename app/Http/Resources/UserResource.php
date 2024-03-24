@@ -22,6 +22,9 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
+        $round = $this->whenLoaded('rounds')->last();
+        $hasActiveRound =  $round && is_null($round->round_finished);
+
         return [
             'id' => $this->id,
             'userName' => $this->user_name,
@@ -31,6 +34,7 @@ class UserResource extends JsonResource
             'company' => new CompanyResource($this->whenLoaded('company')),
             'phoneNumber' => $this->phone_number,
             'roles' => new UserRoleCollection($this->roles),
+            'round' => $hasActiveRound ? new RoundResource($round) : null,
             'storeId' => $this->store?->id,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,

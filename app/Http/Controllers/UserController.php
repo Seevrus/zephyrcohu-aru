@@ -201,7 +201,7 @@ class UserController extends Controller
             $token = $request->user()->currentAccessToken();
             $tokenExpiration = Carbon::parse($token->created_at)->addHours(25);
 
-            $userResource = new UserResource($sender->load('company'));
+            $userResource = new UserResource($sender->load('company', 'rounds'));
 
             return array_merge(
                 $userResource->toArray(0),
