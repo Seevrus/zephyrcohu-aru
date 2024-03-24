@@ -11,11 +11,18 @@ import {
 } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { useFonts } from 'expo-font';
+import {
+  getPermissionsAsync,
+  requestPermissionsAsync,
+} from 'expo-media-library';
 import { StatusBar } from 'expo-status-bar';
 import { Provider as AtomsProvider } from 'jotai/react';
+import { isNil } from 'ramda';
+import { useEffect, useState } from 'react';
 
 import { Loading } from './react_native/components/Loading';
 import { MainStack } from './react_native/navigators/MainStack';
+import { MissingPermissions } from './react_native/screens/missing-permissions/MissingPermissions';
 
 const asyncStoragePersister = createAsyncStoragePersister({
   storage: AsyncStorage,
@@ -44,8 +51,29 @@ export default function App() {
     'Roboto-Bold': Roboto_700Bold,
   });
 
-  if (!fontsLoaded) {
+  const [hasMediaPermissions, setHasMediaPermissions] = useState<
+    boolean | null
+  >(null);
+
+  useEffect(() => {
+    getPermissionsAsync()
+      .then((permissions) => {
+        if (!permissions.granted && permissions.canAskAgain) {
+          return requestPermissionsAsync();
+        }
+
+        return permissions;
+      })
+      .then((permissions) => {
+        setHasMediaPermissions(permissions.granted);
+        return permissions;
+      });
+  }, []);
+
+  if (!fontsLoaded || isNil(hasMediaPermissions)) {
     return <Loading />;
+  } else if (!hasMediaPermissions) {
+    return <MissingPermissions />;
   }
 
   return (
