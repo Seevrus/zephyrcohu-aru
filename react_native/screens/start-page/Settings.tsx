@@ -11,7 +11,7 @@ import { currentReceiptAtom, receiptsAtom } from '../../atoms/receipts';
 import { maxNewPartnerIdInUseAtom } from '../../atoms/sellFlow';
 import {
   primaryStoreAtom,
-  selectedStoreAtom,
+  selectedStoreCurrentStateAtom,
   selectedStoreInitialStateAtom,
 } from '../../atoms/storage';
 import {
@@ -46,7 +46,9 @@ function SuspendedSettings({ navigation }: SettingsProps) {
   const [, setSelectedStoreInitialState] = useAtom(
     selectedStoreInitialStateAtom
   );
-  const [, setSelectedStore] = useAtom(selectedStoreAtom);
+  const [, setSelectedStoreCurrentState] = useAtom(
+    selectedStoreCurrentStateAtom
+  );
 
   const [, setIsStorageSavedToApi] = useAtom(isStorageSavedToApiAtom);
   const [, setStorageListItems] = useAtom(storageListItemsAtom);
@@ -77,7 +79,7 @@ function SuspendedSettings({ navigation }: SettingsProps) {
 
     await setPrimaryStore(null);
     await setSelectedStoreInitialState(null);
-    await setSelectedStore(null);
+    await setSelectedStoreCurrentState(null);
 
     setIsStorageSavedToApi(false);
     setStorageListItems(null);

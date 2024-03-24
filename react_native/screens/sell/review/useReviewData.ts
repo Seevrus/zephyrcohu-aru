@@ -24,7 +24,7 @@ import {
   type OtherReviewItem,
   type RegularReviewItem,
 } from '../../../atoms/sellFlow';
-import { selectedStoreAtom } from '../../../atoms/storage';
+import { selectedStoreCurrentStateAtom } from '../../../atoms/storage';
 import { tokenAtom } from '../../../atoms/token';
 import { type AlertButton } from '../../../components/alert/Alert';
 import { useCurrentPriceList } from '../../../hooks/sell/useCurrentPriceList';
@@ -52,8 +52,9 @@ export function useReviewData(
 
   const currentOrder = useAtomValue(currentOrderAtom);
   const [currentReceipt, setCurrentReceipt] = useAtom(currentReceiptAtom);
-  const [selectedStoreCurrentState, setSelectedStoreCurrentState] =
-    useAtom(selectedStoreAtom);
+  const [selectedStoreCurrentState, setSelectedStoreCurrentState] = useAtom(
+    selectedStoreCurrentStateAtom
+  );
   const [, setOrders] = useAtom(ordersAtom);
   const [receipts, setReceipts] = useAtom(receiptsAtom);
   const [reviewItems, setReviewItems] = useAtom(reviewItemsAtom);

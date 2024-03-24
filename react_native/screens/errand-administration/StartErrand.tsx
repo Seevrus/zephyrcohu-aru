@@ -22,7 +22,7 @@ import { fetchPartners } from '../../api/queries/usePartners';
 import { fetchPriceLists } from '../../api/queries/usePriceLists';
 import { fetchStoreDetails } from '../../api/queries/useStoreDetails';
 import { fetchStores, useStores } from '../../api/queries/useStores';
-import { selectedStoreAtom } from '../../atoms/storage';
+import { selectedStoreCurrentStateAtom } from '../../atoms/storage';
 import { tokenAtom } from '../../atoms/token';
 import { Loading } from '../../components/Loading';
 import { Container } from '../../components/container/Container';
@@ -49,7 +49,9 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
   } = useStores();
 
   const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
-  const [, setSelectedStore] = useAtom(selectedStoreAtom);
+  const [, setSelectedStoreCurrentState] = useAtom(
+    selectedStoreCurrentStateAtom
+  );
 
   const [storeId, setStoreId] = useState<number | null>(null);
   const [partnerListId, setPartnerListId] = useState<number | null>(null);
@@ -108,7 +110,7 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
           queryKey: ['store-details', storeId],
           queryFn: fetchStoreDetails(token, storeId),
         });
-        await setSelectedStore(storeDetails);
+        await setSelectedStoreCurrentState(storeDetails);
 
         await queryClient.fetchQuery({
           queryKey: ['stores'],

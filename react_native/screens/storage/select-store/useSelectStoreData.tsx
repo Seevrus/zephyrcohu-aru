@@ -28,7 +28,7 @@ import { type StoreDetailsResponseData } from '../../../api/response-types/Store
 import { type StoreType } from '../../../api/response-types/common/StoreType';
 import {
   primaryStoreAtom,
-  selectedStoreAtom,
+  selectedStoreCurrentStateAtom,
   selectedStoreInitialStateAtom,
 } from '../../../atoms/storage';
 import { tokenAtom } from '../../../atoms/token';
@@ -48,7 +48,9 @@ export function useSelectStoreData(
   const [, setSelectedStoreInitialState] = useAtom(
     selectedStoreInitialStateAtom
   );
-  const [, setSelectedStore] = useAtom(selectedStoreAtom);
+  const [, setSelectedStoreCurrentState] = useAtom(
+    selectedStoreCurrentStateAtom
+  );
 
   const [storeSearchValue, setStoreSearchValue] = useState<string>('');
   const [selectedStoreId, setSelectedStoreId] = useState<number | null>(null);
@@ -105,7 +107,7 @@ export function useSelectStoreData(
             queryFn: fetchStoreDetails(token, selectedStoreId),
           });
         await setSelectedStoreInitialState(selectedStoreDetails);
-        await setSelectedStore(selectedStoreDetails);
+        await setSelectedStoreCurrentState(selectedStoreDetails);
 
         navigation.replace('SelectItemsFromStore');
       } catch (error) {
@@ -119,7 +121,7 @@ export function useSelectStoreData(
     selectStore,
     selectedStoreId,
     setPrimaryStore,
-    setSelectedStore,
+    setSelectedStoreCurrentState,
     setSelectedStoreInitialState,
     token,
   ]);

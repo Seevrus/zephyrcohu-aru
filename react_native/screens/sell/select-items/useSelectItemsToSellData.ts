@@ -37,7 +37,7 @@ import {
   selectedItemsAtom,
   selectedPartnerAtom,
 } from '../../../atoms/sellFlow';
-import { selectedStoreAtom } from '../../../atoms/storage';
+import { selectedStoreCurrentStateAtom } from '../../../atoms/storage';
 import { type AlertButton } from '../../../components/alert/Alert';
 import { useCurrentPriceList } from '../../../hooks/sell/useCurrentPriceList';
 import { useResetSellFlow } from '../../../hooks/sell/useResetSellFlow';
@@ -83,7 +83,9 @@ export function useSelectItemsToSellData(
 
   const [, setCurrentOrder] = useAtom(currentOrderAtom);
   const [, setCurrentReceipt] = useAtom(currentReceiptAtom);
-  const currentStorage = useAtomValue(loadable(selectedStoreAtom));
+  const selectedStoreCurrentState = useAtomValue(
+    loadable(selectedStoreCurrentStateAtom)
+  );
   const [selectedItems, setSelectedItems] = useAtom(selectedItemsAtom);
   const selectedPartner = useAtomValue(selectedPartnerAtom);
 
@@ -113,11 +115,11 @@ export function useSelectItemsToSellData(
   const storageExpirations = useMemo(() => {
     const expirations: Record<number, Record<number, number>> = {};
 
-    if (currentStorage.state !== 'hasData') {
+    if (selectedStoreCurrentState.state !== 'hasData') {
       return expirations;
     }
 
-    currentStorage.data?.expirations?.forEach((expiration) => {
+    selectedStoreCurrentState.data?.expirations?.forEach((expiration) => {
       if (!expirations[expiration.itemId]) {
         expirations[expiration.itemId] = {};
       }
@@ -126,7 +128,7 @@ export function useSelectItemsToSellData(
     });
 
     return expirations;
-  }, [currentStorage]);
+  }, [selectedStoreCurrentState]);
 
   const sellItems: SellItems = useMemo(
     () =>
@@ -414,7 +416,9 @@ export function useSelectItemsToSellData(
 
   return {
     isLoading:
-      isLoading || isItemsPending || currentStorage.state !== 'hasData',
+      isLoading ||
+      isItemsPending ||
+      selectedStoreCurrentState.state !== 'hasData',
     selectedOrderItems,
     searchState,
     setSearchState,

@@ -10,7 +10,7 @@ import {
   numberOfReceiptsAtom,
   receiptsAtom,
 } from '../../atoms/receipts';
-import { selectedStoreAtom } from '../../atoms/storage';
+import { selectedStoreCurrentStateAtom } from '../../atoms/storage';
 import { useResetSellFlow } from '../../hooks/sell/useResetSellFlow';
 
 export function useEndErrand() {
@@ -27,8 +27,9 @@ export function useEndErrand() {
   const numberOfReceipts = useAtomValue(numberOfReceiptsAtom);
   const [, setOrders] = useAtom(ordersAtom);
   const [receipts, setReceipts] = useAtom(receiptsAtom);
-  const [selectedStoreCurrentState, setSelectedStoreCurrentState] =
-    useAtom(selectedStoreAtom);
+  const [selectedStoreCurrentState, setSelectedStoreCurrentState] = useAtom(
+    selectedStoreCurrentStateAtom
+  );
 
   const finishRound = useCallback(async () => {
     if (!!activeRound && !!selectedStoreCurrentState) {

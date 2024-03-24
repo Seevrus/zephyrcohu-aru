@@ -14,8 +14,6 @@ import {
   deleteAssetsAsync,
   getAlbumAsync,
   getAssetsAsync,
-  getPermissionsAsync,
-  requestPermissionsAsync,
 } from 'expo-media-library';
 import { deleteItemAsync, getItemAsync, setItemAsync } from 'expo-secure-store';
 import { atomWithStorage, createJSONStorage } from 'jotai/utils';
@@ -50,24 +48,8 @@ async function ensureCacheDirectoryExists() {
   }
 }
 
-async function requestPermissions() {
-  let permissions = await getPermissionsAsync();
-
-  if (!permissions.granted && permissions.canAskAgain) {
-    permissions = await requestPermissionsAsync();
-  }
-
-  return permissions;
-}
-
 const MediaStorage = <const>{
   async getItem(key: string) {
-    const permissions = await requestPermissions();
-
-    if (!permissions.granted) {
-      return;
-    }
-
     const cacheAlbum = await getAlbumAsync(albumName);
 
     if (!cacheAlbum) {
@@ -91,12 +73,6 @@ const MediaStorage = <const>{
     return JSON.parse(cacheItemContent);
   },
   async setItem(key: string, value: string) {
-    const permissions = await requestPermissions();
-
-    if (!permissions.granted) {
-      return;
-    }
-
     await ensureCacheDirectoryExists();
     const temporaryFile = storageDirectory + '/' + key + imageExtension;
 
@@ -112,12 +88,6 @@ const MediaStorage = <const>{
       : createAlbumAsync(albumName, cacheItem, false));
   },
   async removeItem(key: string) {
-    const permissions = await requestPermissions();
-
-    if (!permissions.granted) {
-      return;
-    }
-
     const cacheAlbum = await getAlbumAsync(albumName);
 
     if (!cacheAlbum) {
@@ -135,6 +105,15 @@ const MediaStorage = <const>{
 
     await deleteAssetsAsync([cacheItem]);
   },
+};
+
+export const mediaKeys = <const>{
+  maxNewPartnerIdInUse: 'a06a3e58-f1cf-4309-b33a-639889d41e96',
+  orders: 'a03f4948-e8d7-4393-aeb4-3b9a18034451',
+  primaryStore: '61ce65cb-3142-4d0b-a982-16e574a6bd96',
+  receipts: '7b39b7aa-ce7b-4b4f-a290-2778c9e72368',
+  selectedStoreCurrent: 'e35c1ffe-57aa-4639-9655-4928d92e51c4',
+  selectedStoreInitial: '9704835a-1f8f-4121-84a0-f0e643eee249',
 };
 
 export const atomWithMediaStorage = <T>(key: string, content: T) => {
