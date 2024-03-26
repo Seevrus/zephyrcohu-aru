@@ -2,11 +2,11 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { useIsFocused } from '@react-navigation/native';
 import { useAtomValue } from 'jotai';
 import { loadable } from 'jotai/utils';
+import { useMemo } from 'react';
 
 import { useCheckToken } from '../api/queries/useCheckToken';
 import { numberOfReceiptsAtom } from '../atoms/receipts';
 import { tokenAtom } from '../atoms/token';
-import { useMemo } from 'react';
 
 export enum StorageTileState {
   Ok = 'ok',

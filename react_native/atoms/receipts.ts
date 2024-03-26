@@ -1,7 +1,7 @@
 import { atom } from 'jotai';
 
-import { type CreateReceiptRequest } from '../api/request-types/CreateReceiptsRequestType';
 import { type ReceiptItem } from '../api/request-types/common/ReceiptItemsTypes';
+import { type CreateReceiptRequest } from '../api/request-types/CreateReceiptsRequestType';
 import {
   atomWithAsyncStorage,
   atomWithMediaStorage,

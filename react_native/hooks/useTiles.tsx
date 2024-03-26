@@ -1,9 +1,6 @@
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
-import * as FileSystem from 'expo-file-system';
-import * as MediaLibrary from 'expo-media-library';
-import * as Sharing from 'expo-sharing';
 import { useAtomValue } from 'jotai';
 import { loadable } from 'jotai/utils';
 import { isNil } from 'ramda';
@@ -13,8 +10,8 @@ import { useCheckToken } from '../api/queries/useCheckToken';
 import { numberOfReceiptsAtom } from '../atoms/receipts';
 import { selectedPartnerAtom } from '../atoms/sellFlow';
 import { isStorageSavedToApiAtom } from '../atoms/storageFlow';
-import { type TileT } from '../components/Tile';
 import { type AlertButton } from '../components/alert/Alert';
+import { type TileT } from '../components/Tile';
 import { PartnerList, type StackParams } from '../navigators/screen-types';
 import { useIsSelectedPartnerForSellOnCurrentPartnerList } from './sell/useIsSelectedPartnerForSellOnCurrentPartnerList';
 import {
@@ -211,154 +208,6 @@ export function useTiles(): UseTilesData | undefined {
             }
           },
         },
-        {
-          id: 't5',
-          title: 'Teszt média',
-          Icon: () => (
-            <MaterialCommunityIcons name="printer" size={45} color="white" />
-          ),
-          variant: 'ok',
-          async onPress() {
-            const albumName = 'boreal_print';
-            const fileDirectory = FileSystem.documentDirectory + albumName;
-            const imageExtension = '.jpg';
-            const fileName = `${fileDirectory}/print_test`;
-            const testFileString = `111111111122222222223333333333444444444455555555556666666666777777777
-
-  RAKJEGYZÉK | 2023.09.20.
-  ------------------------
-  Rakodta: 0032 Valkó Béla
-  Raktár : 0002 LXW-777 hûtõautó
-  
-  SSz. Cikk__ Lejárat                      Menny. Mennyiségek______  
-  Megnevezés______________________________ egység Kezdõ Mozgás Kész_
-  ------------------------------------------------------------------
-  001. ****6* ****.**  
-  *************************************40* ****6* ***5* ****6* ***5*
-  ------------------------------------------------------------------
-  002. 000021 2024.05  
-  Pandó pálcikás                           karton    10     +7    17
-  ------------------------------------------------------------------
-  003. 000033 2024.11  
-  Mogyorós családi                         karton    10      0    10
-  ------------------------------------------------------------------
-  004. 000042 2023.12  
-  Vaníliás családi                         karton    30     -3    27
-  ------------------------------------------------------------------
-  Összesen (rakodva 2 termék)                        50     +7
-                                                            -3    54
-  ==================================================================
-  
-  
-                      --------------------      --------------------
-                                   rakodta               ellenõrizte 
-  |> 2023.09.20. | 0032 | 0002 <|-----------------------------------`;
-
-            const directoryInfo = await FileSystem.getInfoAsync(fileDirectory);
-            if (!directoryInfo.exists) {
-              await FileSystem.makeDirectoryAsync(fileDirectory, {
-                intermediates: true,
-              });
-            }
-
-            const permission = await MediaLibrary.requestPermissionsAsync();
-
-            if (FileSystem.documentDirectory !== null && permission.granted) {
-              try {
-                await FileSystem.writeAsStringAsync(
-                  fileName + imageExtension,
-                  testFileString,
-                  {
-                    encoding: FileSystem.EncodingType.UTF8,
-                  }
-                );
-
-                const asset = await MediaLibrary.createAssetAsync(
-                  fileName + imageExtension
-                );
-                const album = await MediaLibrary.getAlbumAsync(albumName);
-
-                await (album
-                  ? MediaLibrary.addAssetsToAlbumAsync([asset], album, false)
-                  : MediaLibrary.createAlbumAsync(albumName, asset, false));
-              } catch (error) {
-                console.error('MediaLibrary.createAssetAsync failed', error);
-              }
-            } else {
-              console.log('Hozzáférés megtagadva');
-            }
-          },
-        },
-        {
-          id: 't6',
-          title: 'Teszt megosztás',
-          Icon: () => (
-            <MaterialCommunityIcons name="printer" size={45} color="white" />
-          ),
-          variant: 'ok',
-          async onPress() {
-            const directoryName = FileSystem.documentDirectory + 'boreal_print';
-            const fileName = `${directoryName}/print_test.txt`;
-            const testFileString = `  Zery egy nagyon szép ember, fején egy új fejhallgatóvel.  `;
-
-            const directoryInfo = await FileSystem.getInfoAsync(directoryName);
-            if (!directoryInfo.exists) {
-              await FileSystem.makeDirectoryAsync(directoryName, {
-                intermediates: true,
-              });
-            }
-
-            await FileSystem.writeAsStringAsync(fileName, testFileString, {
-              encoding: FileSystem.EncodingType.UTF8,
-            });
-
-            await Sharing.shareAsync(fileName, { mimeType: 'text/plain' });
-          },
-        },
-        /* {
-          id: 't7',
-          title: 'Teszt engedélyes',
-          Icon: () => (
-            <MaterialCommunityIcons name="printer" size={45} color="white" />
-          ),
-          variant: 'ok',
-          async onPress() {
-            const documentsDirectory =
-              FileSystem.StorageAccessFramework.getUriForDirectoryInRoot(
-                'Documents'
-              );
-
-            console.log(documentsDirectory);
-
-            const borealDirectory = documentsDirectory + '/Boreal';
-
-            console.log(borealDirectory);
-
-            const permissions =
-              await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(
-                borealDirectory
-              );
-
-            console.log(permissions);
-
-            if (permissions.granted) {
-              const borealDirectoryContent =
-                await FileSystem.StorageAccessFramework.readDirectoryAsync(
-                  permissions.directoryUri
-                );
-
-              console.log(borealDirectoryContent);
-
-              // const testFileString = `  Zery egy nagyon szép ember, fején egy új fejhallgatóvel.  `;
-
-              // await FileSystem.StorageAccessFramework.writeAsStringAsync(
-              //   borealDirectory + '/print.txt',
-              //   testFileString,
-              //   { encoding: FileSystem.EncodingType.UTF8 }
-              // );
-            }
-          },
-        }, */
       ],
     };
   }

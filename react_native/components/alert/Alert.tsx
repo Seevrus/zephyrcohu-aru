@@ -1,9 +1,9 @@
 import { Overlay } from '@rneui/themed';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Button, type ButtonProps } from '../ui/Button';
 import { colors } from '../../constants/colors';
 import { fontSizes } from '../../constants/fontSizes';
+import { Button, type ButtonProps } from '../ui/Button';
 
 export type AlertButton = {
   text: string;

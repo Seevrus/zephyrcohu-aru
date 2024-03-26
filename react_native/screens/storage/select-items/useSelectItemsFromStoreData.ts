@@ -10,8 +10,8 @@ import {
   selectedStoreInitialStateAtom,
 } from '../../../atoms/storage';
 import {
-  storageListItemsAtom,
   type StorageListItem,
+  storageListItemsAtom,
 } from '../../../atoms/storageFlow';
 
 export function useSelectItemsFromStoreData() {

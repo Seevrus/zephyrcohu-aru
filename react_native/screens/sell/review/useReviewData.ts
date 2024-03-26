@@ -13,16 +13,16 @@ import { useOtherItems } from '../../../api/queries/useOtherItems';
 import { type StoreDetailsResponseData } from '../../../api/response-types/StoreDetailsResponseType';
 import { currentOrderAtom, ordersAtom } from '../../../atoms/orders';
 import {
+  type ContextReceipt,
   currentReceiptAtom,
   receiptsAtom,
-  type ContextReceipt,
 } from '../../../atoms/receipts';
 import {
+  type OtherReviewItem,
+  type RegularReviewItem,
   reviewItemsAtom,
   selectedItemsAtom,
   selectedOtherItemsAtom,
-  type OtherReviewItem,
-  type RegularReviewItem,
 } from '../../../atoms/sellFlow';
 import { selectedStoreCurrentStateAtom } from '../../../atoms/storage';
 import { tokenAtom } from '../../../atoms/token';

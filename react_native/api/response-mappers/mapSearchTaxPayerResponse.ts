@@ -1,7 +1,7 @@
 import { formatISO } from 'date-fns';
 
-import { type SearchTaxNumberResponseData } from '../response-types/SearchTaxNumberResponseType';
 import { type PartnerLocation } from '../response-types/common/PartnerType';
+import { type SearchTaxNumberResponseData } from '../response-types/SearchTaxNumberResponseType';
 
 export type TaxPayer = {
   id: number;

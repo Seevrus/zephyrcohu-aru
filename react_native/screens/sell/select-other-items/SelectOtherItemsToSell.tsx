@@ -3,14 +3,14 @@ import { useAtomValue } from 'jotai';
 import { Suspense, useCallback, useState } from 'react';
 import {
   Animated,
+  type ListRenderItemInfo,
   StyleSheet,
   View,
-  type ListRenderItemInfo,
 } from 'react-native';
 
 import { selectedOtherItemsAtom } from '../../../atoms/sellFlow';
-import { Loading } from '../../../components/Loading';
 import { Container } from '../../../components/container/Container';
+import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { LabeledItem } from '../../../components/ui/LabeledItem';
@@ -19,8 +19,8 @@ import { type SelectOtherItemsToSellProps } from '../../../navigators/screen-typ
 import { formatPrice } from '../../../utils/formatPrice';
 import { ExpirationAccordionDetails } from './ExpirationAccordionDetails';
 import {
-  useSelectOtherItemsToSellData,
   type OtherSellItem,
+  useSelectOtherItemsToSellData,
 } from './useSelectOtherItemsToSellData';
 
 function SuspendedSelectOtherItemsToSell({

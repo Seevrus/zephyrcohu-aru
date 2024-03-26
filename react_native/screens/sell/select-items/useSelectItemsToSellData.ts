@@ -1,7 +1,8 @@
 import { type BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { useFocusEffect, type EventArg } from '@react-navigation/native';
+import { type EventArg, useFocusEffect } from '@react-navigation/native';
 import { format } from 'date-fns';
 import { useAtom, useAtomValue } from 'jotai';
+import { loadable } from 'jotai/utils';
 import {
   all,
   anyPass,
@@ -23,7 +24,6 @@ import {
 } from 'ramda';
 import { useCallback, useMemo, useState } from 'react';
 
-import { loadable } from 'jotai/utils';
 import { useItems } from '../../../api/queries/useItems';
 import { type OrderItem } from '../../../api/request-types/common/OrderItem';
 import {

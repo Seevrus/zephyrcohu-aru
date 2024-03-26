@@ -1,6 +1,6 @@
 import { equals } from 'ramda';
 import { memo, useState } from 'react';
-import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
 
 import { type OtherReviewItem } from '../../../atoms/sellFlow';
 import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';

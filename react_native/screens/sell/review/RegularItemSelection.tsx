@@ -3,7 +3,7 @@ import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { format } from 'date-fns';
 import { equals } from 'ramda';
 import { memo, useState } from 'react';
-import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
 
 import { type RegularReviewItem } from '../../../atoms/sellFlow';
 import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';

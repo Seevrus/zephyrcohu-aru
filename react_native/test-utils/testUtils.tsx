@@ -7,9 +7,9 @@ import {
   type NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
 import {
+  keepPreviousData,
   QueryClient,
   QueryClientProvider,
-  keepPreviousData,
 } from '@tanstack/react-query';
 import { render } from '@testing-library/react-native';
 import { useFonts } from 'expo-font';

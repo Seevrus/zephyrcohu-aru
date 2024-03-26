@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-  EncodingType,
   cacheDirectory,
+  EncodingType,
   getInfoAsync,
   makeDirectoryAsync,
   readAsStringAsync,

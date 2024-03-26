@@ -2,11 +2,11 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { eqProps, isNil, pipe, replace, trim } from 'ramda';
 import { memo, useState } from 'react';
 import {
+  type LayoutChangeEvent,
   Pressable,
   StyleSheet,
   Text,
   View,
-  type LayoutChangeEvent,
 } from 'react-native';
 
 import { type StorageListItem } from '../../../atoms/storageFlow';

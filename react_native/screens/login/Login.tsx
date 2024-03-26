@@ -10,9 +10,9 @@ import {
 
 import { useLogin } from '../../api/mutations/useLogin';
 import { useCheckToken } from '../../api/queries/useCheckToken';
-import { Loading } from '../../components/Loading';
 import { ErrorCard } from '../../components/info-cards/ErrorCard';
 import { TextCard } from '../../components/info-cards/TextCard';
+import { Loading } from '../../components/Loading';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { colors } from '../../constants/colors';

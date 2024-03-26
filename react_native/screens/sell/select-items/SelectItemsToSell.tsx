@@ -4,16 +4,16 @@ import { isNil } from 'ramda';
 import { Suspense, useCallback, useEffect } from 'react';
 import {
   Animated,
+  type ListRenderItemInfo,
   Pressable,
   StyleSheet,
   View,
-  type ListRenderItemInfo,
 } from 'react-native';
 
 import { selectedItemsAtom } from '../../../atoms/sellFlow';
-import { Loading } from '../../../components/Loading';
 import { Alert } from '../../../components/alert/Alert';
 import { Container } from '../../../components/container/Container';
+import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { LabeledItem } from '../../../components/ui/LabeledItem';
@@ -22,8 +22,8 @@ import { type SelectItemsToSellProps } from '../../../navigators/screen-types';
 import { formatPrice } from '../../../utils/formatPrice';
 import { ItemAvailability, SelectItem } from './SelectItem';
 import {
-  useSelectItemsToSellData,
   type SellItem,
+  useSelectItemsToSellData,
 } from './useSelectItemsToSellData';
 
 function SuspendedSelectItemsToSell({

@@ -1,10 +1,10 @@
 import { type PropsWithChildren } from 'react';
 import {
+  type GestureResponderEvent,
   Pressable,
   StyleSheet,
   Text,
   View,
-  type GestureResponderEvent,
 } from 'react-native';
 
 import { colors } from '../../constants/colors';

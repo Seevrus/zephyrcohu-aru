@@ -1,5 +1,5 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import * as Print from 'expo-print';
+import { printAsync } from 'expo-print';
 import { useAtom } from 'jotai';
 import { isNotNil, prop } from 'ramda';
 import { useCallback, useState } from 'react';
@@ -8,7 +8,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useUpdateReceipts } from '../../api/mutations/useUpdateReceipts';
 import { useCheckToken } from '../../api/queries/useCheckToken';
 import { type Partner } from '../../api/response-mappers/mapPartnersResponse';
-import { receiptsAtom, type ContextReceipt } from '../../atoms/receipts';
+import { type ContextReceipt, receiptsAtom } from '../../atoms/receipts';
 import { colors } from '../../constants/colors';
 import { fontSizes } from '../../constants/fontSizes';
 import { Loading } from '../Loading';
@@ -96,7 +96,7 @@ export function PrintSection({ partner, receipt }: PrintSectionProps) {
     }
 
     if (!!partner && !!receipt) {
-      await Print.printAsync({
+      await printAsync({
         html: createReceiptHtml({
           user,
           receipt,

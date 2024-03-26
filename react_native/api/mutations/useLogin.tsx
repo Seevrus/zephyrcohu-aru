@@ -25,6 +25,8 @@ export function useLogin() {
           )
           .then((r) => mapLoginResponse(r.data));
 
+        console.log('Token:', response.token.accessToken);
+
         await setStoredToken({
           token: response.token.accessToken,
           isPasswordExpired: response.token.isPasswordExpired,

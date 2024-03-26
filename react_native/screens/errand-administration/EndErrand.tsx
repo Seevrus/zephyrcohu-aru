@@ -2,8 +2,8 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { Suspense, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Loading } from '../../components/Loading';
 import { ErrorCard } from '../../components/info-cards/ErrorCard';
+import { Loading } from '../../components/Loading';
 import { Button } from '../../components/ui/Button';
 import { colors } from '../../constants/colors';
 import { fontSizes } from '../../constants/fontSizes';

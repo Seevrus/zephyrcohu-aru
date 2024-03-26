@@ -1,4 +1,5 @@
 import { http, HttpResponse } from 'msw';
+
 import env from '../../env.json';
 
 export const getPartnerListsOkResponse = http.get(

@@ -24,8 +24,8 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSelectStore } from '../../../api/mutations/useSelectStore';
 import { fetchStoreDetails } from '../../../api/queries/useStoreDetails';
 import { useStores } from '../../../api/queries/useStores';
-import { type StoreDetailsResponseData } from '../../../api/response-types/StoreDetailsResponseType';
 import { type StoreType } from '../../../api/response-types/common/StoreType';
+import { type StoreDetailsResponseData } from '../../../api/response-types/StoreDetailsResponseType';
 import {
   primaryStoreAtom,
   selectedStoreCurrentStateAtom,

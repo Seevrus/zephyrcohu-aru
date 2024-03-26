@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { fontSizes } from '../../constants/fontSizes';
 import { colors } from '../../constants/colors';
+import { fontSizes } from '../../constants/fontSizes';
 
 type LabeledItemProps = {
   label: string;

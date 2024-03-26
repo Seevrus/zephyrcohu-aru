@@ -2,26 +2,26 @@ import { useAtomValue } from 'jotai';
 import { Suspense, useCallback, useState } from 'react';
 import {
   FlatList,
-  StyleSheet,
-  View,
   type ListRenderItem,
   type ListRenderItemInfo,
+  StyleSheet,
+  View,
 } from 'react-native';
 
-import { reviewItemsAtom, type ReviewItem } from '../../../atoms/sellFlow';
-import { Loading } from '../../../components/Loading';
+import { type ReviewItem, reviewItemsAtom } from '../../../atoms/sellFlow';
+import { Alert } from '../../../components/alert/Alert';
 import { Container } from '../../../components/container/Container';
 import { ErrorCard } from '../../../components/info-cards/ErrorCard';
+import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
 import { LabeledItem } from '../../../components/ui/LabeledItem';
 import { colors } from '../../../constants/colors';
 import { type ReviewProps } from '../../../navigators/screen-types';
 import { formatPrice } from '../../../utils/formatPrice';
+import { getReviewItemId } from './getReviewItemId';
 import { OtherItemSelection } from './OtherItemSelection';
 import { RegularItemSelection } from './RegularItemSelection';
-import { getReviewItemId } from './getReviewItemId';
 import { useReviewData } from './useReviewData';
-import { Alert } from '../../../components/alert/Alert';
 
 function SuspendedReview({ navigation }: ReviewProps) {
   const {

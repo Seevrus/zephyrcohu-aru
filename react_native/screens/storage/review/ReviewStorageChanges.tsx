@@ -2,17 +2,17 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { Suspense, useState } from 'react';
 import {
   FlatList,
+  type ListRenderItemInfo,
   StyleSheet,
   View,
-  type ListRenderItemInfo,
 } from 'react-native';
 
 import { type StorageListItem } from '../../../atoms/storageFlow';
-import { Loading } from '../../../components/Loading';
 import { Alert } from '../../../components/alert/Alert';
 import { Container } from '../../../components/container/Container';
 import { ErrorCard } from '../../../components/info-cards/ErrorCard';
 import { TextCard } from '../../../components/info-cards/TextCard';
+import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
 import { colors } from '../../../constants/colors';
 import { type ReviewStorageChangesProps } from '../../../navigators/screen-types';

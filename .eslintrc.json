@@ -52,6 +52,7 @@
     "react",
     "react-hooks",
     "react-native",
+    "simple-import-sort",
     "sonarjs",
     "unicorn"
   ],
@@ -160,8 +161,13 @@
     {
       "files": ["./react_native/**"],
       "rules": {
+        "import/first": "error",
+        "import/newline-after-import": "error",
         "import/no-default-export": "error",
-        "import/no-unused-modules": ["warn", { "unusedExports": true }]
+        "import/no-duplicates": "error",
+        "import/no-unused-modules": ["warn", { "unusedExports": true }],
+        "simple-import-sort/imports": "error",
+        "simple-import-sort/exports": "error"
       }
     },
     {

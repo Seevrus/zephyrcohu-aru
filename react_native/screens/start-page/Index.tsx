@@ -4,19 +4,19 @@ import { loadable } from 'jotai/utils';
 import { Suspense } from 'react';
 import {
   FlatList,
-  StyleSheet,
-  View,
   type ListRenderItem,
   type ListRenderItemInfo,
+  StyleSheet,
+  View,
 } from 'react-native';
 
 import { useCheckToken } from '../../api/queries/useCheckToken';
 import { tokenAtom } from '../../atoms/token';
-import { Loading } from '../../components/Loading';
-import { Tile, type TileT } from '../../components/Tile';
 import { Alert } from '../../components/alert/Alert';
 import { Container } from '../../components/container/Container';
 import { TextCard } from '../../components/info-cards/TextCard';
+import { Loading } from '../../components/Loading';
+import { Tile, type TileT } from '../../components/Tile';
 import { RoundInfo } from '../../containers/RoundInfo';
 import { useTiles } from '../../hooks/useTiles';
 

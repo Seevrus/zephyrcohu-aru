@@ -19,8 +19,8 @@ import {
   storageListItemsAtom,
 } from '../../atoms/storageFlow';
 import { tokenAtom } from '../../atoms/token';
-import { Loading } from '../../components/Loading';
 import { Container } from '../../components/container/Container';
+import { Loading } from '../../components/Loading';
 import { Button } from '../../components/ui/Button';
 import { colors } from '../../constants/colors';
 import { useResetSellFlow } from '../../hooks/sell/useResetSellFlow';

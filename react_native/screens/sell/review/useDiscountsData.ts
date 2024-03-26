@@ -8,8 +8,8 @@ import {
   type SelectedDiscount,
 } from '../../../atoms/receipts';
 import {
-  reviewItemsAtom,
   type RegularReviewItem,
+  reviewItemsAtom,
 } from '../../../atoms/sellFlow';
 import { type StackParams } from '../../../navigators/screen-types';
 

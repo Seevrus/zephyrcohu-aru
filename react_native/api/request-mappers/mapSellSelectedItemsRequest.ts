@@ -1,5 +1,5 @@
-import { type SellSelectedItemsRequest } from '../request-types/SellSelectedItemsRequest';
 import { type ExpirationChange } from '../request-types/common/ExpirationChange';
+import { type SellSelectedItemsRequest } from '../request-types/SellSelectedItemsRequest';
 import { type StoreDetailsResponseData } from '../response-types/StoreDetailsResponseType';
 
 export function mapSellSelectedItemsRequest(
