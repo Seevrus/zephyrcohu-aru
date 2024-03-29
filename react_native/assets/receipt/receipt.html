@@ -4,13 +4,9 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bizonylat</title>
+    <title>Számla</title>
 
     <style>
-      @page {
-        margin: 10px;
-      }
-
       * {
         box-sizing: border-box;
       }
@@ -18,17 +14,27 @@
       html,
       body {
         margin: 0;
-        padding: 0;
+        padding: 5px;
         width: 100%;
-        min-height: 100vh;
       }
 
       body {
         font-family: 'Lucida Console';
-        font-size: 7pt;
+        font-size: 12px;
       }
 
-      header {
+      header .title-row {
+        display: flex;
+        width: fit-content;
+        border-bottom: 1px solid black;
+        margin-bottom: 5px;
+      }
+
+      header .title-row .title {
+        text-transform: uppercase;
+      }
+
+      header .receipt-nr {
         display: grid;
         grid-template-columns: repeat(2, auto);
         justify-items: stretch;
@@ -36,13 +42,8 @@
         border-bottom: 2px solid black;
       }
 
-      header .last-column {
+      header .receipt-nr .last-column {
         justify-self: end;
-      }
-
-      .title {
-        text-transform: uppercase;
-        text-decoration: underline;
       }
 
       .subtitle {
@@ -57,6 +58,10 @@
         row-gap: 3px;
         column-gap: 5px;
         border-bottom: 1px solid black;
+      }
+
+      .buyer.delivery-address {
+        border-bottom: 2px solid black;
       }
 
       .vendor .subtitle,
@@ -91,132 +96,172 @@
         grid-template-columns: repeat(1, auto);
       }
 
-      .payment,
-      .agent,
-      .software {
+      .metadata {
         padding: 5px 0;
+        display: grid;
+        grid-template-columns: repeat(2, auto);
+        row-gap: 3px;
+        column-gap: 5px;
+        border-bottom: 1px solid black;
+      }
+
+      .metadata .agent-title,
+      .metadata .software-title {
+        grid-column: auto / span 2;
+      }
+
+      .item-grid {
+        display: grid;
+        grid-template-columns: repeat(7, auto);
+      }
+
+      .item-grid .number {
         display: flex;
-        justify-content: space-between;
-        border-bottom: 1px solid black;
+        justify-content: flex-end;
       }
 
-      .software {
-        border-bottom: 2px solid black;
-      }
-
-      .payment .payment-deadline,
-      .payment .payment-method,
-      .software .software-email,
-      .software .software-currency {
-        border-left: 1px solid black;
+      .item-grid .item-nr,
+      .item-grid .vtsz,
+      .item-grid .serial-nr,
+      .item-grid .expires,
+      .item-grid .item-name,
+      .item-grid .amount-label,
+      .item-grid .amount,
+      .item-grid .unit,
+      .item-grid .net-price,
+      .item-grid .net-amount,
+      .item-grid .vat-label,
+      .item-grid .vat-key,
+      .item-grid .vat-amount,
+      .item-grid .gross-amount,
+      .item-grid .total-label,
+      .item-grid .total-amount,
+      .item-grid .total-vat-label,
+      .item-grid .total-net-amount,
+      .item-grid .total-vat-key,
+      .item-grid .total-vat-amount,
+      .item-grid .total-gross-amount,
+      .item-grid .rounding-label,
+      .item-grid .rounded-gross-amount,
+      .item-grid .total-receipt-amount-label,
+      .item-grid .total-receipt-amount {
         padding-left: 5px;
+        padding-right: 5px;
       }
 
-      .items .item-first-row,
-      .items .item-second-row {
-        display: grid;
-        row-gap: 2px;
-        column-gap: 3px;
+      .item-grid .item-nr,
+      .item-grid .amount-label,
+      .item-grid .amount,
+      .item-grid .total-label,
+      .item-grid .total-vat-label,
+      .item-grid .rounding-label,
+      .item-grid .total-receipt-amount-label {
+        padding-left: 0;
       }
 
-      .items .item-first-row {
-        grid-template-columns: 4fr 7fr 8fr 7fr 40fr;
-      }
-
-      .items .item-first-row.label {
+      .item-grid .item-nr,
+      .item-grid .vtsz,
+      .item-grid .serial-nr,
+      .item-grid .expires,
+      .item-grid .item-name {
         border-bottom: 1px dashed black;
+        margin-bottom: 5px;
       }
 
-      .items .item-first-row:not(.label) {
-        font-size: 7pt;
+      .item-grid .amount,
+      .item-grid .unit,
+      .item-grid .net-price,
+      .item-grid .net-amount,
+      .item-grid .vat-key,
+      .item-grid .vat-amount,
+      .item-grid .gross-amount {
+        border-bottom: 1px dashed black;
+        margin-bottom: 5px;
       }
 
-      .items .item-first-row:not(.label) .item-nr {
-        font-size: 7pt;
-      }
-
-      .items .item-second-row {
-        grid-template-columns: 8fr 15fr 8fr 10fr 3fr 10fr 10fr;
+      .item-grid .amount-label,
+      .item-grid .amount:not(.has-third-row),
+      .item-grid .unit:not(.has-third-row),
+      .item-grid .net-price:not(.has-third-row),
+      .item-grid .net-amount:not(.has-third-row),
+      .item-grid .vat-label,
+      .item-grid .vat-key:not(.has-third-row),
+      .item-grid .vat-amount:not(.has-third-row),
+      .item-grid .gross-amount:not(.has-third-row) {
         border-bottom: 1px solid black;
+        margin-bottom: 10px;
       }
 
-      .items .item-second-row.is-third-row {
-        border-bottom: 0;
+      .item-grid .item-name,
+      .item-grid .gross-amount,
+      .item-grid .total-gross-amount,
+      .item-grid .rounded-gross-amount,
+      .item-grid .total-receipt-amount {
+        padding-right: 0;
       }
 
-      .items .item-second-row .amount {
-        grid-column-start: 2;
+      .item-grid .item-name {
+        grid-column: 5 / span 3;
       }
 
-      .items .item-second-row .vat-label {
-        grid-column: span 2;
+      .item-grid .amount-label {
+        grid-column: 1 / span 2;
       }
 
-      .items .item-third-row {
+      .item-grid .vat-label {
+        grid-column: 5 / span 2;
+      }
+
+      .item-grid .amount {
+        grid-column: 1 / span 1;
+      }
+
+      .item-grid .comment-row {
+        grid-column: 1 / span 7;
+        margin-top: 5px;
         border-bottom: 1px solid black;
-        padding-left: 10px;
-        text-align: justify;
+        margin-bottom: 10px;
       }
 
-      .items .item-third-row .comment-label {
-        font-style: italic;
-      }
-
-      .total {
-        display: grid;
-        column-gap: 3px;
-        padding: 5px 0;
+      .item-grid .total-label,
+      .item-grid .total-amount,
+      .item-grid .net-amount.total,
+      .item-grid .vat-amount.total,
+      .item-grid .gross-amount.total {
         border-bottom: 2px solid black;
-        grid-template-columns: 8fr 15fr 8fr 10fr 3fr 10fr 10fr;
+        margin-bottom: 10px;
       }
 
-      .total .amount {
-        grid-column: 4 / 6;
+      .item-grid .total-label {
+        grid-column: 1 / span 2;
       }
 
-      .total .vat {
-        border: 0;
+      .item-grid .vat-amount.total {
+        grid-column: auto / span 2;
       }
 
-      .vat,
-      .rounding,
-      .total-amount {
-        display: grid;
-        column-gap: 3px;
-        padding: 5px 0;
-        grid-template-columns: 8fr 15fr 8fr 10fr 3fr 10fr 10fr;
-        border-bottom: 1px solid black;
+      .item-grid .total-vat-label {
+        grid-column: 1 / span 3;
       }
 
-      .vat .label {
-        grid-column: 1 / 4;
+      .item-grid .rounding-label {
+        grid-column: 1 / span 6;
       }
 
-      .rounding {
+      .item-grid .rounding-label,
+      .item-grid .rounded-gross-amount {
         border-bottom: 2px solid black;
+        margin-bottom: 10px;
       }
 
-      .rounding .label {
-        grid-column: 1 / 7;
+      .item-grid .total-receipt-amount-label {
+        grid-column: 1 / span 6;
       }
 
-      .packing-info {
-        padding: 5px 0;
+      .item-grid .total-receipt-amount-label,
+      .item-grid .total-receipt-amount {
         border-bottom: 1px solid black;
-        text-align: justify;
-      }
-
-      .total-amount {
-        font-size: 8pt;
-        font-weight: 700;
-      }
-
-      .total-amount .label {
-        grid-column: 1 / 6;
-      }
-
-      .total-amount .currency {
-        justify-self: center;
+        margin-bottom: 10px;
       }
 
       footer {
@@ -224,6 +269,8 @@
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         column-gap: 20px;
+        margin-bottom: 30px;
+        border-bottom: 1px dashed black;
       }
 
       footer .signature {
@@ -245,6 +292,8 @@
         grid-column: 1 / -1;
         overflow: hidden;
         white-space: nowrap;
+        text-transform: uppercase;
+        margin-bottom: 20px;
       }
 
       footer .thank-you::after {
@@ -254,119 +303,111 @@
   </head>
   <body>
     <header>
-      <div>Számlaszám: xxxxxxxx/xx</div>
-      <div class="last-column">Eredeti: 1./3 példány</div>
+      <div class="title-row">
+        <div class="title">Számla</div>
+      </div>
+      <div class="receipt-nr">
+        <div>Számlaszám: xxxxxxxx/xx</div>
+        <div class="last-column">Eredeti: 1./3 példány</div>
+      </div>
     </header>
     <main>
       <section class="vendor">
         <div class="subtitle">Eladó</div>
         <div class="vendor-name">
-          Neve: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx45x
+          Neve: xxxxx xxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxx xx45x
         </div>
         <div class="vendor-felir">Felir: *******9*</div>
         <div class="vendor-address">
-          Címe: xx4x xxxxxxxxxxxxxxxxx20x xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx38x
+          Címe: xx4x xxxxxxxxxxxxxxxxx20x xxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxx38x
         </div>
         <div class="vendor-bank">Bank: xxxx-xxxxxxxx-xxxxxxxx-xxxxxxxx</div>
         <div class="vendor-vat">Adószám: xxxxxxxx-x-xx</div>
       </section>
       <section class="buyer">
-        <div class="subtitle">Vevő</div>
+        <div class="subtitle">Vevő (partner):</div>
         <div class="buyer-name">
-          Neve: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx45x
+          Neve: xxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxx45x
         </div>
         <div class="buyer-address">
-          Címe: xx4x xxxxxxxxxxxxxxxxx20x xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx38x
+          Címe: xx4x xxxxxxxxxxxxxxxxx20x xxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxx38x
         </div>
         <div class="buyer-bank">Bank: xxxx-xxxxxxxx-xxxxxxxx-xxxxxxxx</div>
         <div class="buyer-vat">Adószám: xxxxxxxx-x-xx</div>
       </section>
       <section class="buyer delivery-address">
-        <div class="subtitle">Vevő szállítási címe</div>
+        <div class="subtitle">Vevő (bolt, szállítási cím):</div>
         <div class="buyer-name">
-          Neve: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx45x
+          Neve: xxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx45x
         </div>
         <div class="buyer-address">
-          Címe: xx4x xxxxxxxxxxxxxxxxx20x xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx38x
+          Címe: xx4x xxxxxxxxxxxxxxxxx20x xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxx38x
         </div>
       </section>
-      <section class="payment">
-        <div>Kelt: xxxx.xx.xx</div>
-        <div class="payment-deadline">Teljesítés: xxxx.xx.xx</div>
-        <div class="payment-method">Fizetés: Készpénz, xxxx.xx.xx</div>
+      <section class="metadata">
+        <div>Kelt és teljesítés:</div>
+        <div>xxxx.xx.xx</div>
+        <div>Fizetés:</div>
+        <div>Készpénz, xxxx.xx.xx</div>
+        <div class="agent-title">Üzletkötő:</div>
+        <div>xxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxx</div>
+        <div>+36xx-xxxxxxx</div>
+        <div class="software-title">Szoftver:</div>
+        <div>Zephyr Boreal 11.40.0000</div>
+        <div>zephyr.bt@gmail.com</div>
       </section>
-      <section class="agent">
-        <div class="agent-name">
-          Üzletkötő: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        </div>
-        <div class="agent-phone">+36xx-xxxxxxx</div>
-      </section>
-      <section class="software">
-        <div class="software-name">SW: Zephyr Boreal 11.40.0000</div>
-        <div class="software-email">zephyr.bt@gmail.com</div>
-        <div class="software-currency">Pénznem: HUF</div>
-      </section>
-      <section class="items">
-        <div class="item-first-row label">
-          <div class="item-nr">Ssz.</div>
-          <div>VTSZ</div>
-          <div>Cikkszám</div>
-          <div>Lejárat</div>
-          <div>Megnevezés</div>
-        </div>
-        <div class="item-second-row label">
-          <div class="amount">Mennyiség<br />és menny.egység</div>
-          <div>Nettó<br />egységár</div>
-          <div>Összeg</div>
-          <div class="vat-label">ÁFA kulcsa<br />és összege</div>
-          <div>Bruttó<br />összeg</div>
-        </div>
-        <div class="item-first-row">
-          <div class="item-nr">001.</div>
-          <div>****&nbsp;**</div>
-          <div>******8*</div>
-          <div>****.**</div>
-          <div>*************************************40*</div>
-        </div>
-        <div class="item-second-row">
-          <div class="amount">xxxxxx8x karton</div>
-          <div>xxxxxx8x</div>
-          <div>xxxxxxx10x</div>
-          <div>27%</div>
-          <div>xxxxxxx10x</div>
-          <div>xxxxxxx10x</div>
-        </div>
-        <div class="item-first-row">
-          <div class="item-nr">002.</div>
-          <div>****&nbsp;**</div>
-          <div>******8*</div>
-          <div>****.**</div>
-          <div>*************************************40*</div>
-        </div>
-        <div class="item-second-row">
-          <div class="amount">xxxxxx8x karton</div>
-          <div>xxxxxx8x</div>
-          <div>xxxxxxx10x</div>
-          <div>27%</div>
-          <div>xxxxxxx10x</div>
-          <div>xxxxxxx10x</div>
-        </div>
-        <div class="item-first-row">
-          <div class="item-nr">003.</div>
-          <div>****&nbsp;**</div>
-          <div>******8*</div>
-          <div>****.**</div>
-          <div>*************************************40*</div>
-        </div>
-        <div class="item-second-row is-third-row">
-          <div class="amount">xxxxxx8x karton</div>
-          <div>xxxxxx8x</div>
-          <div>xxxxxxx10x</div>
-          <div>27%</div>
-          <div>xxxxxxx10x</div>
-          <div>xxxxxxx10x</div>
-        </div>
-        <div class="item-third-row">
+      <section class="item-grid">
+        <div class="item-nr">Ssz.</div>
+        <div class="vtsz">VTSZ</div>
+        <div class="serial-nr">Cikkszám</div>
+        <div class="expires">Lejárat</div>
+        <div class="item-name">Megnevezés</div>
+        <div class="amount-label">Mennyiség és menny. egység</div>
+        <div class="net-price">Nettó egységár</div>
+        <div class="net-amount">Összeg</div>
+        <div class="vat-label">ÁFA kulcsa és összege</div>
+        <div class="gross-amount">Bruttó összeg</div>
+
+        <div class="item-nr">001.</div>
+        <div class="vtsz">1234 56</div>
+        <div class="serial-nr">12345678</div>
+        <div class="expires">2024.12.</div>
+        <div class="item-name">Lorem ipsum dolor sit amet, consectetur a</div>
+        <div class="amount number">1000</div>
+        <div class="unit">karton</div>
+        <div class="net-price number">12345</div>
+        <div class="net-amount number">12345</div>
+        <div class="vat-key number">27%</div>
+        <div class="vat-amount number">1234</div>
+        <div class="gross-amount number">12345</div>
+
+        <div class="item-nr">002.</div>
+        <div class="vtsz">1234 56</div>
+        <div class="serial-nr">12345678</div>
+        <div class="expires">2024.12.</div>
+        <div class="item-name">Lorem ipsum dolor sit amet, consectetur a</div>
+        <div class="amount number">1000</div>
+        <div class="unit">karton</div>
+        <div class="net-price number">12345</div>
+        <div class="net-amount number">12345</div>
+        <div class="vat-key number">27%</div>
+        <div class="vat-amount number">1234</div>
+        <div class="gross-amount number">12345</div>
+
+        <div class="item-nr">003.</div>
+        <div class="vtsz">1234 56</div>
+        <div class="serial-nr">12345678</div>
+        <div class="expires">2024.12.</div>
+        <div class="item-name">Lorem ipsum dolor sit amet, consectetur a</div>
+        <div class="amount number has-third-row">1000</div>
+        <div class="unit has-third-row">karton</div>
+        <div class="net-price number has-third-row">12345</div>
+        <div class="net-amount number has-third-row">12345</div>
+        <div class="vat-key number has-third-row">27%</div>
+        <div class="vat-amount number has-third-row">1234</div>
+        <div class="gross-amount number has-third-row">12345</div>
+
+        <div class="comment-row">
           <span class="comment-label">Megjegyzés:</span>
           <span class="comment">
             Etiam porta aliquet convallis. Curabitur sem purus, laoreet quis
@@ -374,85 +415,75 @@
             elementum posuere sed vel augue. Proin a nibh eros.
           </span>
         </div>
-        <div class="item-first-row">
-          <div class="item-nr">004.</div>
-          <div>****&nbsp;**</div>
-          <div>******8*</div>
-          <div>****.**</div>
-          <div>*************************************40*</div>
-        </div>
-        <div class="item-second-row">
-          <div class="amount">xxxxxx8x karton</div>
-          <div>xxxxxx8x</div>
-          <div>xxxxxxx10x</div>
-          <div>27%</div>
-          <div>xxxxxxx10x</div>
-          <div>xxxxxxx10x</div>
-        </div>
-        <div class="item-first-row">
-          <div class="item-nr">005.</div>
-          <div>****&nbsp;**</div>
-          <div>******8*</div>
-          <div>****.**</div>
-          <div>*************************************40*</div>
-        </div>
-        <div class="item-second-row">
-          <div class="amount">xxxxxx8x karton</div>
-          <div>xxxxxx8x</div>
-          <div>xxxxxxx10x</div>
-          <div>27%</div>
-          <div>xxxxxxx10x</div>
-          <div>xxxxxxx10x</div>
-        </div>
-        <div class="item-first-row">
-          <div class="item-nr">006.</div>
-          <div>****&nbsp;**</div>
-          <div>******8*</div>
-          <div>****.**</div>
-          <div>*************************************40*</div>
-        </div>
-        <div class="item-second-row">
-          <div class="amount">xxxxxx8x karton</div>
-          <div>xxxxxx8x</div>
-          <div>xxxxxxx10x</div>
-          <div>27%</div>
-          <div>xxxxxxx10x</div>
-          <div>xxxxxxx10x</div>
-        </div>
-      </section>
-      <section class="total">
-        <div class="label">Összes:</div>
-        <div class="quantity">xxxxxx8x</div>
-        <div class="amount">xxxxxxx10x</div>
-        <div class="vat">xxxxxxx10x</div>
-        <div class="gross">xxxxxxx10x</div>
-      </section>
-      <section class="vat">
-        <div class="label">ÁFA összesen</div>
-        <div class="amount">xxxxxxx10x</div>
-        <div class="vat-key">5%</div>
-        <div class="vat-amount">xxxxxxx10x</div>
-        <div class="gross">xxxxxxx10x</div>
 
-        <div class="label">ÁFA összesen</div>
-        <div class="amount">xxxxxxx10x</div>
-        <div class="vat-key">27%</div>
-        <div class="vat-amount">xxxxxxx10x</div>
-        <div class="gross">xxxxxxx10x</div>
-      </section>
-      <section class="rounding">
-        <div class="label">Kerekítés (5 forintra) összege</div>
-        <div class="amount">xxxxxxx10x</div>
-      </section>
-      <section class="total-amount">
-        <div class="label">Számla mindösszesen: (fizetendő)</div>
-        <div class="currency">(HUF)</div>
-        <div class="amount">xxxxxxx10x</div>
+        <div class="item-nr">004.</div>
+        <div class="vtsz">1234 56</div>
+        <div class="serial-nr">12345678</div>
+        <div class="expires">2024.12.</div>
+        <div class="item-name">Lorem ipsum dolor sit amet, consectetur a</div>
+        <div class="amount number">1000</div>
+        <div class="unit">karton</div>
+        <div class="net-price number">12345</div>
+        <div class="net-amount number">12345</div>
+        <div class="vat-key number">27%</div>
+        <div class="vat-amount number">1234</div>
+        <div class="gross-amount number">12345</div>
+
+        <div class="item-nr">005.</div>
+        <div class="vtsz">1234 56</div>
+        <div class="serial-nr">12345678</div>
+        <div class="expires">2024.12.</div>
+        <div class="item-name">Lorem ipsum dolor sit amet, consectetur a</div>
+        <div class="amount number">1000</div>
+        <div class="unit">karton</div>
+        <div class="net-price number">12345</div>
+        <div class="net-amount number">12345</div>
+        <div class="vat-key number">27%</div>
+        <div class="vat-amount number">1234</div>
+        <div class="gross-amount number">12345</div>
+
+        <div class="item-nr">006.</div>
+        <div class="vtsz">1234 56</div>
+        <div class="serial-nr">12345678</div>
+        <div class="expires">2024.12.</div>
+        <div class="item-name">Lorem ipsum dolor sit amet, consectetur a</div>
+        <div class="amount number">1000</div>
+        <div class="unit">karton</div>
+        <div class="net-price number">12345</div>
+        <div class="net-amount number">12345</div>
+        <div class="vat-key number">27%</div>
+        <div class="vat-amount number">1234</div>
+        <div class="gross-amount number">12345</div>
+
+        <div class="total-label">Összes:</div>
+        <div class="total-amount number">1234</div>
+        <div class="net-amount total number">12345</div>
+        <div class="vat-amount total number">1234</div>
+        <div class="gross-amount total number">12345</div>
+
+        <div class="total-vat-label">ÁFA összesen</div>
+        <div class="total-net-amount number">123456</div>
+        <div class="total-vat-key number">5%</div>
+        <div class="total-vat-amount number">12345</div>
+        <div class="total-gross-amount number">123456</div>
+
+        <div class="total-vat-label">ÁFA összesen</div>
+        <div class="total-net-amount number">123456</div>
+        <div class="total-vat-key number">27%</div>
+        <div class="total-vat-amount number">12345</div>
+        <div class="total-gross-amount number">123456</div>
+
+        <div class="rounding-label">Kerekítés (5 forintra) összege</div>
+        <div class="rounded-gross-amount number">123456</div>
+
+        <div class="total-receipt-amount-label">
+          Számla mindösszesen: (fizetendő)
+        </div>
+        <div class="total-receipt-amount">123456</div>
       </section>
       <section class="packing-info">
-        A számlán szereplő csomagolóanyagok a termékdíjfizetés alól mentesek, a
-        termékdíj megfizetésre került. A népegészségügyi termékadó az eladót
-        terheli.
+        A számlán szereplő csomagolóanyagok mentesek a termékdíjfizetés alól, a
+        termékdíj megfizetésre került. A NÉTA az eladót terheli.
       </section>
     </main>
     <footer>
