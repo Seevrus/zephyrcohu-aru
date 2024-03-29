@@ -32,10 +32,10 @@ export function useEndErrand() {
   );
 
   const finishRound = useCallback(async () => {
-    if (!!activeRound && !!selectedStoreCurrentState) {
+    if (activeRound) {
       const lastSerialNumber =
         numberOfReceipts === 0
-          ? selectedStoreCurrentState.firstAvailableSerialNumber
+          ? selectedStoreCurrentState?.firstAvailableSerialNumber
           : receipts.reduce(
               (sn, { serialNumber: receiptSn }) =>
                 receiptSn > sn ? receiptSn : sn,
@@ -45,7 +45,7 @@ export function useEndErrand() {
       await finishRoundAPI({
         roundId: activeRound?.id,
         lastSerialNumber,
-        yearCode: selectedStoreCurrentState.yearCode,
+        yearCode: selectedStoreCurrentState?.yearCode,
       });
 
       await setSelectedStoreCurrentState(null);

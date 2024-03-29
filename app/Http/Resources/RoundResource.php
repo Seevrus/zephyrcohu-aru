@@ -15,7 +15,7 @@ class RoundResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+        $result = [
             'id' => $this->id,
             'userId' => $this->user_id,
             'storeId' => $this->store_id,
@@ -27,5 +27,11 @@ class RoundResource extends JsonResource
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
         ];
+
+        if (!is_null($this->last_serial_number)) {
+            $result['isEmergencyClose'] = $this->emergency_close == 0 ? false : true;
+        }
+
+        return $result;
     }
 }

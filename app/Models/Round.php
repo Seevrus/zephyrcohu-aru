@@ -16,6 +16,7 @@ class Round extends Model
         'partner_list_id',
         'last_serial_number',
         'year_code',
+        'emergency_close',
         'round_started',
         'round_finished',
     ];
