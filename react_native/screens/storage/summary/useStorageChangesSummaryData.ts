@@ -83,13 +83,15 @@ export function useStorageChangesSummaryData(
   );
 
   const printButtonHandler = async () => {
-    await printAsync({
-      html: createPrint({
-        receiptItems,
-        storeDetails: selectedStoreInitialState,
-        user,
-      }),
-    });
+    if (isPrintEnabled) {
+      await printAsync({
+        html: createPrint({
+          receiptItems,
+          storeDetails: selectedStoreInitialState,
+          user,
+        }),
+      });
+    }
   };
 
   const returnButtonHandler = async () => {

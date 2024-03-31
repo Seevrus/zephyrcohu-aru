@@ -13,7 +13,7 @@ function mapToNr(index: number) {
     return stringIndex;
   }
 
-  return '0'.repeat(3 - stringIndex.length) + stringIndex;
+  return '0'.repeat(3 - stringIndex.length) + stringIndex + '.';
 }
 
 const documentType = '<!DOCTYPE html>';
@@ -25,10 +25,6 @@ const head = `
     <title>Rakjegyzék</title>
 
     <style>
-      @page {
-        margin: 10px;
-      }
-
       * {
         box-sizing: border-box;
       }
@@ -36,14 +32,13 @@ const head = `
       html,
       body {
         margin: 0;
-        padding: 0;
+        padding: 5px;
         width: 100%;
-        min-height: 100vh;
       }
 
       body {
         font-family: 'Lucida Console';
-        font-size: 7pt;
+        font-size: 12px;
       }
 
       body header {
@@ -53,7 +48,7 @@ const head = `
       body header .title-row {
         display: flex;
         width: fit-content;
-        border-bottom: 1px dashed black;
+        border-bottom: 1px solid black;
         padding-bottom: 5px;
         margin-bottom: 5px;
       }
@@ -86,91 +81,82 @@ const head = `
         margin-bottom: 5px;
       }
 
-      body header .label {
-        text-decoration: underline;
-      }
-
-      body main section.items .item {
+      .item-grid {
         display: grid;
-        grid-template-columns: repeat(70, minmax(0, 1fr));
-        border-bottom: 1px dashed black;
-        padding-bottom: 5px;
-        margin-bottom: 5px;
-      }
-
-      body main section.items .item .nr {
-        grid-column: 1 / span 4;
-      }
-
-      body main section.items .item .article-number {
-        grid-column: 6 / span 8;
-      }
-
-      body main section.items .item .expires-at {
-        grid-column: 15 / span 27;
-      }
-
-      body main section.items .item .quantities {
-        grid-column: 42 / span 29;
-      }
-
-      body main section.items .item .item-name {
-        grid-column: 1 / span 40;
-        word-break: break-all;
-      }
-
-      body main section.items .item .unit {
-        grid-column: 42 / span 6;
-      }
-
-      body main section.items .item .starting-quantity {
-        grid-column: 49 / span 5;
-        justify-self: flex-end;
-      }
-
-      body main section.items .item .quantity-change {
-        grid-column: 55 / span 6;
-        justify-self: flex-end;
-      }
-
-      body main section.items .item .final-quantity {
-        grid-column: 62 / span 5;
-        justify-self: flex-end;
-      }
-
-      body main section.items .item .ok {
-        grid-column: 68 / span 3;
-        justify-self: flex-end;
-      }
-
-      body main section.items-summary {
+        grid-template-columns: repeat(8, auto);
         border-bottom: 2px solid black;
         padding-bottom: 5px;
         margin-bottom: 5px;
       }
 
-      body main section.items-summary .item {
-        display: grid;
-        grid-template-columns: repeat(70, minmax(0, 1fr));
+      .item-grid .item {
+        padding-left: 5px;
+        padding-right: 5px;
       }
 
-      body main section.items-summary .item .total-label {
-        grid-column: 1 / span 47;
+      .item-grid .item.nr,
+      .item-grid .item.item-name,
+      .item-grid .item.total-label {
+        padding-left: 0;
       }
 
-      body main section.items-summary .item .starting-total {
-        grid-column: 49 / span 5;
-        justify-self: flex-end;
+      .item-grid .item.quantities,
+      .item-grid .item.ok {
+        padding-right: 0;
       }
 
-      body main section.items-summary .item .total-change {
-        grid-column: 55 / span 6;
-        justify-self: flex-end;
+      .item-grid .item.item-name,
+      .item-grid .item.unit,
+      .item-grid .item.starting-quantity,
+      .item-grid .item.quantity-change,
+      .item-grid .item.final-quantity,
+      .item-grid .item.ok {
+        border-bottom: 1px solid black;
+        margin-bottom: 10px;
       }
 
-      body main section.items-summary .item .ending-total {
-        grid-column: 62 / span 5;
-        justify-self: flex-end;
+      .item-grid .item.starting-quantity,
+      .item-grid .item.quantity-change,
+      .item-grid .item.final-quantity,
+      .item-grid .item.ok,
+      .item-grid .item.starting-total,
+      .item-grid .item.total-change,
+      .item-grid .item.ending-total {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .item-grid .item.expires-at {
+        grid-column: 3 / span 2;
+      }
+
+      .item-grid .item.quantities {
+        grid-column: 5 / span 3;
+      }
+
+      .item-grid .item.item-name {
+        grid-column: 1 / span 3;
+        overflow-wrap: break-word;
+      }
+
+      .item-grid .item.ok {
+        align-items: center;
+      }
+
+      .square-check {
+        width: 15px;
+        height: 15px;
+        border: 1px solid black;
+        margin-bottom: 5px;
+      }
+
+      .item-grid .item.total-label {
+        grid-column: 1 / span 4;
+        grid-row: auto / span 2;
+      }
+
+      .item-grid .item.total-change {
+        grid-column: 6 / span 1;
       }
 
       body footer {
@@ -200,12 +186,11 @@ const head = `
 
       body footer .end-delimiter {
         border-bottom: 1px dashed black;
-        padding-bottom: 5px;
-        margin-bottom: 5px;
+        padding-bottom: 30px;
+        margin-bottom: 20px;
       }
     </style>
-  </head>
-`;
+  </head>`;
 
 export function createPrint({
   receiptItems,
@@ -213,63 +198,58 @@ export function createPrint({
   user,
 }: {
   receiptItems: StorageListItem[];
-  storeDetails: StoreDetailsResponseData | null;
-  user: CheckToken | undefined;
+  storeDetails: StoreDetailsResponseData;
+  user: CheckToken;
 }) {
   const header = `
     <header>
       <div class="title-row">
         <div class="title">Rakjegyzék</div>
-        <div class="date">${format(new Date(), 'yyyy. MMMM do', {
-          locale: hu,
-        })}</div>
+        <div class="date">
+          ${format(new Date(), 'yyyy. MMMM do', { locale: hu })}
+        </div>
       </div>
       <div class="contestants">
         <div>Rakodta:</div>
-        <div>${user?.code}</div>
-        <div>${user?.name}</div>
+        <div>${user.code}</div>
+        <div>${user.name}</div>
         <div>Raktár:</div>
-        <div>${storeDetails?.code}</div>
-        <div>${storeDetails?.name}</div>
+        <div>${storeDetails.code}</div>
+        <div>${storeDetails.name}</div>
       </div>
-    </header>
-  `;
+    </header>`;
 
-  const itemsSection = `
-    <section class="items">
-      <div class="item">
-        <div class="nr">Ssz.</div>
-        <div class="article-number">Cikkszám</div>
-        <div class="expires-at">Lejárat</div>
-        <div class="quantities">Mennyiségek</div>
-        <div class="item-name">Megnevezés</div>
-        <div class="unit">Menny. egység</div>
-        <div class="starting-quantity">Kezdő</div>
-        <div class="quantity-change">Mozgás</div>
-        <div class="final-quantity">Kész</div>
-        <div class="ok">Ok?</div>
-      </div>
-      ${receiptItems.map((item, index) => {
-        const quantityChange =
-          (item.currentQuantity || 0) - (item.originalQuantity || 0);
+  const itemsList = `
+    <div class="item nr">Ssz.</div>
+    <div class="item article-number">Cikkszám</div>
+    <div class="item expires-at">Lejárat</div>
+    <div class="item quantities">Mennyiségek</div>
+    <div class="item item-name">Megnevezés</div>
+    <div class="item unit">Egység</div>
+    <div class="item starting-quantity">Kezdő</div>
+    <div class="item quantity-change">Mozgás</div>
+    <div class="item final-quantity">Kész</div>
+    <div class="item ok">Ok?</div>
+  
+    ${receiptItems.map((item, index) => {
+      const quantityChange =
+        (item.currentQuantity || 0) - (item.originalQuantity || 0);
 
-        return `
-          <div class="item">
-            <div class="nr">${mapToNr(index)}</div>
-            <div class="article-number">${item.articleNumber}</div>
-            <div class="expires-at">${item.expiresAt}</div>
-            <div class="item-name">${item.name}</div>
-            <div class="unit">${item.unitName}</div>
-            <div class="starting-quantity">${item.originalQuantity || 0}</div>
-            <div class="quantity-change">${
-              quantityChange > 0 ? '+' : ''
-            }${quantityChange}</div>
-            <div class="final-quantity">${item.currentQuantity}</div>
-            <div class="ok">[]</div>
-          </div>
-        `;
-      })}
-    </section>
+      return `
+        <div class="item nr">${mapToNr(index)}</div>
+        <div class="item article-number">${item.articleNumber}</div>
+        <div class="item expires-at">${item.expiresAt}</div>
+        <div class="item item-name">${item.name}</div>
+        <div class="item unit">${item.unitName}</div>
+        <div class="item starting-quantity">${item.originalQuantity || 0}</div>
+        <div class="item quantity-change">
+          ${quantityChange > 0 ? '+' : ''}${quantityChange}
+        </div>
+        <div class="item final-quantity">${item.currentQuantity}</div>
+        <div class="item ok">
+          <div class="square-check"></div>
+        </div>`;
+    })}
   `;
 
   const createItemsSummarySection = () => {
@@ -295,18 +275,14 @@ export function createPrint({
     );
 
     return `
-      <section class="items-summary">
-        <div class="item">
-          <div class="total-label">Összesen (rakodva 2 termék)</div>
-          <div class="starting-total">${itemsSummary.originalQuantity}</div>
-          <div class="total-change">+${itemsSummary.in}</div>
-        </div>
-        <div class="item">
-          <div class="total-change">${itemsSummary.out}</div>
-          <div class="ending-total">${itemsSummary.currentQuantity}</div>
-        </div>
-      </section>
-    `;
+      <div class="item total-label">
+        Összesen (rakodva ${receiptItems.length} termék)
+      </div>
+      <div class="item starting-total">${itemsSummary.originalQuantity}</div>
+      <div class="item total-change">+${itemsSummary.in}</div>
+
+      <div class="item total-change">${itemsSummary.out}</div>
+      <div class="item ending-total">${itemsSummary.currentQuantity}</div>`;
   };
 
   const footer = `
@@ -317,12 +293,10 @@ export function createPrint({
           <div>Ellenőrizte</div>
         </div>
       </div>
-      <div class="end-delimiter">|> ${format(
-        new Date(),
-        'yyyy.MM.dd.'
-      )} | ${user?.code} | ${user?.name} <|</div>
-    </footer>
-  `;
+      <div class="end-delimiter">
+        |> ${format(new Date(), 'yyyy.MM.dd.')} | ${user.code} | ${user.name} <|
+      </div>
+    </footer>`;
 
   return `
     ${documentType}
@@ -331,8 +305,10 @@ export function createPrint({
       <body>
         ${header}
         <main>
-          ${itemsSection}
-          ${createItemsSummarySection()}
+          <div class="item-grid">
+            ${itemsList}
+            ${createItemsSummarySection()}
+          </div>
         </main>
         ${footer}
       </body>

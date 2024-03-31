@@ -1,2240 +1,1934 @@
 {
-	"info": {
-		"_postman_id": "e73bb862-10a7-4388-ae40-c8173b4e01c4",
-		"name": "Zephyr ARU",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "14197538"
-	},
-	"item": [
-		{
-			"name": "items",
-			"item": [
-				{
-					"name": "Create Items",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"CNCode\": \"010203\",\r\n            \"articleNumber\": \"0000_01\",\r\n            \"name\": \"Első Jégkrém\",\r\n            \"shortName\": \"EJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000001\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2023-12\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2024-02\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010204\",\r\n            \"articleNumber\": \"0000_02\",\r\n            \"name\": \"Második Jégkrém\",\r\n            \"shortName\": \"MJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000002\",\r\n            \"vatRate\": \"18\",\r\n            \"netPrice\": 999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2023-12\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010205\",\r\n            \"articleNumber\": \"0000_03\",\r\n            \"name\": \"Harmadik Jégkrém\",\r\n            \"shortName\": \"HJ01\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000003\",\r\n            \"vatRate\": \"AM\",\r\n            \"netPrice\": 999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2023-12\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2024-02\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010206\",\r\n            \"articleNumber\": \"0000_04\",\r\n            \"name\": \"Negyedik Jégkrém\",\r\n            \"shortName\": \"NJ01\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000004\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2023-12\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2024-02\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010207\",\r\n            \"articleNumber\": \"0000_05\",\r\n            \"name\": \"Ötödik Jégkrém\",\r\n            \"shortName\": \"ÖJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000005\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2023-12\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010208\",\r\n            \"articleNumber\": \"0000_06\",\r\n            \"name\": \"Hatodik Jégkrém\",\r\n            \"shortName\": \"HJ02\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000006\",\r\n            \"vatRate\": \"18\",\r\n            \"netPrice\": 999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2023-12\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010209\",\r\n            \"articleNumber\": \"0000_07\",\r\n            \"name\": \"Hetedik Jégkrém\",\r\n            \"shortName\": \"HJ03\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000007\",\r\n            \"vatRate\": \"AM\",\r\n            \"netPrice\": 999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2023-12\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2024-02\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010210\",\r\n            \"articleNumber\": \"0000_08\",\r\n            \"name\": \"Nyolcadik Jégkrém\",\r\n            \"shortName\": \"NJ02\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000008\",\r\n            \"vatRate\": \"05\",\r\n            \"netPrice\": 999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2023-12\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010211\",\r\n            \"articleNumber\": \"0000_09\",\r\n            \"name\": \"Kilencedik Jégkrém\",\r\n            \"shortName\": \"KJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000009\",\r\n            \"vatRate\": \"05\",\r\n            \"netPrice\": 999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2023-12\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2024-02\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010212\",\r\n            \"articleNumber\": \"0000_10\",\r\n            \"name\": \"Tizedik Jégkrém\",\r\n            \"shortName\": \"TJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000010\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2023-12\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010213\",\r\n            \"articleNumber\": \"0000_11\",\r\n            \"name\": \"Tizenegyedik Jégkrém\",\r\n            \"shortName\": \"TEJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000011\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2023-12\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2024-02\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010214\",\r\n            \"articleNumber\": \"0000_12\",\r\n            \"name\": \"Tizenkettedik Jégkrém\",\r\n            \"shortName\": \"TKJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000012\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2023-12\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2024-02\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010215\",\r\n            \"articleNumber\": \"0000_13\",\r\n            \"name\": \"Tizenharmadik Jégkrém\",\r\n            \"shortName\": \"THJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000013\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2023-12\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010203\",\r\n            \"articleNumber\": \"0000_14\",\r\n            \"name\": \"Tizennegyedik Jégkrém\",\r\n            \"shortName\": \"TNJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000014\",\r\n            \"vatRate\": \"AM\",\r\n            \"netPrice\": 999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2023-12\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2024-02\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010203\",\r\n            \"articleNumber\": \"0000_15\",\r\n            \"name\": \"Tizenötödik Jégkrém\",\r\n            \"shortName\": \"TÖJ\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"cs.\",\r\n            \"productCatalogCode\": \"10000000015\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2023-12\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/items",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"items"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "View All Items",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/items",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"items"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Item",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"barcode\": \"599441\",\r\n        \"expirations\": [\r\n            {\r\n                \"action\": \"delete\",\r\n                \"id\": 48,\r\n                \"barcode\": \"48\",\r\n                \"expiresAt\": \"2023-12\"\r\n            }\r\n        ]\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/items/32",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"items",
-								"32"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Remove Item",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/items/14",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"items",
-								"14"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "orders",
-			"item": [
-				{
-					"name": "Create Orders",
-					"protocolProfileBehavior": {
-						"disabledSystemHeaders": {
-							"accept": true
-						}
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"partnerId\": 15,\r\n            \"orderedAt\": \"2023-11-07 19:21:14\",\r\n            \"items\": [\r\n                {\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 5\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/orders",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"orders"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "View All Orders",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/orders",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"orders"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Order",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/orders/3",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"orders",
-								"3"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "other items",
-			"item": [
-				{
-					"name": "Create Other Items",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"articleNumber\": \"9999_01\",\r\n            \"name\": \"Utólag adott visszatérítés\",\r\n            \"shortName\": \"VT\",\r\n            \"unitName\": \"db.\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 0\r\n        },\r\n        {\r\n            \"articleNumber\": \"9999_02\",\r\n            \"name\": \"Teszt, hogy tudjak törölni is\",\r\n            \"shortName\": \"Test\",\r\n            \"unitName\": \"db.\",\r\n            \"vatRate\": \"18\",\r\n            \"netPrice\": 0\r\n        }\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/other_items",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"other_items"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "View All Other Items",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/other_items",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"other_items"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Other Item",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"name\": \"Új név törlés előtt\"\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/other_items/2",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"other_items",
-								"2"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Remove Other Item",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/other_items/2",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"other_items",
-								"2"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "partners",
-			"item": [
-				{
-					"name": "Create Partners",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"code\": \"000002\",\r\n            \"siteCode\": \"0001\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"invoiceType\": \"E\",\r\n            \"invoiceCopies\": 1,\r\n            \"paymentDays\": 30,\r\n            \"iban\": \"AB12\",\r\n            \"bankAccount\": \"11111111-00000000-12345678\",\r\n            \"phoneNumber\": \"+3611234567\",\r\n            \"email\": \"test@test.hu\",\r\n            \"locations\": [\r\n                {\r\n                    \"name\": \"Test Name C2\",\r\n                    \"locationType\": \"C\",\r\n                    \"country\": \"HU\",\r\n                    \"postalCode\": \"1234\",\r\n                    \"city\": \"Test City\",\r\n                    \"address\": \"Test Address 42. 1. 789B\"\r\n                },\r\n                {\r\n                    \"name\": \"Test Name D2\",\r\n                    \"locationType\": \"D\",\r\n                    \"country\": \"HU\",\r\n                    \"postalCode\": \"4321\",\r\n                    \"city\": \"Test Town\",\r\n                    \"address\": \"Test Address 25C\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/partners",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"partners"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Partners",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/partners",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"partners"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Partner Details",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/partners/15",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"partners",
-								"15"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Partner",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"priceListId\": 27\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/partners/15",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"partners",
-								"15"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Remove Partner",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/partners/14",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"partners",
-								"14"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Search",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"taxNumber\": \"10625790\"\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/partners/search",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"partners",
-								"search"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "partner lists",
-			"item": [
-				{
-					"name": "Create Partner List",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"name\": \"Test Partner List\",\r\n        \"partners\": [\r\n            1\r\n        ]\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/partner_lists",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"partner_lists"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Partner Lists",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/partner_lists",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"partner_lists"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Partner List",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"name\": \"Test Partner Lista\"\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/partner_lists/1",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"partner_lists",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add Partner to List",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/partner_lists/1/1",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"partner_lists",
-								"1",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Remove Partner from List",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/partner_lists/1/1",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"partner_lists",
-								"1",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Remove Partner List",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/partner_lists/1",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"partner_lists",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "price lists",
-			"item": [
-				{
-					"name": "Create Price List",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"name\": \"Első és egyetlen teszt árjegyzék\",\r\n        \"items\": [\r\n            {\r\n                \"itemId\": 1,\r\n                \"netPrice\": 899\r\n            },\r\n            {\r\n                \"itemId\": 2,\r\n                \"netPrice\": 899\r\n            },\r\n            {\r\n                \"itemId\": 4,\r\n                \"netPrice\": 899\r\n            },\r\n            {\r\n                \"itemId\": 10,\r\n                \"netPrice\": 899\r\n            },\r\n            {\r\n                \"itemId\": 15,\r\n                \"netPrice\": 899\r\n            }\r\n        ]\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/price_lists/",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"price_lists",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "View All Price Lists",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/price_lists/",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"price_lists",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "View Price List Details",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/price_lists/27",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"price_lists",
-								"27"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Price List",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"name\": \"Első teszt árjegyzék\"\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/price_lists/26",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"price_lists",
-								"26"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Remove Price List",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/price_lists/26",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"price_lists",
-								"26"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Upsert Price List Items",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"itemId\": 31,\r\n            \"netPrice\": 1099\r\n        },\r\n        {\r\n            \"itemId\": 36,\r\n            \"netPrice\": 1\r\n        }\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/price_lists/27/upsert_items",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"price_lists",
-								"27",
-								"upsert_items"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Remove Price List Items",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": [\r\n        33,\r\n        32\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/price_lists/27/remove_items",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"price_lists",
-								"27",
-								"remove_items"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "receipts",
-			"item": [
-				{
-					"name": "Create Receipts",
-					"protocolProfileBehavior": {
-						"disabledSystemHeaders": {
-							"accept": true
-						}
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"partnerId\": 15,\r\n            \"partnerCode\": \"000002\",\r\n            \"partnerSiteCode\": \"0001\",\r\n            \"buyer\": {\r\n                \"id\": 15,\r\n                \"name\": \"Test Name C2\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"1234\",\r\n                \"city\": \"Test City\",\r\n                \"address\": \"Test Address 42. 1. 789B\",\r\n                \"deliveryName\": \"Test Name D2\",\r\n                \"deliveryCountry\": \"HU\",\r\n                \"deliveryPostalCode\": \"4321\",\r\n                \"deliveryCity\": \"Test Town\",\r\n                \"deliveryAddress\": \"Test Address 25C\",\r\n                \"iban\": \"AB12\",\r\n                \"bankAccount\": \"11111111-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-12\"\r\n            },\r\n            \"paymentDays\": 30,\r\n            \"invoiceType\": \"P\",\r\n            \"items\": [\r\n                {\r\n                    \"id\": 31,\r\n                    \"expirationId\": 25,\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"expiresAt\": \"2024-02\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 1,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 4995,\r\n                    \"vatRate\": \"27\",\r\n                    \"vatAmount\": 1349,\r\n                    \"grossAmount\": 6344\r\n                },\r\n                {\r\n                    \"id\": 31,\r\n                    \"expirationId\": 25,\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"expiresAt\": \"2024-02\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 2,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 1798,\r\n                    \"vatRate\": \"27\",\r\n                    \"vatAmount\": 485,\r\n                    \"grossAmount\": 2283,\r\n                    \"discountName\": \"100 Ft kedvezmény\"\r\n                },\r\n                {\r\n                    \"id\": 31,\r\n                    \"expirationId\": 25,\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"expiresAt\": \"2024-02\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 2,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 2598,\r\n                    \"vatRate\": \"27\",\r\n                    \"vatAmount\": 701,\r\n                    \"grossAmount\": 3299,\r\n                    \"discountName\": \"Tetszőleges kedvezmény\"\r\n                }\r\n            ],\r\n            \"isSent\": false,\r\n            \"shouldBeUpdated\": false,\r\n            \"serialNumber\": 20000,\r\n            \"yearCode\": 23,\r\n            \"originalCopiesPrinted\": 0,\r\n            \"vendor\": {\r\n                \"name\": \"Szlartibartfaszt és Társa\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"8145\",\r\n                \"city\": \"Nádasladány\",\r\n                \"address\": \"Kastély út 5.\",\r\n                \"felir\": \"XY1234567\",\r\n                \"iban\": \"HU88\",\r\n                \"bankAccount\": \"12345678-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-23\"\r\n            },\r\n            \"invoiceDate\": \"2023-11-07\",\r\n            \"fulfillmentDate\": \"2023-12-07\",\r\n            \"paidDate\": \"2023-12-07\",\r\n            \"quantity\": 5,\r\n            \"netAmount\": 5395,\r\n            \"vatAmount\": 1456,\r\n            \"grossAmount\": 6851,\r\n            \"vatAmounts\": [\r\n                {\r\n                    \"vatRate\": \"27\",\r\n                    \"netAmount\": 5395,\r\n                    \"vatAmount\": 1456,\r\n                    \"grossAmount\": 6851\r\n                }\r\n            ],\r\n            \"roundAmount\": -1,\r\n            \"roundedAmount\": 6850\r\n        }\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/receipts",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"receipts"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Recipt Print",
-					"protocolProfileBehavior": {
-						"disabledSystemHeaders": {
-							"accept": true
-						}
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"id\": 2,\r\n            \"originalCopiesPrinted\": 1\r\n        }\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/receipts/update_printed_copies",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"receipts",
-								"update_printed_copies"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Receipts",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/receipts?downloaded=1",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"receipts"
-							],
-							"query": [
-								{
-									"key": "downloaded",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Receipts",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/receipts/1",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"receipts",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "rounds",
-			"item": [
-				{
-					"name": "Get Rounds",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/rounds",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"rounds"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Start Round",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"storeId\": 2,\r\n        \"partnerListId\": 2,\r\n        \"roundStarted\": \"2023-10-25\"\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/rounds/start",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"rounds",
-								"start"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Finish Round",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"roundId\": 8,\r\n        \"lastSerialNumber\": 10187,\r\n        \"yearCode\": 23\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/rounds/finish",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"rounds",
-								"finish"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "storage",
-			"item": [
-				{
-					"name": "Load Primary Store",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"storeId\": 1,\r\n        \"changes\": [\r\n            {\r\n                \"expirationId\": 1,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 2,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 3,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 5,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 6,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 7,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 8,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 9,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 10,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 11,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 12,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 13,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 14,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 15,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 16,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 17,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 18,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 19,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 20,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 21,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 22,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 23,\r\n                \"quantityChange\": 100\r\n            }\r\n        ]\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/storage/load_primary",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"storage",
-								"load_primary"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Lock Store to User",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"storeId\": 2\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/storage/lock_to_user",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"storage",
-								"lock_to_user"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Load Store",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"primaryStoreId\": 1,\r\n        \"changes\": [\r\n            {\r\n                \"expirationId\": 1,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 2,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 3,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 4,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 5,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 6,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 7,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 8,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 9,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 10,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 11,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 12,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 13,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 14,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 15,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 16,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 17,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 18,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 19,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 20,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 21,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 22,\r\n                \"quantityChange\": 10\r\n            }\r\n        ]\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/storage/load",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"storage",
-								"load"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Sell Items From Store",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"changes\": [\r\n            {\r\n                \"expirationId\": 24,\r\n                \"quantityChange\": -5\r\n            }\r\n        ]\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/storage/sell",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"storage",
-								"sell"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Unlock Store from User",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/storage/unlock_from_user",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"storage",
-								"unlock_from_user"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "stores",
-			"item": [
-				{
-					"name": "Create Stores",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"code\": \"0001\",\r\n            \"name\": \"Főraktár\",\r\n            \"type\": \"P\"\r\n        },\r\n        {\r\n            \"code\": \"0002\",\r\n            \"name\": \"ABC-124\",\r\n            \"type\": \"S\",\r\n            \"firstAvailableSerialNumber\": 20000,\r\n            \"lastAvailableSerialNumber\": 29999,\r\n            \"yearCode\": 23\r\n        },\r\n        {\r\n            \"code\": \"0003\",\r\n            \"name\": \"ABC-125\",\r\n            \"type\": \"S\",\r\n            \"firstAvailableSerialNumber\": 30000,\r\n            \"lastAvailableSerialNumber\": 39999,\r\n            \"yearCode\": 23\r\n        },\r\n        {\r\n            \"code\": \"0004\",\r\n            \"name\": \"ABC-126\",\r\n            \"type\": \"S\",\r\n            \"firstAvailableSerialNumber\": 40000,\r\n            \"lastAvailableSerialNumber\": 49999,\r\n            \"yearCode\": 23\r\n        },\r\n        {\r\n            \"code\": \"0005\",\r\n            \"name\": \"ABC-127\",\r\n            \"type\": \"S\",\r\n            \"firstAvailableSerialNumber\": 50000,\r\n            \"lastAvailableSerialNumber\": 59999,\r\n            \"yearCode\": 23\r\n        }\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/stores",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"stores"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "View All Stores",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/stores",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"stores"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "View Store Details",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/stores/2",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"stores",
-								"2"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Store",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"data\": {\r\n        \"name\": \"Kovács Béla Platós Lovaskocsija\"\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/stores/2",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"stores",
-								"2"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Remove Store",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/stores/5",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"stores",
-								"5"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "users",
-			"item": [
-				{
-					"name": "Login",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"userName\": \"ztill\",\r\n    \"password\": \"password01\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/users/login",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"users",
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Check Token",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/users/check-token",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"users",
-								"check-token"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Change Password",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"password\": \"password01\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/users/password",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"users",
-								"password"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "View All Users",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{zephyr_aru_url}}/users",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"users"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create User",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"userName\": \"ztill_tester\",\r\n    \"name\": \"Till Zoltán\",\r\n    \"phoneNumber\": \"+36304969025\",\r\n    \"roles\": [\r\n        \"A\"\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/users",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"users"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete User",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"userName\": \"ztill\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/users/delete",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"users",
-								"delete"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add User Role",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"userName\": \"ztill\",\r\n    \"roles\": [\r\n        \"A\"\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/users/roles",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"users",
-								"roles"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Remove User Role",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"userName\": \"ztill_tester\",\r\n    \"roles\": [\r\n        \"I\"\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{zephyr_aru_url}}/users/roles/delete",
-							"host": [
-								"{{zephyr_aru_url}}"
-							],
-							"path": [
-								"users",
-								"roles",
-								"delete"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		}
-	]
+  "info": {
+    "_postman_id": "e73bb862-10a7-4388-ae40-c8173b4e01c4",
+    "name": "Zephyr ARU",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "14197538"
+  },
+  "item": [
+    {
+      "name": "items",
+      "item": [
+        {
+          "name": "Create Items",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": [\r\n        {\r\n            \"CNCode\": \"010203\",\r\n            \"articleNumber\": \"0000_01\",\r\n            \"name\": \"Dupla Csokoládé\",\r\n            \"shortName\": \"DCs\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"karton\",\r\n            \"productCatalogCode\": \"10000000001\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 4299,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2024-12\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2025-02\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2025-05\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010204\",\r\n            \"articleNumber\": \"0000_02\",\r\n            \"name\": \"Pálcikás Vanília\",\r\n            \"shortName\": \"PV\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"karton\",\r\n            \"productCatalogCode\": \"10000000002\",\r\n            \"vatRate\": \"18\",\r\n            \"netPrice\": 2699,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2024-12\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010205\",\r\n            \"articleNumber\": \"0000_03\",\r\n            \"name\": \"Pálcikás Panda\",\r\n            \"shortName\": \"PP\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"karton\",\r\n            \"productCatalogCode\": \"10000000003\",\r\n            \"vatRate\": \"AM\",\r\n            \"netPrice\": 4499,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2024-08\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2025-02\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010206\",\r\n            \"articleNumber\": \"0000_04\",\r\n            \"name\": \"Óriás Panda\",\r\n            \"shortName\": \"OP\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"karton\",\r\n            \"productCatalogCode\": \"10000000004\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 3899,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2024-12\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2025-12\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2026-05\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010207\",\r\n            \"articleNumber\": \"0000_05\",\r\n            \"name\": \"Vörös Panda\",\r\n            \"shortName\": \"VöP\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"karton\",\r\n            \"productCatalogCode\": \"10000000005\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 3699,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2024-12\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010208\",\r\n            \"articleNumber\": \"0000_06\",\r\n            \"name\": \"Pisztácia\",\r\n            \"shortName\": \"P\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"karton\",\r\n            \"productCatalogCode\": \"10000000006\",\r\n            \"vatRate\": \"18\",\r\n            \"netPrice\": 2999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2024-11\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010209\",\r\n            \"articleNumber\": \"0000_07\",\r\n            \"name\": \"Kesudó Pálcikás\",\r\n            \"shortName\": \"KP\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"karton\",\r\n            \"productCatalogCode\": \"10000000007\",\r\n            \"vatRate\": \"AM\",\r\n            \"netPrice\": 3299,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2024-10\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2025-01\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2025-05\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010210\",\r\n            \"articleNumber\": \"0000_08\",\r\n            \"name\": \"Tripla Panda\",\r\n            \"shortName\": \"TP\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"karton\",\r\n            \"productCatalogCode\": \"10000000008\",\r\n            \"vatRate\": \"05\",\r\n            \"netPrice\": 3199,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2024-09\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010211\",\r\n            \"articleNumber\": \"0000_09\",\r\n            \"name\": \"Tripla Csokis\",\r\n            \"shortName\": \"TCs\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"karton\",\r\n            \"productCatalogCode\": \"10000000009\",\r\n            \"vatRate\": \"05\",\r\n            \"netPrice\": 3699,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2024-12\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2026-02\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010212\",\r\n            \"articleNumber\": \"0000_10\",\r\n            \"name\": \"Vegyes Savanyú\",\r\n            \"shortName\": \"VS\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"karton\",\r\n            \"productCatalogCode\": \"10000000010\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 2899,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2024-07\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2025-05\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010213\",\r\n            \"articleNumber\": \"0000_11\",\r\n            \"name\": \"Pálcikás Pisztácia\",\r\n            \"shortName\": \"PPi\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"karton\",\r\n            \"productCatalogCode\": \"10000000011\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 4199,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2024-08\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2024-11\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010214\",\r\n            \"articleNumber\": \"0000_12\",\r\n            \"name\": \"Hupikák Törpikék\",\r\n            \"shortName\": \"HT\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"karton\",\r\n            \"productCatalogCode\": \"10000000012\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 2399,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2024-12\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2025-03\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2025-05\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010215\",\r\n            \"articleNumber\": \"0000_13\",\r\n            \"name\": \"Szőlős Családi\",\r\n            \"shortName\": \"SzCs\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"karton\",\r\n            \"productCatalogCode\": \"10000000013\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 4299,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2024-11\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010203\",\r\n            \"articleNumber\": \"0000_14\",\r\n            \"name\": \"Csípős Majonézes\",\r\n            \"shortName\": \"CsN\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"karton\",\r\n            \"productCatalogCode\": \"10000000014\",\r\n            \"vatRate\": \"AM\",\r\n            \"netPrice\": 2999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2024-12\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2026-06\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2025-08\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"CNCode\": \"010203\",\r\n            \"articleNumber\": \"0000_15\",\r\n            \"name\": \"Pálcikás Strucc\",\r\n            \"shortName\": \"PS\",\r\n            \"category\": \"Jégkrémek\",\r\n            \"unitName\": \"karton\",\r\n            \"productCatalogCode\": \"10000000015\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 3999,\r\n            \"expirations\": [\r\n                {\r\n                    \"expiresAt\": \"2024-07\"\r\n                },\r\n                {\r\n                    \"expiresAt\": \"2025-05\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/items",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["items"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "View All Items",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/items",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["items"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Item",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": {\r\n        \"barcode\": \"599441\",\r\n        \"expirations\": [\r\n            {\r\n                \"action\": \"delete\",\r\n                \"id\": 48,\r\n                \"barcode\": \"48\",\r\n                \"expiresAt\": \"2023-12\"\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/items/32",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["items", "32"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Item",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/items/14",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["items", "14"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "orders",
+      "item": [
+        {
+          "name": "Create Orders",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": [\r\n        {\r\n            \"partnerId\": 15,\r\n            \"orderedAt\": \"2023-11-07 19:21:14\",\r\n            \"items\": [\r\n                {\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 5\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/orders",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "View All Orders",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/orders",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Order",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/orders/3",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["orders", "3"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "other items",
+      "item": [
+        {
+          "name": "Create Other Items",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": [\r\n        {\r\n            \"articleNumber\": \"9999_01\",\r\n            \"name\": \"Utólag adott visszatérítés\",\r\n            \"shortName\": \"VT\",\r\n            \"unitName\": \"db.\",\r\n            \"vatRate\": \"27\",\r\n            \"netPrice\": 0\r\n        },\r\n        {\r\n            \"articleNumber\": \"9999_02\",\r\n            \"name\": \"Teszt, hogy tudjak törölni is\",\r\n            \"shortName\": \"Test\",\r\n            \"unitName\": \"db.\",\r\n            \"vatRate\": \"18\",\r\n            \"netPrice\": 0\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/other_items",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["other_items"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "View All Other Items",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/other_items",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["other_items"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Other Item",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": {\r\n        \"name\": \"Új név törlés előtt\"\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/other_items/2",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["other_items", "2"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Other Item",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/other_items/2",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["other_items", "2"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "partners",
+      "item": [
+        {
+          "name": "Create Partners",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": [\r\n        {\r\n            \"code\": \"000001\",\r\n            \"siteCode\": \"0002\",\r\n            \"vatNumber\": \"12345678-1-12\",\r\n            \"invoiceType\": \"P\",\r\n            \"invoiceCopies\": 2,\r\n            \"paymentDays\": 30,\r\n            \"iban\": \"AB12\",\r\n            \"bankAccount\": \"11111111-00000000-12345678\",\r\n            \"phoneNumber\": \"+3611234567\",\r\n            \"locations\": [\r\n                {\r\n                    \"name\": \"Pityi Palkó Kft\",\r\n                    \"locationType\": \"D\",\r\n                    \"country\": \"HU\",\r\n                    \"postalCode\": \"1234\",\r\n                    \"city\": \"Alsógöröngyös\",\r\n                    \"address\": \"Kossuth utca 7.\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"code\": \"000002\",\r\n            \"siteCode\": \"0003\",\r\n            \"vatNumber\": \"12345679-1-12\",\r\n            \"invoiceType\": \"P\",\r\n            \"invoiceCopies\": 2,\r\n            \"paymentDays\": 30,\r\n            \"iban\": \"AB13\",\r\n            \"bankAccount\": \"17111111-00000000-12345678\",\r\n            \"phoneNumber\": \"+3611258568\",\r\n            \"email\": \"malyi@hunguest.hu\",\r\n            \"locations\": [\r\n                {\r\n                    \"name\": \"Hunguest Hotels\",\r\n                    \"locationType\": \"C\",\r\n                    \"country\": \"HU\",\r\n                    \"postalCode\": \"2040\",\r\n                    \"city\": \"New York\",\r\n                    \"address\": \"Zephyr Bt. utca 2.\"\r\n                },\r\n                {\r\n                    \"name\": \"Hunguest Mályi\",\r\n                    \"locationType\": \"D\",\r\n                    \"country\": \"HU\",\r\n                    \"postalCode\": \"3825\",\r\n                    \"city\": \"Mályi\",\r\n                    \"address\": \"Latabárné tér 4.\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"code\": \"000003\",\r\n            \"siteCode\": \"0004\",\r\n            \"vatNumber\": \"32345678-1-12\",\r\n            \"invoiceType\": \"P\",\r\n            \"invoiceCopies\": 2,\r\n            \"paymentDays\": 30,\r\n            \"iban\": \"AB14\",\r\n            \"bankAccount\": \"11111111-00000000-74545678\",\r\n            \"phoneNumber\": \"+3631234567\",\r\n            \"locations\": [\r\n                {\r\n                    \"name\": \"Molnár & Till Bt.\",\r\n                    \"locationType\": \"D\",\r\n                    \"country\": \"HU\",\r\n                    \"postalCode\": \"4025\",\r\n                    \"city\": \"Debrecen\",\r\n                    \"address\": \"Holdő köz 3.\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"code\": \"000004\",\r\n            \"siteCode\": \"0005\",\r\n            \"vatNumber\": \"42345678-2-12\",\r\n            \"invoiceType\": \"P\",\r\n            \"invoiceCopies\": 2,\r\n            \"paymentDays\": 30,\r\n            \"iban\": \"AB15\",\r\n            \"bankAccount\": \"11187111-00000000-12945678\",\r\n            \"email\": \"jozsi@tyuk.hu\",\r\n            \"locations\": [\r\n                {\r\n                    \"name\": \"Anyám Tyúkja Zrt.\",\r\n                    \"locationType\": \"C\",\r\n                    \"country\": \"HU\",\r\n                    \"postalCode\": \"1234\",\r\n                    \"city\": \"Coast City\",\r\n                    \"address\": \"Rest Avenue 15478.\"\r\n                },\r\n                {\r\n                    \"name\": \"Józsi Boltja\",\r\n                    \"locationType\": \"D\",\r\n                    \"country\": \"HU\",\r\n                    \"postalCode\": \"4321\",\r\n                    \"city\": \"Szalonna\",\r\n                    \"address\": \"Fő út 143.\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"code\": \"000005\",\r\n            \"siteCode\": \"0006\",\r\n            \"vatNumber\": \"52345678-1-12\",\r\n            \"invoiceType\": \"P\",\r\n            \"invoiceCopies\": 2,\r\n            \"paymentDays\": 30,\r\n            \"iban\": \"AB16\",\r\n            \"bankAccount\": \"11116911-00052000-12345678\",\r\n            \"phoneNumber\": \"+3615234567\",\r\n            \"email\": \"ivan@klima.az\",\r\n            \"locations\": [\r\n                {\r\n                    \"name\": \"Szorgalmas Klíma Kft.\",\r\n                    \"locationType\": \"C\",\r\n                    \"country\": \"HU\",\r\n                    \"postalCode\": \"4545\",\r\n                    \"city\": \"Somlyószentbéla\",\r\n                    \"address\": \"Tímár Mihály utca 23.\"\r\n                },\r\n                {\r\n                    \"name\": \"Magas Les Iván E.V.\",\r\n                    \"locationType\": \"D\",\r\n                    \"country\": \"HU\",\r\n                    \"postalCode\": \"4321\",\r\n                    \"city\": \"Lesnyéte\",\r\n                    \"address\": \"Till Zoltán utca 23.\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"code\": \"000006\",\r\n            \"siteCode\": \"0007\",\r\n            \"vatNumber\": \"62345678-2-12\",\r\n            \"invoiceType\": \"P\",\r\n            \"invoiceCopies\": 2,\r\n            \"paymentDays\": 30,\r\n            \"iban\": \"AB17\",\r\n            \"bankAccount\": \"11111111-00000000-12336678\",\r\n            \"email\": \"test@test.hu\",\r\n            \"locations\": [\r\n                {\r\n                    \"name\": \"Peregrin Kft.\",\r\n                    \"locationType\": \"D\",\r\n                    \"country\": \"HU\",\r\n                    \"postalCode\": \"8200\",\r\n                    \"city\": \"Veszprém\",\r\n                    \"address\": \"Haszkovó utca 7.\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/partners",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["partners"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Partners",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/partners",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["partners"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Partner Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/partners/15",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["partners", "15"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Partner",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": {\r\n        \"priceListId\": 27\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/partners/15",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["partners", "15"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Partner",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/partners/14",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["partners", "14"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": {\r\n        \"taxNumber\": \"10625790\"\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/partners/search",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["partners", "search"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "partner lists",
+      "item": [
+        {
+          "name": "Create Partner List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": {\r\n        \"name\": \"Békésiek\",\r\n        \"partners\": [\r\n            2,4,6\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/partner_lists",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["partner_lists"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Partner Lists",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/partner_lists",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["partner_lists"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Partner List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": {\r\n        \"name\": \"Test Partner Lista\"\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/partner_lists/1",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["partner_lists", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Partner to List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/partner_lists/1/1",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["partner_lists", "1", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Partner from List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/partner_lists/1/1",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["partner_lists", "1", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Partner List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/partner_lists/1",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["partner_lists", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "price lists",
+      "item": [
+        {
+          "name": "Create Price List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": {\r\n        \"name\": \"Első és egyetlen teszt árjegyzék\",\r\n        \"items\": [\r\n            {\r\n                \"itemId\": 1,\r\n                \"netPrice\": 899\r\n            },\r\n            {\r\n                \"itemId\": 2,\r\n                \"netPrice\": 899\r\n            },\r\n            {\r\n                \"itemId\": 4,\r\n                \"netPrice\": 899\r\n            },\r\n            {\r\n                \"itemId\": 10,\r\n                \"netPrice\": 899\r\n            },\r\n            {\r\n                \"itemId\": 15,\r\n                \"netPrice\": 899\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/price_lists",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["price_lists"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "View All Price Lists",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/price_lists/",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["price_lists", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "View Price List Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/price_lists/27",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["price_lists", "27"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Price List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": {\r\n        \"name\": \"Első teszt árjegyzék\"\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/price_lists/26",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["price_lists", "26"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Price List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/price_lists/26",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["price_lists", "26"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upsert Price List Items",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": [\r\n        {\r\n            \"itemId\": 31,\r\n            \"netPrice\": 1099\r\n        },\r\n        {\r\n            \"itemId\": 36,\r\n            \"netPrice\": 1\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/price_lists/27/upsert_items",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["price_lists", "27", "upsert_items"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Price List Items",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": [\r\n        33,\r\n        32\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/price_lists/27/remove_items",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["price_lists", "27", "remove_items"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "receipts",
+      "item": [
+        {
+          "name": "Create Receipts",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": [\r\n        {\r\n            \"partnerId\": 15,\r\n            \"partnerCode\": \"000002\",\r\n            \"partnerSiteCode\": \"0001\",\r\n            \"buyer\": {\r\n                \"id\": 15,\r\n                \"name\": \"Test Name C2\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"1234\",\r\n                \"city\": \"Test City\",\r\n                \"address\": \"Test Address 42. 1. 789B\",\r\n                \"deliveryName\": \"Test Name D2\",\r\n                \"deliveryCountry\": \"HU\",\r\n                \"deliveryPostalCode\": \"4321\",\r\n                \"deliveryCity\": \"Test Town\",\r\n                \"deliveryAddress\": \"Test Address 25C\",\r\n                \"iban\": \"AB12\",\r\n                \"bankAccount\": \"11111111-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-12\"\r\n            },\r\n            \"paymentDays\": 30,\r\n            \"invoiceType\": \"P\",\r\n            \"items\": [\r\n                {\r\n                    \"id\": 31,\r\n                    \"expirationId\": 25,\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"expiresAt\": \"2024-02\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 1,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 4995,\r\n                    \"vatRate\": \"27\",\r\n                    \"vatAmount\": 1349,\r\n                    \"grossAmount\": 6344\r\n                },\r\n                {\r\n                    \"id\": 31,\r\n                    \"expirationId\": 25,\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"expiresAt\": \"2024-02\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 2,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 1798,\r\n                    \"vatRate\": \"27\",\r\n                    \"vatAmount\": 485,\r\n                    \"grossAmount\": 2283,\r\n                    \"discountName\": \"100 Ft kedvezmény\"\r\n                },\r\n                {\r\n                    \"id\": 31,\r\n                    \"expirationId\": 25,\r\n                    \"CNCode\": \"010203\",\r\n                    \"articleNumber\": \"0000_01\",\r\n                    \"expiresAt\": \"2024-02\",\r\n                    \"name\": \"Első Jégkrém\",\r\n                    \"quantity\": 2,\r\n                    \"unitName\": \"cs.\",\r\n                    \"netPrice\": 999,\r\n                    \"netAmount\": 2598,\r\n                    \"vatRate\": \"27\",\r\n                    \"vatAmount\": 701,\r\n                    \"grossAmount\": 3299,\r\n                    \"discountName\": \"Tetszőleges kedvezmény\"\r\n                }\r\n            ],\r\n            \"isSent\": false,\r\n            \"shouldBeUpdated\": false,\r\n            \"serialNumber\": 20000,\r\n            \"yearCode\": 23,\r\n            \"originalCopiesPrinted\": 0,\r\n            \"vendor\": {\r\n                \"name\": \"Szlartibartfaszt és Társa\",\r\n                \"country\": \"HU\",\r\n                \"postalCode\": \"8145\",\r\n                \"city\": \"Nádasladány\",\r\n                \"address\": \"Kastély út 5.\",\r\n                \"felir\": \"XY1234567\",\r\n                \"iban\": \"HU88\",\r\n                \"bankAccount\": \"12345678-00000000-12345678\",\r\n                \"vatNumber\": \"12345678-1-23\"\r\n            },\r\n            \"invoiceDate\": \"2023-11-07\",\r\n            \"fulfillmentDate\": \"2023-12-07\",\r\n            \"paidDate\": \"2023-12-07\",\r\n            \"quantity\": 5,\r\n            \"netAmount\": 5395,\r\n            \"vatAmount\": 1456,\r\n            \"grossAmount\": 6851,\r\n            \"vatAmounts\": [\r\n                {\r\n                    \"vatRate\": \"27\",\r\n                    \"netAmount\": 5395,\r\n                    \"vatAmount\": 1456,\r\n                    \"grossAmount\": 6851\r\n                }\r\n            ],\r\n            \"roundAmount\": -1,\r\n            \"roundedAmount\": 6850\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/receipts",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["receipts"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Receipts",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/receipts?downloaded=1",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["receipts"],
+              "query": [
+                {
+                  "key": "downloaded",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Receipts",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/receipts/1",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["receipts", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "rounds",
+      "item": [
+        {
+          "name": "Get Rounds",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/rounds",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["rounds"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Start Round",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": {\r\n        \"storeId\": 2,\r\n        \"partnerListId\": 2,\r\n        \"roundStarted\": \"2023-10-25\"\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/rounds/start",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["rounds", "start"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Finish Round",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": {\r\n        \"roundId\": 1\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/rounds/finish",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["rounds", "finish"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "storage",
+      "item": [
+        {
+          "name": "Load Primary Store",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": {\r\n        \"storeId\": 1,\r\n        \"changes\": [\r\n            {\r\n                \"expirationId\": 1,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 2,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 3,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 5,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 6,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 7,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 8,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 9,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 10,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 11,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 12,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 13,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 14,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 15,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 16,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 17,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 18,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 19,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 20,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 21,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 22,\r\n                \"quantityChange\": 100\r\n            },\r\n            {\r\n                \"expirationId\": 23,\r\n                \"quantityChange\": 100\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/storage/load_primary",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["storage", "load_primary"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Lock Store to User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": {\r\n        \"storeId\": 2\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/storage/lock_to_user",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["storage", "lock_to_user"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Load Store",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": {\r\n        \"primaryStoreId\": 1,\r\n        \"changes\": [\r\n            {\r\n                \"expirationId\": 1,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 2,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 3,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 4,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 5,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 6,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 7,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 8,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 9,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 10,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 11,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 12,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 13,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 14,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 15,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 16,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 17,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 18,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 19,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 20,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 21,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 22,\r\n                \"quantityChange\": 10\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/storage/load",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["storage", "load"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Sell Items From Store",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": {\r\n        \"changes\": [\r\n            {\r\n                \"expirationId\": 24,\r\n                \"quantityChange\": -5\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/storage/sell",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["storage", "sell"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Unlock Store from User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/storage/unlock_from_user",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["storage", "unlock_from_user"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "stores",
+      "item": [
+        {
+          "name": "Create Stores",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": [\r\n        {\r\n            \"code\": \"0001\",\r\n            \"name\": \"Főraktár\",\r\n            \"type\": \"P\"\r\n        },\r\n        {\r\n            \"code\": \"0002\",\r\n            \"name\": \"ABC-124\",\r\n            \"type\": \"S\",\r\n            \"firstAvailableSerialNumber\": 20000,\r\n            \"lastAvailableSerialNumber\": 29999,\r\n            \"yearCode\": 23\r\n        },\r\n        {\r\n            \"code\": \"0003\",\r\n            \"name\": \"ABC-125\",\r\n            \"type\": \"S\",\r\n            \"firstAvailableSerialNumber\": 30000,\r\n            \"lastAvailableSerialNumber\": 39999,\r\n            \"yearCode\": 23\r\n        },\r\n        {\r\n            \"code\": \"0004\",\r\n            \"name\": \"ABC-126\",\r\n            \"type\": \"S\",\r\n            \"firstAvailableSerialNumber\": 40000,\r\n            \"lastAvailableSerialNumber\": 49999,\r\n            \"yearCode\": 23\r\n        },\r\n        {\r\n            \"code\": \"0005\",\r\n            \"name\": \"ABC-127\",\r\n            \"type\": \"S\",\r\n            \"firstAvailableSerialNumber\": 50000,\r\n            \"lastAvailableSerialNumber\": 59999,\r\n            \"yearCode\": 23\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/stores",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["stores"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "View All Stores",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/stores",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["stores"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "View Store Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/stores/3",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["stores", "3"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Store",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"data\": {\r\n        \"name\": \"Kovács Béla Platós Lovaskocsija\"\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/stores/2",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["stores", "2"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Store",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/stores/5",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["stores", "5"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"userName\": \"ztill\",\r\n    \"password\": \"test\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/users/login",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["users", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Check Token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/users/check-token",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["users", "check-token"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"password\": \"password01\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/users/password",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["users", "password"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "View All Users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{last_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/users",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"userName\": \"ztill_tester\",\r\n    \"name\": \"Till Zoltán\",\r\n    \"phoneNumber\": \"+363049690\",\r\n    \"roles\": [\r\n        \"A\"\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/users",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{last_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"userName\": \"zig\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/users/delete",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["users", "delete"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add User Role",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"userName\": \"ztill\",\r\n    \"roles\": [\r\n        \"AM\", \"I\"\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/users/roles",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["users", "roles"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove User Role",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"userName\": \"ztill\",\r\n    \"roles\": [\r\n        \"I\"\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{zephyr_aru_url}}/users/roles/delete",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["users", "roles", "delete"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
 }
