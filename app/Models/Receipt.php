@@ -17,7 +17,6 @@ class Receipt extends Model
         'partner_site_code',
         'serial_number',
         'year_code',
-        'original_copies_printed',
         'vendor_name',
         'vendor_country',
         'vendor_postal_code',

@@ -30,7 +30,6 @@ class CreateReceiptsRequest extends FormRequest
             'data.*.partnerSiteCode' => 'required|string|size:4',
             'data.*.serialNumber' => 'required|integer|min:0|max:16777215|distinct',
             'data.*.yearCode' => 'required|integer|min:0|max:99',
-            'data.*.originalCopiesPrinted' => 'required|integer|min:0|max:999',
             'data.*.vendor' => 'required',
             'data.*.vendor.name' => 'required|string|max:50',
             'data.*.vendor.country' => 'required|string|size:2',

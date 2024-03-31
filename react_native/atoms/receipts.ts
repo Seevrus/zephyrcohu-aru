@@ -31,6 +31,7 @@ export type ContextReceiptItem = ReceiptItem & {
 
 export type ContextReceipt = Omit<CreateReceiptRequest, 'items'> & {
   id: number;
+  isPrinted: boolean;
   isSent: boolean;
   shouldBeUpdated: boolean;
   items: ContextReceiptItem[];

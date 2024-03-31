@@ -12,7 +12,6 @@ export type CreateReceiptRequest = {
   partnerSiteCode: string;
   serialNumber: number;
   yearCode: number;
-  originalCopiesPrinted: number;
   vendor: ReceiptVendor;
   buyer: ReceiptBuyer;
   invoiceDate: string; // yyyy-MM-dd
