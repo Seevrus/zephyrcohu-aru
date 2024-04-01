@@ -1,20 +1,20 @@
 import { type StoreDetailsResponseData } from '../api/response-types/StoreDetailsResponseType';
-import { atomWithMediaStorage, mediaKeys } from './helpers';
+import { atomWithAsyncStorage } from './helpers';
 
 export const primaryStoreAtom =
-  atomWithMediaStorage<StoreDetailsResponseData | null>(
-    mediaKeys.primaryStore,
+  atomWithAsyncStorage<StoreDetailsResponseData | null>(
+    'boreal-primary-store',
     null
   );
 
 export const selectedStoreInitialStateAtom =
-  atomWithMediaStorage<StoreDetailsResponseData | null>(
-    mediaKeys.selectedStoreInitial,
+  atomWithAsyncStorage<StoreDetailsResponseData | null>(
+    'boreal-selected-store-initial-state',
     null
   );
 
 export const selectedStoreCurrentStateAtom =
-  atomWithMediaStorage<StoreDetailsResponseData | null>(
-    mediaKeys.selectedStoreCurrent,
+  atomWithAsyncStorage<StoreDetailsResponseData | null>(
+    'boreal-selected-store-current-state',
     null
   );

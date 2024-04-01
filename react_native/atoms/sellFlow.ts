@@ -2,7 +2,7 @@ import { atom } from 'jotai';
 
 import { type Partner } from '../api/response-mappers/mapPartnersResponse';
 import { type Discount } from '../api/response-types/ItemsResponseType';
-import { atomWithMediaStorage, mediaKeys } from './helpers';
+import { atomWithAsyncStorage } from './helpers';
 import { type SelectedDiscount } from './receipts';
 
 type SelectedOtherItems = Record<
@@ -41,8 +41,8 @@ export type OtherReviewItem = BaseReviewItem & {
 
 export type ReviewItem = RegularReviewItem | OtherReviewItem;
 
-export const maxNewPartnerIdInUseAtom = atomWithMediaStorage(
-  mediaKeys.maxNewPartnerIdInUse,
+export const maxNewPartnerIdInUseAtom = atomWithAsyncStorage(
+  'boreal-max-partner-id-in-use',
   0
 );
 

@@ -1,16 +1,12 @@
 import { type OrderRequest } from '../api/request-types/CreateOrdersRequestType';
-import {
-  atomWithAsyncStorage,
-  atomWithMediaStorage,
-  mediaKeys,
-} from './helpers';
+import { atomWithAsyncStorage } from './helpers';
 
 export type ContextOrder = OrderRequest & {
   isSent: boolean;
 };
 
-export const ordersAtom = atomWithMediaStorage<ContextOrder[]>(
-  mediaKeys.orders,
+export const ordersAtom = atomWithAsyncStorage<ContextOrder[]>(
+  'boreal-orders',
   []
 );
 
