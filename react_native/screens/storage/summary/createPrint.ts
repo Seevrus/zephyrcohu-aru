@@ -211,7 +211,7 @@ export function createPrint({
       </div>
       <div class="contestants">
         <div>Rakodta:</div>
-        <div>${user.code}</div>
+        <div>${user.userName}</div>
         <div>${user.name}</div>
         <div>Raktár:</div>
         <div>${storeDetails.code}</div>
@@ -231,11 +231,12 @@ export function createPrint({
     <div class="item final-quantity">Kész</div>
     <div class="item ok">Ok?</div>
   
-    ${receiptItems.map((item, index) => {
-      const quantityChange =
-        (item.currentQuantity || 0) - (item.originalQuantity || 0);
+    ${receiptItems
+      .map((item, index) => {
+        const quantityChange =
+          (item.currentQuantity || 0) - (item.originalQuantity || 0);
 
-      return `
+        return `
         <div class="item nr">${mapToNr(index)}</div>
         <div class="item article-number">${item.articleNumber}</div>
         <div class="item expires-at">${item.expiresAt}</div>
@@ -249,7 +250,8 @@ export function createPrint({
         <div class="item ok">
           <div class="square-check"></div>
         </div>`;
-    })}
+      })
+      .join('')}
   `;
 
   const createItemsSummarySection = () => {
@@ -294,7 +296,7 @@ export function createPrint({
         </div>
       </div>
       <div class="end-delimiter">
-        |> ${format(new Date(), 'yyyy.MM.dd.')} | ${user.code} | ${user.name} <|
+        |> ${format(new Date(), 'yyyy.MM.dd.')} | ${user.userName} | ${user.name} <|
       </div>
     </footer>`;
 

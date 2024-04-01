@@ -3,7 +3,6 @@ import { type UserRoleType } from './UserRoleType';
 
 export type UserType = {
   id: number;
-  code: string;
   userName: string;
   state: 'I' | 'L' | 'R';
   name: string;
