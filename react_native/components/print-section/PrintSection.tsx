@@ -26,6 +26,11 @@ export function PrintSection({ partner, receipt }: PrintSectionProps) {
 
   const printButtonVariant = canPrint ? 'ok' : 'disabled';
 
+  const numberOfPrints =
+    partner?.invoiceType === 'E' || receipt?.isPrinted
+      ? 2
+      : partner?.invoiceCopies;
+
   const printButtonHandler = async () => {
     if (canPrint) {
       await printAsync({
@@ -63,7 +68,8 @@ export function PrintSection({ partner, receipt }: PrintSectionProps) {
         <Text style={styles.text}>
           Az alábbi gombra koppintva megnyílik az Android rendszer nyomtatási
           párbeszédablaka, melyen keresztül lehetőség van a számla nyomtatására.
-          A nyomtatás két példányban történik, melyek közül az egyik a vevőé.
+          A nyomtatás {numberOfPrints} példányban történik, melyek közül az
+          egyik a vevőé.
         </Text>
       ) : (
         <Text style={styles.text}>

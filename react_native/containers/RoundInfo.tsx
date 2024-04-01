@@ -37,7 +37,7 @@ export function RoundInfo() {
       <View style={styles.infoItemContainer}>
         <Text style={styles.infoItem}>Kör kezdete:</Text>
         <Text style={styles.infoItem}>
-          {format(user.round.roundStarted, 'yyyy-MM-dd HH:mm:ss')}
+          {format(user.round.roundStarted, 'yyyy-MM-dd')}
         </Text>
       </View>
     </View>

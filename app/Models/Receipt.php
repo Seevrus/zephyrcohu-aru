@@ -44,7 +44,7 @@ class Receipt extends Model
         'invoice_type',
         'paid_date',
         'user_id',
-        'user_code',
+        'user_user_name',
         'user_name',
         'user_phone_number',
         'quantity',

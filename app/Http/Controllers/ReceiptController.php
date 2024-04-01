@@ -72,7 +72,7 @@ class ReceiptController extends Controller
                     'invoice_type' => $receiptRequest['invoiceType'],
                     'paid_date' => $receiptRequest['paidDate'],
                     'user_id' => $sender->id,
-                    'user_code' => $sender->code,
+                    'user_user_name' => $sender->user_name,
                     'user_name' => $sender->name,
                     'user_phone_number' => $sender->phone_number ?? null,
                     'quantity' => $receiptRequest['quantity'],
