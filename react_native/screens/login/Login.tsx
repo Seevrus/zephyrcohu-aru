@@ -20,7 +20,7 @@ import { type LoginProps } from '../../navigators/screen-types';
 
 export function Login({ navigation }: LoginProps) {
   const { data: user, isFetching: isUserFetching } = useCheckToken();
-  const login = useLogin();
+  const { mutateAsync: login } = useLogin();
 
   const isRoundStarted = user?.state === 'R';
 
@@ -50,10 +50,11 @@ export function Login({ navigation }: LoginProps) {
 
     try {
       setIsLoading(true);
-      await login.mutateAsync({
+      await login({
         userName: userName.trim(),
         password: password.trim(),
       });
+
       navigation.reset({
         index: 0,
         routes: [{ name: 'Index' }],

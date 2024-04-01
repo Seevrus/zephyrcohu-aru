@@ -24,6 +24,8 @@ class UserResource extends JsonResource
         $isRoundsLoaded = $this->relationLoaded('rounds');
         $round = $isRoundsLoaded ? $this->rounds->last() : null;
 
+        $hasActiveRound = $round ? !$round['round_finished'] : false;
+
         return [
             'id' => $this->id,
             'userName' => $this->user_name,
@@ -33,7 +35,7 @@ class UserResource extends JsonResource
             'company' => new CompanyResource($this->whenLoaded('company')),
             'phoneNumber' => $this->phone_number,
             'roles' => new UserRoleCollection($this->roles),
-            'round' => $round ? new RoundResource($round) : null,
+            'round' => $hasActiveRound ? new RoundResource($round) : null,
             'storeId' => $this->store?->id,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
