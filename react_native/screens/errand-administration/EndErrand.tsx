@@ -31,10 +31,7 @@ function SuspendedEndErrand({ navigation }: EndErrandProps) {
       setIsLoading(true);
       await finishRound();
 
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Index' }],
-      });
+      navigation.replace('PrintEndErrand');
     } catch {
       setIsLoading(false);
       setEndErrandError('Kör zárása sikertelen.');
@@ -54,8 +51,12 @@ function SuspendedEndErrand({ navigation }: EndErrandProps) {
       )}
       <Text style={styles.text}>
         Az kör zárásával az alkalmazás készre jelenti a teljes eladási
-        folyamatot és alaphelyzetbe állítja magát. Ezután a munka rakodással
-        folytatható vagy új kör indítható.
+        folyamatot.
+      </Text>
+      <Text style={styles.text}>
+        Sikeres körzárás esetén a következő képernyőn lesz lehetőség a
+        végelszámolás kinyomtatására, amely a készpénzes számlák ellenértéke
+        átbételének igazolására szolgál.
       </Text>
       <Text style={styles.text}>
         Kivételes esetektől eltekintve a kör zárását kizárólag visszaérkezés

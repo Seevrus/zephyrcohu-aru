@@ -11,7 +11,7 @@ import { storageListItemsAtom } from '../../../atoms/storageFlow';
 import { useResetStorage } from '../../../atoms/useResetStorage';
 import { useResetStorageFlow } from '../../../atoms/useResetStorageFlow';
 import { type StackParams } from '../../../navigators/screen-types';
-import { createPrint } from './createPrint';
+import { createPrintStorageChanges } from './createPrintStorageChanges';
 
 export function useStorageChangesSummaryData(
   navigation: NativeStackNavigationProp<
@@ -85,7 +85,7 @@ export function useStorageChangesSummaryData(
   const printButtonHandler = async () => {
     if (isPrintEnabled) {
       await printAsync({
-        html: createPrint({
+        html: createPrintStorageChanges({
           receiptItems,
           storeDetails: selectedStoreInitialState,
           user,

@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import { isNotNil } from 'ramda';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useCheckToken } from '../api/queries/useCheckToken';
@@ -16,7 +17,7 @@ export function RoundInfo() {
     (pl) => pl.id === user?.round?.partnerListId
   );
 
-  if (!user?.round) {
+  if (!user?.round || isNotNil(user.round.roundFinished)) {
     return null;
   }
 

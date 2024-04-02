@@ -1,35 +1,19 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { useCallback, useMemo } from 'react';
 
 import { useFinishRound } from '../../api/mutations/useFinishRound';
 import { useActiveRound } from '../../api/queries/useActiveRound';
-import { currentOrderAtom, ordersAtom } from '../../atoms/orders';
-import {
-  currentReceiptAtom,
-  numberOfReceiptsAtom,
-  receiptsAtom,
-} from '../../atoms/receipts';
+import { numberOfReceiptsAtom, receiptsAtom } from '../../atoms/receipts';
 import { selectedStoreCurrentStateAtom } from '../../atoms/storage';
-import { useResetSellFlow } from '../../hooks/sell/useResetSellFlow';
 
 export function useEndErrand() {
-  const queryClient = useQueryClient();
-
   const { isPending: isActiveRoundPending, data: activeRound } =
     useActiveRound();
   const { mutateAsync: finishRoundAPI } = useFinishRound();
 
-  const resetSellFlow = useResetSellFlow();
-
-  const [, setCurrentOrder] = useAtom(currentOrderAtom);
-  const [, setCurrentReceipt] = useAtom(currentReceiptAtom);
   const numberOfReceipts = useAtomValue(numberOfReceiptsAtom);
-  const [, setOrders] = useAtom(ordersAtom);
-  const [receipts, setReceipts] = useAtom(receiptsAtom);
-  const [selectedStoreCurrentState, setSelectedStoreCurrentState] = useAtom(
-    selectedStoreCurrentStateAtom
-  );
+  const receipts = useAtomValue(receiptsAtom);
+  const selectedStoreCurrentState = useAtomValue(selectedStoreCurrentStateAtom);
 
   const finishRound = useCallback(async () => {
     if (activeRound) {
@@ -47,38 +31,14 @@ export function useEndErrand() {
         lastSerialNumber,
         yearCode: selectedStoreCurrentState?.yearCode,
       });
-
-      await setSelectedStoreCurrentState(null);
-      await resetSellFlow();
-      await setReceipts([]);
-      await setCurrentReceipt(null);
-      await setOrders([]);
-      await setCurrentOrder(null);
-
-      await queryClient.invalidateQueries({ queryKey: ['active-round'] });
-      await queryClient.invalidateQueries({ queryKey: ['check-token'] });
-      await queryClient.invalidateQueries({ queryKey: ['items'] });
-      await queryClient.invalidateQueries({ queryKey: ['other-items'] });
-      await queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
-      await queryClient.invalidateQueries({ queryKey: ['partners'] });
-      await queryClient.invalidateQueries({ queryKey: ['price-lists'] });
-      await queryClient.invalidateQueries({ queryKey: ['search-tax-number'] });
-      await queryClient.invalidateQueries({ queryKey: ['store-details'] });
-      await queryClient.invalidateQueries({ queryKey: ['stores'] });
     }
   }, [
     activeRound,
     finishRoundAPI,
     numberOfReceipts,
-    queryClient,
     receipts,
-    resetSellFlow,
-    selectedStoreCurrentState,
-    setCurrentOrder,
-    setCurrentReceipt,
-    setOrders,
-    setReceipts,
-    setSelectedStoreCurrentState,
+    selectedStoreCurrentState?.firstAvailableSerialNumber,
+    selectedStoreCurrentState?.yearCode,
   ]);
 
   return useMemo(

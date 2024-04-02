@@ -133,6 +133,11 @@ export type StartErrandProps = NativeStackScreenProps<
 >;
 export type EndErrandProps = NativeStackScreenProps<StackParams, 'EndErrand'>;
 
+export type PrintEndErrandProps = NativeStackScreenProps<
+  StackParams,
+  'PrintEndErrand'
+>;
+
 export enum PartnerList {
   STORE,
   ALL,

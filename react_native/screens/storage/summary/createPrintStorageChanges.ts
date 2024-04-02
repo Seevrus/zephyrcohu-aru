@@ -192,7 +192,7 @@ const head = `
     </style>
   </head>`;
 
-export function createPrint({
+export function createPrintStorageChanges({
   receiptItems,
   storeDetails,
   user,
@@ -251,8 +251,7 @@ export function createPrint({
           <div class="square-check"></div>
         </div>`;
       })
-      .join('')}
-  `;
+      .join('')}`;
 
   const createItemsSummarySection = () => {
     const itemsSummary = receiptItems.reduce(
@@ -314,6 +313,5 @@ export function createPrint({
         </main>
         ${footer}
       </body>
-    </html>
-  `;
+    </html>`;
 }
