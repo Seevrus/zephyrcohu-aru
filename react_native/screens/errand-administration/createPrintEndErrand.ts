@@ -142,7 +142,7 @@ export function createPrintEndErrand({
   user: CheckToken;
 }) {
   const partnerList = partnerLists.find(
-    (pl) => pl.id === user.round?.partnerListId
+    (pl) => pl.id === user.lastRound?.partnerListId
   );
 
   const header = `
@@ -164,15 +164,15 @@ export function createPrintEndErrand({
         <div>${storeDetails.name}</div>
 
         <div>Kör</div>
-        <div>${user.round?.id ?? ''}</div>
+        <div>${user.lastRound?.id ?? ''}</div>
         <div>${partnerList?.name ?? ''}</div>
 
         <div>Kördátum:</div>
         <div>
-          ${format(user.round?.roundStarted ?? new Date(), 'yyyy.MM.dd.')}
+          ${format(user.lastRound?.roundStarted ?? new Date(), 'yyyy.MM.dd.')}
         </div>
         <div>
-          ${format(user.round?.roundFinished ?? new Date(), 'yyyy.MM.dd.')}
+          ${format(user.lastRound?.roundFinished ?? new Date(), 'yyyy.MM.dd.')}
         </div>
       </div>
     </header>`;

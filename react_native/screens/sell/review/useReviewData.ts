@@ -245,7 +245,7 @@ export function useReviewData(
       setOrders(async (prevOrders) => [...(await prevOrders), currentOrder]);
     }
 
-    if (!!user?.round && !!currentReceipt && !!token && !!user) {
+    if (!!user?.lastRound && !!currentReceipt && !!token && !!user) {
       const serialNumber = isEmpty(receipts)
         ? selectedStoreCurrentState?.firstAvailableSerialNumber
         : receipts.reduce(
@@ -259,7 +259,7 @@ export function useReviewData(
         otherItems: currentReceipt.otherItems,
       });
 
-      const invoiceDate = parseISO(user.round.roundStarted);
+      const invoiceDate = parseISO(user.lastRound.roundStarted);
       const fulfillmentDate = add(invoiceDate, {
         days: currentReceipt.paymentDays ?? 0,
       });
@@ -398,7 +398,7 @@ export function useReviewData(
     removeOtherItemHandler,
     saveReceiptError,
     removeReceiptHandler,
-    canConfirm: !!user?.round && !!currentReceipt && !!token && !!user,
+    canConfirm: !!user?.lastRound && !!currentReceipt && !!token && !!user,
     confirmReceiptHandler,
     alert: {
       isAlertVisible,

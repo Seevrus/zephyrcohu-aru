@@ -5,7 +5,7 @@ import { type UserType } from './common/UserType';
 
 export type LoginResponse = UserType & {
   company: CompanyType;
-  round: RoundType | null;
+  lastRound: RoundType | null;
   token: Token;
 };
 

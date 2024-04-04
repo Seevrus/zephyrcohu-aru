@@ -14,9 +14,9 @@ export function useIsSelectedPartnerForSellOnCurrentPartnerList() {
   const currentPartnerList = useMemo(
     () =>
       partnerLists?.find(
-        (partnerList) => partnerList.id === user?.round?.partnerListId
+        (partnerList) => partnerList.id === user?.lastRound?.partnerListId
       ),
-    [partnerLists, user?.round?.partnerListId]
+    [partnerLists, user?.lastRound?.partnerListId]
   );
 
   return !currentPartnerList || !selectedPartner

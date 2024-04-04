@@ -29,19 +29,20 @@ function SuspendedPrintEndErrand({ navigation }: PrintEndErrandProps) {
 
   return (
     <Container style={styles.container}>
-      <Text style={styles.header}>Rakodás mentése sikeres!</Text>
+      <Text style={styles.header}>Kör mentése sikeres!</Text>
       <Text style={styles.text}>
-        Az alábbi gombra kattintva jegyzék nyomtatható a rakodás adatairól.
+        Az alábbi gombra kattintva összegzés nyomtatható a kör során készült
+        számlák adatairól.
       </Text>
       <View style={styles.buttonContainer}>
         <Button variant={printButtonVariant} onPress={printButtonHandler}>
-          Rakjegyzék nyomtatása
+          Számlajegyzék nyomtatása
         </Button>
       </View>
 
       <Text style={styles.text}>
-        Az alábbi gombra kattintva befejeződik a rakodási folyamat. A
-        későbbiekben nyomtatásra már nem lesz lehetőség!
+        Az alábbi gombra kattintva befejeződik a körzárás. A későbbiekben
+        nyomtatásra már nem lesz lehetőség!
       </Text>
       <View style={styles.buttonContainer}>
         <Button variant={returnButtonVariant} onPress={exitConfimationHandler}>

@@ -15,7 +15,7 @@ export function useEndErrand() {
   const selectedStoreCurrentState = useAtomValue(selectedStoreCurrentStateAtom);
 
   const finishRound = useCallback(async () => {
-    if (user?.round) {
+    if (user?.lastRound) {
       const lastSerialNumber =
         numberOfReceipts === 0
           ? selectedStoreCurrentState?.firstAvailableSerialNumber
@@ -26,7 +26,7 @@ export function useEndErrand() {
             ) + 1;
 
       await finishRoundAPI({
-        roundId: user.round?.id,
+        roundId: user.lastRound?.id,
         lastSerialNumber,
         yearCode: selectedStoreCurrentState?.yearCode,
       });
@@ -37,7 +37,7 @@ export function useEndErrand() {
     receipts,
     selectedStoreCurrentState?.firstAvailableSerialNumber,
     selectedStoreCurrentState?.yearCode,
-    user?.round,
+    user?.lastRound,
   ]);
 
   return useMemo(

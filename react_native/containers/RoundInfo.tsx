@@ -14,10 +14,10 @@ export function RoundInfo() {
   const { data: storeDetails } = useStoreDetails(user?.storeId);
 
   const partnerList = partnerLists?.find(
-    (pl) => pl.id === user?.round?.partnerListId
+    (pl) => pl.id === user?.lastRound?.partnerListId
   );
 
-  if (!user?.round || isNotNil(user.round.roundFinished)) {
+  if (!user?.lastRound || isNotNil(user.lastRound.roundFinished)) {
     return null;
   }
 
@@ -38,7 +38,7 @@ export function RoundInfo() {
       <View style={styles.infoItemContainer}>
         <Text style={styles.infoItem}>Kör kezdete:</Text>
         <Text style={styles.infoItem}>
-          {format(user.round.roundStarted, 'yyyy-MM-dd')}
+          {format(user.lastRound.roundStarted, 'yyyy-MM-dd')}
         </Text>
       </View>
     </View>
