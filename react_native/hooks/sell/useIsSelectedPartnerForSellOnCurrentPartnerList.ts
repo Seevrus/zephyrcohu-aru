@@ -1,12 +1,12 @@
 import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
 
-import { useActiveRound } from '../../api/queries/useActiveRound';
+import { useCheckToken } from '../../api/queries/useCheckToken';
 import { usePartnerLists } from '../../api/queries/usePartnerLists';
 import { selectedPartnerAtom } from '../../atoms/sellFlow';
 
 export function useIsSelectedPartnerForSellOnCurrentPartnerList() {
-  const { data: activeRound } = useActiveRound();
+  const { data: user } = useCheckToken();
   const { data: partnerLists } = usePartnerLists();
 
   const selectedPartner = useAtomValue(selectedPartnerAtom);
@@ -14,9 +14,9 @@ export function useIsSelectedPartnerForSellOnCurrentPartnerList() {
   const currentPartnerList = useMemo(
     () =>
       partnerLists?.find(
-        (partnerList) => partnerList.id === activeRound?.partnerListId
+        (partnerList) => partnerList.id === user?.round?.partnerListId
       ),
-    [activeRound?.partnerListId, partnerLists]
+    [partnerLists, user?.round?.partnerListId]
   );
 
   return !currentPartnerList || !selectedPartner

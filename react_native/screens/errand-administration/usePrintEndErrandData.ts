@@ -80,7 +80,6 @@ export function usePrintEndErrandData(
     await setOrders([]);
     await setCurrentOrder(null);
 
-    await queryClient.invalidateQueries({ queryKey: ['active-round'] });
     await queryClient.invalidateQueries({ queryKey: ['check-token'] });
     await queryClient.invalidateQueries({ queryKey: ['items'] });
     await queryClient.invalidateQueries({ queryKey: ['other-items'] });

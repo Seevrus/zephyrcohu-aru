@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import {
   DateTimePickerAndroid,
   type DateTimePickerEvent,
@@ -11,7 +12,6 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useStartRound } from '../../api/mutations/useStartRound';
-import { fetchActiveRound } from '../../api/queries/useActiveRound';
 import { fetchItems } from '../../api/queries/useItems';
 import { fetchOtherItems } from '../../api/queries/useOtherItems';
 import {
@@ -77,14 +77,21 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
           roundStarted: format(date, 'yyyy-MM-dd'),
         });
 
-        await queryClient.fetchQuery({
-          queryKey: ['active-round'],
-          queryFn: fetchActiveRound(token),
-        });
         await queryClient.invalidateQueries({
           queryKey: ['check-token'],
           refetchType: 'all',
         });
+        await queryClient.invalidateQueries({ queryKey: ['items'] });
+        await queryClient.invalidateQueries({ queryKey: ['other-items'] });
+        await queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
+        await queryClient.invalidateQueries({ queryKey: ['partners'] });
+        await queryClient.invalidateQueries({ queryKey: ['price-lists'] });
+        await queryClient.invalidateQueries({
+          queryKey: ['search-tax-number'],
+        });
+        await queryClient.invalidateQueries({ queryKey: ['store-details'] });
+        await queryClient.invalidateQueries({ queryKey: ['stores'] });
+
         await queryClient.fetchQuery({
           queryKey: ['items'],
           queryFn: fetchItems(token),

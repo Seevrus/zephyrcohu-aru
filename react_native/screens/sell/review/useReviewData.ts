@@ -6,7 +6,6 @@ import { and, dissoc, dissocPath, isEmpty, reduce } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useSellSelectedItems } from '../../../api/mutations/useSellSelectedItems';
-import { useActiveRound } from '../../../api/queries/useActiveRound';
 import { useCheckToken } from '../../../api/queries/useCheckToken';
 import { useItems } from '../../../api/queries/useItems';
 import { useOtherItems } from '../../../api/queries/useOtherItems';
@@ -40,7 +39,6 @@ export function useReviewData(
   const { isInternetReachable } = useNetInfo();
   const { token } = useAtomValue(tokenAtom);
 
-  const { data: activeRound } = useActiveRound();
   const { data: user } = useCheckToken();
   const { data: items, isPending: isItemsPending } = useItems();
   const { data: otherItems, isPending: isOtherItemsPending } = useOtherItems();
@@ -247,7 +245,7 @@ export function useReviewData(
       setOrders(async (prevOrders) => [...(await prevOrders), currentOrder]);
     }
 
-    if (!!activeRound && !!currentReceipt && !!token && !!user) {
+    if (!!user?.round && !!currentReceipt && !!token && !!user) {
       const serialNumber = isEmpty(receipts)
         ? selectedStoreCurrentState?.firstAvailableSerialNumber
         : receipts.reduce(
@@ -261,7 +259,7 @@ export function useReviewData(
         otherItems: currentReceipt.otherItems,
       });
 
-      const invoiceDate = parseISO(activeRound.roundStarted);
+      const invoiceDate = parseISO(user.round.roundStarted);
       const fulfillmentDate = add(invoiceDate, {
         days: currentReceipt.paymentDays ?? 0,
       });
@@ -332,7 +330,6 @@ export function useReviewData(
       await setSelectedStoreCurrentState(updatedStorage);
     }
   }, [
-    activeRound,
     currentOrder,
     currentReceipt,
     isInternetReachable,
@@ -401,7 +398,7 @@ export function useReviewData(
     removeOtherItemHandler,
     saveReceiptError,
     removeReceiptHandler,
-    canConfirm: !!activeRound && !!currentReceipt && !!token && !!user,
+    canConfirm: !!user?.round && !!currentReceipt && !!token && !!user,
     confirmReceiptHandler,
     alert: {
       isAlertVisible,

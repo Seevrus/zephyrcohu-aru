@@ -2,13 +2,12 @@ import { useAtomValue } from 'jotai';
 import { useCallback, useMemo } from 'react';
 
 import { useFinishRound } from '../../api/mutations/useFinishRound';
-import { useActiveRound } from '../../api/queries/useActiveRound';
+import { useCheckToken } from '../../api/queries/useCheckToken';
 import { numberOfReceiptsAtom, receiptsAtom } from '../../atoms/receipts';
 import { selectedStoreCurrentStateAtom } from '../../atoms/storage';
 
 export function useEndErrand() {
-  const { isPending: isActiveRoundPending, data: activeRound } =
-    useActiveRound();
+  const { isPending: isUserPending, data: user } = useCheckToken();
   const { mutateAsync: finishRoundAPI } = useFinishRound();
 
   const numberOfReceipts = useAtomValue(numberOfReceiptsAtom);
@@ -16,7 +15,7 @@ export function useEndErrand() {
   const selectedStoreCurrentState = useAtomValue(selectedStoreCurrentStateAtom);
 
   const finishRound = useCallback(async () => {
-    if (activeRound) {
+    if (user?.round) {
       const lastSerialNumber =
         numberOfReceipts === 0
           ? selectedStoreCurrentState?.firstAvailableSerialNumber
@@ -27,25 +26,25 @@ export function useEndErrand() {
             ) + 1;
 
       await finishRoundAPI({
-        roundId: activeRound?.id,
+        roundId: user.round?.id,
         lastSerialNumber,
         yearCode: selectedStoreCurrentState?.yearCode,
       });
     }
   }, [
-    activeRound,
     finishRoundAPI,
     numberOfReceipts,
     receipts,
     selectedStoreCurrentState?.firstAvailableSerialNumber,
     selectedStoreCurrentState?.yearCode,
+    user?.round,
   ]);
 
   return useMemo(
     () => ({
-      isPending: isActiveRoundPending,
+      isPending: isUserPending,
       finishRound,
     }),
-    [finishRound, isActiveRoundPending]
+    [finishRound, isUserPending]
   );
 }
