@@ -4,16 +4,16 @@ import { useAtomValue } from 'jotai';
 import { useLayoutEffect } from 'react';
 import {
   FlatList,
-  StyleSheet,
-  View,
   type ListRenderItem,
   type ListRenderItemInfo,
+  StyleSheet,
+  View,
 } from 'react-native';
 
 import { type TaxPayer } from '../../../api/response-mappers/mapSearchTaxPayerResponse';
 import { tokenAtom } from '../../../atoms/token';
-import { Loading } from '../../../components/Loading';
 import { TextCard } from '../../../components/info-cards/TextCard';
+import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { colors } from '../../../constants/colors';

@@ -3,16 +3,16 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { Suspense } from 'react';
 import {
   FlatList,
+  type ListRenderItem,
+  type ListRenderItemInfo,
   Pressable,
   StyleSheet,
   View,
-  type ListRenderItem,
-  type ListRenderItemInfo,
 } from 'react-native';
 
 import { type Partners } from '../../../api/response-mappers/mapPartnersResponse';
-import { Loading } from '../../../components/Loading';
 import { Container } from '../../../components/container/Container';
+import { Loading } from '../../../components/Loading';
 import { Input } from '../../../components/ui/Input';
 import { type SelectPartnerProps } from '../../../navigators/screen-types';
 import { Selection } from './Selection';

@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="hu">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Körzárásos lista</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 5px;
+        width: 100%;
+      }
+
+      body {
+        font-family: 'Lucida Console';
+        font-size: 12px;
+      }
+
+      body header {
+        margin-bottom: 10px;
+      }
+
+      body header .title-row {
+        display: flex;
+        width: fit-content;
+        border-bottom: 1px solid black;
+        padding-bottom: 5px;
+        margin-bottom: 5px;
+      }
+
+      body header .title-row .title {
+        text-transform: uppercase;
+        padding-right: 5px;
+        border-right: 1px solid black;
+      }
+
+      body header .title-row .date {
+        padding-left: 5px;
+      }
+
+      body header .contestants {
+        display: grid;
+        width: 100%;
+        column-gap: 5px;
+        grid-template-columns: repeat(3, auto);
+      }
+
+      body header .contestants div.round-start {
+        justify-self: end;
+        border-right: 1px solid black;
+      }
+
+      .items {
+        display: grid;
+        grid-template-columns: repeat(5, auto);
+        column-gap: 5px;
+        row-gap: 5px;
+      }
+
+      .items > div {
+        display: flex;
+        align-items: center;
+      }
+
+      .items > .number {
+        justify-content: flex-end;
+      }
+
+      .items .summary {
+        grid-column: auto / span 4;
+      }
+
+      footer {
+        margin-top: 10px;
+        border-top: 2px solid black;
+        padding-top: 10px;
+      }
+
+      footer .signatures-container {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+      }
+
+      footer .signatures-container .signatures {
+        width: 60%;
+        margin-bottom: 10px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: 20px;
+      }
+
+      footer .signatures-container .signatures div {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        border-top: 1px solid black;
+      }
+
+      footer .amount-summary {
+        margin-bottom: 30px;
+        border-bottom: 1px dashed black;
+        border-top: 1px solid black;
+        padding: 5px 0 30px 0;
+        display: grid;
+        grid-template-columns: repeat(3, auto);
+        column-gap: 5px;
+      }
+
+      footer .amount-summary .number {
+        justify-self: end;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div class="title-row">
+        <div class="title">Körelszámolás</div>
+        <div class="date">2024. március 18.</div>
+      </div>
+
+      <div class="contestants">
+        <div>Üzletkötő</div>
+        <div>0032</div>
+        <div>Valkó Béla</div>
+
+        <div>Raktár</div>
+        <div>0002</div>
+        <div>LXW-777 hűtőautó</div>
+
+        <div>Kör</div>
+        <div>1000000</div>
+        <div>Szépek</div>
+
+        <div>Kördátum:</div>
+        <div>2024.03.17.</div>
+        <div>2024.03.18.</div>
+      </div>
+    </header>
+
+    <main>
+      <section class="items">
+        <div>Számlaszám</div>
+        <div>F</div>
+        <div>Adószám</div>
+        <div>Bolt</div>
+        <div>Végösszeg</div>
+
+        <div class="number">1023/24</div>
+        <div>Á</div>
+        <div>11286788-2-05</div>
+        <div>Szotyi ABC</div>
+        <div class="number">128500</div>
+
+        <div class="number">1024/24</div>
+        <div>K</div>
+        <div>14548788-2-05</div>
+        <div>Sarki Kocsma</div>
+        <div class="number">57000</div>
+
+        <div class="number">1025/24</div>
+        <div>Á</div>
+        <div>58386788-2-05</div>
+        <div>Csinos Presszó</div>
+        <div class="number">22040</div>
+
+        <div class="number">1026/24</div>
+        <div>K</div>
+        <div>13587788-2-05</div>
+        <div>Megállj! Kocsma!</div>
+        <div class="number">12000</div>
+
+        <div class="number">1027/24</div>
+        <div>K</div>
+        <div>13587788-2-05</div>
+        <div>Megállt, de kár volt</div>
+        <div class="number">72000</div>
+
+        <div class="summary">Összesen (5 db számla)</div>
+        <div class="number">291540</div>
+
+        <div class="summary">Készpénzes számlák összesen</div>
+        <div class="number">141000</div>
+      </section>
+    </main>
+
+    <footer>
+      <div>A számlákat és a készpénzt</div>
+
+      <div class="signatures-container">
+        <div class="signatures">
+          <div>átvettem</div>
+          <div>átadtam</div>
+        </div>
+      </div>
+
+      <div class="amount-summary">
+        <div>Számlázott készlet összesen</div>
+        <div class="number">******** karton</div>
+        <div class="number">********** Ft</div>
+      </div>
+    </footer>
+  </body>
+</html>

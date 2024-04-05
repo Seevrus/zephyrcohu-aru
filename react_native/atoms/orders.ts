@@ -6,11 +6,11 @@ export type ContextOrder = OrderRequest & {
 };
 
 export const ordersAtom = atomWithAsyncStorage<ContextOrder[]>(
-  'boreal-orders-context',
+  'boreal-orders',
   []
 );
 
 export const currentOrderAtom = atomWithAsyncStorage<ContextOrder | null>(
-  'boreal-current-order-context',
+  'boreal-current-order',
   null
 );

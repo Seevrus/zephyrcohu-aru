@@ -1,40 +1,24 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { useCallback, useMemo } from 'react';
 
 import { useFinishRound } from '../../api/mutations/useFinishRound';
-import { useActiveRound } from '../../api/queries/useActiveRound';
-import { currentOrderAtom, ordersAtom } from '../../atoms/orders';
-import {
-  currentReceiptAtom,
-  numberOfReceiptsAtom,
-  receiptsAtom,
-} from '../../atoms/receipts';
-import { selectedStoreAtom } from '../../atoms/storage';
-import { useResetSellFlow } from '../../hooks/sell/useResetSellFlow';
+import { useCheckToken } from '../../api/queries/useCheckToken';
+import { numberOfReceiptsAtom, receiptsAtom } from '../../atoms/receipts';
+import { selectedStoreCurrentStateAtom } from '../../atoms/storage';
 
 export function useEndErrand() {
-  const queryClient = useQueryClient();
-
-  const { isPending: isActiveRoundPending, data: activeRound } =
-    useActiveRound();
+  const { isPending: isUserPending, data: user } = useCheckToken();
   const { mutateAsync: finishRoundAPI } = useFinishRound();
 
-  const resetSellFlow = useResetSellFlow();
-
-  const [, setCurrentOrder] = useAtom(currentOrderAtom);
-  const [, setCurrentReceipt] = useAtom(currentReceiptAtom);
   const numberOfReceipts = useAtomValue(numberOfReceiptsAtom);
-  const [, setOrders] = useAtom(ordersAtom);
-  const [receipts, setReceipts] = useAtom(receiptsAtom);
-  const [selectedStoreCurrentState, setSelectedStoreCurrentState] =
-    useAtom(selectedStoreAtom);
+  const receipts = useAtomValue(receiptsAtom);
+  const selectedStoreCurrentState = useAtomValue(selectedStoreCurrentStateAtom);
 
   const finishRound = useCallback(async () => {
-    if (!!activeRound && !!selectedStoreCurrentState) {
+    if (user?.lastRound) {
       const lastSerialNumber =
         numberOfReceipts === 0
-          ? selectedStoreCurrentState.firstAvailableSerialNumber
+          ? selectedStoreCurrentState?.firstAvailableSerialNumber
           : receipts.reduce(
               (sn, { serialNumber: receiptSn }) =>
                 receiptSn > sn ? receiptSn : sn,
@@ -42,49 +26,25 @@ export function useEndErrand() {
             ) + 1;
 
       await finishRoundAPI({
-        roundId: activeRound?.id,
+        roundId: user.lastRound?.id,
         lastSerialNumber,
-        yearCode: selectedStoreCurrentState.yearCode,
+        yearCode: selectedStoreCurrentState?.yearCode,
       });
-
-      await setSelectedStoreCurrentState(null);
-      await resetSellFlow();
-      await setReceipts([]);
-      await setCurrentReceipt(null);
-      await setOrders([]);
-      await setCurrentOrder(null);
-
-      await queryClient.invalidateQueries({ queryKey: ['active-round'] });
-      await queryClient.invalidateQueries({ queryKey: ['check-token'] });
-      await queryClient.invalidateQueries({ queryKey: ['items'] });
-      await queryClient.invalidateQueries({ queryKey: ['other-items'] });
-      await queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
-      await queryClient.invalidateQueries({ queryKey: ['partners'] });
-      await queryClient.invalidateQueries({ queryKey: ['price-lists'] });
-      await queryClient.invalidateQueries({ queryKey: ['search-tax-number'] });
-      await queryClient.invalidateQueries({ queryKey: ['store-details'] });
-      await queryClient.invalidateQueries({ queryKey: ['stores'] });
     }
   }, [
-    activeRound,
     finishRoundAPI,
     numberOfReceipts,
-    queryClient,
     receipts,
-    resetSellFlow,
-    selectedStoreCurrentState,
-    setCurrentOrder,
-    setCurrentReceipt,
-    setOrders,
-    setReceipts,
-    setSelectedStoreCurrentState,
+    selectedStoreCurrentState?.firstAvailableSerialNumber,
+    selectedStoreCurrentState?.yearCode,
+    user?.lastRound,
   ]);
 
   return useMemo(
     () => ({
-      isPending: isActiveRoundPending,
+      isPending: isUserPending,
       finishRound,
     }),
-    [finishRound, isActiveRoundPending]
+    [finishRound, isUserPending]
   );
 }

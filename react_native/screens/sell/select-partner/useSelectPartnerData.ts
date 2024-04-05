@@ -19,7 +19,7 @@ import {
 } from 'ramda';
 import { useCallback, useMemo, useState } from 'react';
 
-import { useActiveRound } from '../../../api/queries/useActiveRound';
+import { useCheckToken } from '../../../api/queries/useCheckToken';
 import { usePartnerLists } from '../../../api/queries/usePartnerLists';
 import { usePartners } from '../../../api/queries/usePartners';
 import {
@@ -55,8 +55,7 @@ export function useSelectPartnerData({
   route,
   navigation,
 }: UseSelectPartnerProps) {
-  const { data: activeRound, isPending: isActiveRoundPending } =
-    useActiveRound();
+  const { data: user, isPending: isUserPending } = useCheckToken();
   const { data: partnerLists, isPending: isPartnerListsPending } =
     usePartnerLists();
   const { data: partners, isPending: isPartnersPending } = usePartners();
@@ -72,9 +71,9 @@ export function useSelectPartnerData({
   const currentPartnerList = useMemo(
     () =>
       partnerLists?.find(
-        (partnerList) => partnerList.id === activeRound?.partnerListId
+        (partnerList) => partnerList.id === user?.lastRound?.partnerListId
       ),
-    [activeRound?.partnerListId, partnerLists]
+    [partnerLists, user?.lastRound?.partnerListId]
   );
 
   const partnersShown: Partners = useMemo(
@@ -177,10 +176,7 @@ export function useSelectPartnerData({
 
   return {
     isLoading:
-      isLoading ||
-      isActiveRoundPending ||
-      isPartnerListsPending ||
-      isPartnersPending,
+      isLoading || isPartnerListsPending || isPartnersPending || isUserPending,
     onSearch: setSearchInputValue,
     partners: partnersShown,
     selectedPartner,

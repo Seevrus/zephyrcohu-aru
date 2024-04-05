@@ -4,19 +4,20 @@ import { loadable } from 'jotai/utils';
 import { Suspense } from 'react';
 import {
   FlatList,
-  StyleSheet,
-  View,
   type ListRenderItem,
   type ListRenderItemInfo,
+  StyleSheet,
+  View,
 } from 'react-native';
 
 import { useCheckToken } from '../../api/queries/useCheckToken';
 import { tokenAtom } from '../../atoms/token';
-import { Loading } from '../../components/Loading';
-import { Tile, type TileT } from '../../components/Tile';
 import { Alert } from '../../components/alert/Alert';
 import { Container } from '../../components/container/Container';
 import { TextCard } from '../../components/info-cards/TextCard';
+import { Loading } from '../../components/Loading';
+import { Tile, type TileT } from '../../components/Tile';
+import { RoundInfo } from '../../containers/RoundInfo';
 import { useTiles } from '../../hooks/useTiles';
 
 function SuspendedIndex() {
@@ -43,7 +44,7 @@ function SuspendedIndex() {
   }
 
   return (
-    <Container testID="index-page" style={styles.container}>
+    <Container testID="index-page">
       {!isInternetReachable && (
         <View style={styles.textCardContainer}>
           <TextCard>
@@ -66,6 +67,7 @@ function SuspendedIndex() {
         keyExtractor={(tile) => tile.id}
         renderItem={renderTile}
       />
+      <RoundInfo />
       {alert ? (
         <Alert
           visible={alert.isAlertVisible}
@@ -90,9 +92,6 @@ export function Index() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingBottom: 30,
-  },
   textCardContainer: {
     marginTop: 30,
   },

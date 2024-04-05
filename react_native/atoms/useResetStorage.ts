@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 
 import {
   primaryStoreAtom,
-  selectedStoreAtom,
+  selectedStoreCurrentStateAtom,
   selectedStoreInitialStateAtom,
 } from './storage';
 
@@ -12,15 +12,21 @@ export function useResetStorage() {
   const [, setSelectedStoreInitialState] = useAtom(
     selectedStoreInitialStateAtom
   );
-  const [, setSelectedStore] = useAtom(selectedStoreAtom);
+  const [, setSelectedStoreCurrentState] = useAtom(
+    selectedStoreCurrentStateAtom
+  );
 
   return useCallback(
     () =>
       Promise.all([
         setPrimaryStore(null),
         setSelectedStoreInitialState(null),
-        setSelectedStore(null),
+        setSelectedStoreCurrentState(null),
       ]),
-    [setPrimaryStore, setSelectedStore, setSelectedStoreInitialState]
+    [
+      setPrimaryStore,
+      setSelectedStoreCurrentState,
+      setSelectedStoreInitialState,
+    ]
   );
 }

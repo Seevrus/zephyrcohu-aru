@@ -45,7 +45,6 @@ class ReceiptController extends Controller
                     'partner_site_code' => $receiptRequest['partnerSiteCode'],
                     'serial_number' => $receiptRequest['serialNumber'],
                     'year_code' => $receiptRequest['yearCode'],
-                    'original_copies_printed' => $receiptRequest['originalCopiesPrinted'],
                     'vendor_name' => $receiptRequest['vendor']['name'],
                     'vendor_country' => $receiptRequest['vendor']['country'],
                     'vendor_postal_code' => $receiptRequest['vendor']['postalCode'],
@@ -73,7 +72,7 @@ class ReceiptController extends Controller
                     'invoice_type' => $receiptRequest['invoiceType'],
                     'paid_date' => $receiptRequest['paidDate'],
                     'user_id' => $sender->id,
-                    'user_code' => $sender->code,
+                    'user_user_name' => $sender->user_name,
                     'user_name' => $sender->name,
                     'user_phone_number' => $sender->phone_number ?? null,
                     'quantity' => $receiptRequest['quantity'],
@@ -138,7 +137,7 @@ class ReceiptController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Created '.count($newReceipts).' receipts',
+                'action' => 'Created ' . count($newReceipts) . ' receipts',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -168,7 +167,7 @@ class ReceiptController extends Controller
                 $receipts = $sender->company->receipts()->with('items', 'otherItems', 'vatAmounts')->get();
             }
 
-            if (! $receipts->isEmpty()) {
+            if (!$receipts->isEmpty()) {
                 $receipts->toQuery()->update([
                     'last_downloaded_at' => Carbon::now(),
                 ]);
@@ -177,7 +176,7 @@ class ReceiptController extends Controller
                     'company_id' => $sender->company_id,
                     'user_id' => $sender->id,
                     'token_id' => $sender->currentAccessToken()->id,
-                    'action' => 'Accessed '.$receipts->count().' receipts',
+                    'action' => 'Accessed ' . $receipts->count() . ' receipts',
                     'occured_at' => Carbon::now(),
                 ]);
             }
@@ -187,52 +186,6 @@ class ReceiptController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-            ) {
-                throw $e;
-            }
-
-            throw new BadRequestException();
-        }
-    }
-
-    public function update_receipt_original_copies_printed(UpdateReceiptsPrintedCopiesRequest $request)
-    {
-        try {
-            $sender = $request->user();
-            $sender->last_active = Carbon::now();
-            $sender->save();
-
-            $updatedReceipts = [];
-            foreach ($request->data as $receiptUpdateRequest) {
-                $receiptId = $receiptUpdateRequest['id'];
-                $receipt = $sender->company->receipts()->find($receiptId);
-
-                if ($receipt) {
-                    $this->authorize('update', $receipt);
-
-                    if ($receipt->invoice_type === 'P') {
-                        $receipt->original_copies_printed = $receiptUpdateRequest['originalCopiesPrinted'];
-
-                        $receipt->save();
-                        array_push($updatedReceipts, $receipt);
-
-                        Log::insert([
-                            'company_id' => $sender->company_id,
-                            'user_id' => $sender->id,
-                            'token_id' => $sender->currentAccessToken()->id,
-                            'action' => 'Updated printed copies on receipt '.$receipt->id,
-                            'occured_at' => Carbon::now(),
-                        ]);
-                    }
-                }
-            }
-
-            return new ReceiptCollection($updatedReceipts);
-        } catch (Exception $e) {
-            if (
-                $e instanceof UnauthorizedHttpException
-                || $e instanceof AuthorizationException
-                || $e instanceof ModelNotFoundException
             ) {
                 throw $e;
             }
@@ -257,7 +210,7 @@ class ReceiptController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed receipt '.$receipt->id,
+                'action' => 'Removed receipt ' . $receipt->id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {

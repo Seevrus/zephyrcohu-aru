@@ -4,6 +4,7 @@ import {
   type NavigatorScreenParams,
 } from '@react-navigation/native';
 import { type NativeStackScreenProps } from '@react-navigation/native-stack';
+
 import { type RegularReviewItem } from '../atoms/sellFlow';
 
 export type StackParams = {
@@ -61,7 +62,7 @@ export type StackParams = {
 
   StartErrand: undefined;
   EndErrand: undefined;
-  BarCodeTest: undefined;
+  PrintEndErrand: undefined;
 };
 
 export type LoginProps = NativeStackScreenProps<StackParams, 'Login'>;
@@ -131,6 +132,11 @@ export type StartErrandProps = NativeStackScreenProps<
   'StartErrand'
 >;
 export type EndErrandProps = NativeStackScreenProps<StackParams, 'EndErrand'>;
+
+export type PrintEndErrandProps = NativeStackScreenProps<
+  StackParams,
+  'PrintEndErrand'
+>;
 
 export enum PartnerList {
   STORE,

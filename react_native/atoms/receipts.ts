@@ -1,8 +1,8 @@
 import { atom } from 'jotai';
-import { atomWithAsyncStorage } from './helpers';
 
 import { type ReceiptItem } from '../api/request-types/common/ReceiptItemsTypes';
 import { type CreateReceiptRequest } from '../api/request-types/CreateReceiptsRequestType';
+import { atomWithAsyncStorage } from './helpers';
 
 export type SelectedDiscount = {
   id: number;
@@ -27,19 +27,20 @@ export type ContextReceiptItem = ReceiptItem & {
 
 export type ContextReceipt = Omit<CreateReceiptRequest, 'items'> & {
   id: number;
+  isPrinted: boolean;
   isSent: boolean;
   shouldBeUpdated: boolean;
   items: ContextReceiptItem[];
 };
 
 export const receiptsAtom = atomWithAsyncStorage<ContextReceipt[]>(
-  'boreal-receipts-context',
+  'boreal-receipts',
   []
 );
 
 export const currentReceiptAtom =
   atomWithAsyncStorage<Partial<ContextReceipt> | null>(
-    'boreal-current-receipt-context',
+    'boreal-current-receipt',
     null
   );
 

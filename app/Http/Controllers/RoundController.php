@@ -94,7 +94,7 @@ class RoundController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Started round '.$round->id,
+                'action' => 'Started round ' . $round->id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -127,17 +127,28 @@ class RoundController extends Controller
             }
 
             $store = $sender->store;
+
+            $isEmergencyClose = is_null($request->data['lastSerialNumber'] ?? null)
+                ? 1
+                : 0;
+
+            $lastSerialNumber = is_null($request->data['lastSerialNumber'] ?? null)
+                ? $store->first_available_serial_number - 1
+                : $request->data['lastSerialNumber'];
+            $yearCode = $request->data['yearCode'] ?? $store->year_code;
+
             $store->state = 'I';
             $store->user_id = null;
-            $store->first_available_serial_number = $request->data['lastSerialNumber'] + 1;
+            $store->first_available_serial_number = $lastSerialNumber + 1;
             $store->save();
 
             $sender->state = 'I';
             $sender->save();
 
             $round->update([
-                'last_serial_number' => $request->data['lastSerialNumber'],
-                'year_code' => $request->data['yearCode'],
+                'last_serial_number' => $lastSerialNumber,
+                'year_code' => $yearCode,
+                'emergency_close' => $isEmergencyClose,
                 'round_finished' => Carbon::now(),
             ]);
 
@@ -145,7 +156,7 @@ class RoundController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Finished round '.$round->id,
+                'action' => 'Finished round ' . $round->id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -159,7 +170,7 @@ class RoundController extends Controller
                 throw $e;
             }
 
-            throw new BadRequestException();
+            throw $e; // new BadRequestException();
         }
     }
 }

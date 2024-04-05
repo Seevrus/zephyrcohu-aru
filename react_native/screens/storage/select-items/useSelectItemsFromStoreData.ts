@@ -6,12 +6,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useItems } from '../../../api/queries/useItems';
 import {
   primaryStoreAtom,
-  selectedStoreAtom,
+  selectedStoreCurrentStateAtom,
   selectedStoreInitialStateAtom,
 } from '../../../atoms/storage';
 import {
-  storageListItemsAtom,
   type StorageListItem,
+  storageListItemsAtom,
 } from '../../../atoms/storageFlow';
 
 export function useSelectItemsFromStoreData() {
@@ -19,7 +19,7 @@ export function useSelectItemsFromStoreData() {
 
   const primaryStoreDetails = useAtomValue(primaryStoreAtom);
   const selectedStoreInitialState = useAtomValue(selectedStoreInitialStateAtom);
-  const selectedStoreDetails = useAtomValue(selectedStoreAtom);
+  const selectedStoreCurrentState = useAtomValue(selectedStoreCurrentStateAtom);
 
   const [storageListItems, setStorageListItems] = useAtom(storageListItemsAtom);
 
@@ -56,7 +56,7 @@ export function useSelectItemsFromStoreData() {
             (exp) =>
               exp.itemId === item.id && exp.expirationId === expiration.id
           )?.quantity,
-          currentQuantity: selectedStoreDetails?.expirations.find(
+          currentQuantity: selectedStoreCurrentState?.expirations.find(
             (exp) =>
               exp.itemId === item.id && exp.expirationId === expiration.id
           )?.quantity,
@@ -66,7 +66,7 @@ export function useSelectItemsFromStoreData() {
   }, [
     items,
     primaryStoreDetails?.expirations,
-    selectedStoreDetails?.expirations,
+    selectedStoreCurrentState?.expirations,
     selectedStoreInitialState?.expirations,
     setStorageListItems,
   ]);

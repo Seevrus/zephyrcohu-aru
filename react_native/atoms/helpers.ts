@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as SecureStore from 'expo-secure-store';
+import { deleteItemAsync, getItemAsync, setItemAsync } from 'expo-secure-store';
 import { atomWithStorage, createJSONStorage } from 'jotai/utils';
 
 export const atomWithAsyncStorage = <T>(key: string, content: T) => {
@@ -8,9 +8,9 @@ export const atomWithAsyncStorage = <T>(key: string, content: T) => {
 };
 
 const SecureStorage = <const>{
-  getItem: SecureStore.getItemAsync,
-  setItem: SecureStore.setItemAsync,
-  removeItem: SecureStore.deleteItemAsync,
+  getItem: getItemAsync,
+  setItem: setItemAsync,
+  removeItem: deleteItemAsync,
 };
 
 export const atomWithSecureStorage = <T>(key: string, content: T) => {

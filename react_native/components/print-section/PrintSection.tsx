@@ -1,14 +1,11 @@
-import { useNetInfo } from '@react-native-community/netinfo';
-import * as Print from 'expo-print';
+import { printAsync } from 'expo-print';
 import { useAtom } from 'jotai';
-import { isNotNil, prop } from 'ramda';
-import { useCallback, useState } from 'react';
+import { lensProp, set } from 'ramda';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useUpdateReceipts } from '../../api/mutations/useUpdateReceipts';
 import { useCheckToken } from '../../api/queries/useCheckToken';
 import { type Partner } from '../../api/response-mappers/mapPartnersResponse';
-import { receiptsAtom, type ContextReceipt } from '../../atoms/receipts';
+import { type ContextReceipt, receiptsAtom } from '../../atoms/receipts';
 import { colors } from '../../constants/colors';
 import { fontSizes } from '../../constants/fontSizes';
 import { Loading } from '../Loading';
@@ -21,93 +18,41 @@ type PrintSectionProps = {
 };
 
 export function PrintSection({ partner, receipt }: PrintSectionProps) {
-  const { isInternetReachable } = useNetInfo();
   const { data: user, isPending: isUserPending } = useCheckToken();
 
-  const {
-    mutateAsync: updateReceiptsAPI,
-    isPending: isUpdateReceiptsAPIPending,
-  } = useUpdateReceipts();
+  const [, setReceipts] = useAtom(receiptsAtom);
 
-  const [receipts, setReceipts] = useAtom(receiptsAtom);
-
-  const updateNumberOfPrintedCopies = useCallback(async () => {
-    if (!!partner && !!receipt) {
-      let updatedReceipts = receipts.map((rcpt) => {
-        if (rcpt.id !== receipt.id) {
-          return rcpt;
-        }
-
-        return {
-          ...rcpt,
-          originalCopiesPrinted: (rcpt.originalCopiesPrinted ?? 0) + 1,
-          shouldBeUpdated: true,
-        };
-      });
-
-      if (isInternetReachable === true) {
-        const updateReceiptsResult = await updateReceiptsAPI(
-          updatedReceipts.filter(prop('shouldBeUpdated'))
-        );
-
-        updatedReceipts = receipts.map((receipt) => {
-          const updateReceiptResult = updateReceiptsResult.find(
-            (result) => result.id === receipt.id
-          );
-
-          if (!updateReceiptResult) {
-            return receipt;
-          }
-
-          return {
-            ...receipt,
-            originalCopiesPrinted: updateReceiptResult.originalCopiesPrinted,
-            shouldBeUpdated: false,
-          };
-        });
-      }
-
-      await setReceipts(updatedReceipts);
-    }
-  }, [
-    isInternetReachable,
-    partner,
-    receipt,
-    receipts,
-    setReceipts,
-    updateReceiptsAPI,
-  ]);
-
-  const [updateProgressMessage, setUpdateProgressMessage] =
-    useState<string>('');
-
-  const canPrint = !!user && !!receipt;
-
-  const canPrintOriginalCopy =
-    (partner?.invoiceCopies ?? 0) > (receipt?.originalCopiesPrinted ?? 0);
+  const canPrint = !!user && !!receipt && !!partner;
 
   const printButtonVariant = canPrint ? 'ok' : 'disabled';
 
-  const printButtonHandler = async () => {
-    if (canPrintOriginalCopy && isNotNil(receipt)) {
-      setUpdateProgressMessage('Számla frissítése folyamatban...');
-      await updateNumberOfPrintedCopies();
-      setUpdateProgressMessage('');
-    }
+  const numberOfPrints =
+    partner?.invoiceType === 'E' || receipt?.isPrinted
+      ? 2
+      : partner?.invoiceCopies;
 
-    if (!!partner && !!receipt) {
-      await Print.printAsync({
+  const printButtonHandler = async () => {
+    if (canPrint) {
+      await printAsync({
         html: createReceiptHtml({
           user,
           receipt,
           partner,
         }),
       });
+
+      if (!receipt.isPrinted) {
+        await setReceipts(async (prevReceipts) =>
+          (await prevReceipts).map((r) =>
+            r.id === receipt.id ? set(lensProp('isPrinted'), true, r) : r
+          )
+        );
+      }
     }
   };
 
-  if (isUserPending || isUpdateReceiptsAPIPending || !!updateProgressMessage) {
-    return <Loading message={updateProgressMessage} />;
+  if (isUserPending) {
+    return <Loading />;
   }
 
   return (
@@ -119,26 +64,21 @@ export function PrintSection({ partner, receipt }: PrintSectionProps) {
         </Text>
         .
       </Text>
-      {canPrintOriginalCopy ? (
+      {canPrint ? (
         <Text style={styles.text}>
-          A számlát{' '}
-          <Text style={styles.numberOfReceipts}>{partner?.invoiceCopies}</Text>{' '}
-          eredeti példányban van lehetőség kinyomtatni. Ebből eddig{' '}
-          <Text style={styles.numberOfReceipts}>
-            {receipt?.originalCopiesPrinted}
-          </Text>{' '}
-          példány került nyomtatásra.
+          Az alábbi gombra koppintva megnyílik az Android rendszer nyomtatási
+          párbeszédablaka, melyen keresztül lehetőség van a számla nyomtatására.
+          A nyomtatás {numberOfPrints} példányban történik, melyek közül az
+          egyik a vevőé.
         </Text>
       ) : (
         <Text style={styles.text}>
-          Az alábbi gombra kattintva számlamásolat nyomtatható.
+          Nem áll rendelkezésre minden adat a nyomtatáshoz.
         </Text>
       )}
       <View style={styles.buttonContainer}>
         <Button variant={printButtonVariant} onPress={printButtonHandler}>
-          {canPrintOriginalCopy
-            ? 'Eredeti példány nyomtatása'
-            : 'Másolat nyomtatása'}
+          Nyomtatás
         </Button>
       </View>
     </>

@@ -10,8 +10,8 @@ import { useCheckToken } from '../api/queries/useCheckToken';
 import { numberOfReceiptsAtom } from '../atoms/receipts';
 import { selectedPartnerAtom } from '../atoms/sellFlow';
 import { isStorageSavedToApiAtom } from '../atoms/storageFlow';
-import { type TileT } from '../components/Tile';
 import { type AlertButton } from '../components/alert/Alert';
+import { type TileT } from '../components/Tile';
 import { PartnerList, type StackParams } from '../navigators/screen-types';
 import { useIsSelectedPartnerForSellOnCurrentPartnerList } from './sell/useIsSelectedPartnerForSellOnCurrentPartnerList';
 import {

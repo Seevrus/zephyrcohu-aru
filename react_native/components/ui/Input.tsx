@@ -2,9 +2,10 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  View,
   type TextInputProps,
+  View,
 } from 'react-native';
+
 import { colors } from '../../constants/colors';
 import { fontSizes } from '../../constants/fontSizes';
 

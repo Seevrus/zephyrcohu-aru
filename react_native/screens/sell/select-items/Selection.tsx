@@ -1,14 +1,14 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { format } from 'date-fns';
 import { equals, pipe, replace, trim } from 'ramda';
 import { memo } from 'react';
 import {
+  type ListRenderItemInfo,
   Pressable,
   StyleSheet,
   View,
-  type ListRenderItemInfo,
 } from 'react-native';
 
-import { format } from 'date-fns';
 import { Input } from '../../../components/ui/Input';
 import { type SellExpiration } from './useSelectItemsToSellData';
 

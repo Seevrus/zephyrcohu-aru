@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="hu">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -7,10 +7,6 @@
     <title>Rakjegyzék</title>
 
     <style>
-      @page {
-        margin: 10px;
-      }
-
       * {
         box-sizing: border-box;
       }
@@ -18,14 +14,13 @@
       html,
       body {
         margin: 0;
-        padding: 0;
+        padding: 5px;
         width: 100%;
-        min-height: 100vh;
       }
 
       body {
         font-family: 'Lucida Console';
-        font-size: 7pt;
+        font-size: 12px;
       }
 
       body header {
@@ -35,7 +30,7 @@
       body header .title-row {
         display: flex;
         width: fit-content;
-        border-bottom: 1px dashed black;
+        border-bottom: 1px solid black;
         padding-bottom: 5px;
         margin-bottom: 5px;
       }
@@ -68,91 +63,82 @@
         margin-bottom: 5px;
       }
 
-      body header .label {
-        text-decoration: underline;
-      }
-
-      body main section.items .item {
+      .item-grid {
         display: grid;
-        grid-template-columns: repeat(70, minmax(0, 1fr));
-        border-bottom: 1px dashed black;
-        padding-bottom: 5px;
-        margin-bottom: 5px;
-      }
-
-      body main section.items .item .nr {
-        grid-column: 1 / span 4;
-      }
-
-      body main section.items .item .article-number {
-        grid-column: 6 / span 8;
-      }
-
-      body main section.items .item .expires-at {
-        grid-column: 15 / span 27;
-      }
-
-      body main section.items .item .quantities {
-        grid-column: 42 / span 29;
-      }
-
-      body main section.items .item .item-name {
-        grid-column: 1 / span 40;
-        word-break: break-all;
-      }
-
-      body main section.items .item .unit {
-        grid-column: 42 / span 6;
-      }
-
-      body main section.items .item .starting-quantity {
-        grid-column: 49 / span 5;
-        justify-self: flex-end;
-      }
-
-      body main section.items .item .quantity-change {
-        grid-column: 55 / span 6;
-        justify-self: flex-end;
-      }
-
-      body main section.items .item .final-quantity {
-        grid-column: 62 / span 5;
-        justify-self: flex-end;
-      }
-
-      body main section.items .item .ok {
-        grid-column: 68 / span 3;
-        justify-self: flex-end;
-      }
-
-      body main section.items-summary {
+        grid-template-columns: repeat(8, auto);
         border-bottom: 2px solid black;
         padding-bottom: 5px;
         margin-bottom: 5px;
       }
 
-      body main section.items-summary .item {
-        display: grid;
-        grid-template-columns: repeat(70, minmax(0, 1fr));
+      .item-grid .item {
+        padding-left: 5px;
+        padding-right: 5px;
       }
 
-      body main section.items-summary .item .total-label {
-        grid-column: 1 / span 47;
+      .item-grid .item.nr,
+      .item-grid .item.item-name,
+      .item-grid .item.total-label {
+        padding-left: 0;
       }
 
-      body main section.items-summary .item .starting-total {
-        grid-column: 49 / span 5;
-        justify-self: flex-end;
+      .item-grid .item.quantities,
+      .item-grid .item.ok {
+        padding-right: 0;
       }
 
-      body main section.items-summary .item .total-change {
-        grid-column: 55 / span 6;
-        justify-self: flex-end;
+      .item-grid .item.item-name,
+      .item-grid .item.unit,
+      .item-grid .item.starting-quantity,
+      .item-grid .item.quantity-change,
+      .item-grid .item.final-quantity,
+      .item-grid .item.ok {
+        border-bottom: 1px solid black;
+        margin-bottom: 10px;
       }
 
-      body main section.items-summary .item .ending-total {
-        grid-column: 62 / span 5;
-        justify-self: flex-end;
+      .item-grid .item.starting-quantity,
+      .item-grid .item.quantity-change,
+      .item-grid .item.final-quantity,
+      .item-grid .item.ok,
+      .item-grid .item.starting-total,
+      .item-grid .item.total-change,
+      .item-grid .item.ending-total {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .item-grid .item.expires-at {
+        grid-column: 3 / span 2;
+      }
+
+      .item-grid .item.quantities {
+        grid-column: 5 / span 3;
+      }
+
+      .item-grid .item.item-name {
+        grid-column: 1 / span 3;
+        overflow-wrap: break-word;
+      }
+
+      .item-grid .item.ok {
+        align-items: center;
+      }
+
+      .square-check {
+        width: 15px;
+        height: 15px;
+        border: 1px solid black;
+        margin-bottom: 5px;
+      }
+
+      .item-grid .item.total-label {
+        grid-column: 1 / span 4;
+        grid-row: auto / span 2;
+      }
+
+      .item-grid .item.total-change {
+        grid-column: 6 / span 1;
       }
 
       body footer {
@@ -182,8 +168,8 @@
 
       body footer .end-delimiter {
         border-bottom: 1px dashed black;
-        padding-bottom: 5px;
-        margin-bottom: 5px;
+        padding-bottom: 30px;
+        margin-bottom: 20px;
       }
     </style>
   </head>
@@ -203,75 +189,75 @@
       </div>
     </header>
     <main>
-      <section class="items">
-        <div class="item">
-          <div class="nr">Ssz.</div>
-          <div class="article-number">Cikkszám</div>
-          <div class="expires-at">Lejárat</div>
-          <div class="quantities">Mennyiségek</div>
-          <div class="item-name">Megnevezés</div>
-          <div class="unit">Menny. egység</div>
-          <div class="starting-quantity">Kezdő</div>
-          <div class="quantity-change">Mozgás</div>
-          <div class="final-quantity">Kész</div>
-          <div class="ok">Ok?</div>
+      <div class="item-grid">
+        <div class="item nr">Ssz.</div>
+        <div class="item article-number">Cikkszám</div>
+        <div class="item expires-at">Lejárat</div>
+        <div class="item quantities">Mennyiségek</div>
+        <div class="item item-name">Megnevezés</div>
+        <div class="item unit">Egység</div>
+        <div class="item starting-quantity">Kezdő</div>
+        <div class="item quantity-change">Mozgás</div>
+        <div class="item final-quantity">Kész</div>
+        <div class="item ok">Ok?</div>
+
+        <div class="item nr">001.</div>
+        <div class="item article-number">******8*</div>
+        <div class="item expires-at">****.**</div>
+        <div class="item item-name">
+          Lorem ipsum dolor sit amet, consectetur a
         </div>
-        <div class="item">
-          <div class="nr">001.</div>
-          <div class="article-number">******8*</div>
-          <div class="expires-at">****.**</div>
-          <div class="item-name">*************************************40*</div>
-          <div class="unit">****6*</div>
-          <div class="starting-quantity">***5*</div>
-          <div class="quantity-change">****6*</div>
-          <div class="final-quantity">***5*</div>
-          <div class="ok">[]</div>
+        <div class="item unit">****6*</div>
+        <div class="item starting-quantity">***5*</div>
+        <div class="item quantity-change">****6*</div>
+        <div class="item final-quantity">***5*</div>
+        <div class="item ok">
+          <div class="square-check"></div>
         </div>
-        <div class="item">
-          <div class="nr">002.</div>
-          <div class="article-number">00000021</div>
-          <div class="expires-at">2024.05</div>
-          <div class="item-name">Pandó pálcikás</div>
-          <div class="unit">karton</div>
-          <div class="starting-quantity">10</div>
-          <div class="quantity-change">+7</div>
-          <div class="final-quantity">17</div>
-          <div class="ok">[]</div>
+
+        <div class="item nr">002.</div>
+        <div class="item article-number">00000021</div>
+        <div class="item expires-at">2024.05</div>
+        <div class="item item-name">Pandó pálcikás</div>
+        <div class="item unit">karton</div>
+        <div class="item starting-quantity">10</div>
+        <div class="item quantity-change">+7</div>
+        <div class="item final-quantity">17</div>
+        <div class="item ok">
+          <div class="square-check"></div>
         </div>
-        <div class="item">
-          <div class="nr">003.</div>
-          <div class="article-number">00000033</div>
-          <div class="expires-at">2024.11</div>
-          <div class="item-name">Mogyorós családi</div>
-          <div class="unit">karton</div>
-          <div class="starting-quantity">10</div>
-          <div class="quantity-change">0</div>
-          <div class="final-quantity">10</div>
-          <div class="ok">[]</div>
+
+        <div class="item nr">003.</div>
+        <div class="item article-number">00000033</div>
+        <div class="item expires-at">2024.11</div>
+        <div class="item item-name">Mogyorós családi</div>
+        <div class="item unit">karton</div>
+        <div class="item starting-quantity">10</div>
+        <div class="item quantity-change">0</div>
+        <div class="item final-quantity">10</div>
+        <div class="item ok">
+          <div class="square-check"></div>
         </div>
-        <div class="item">
-          <div class="nr">004.</div>
-          <div class="article-number">00000042</div>
-          <div class="expires-at">2023.12</div>
-          <div class="item-name">Vaníliás családi</div>
-          <div class="unit">karton</div>
-          <div class="starting-quantity">30</div>
-          <div class="quantity-change">-3</div>
-          <div class="final-quantity">27</div>
-          <div class="ok">[]</div>
+
+        <div class="item nr">004.</div>
+        <div class="item article-number">00000042</div>
+        <div class="item expires-at">2023.12</div>
+        <div class="item item-name">Vaníliás családi</div>
+        <div class="item unit">karton</div>
+        <div class="item starting-quantity">30</div>
+        <div class="item quantity-change">-3</div>
+        <div class="item final-quantity">27</div>
+        <div class="item ok">
+          <div class="square-check"></div>
         </div>
-      </section>
-      <section class="items-summary">
-        <div class="item">
-          <div class="total-label">Összesen (rakodva 2 termék)</div>
-          <div class="starting-total">50</div>
-          <div class="total-change">+7</div>
-        </div>
-        <div class="item">
-          <div class="total-change">-3</div>
-          <div class="ending-total">54</div>
-        </div>
-      </section>
+
+        <div class="item total-label">Összesen (rakodva 2 termék)</div>
+        <div class="item starting-total">50</div>
+        <div class="item total-change">+7</div>
+
+        <div class="item total-change">-3</div>
+        <div class="item ending-total">54</div>
+      </div>
     </main>
     <footer>
       <div class="signatures-container">

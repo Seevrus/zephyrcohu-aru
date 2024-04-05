@@ -1,13 +1,13 @@
 import { useAtomValue } from 'jotai';
+import { Suspense } from 'react';
 import {
   FlatList,
+  type ListRenderItemInfo,
   StyleSheet,
   View,
-  type ListRenderItemInfo,
 } from 'react-native';
 
-import { Suspense } from 'react';
-import { receiptsAtom, type ContextReceipt } from '../../atoms/receipts';
+import { type ContextReceipt, receiptsAtom } from '../../atoms/receipts';
 import { Loading } from '../../components/Loading';
 import { colors } from '../../constants/colors';
 import { type ReceiptListProps } from '../../navigators/screen-types';

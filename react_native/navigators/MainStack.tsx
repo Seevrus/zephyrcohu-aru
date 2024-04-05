@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { colors } from '../constants/colors';
 import { fontSizes } from '../constants/fontSizes';
 import { EndErrand } from '../screens/errand-administration/EndErrand';
+import { PrintEndErrand } from '../screens/errand-administration/PrintEndErrand';
 import { StartErrand } from '../screens/errand-administration/StartErrand';
 import { Login } from '../screens/login/Login';
 import { ReceiptDetails } from '../screens/receipts/ReceiptDetails';
@@ -179,6 +180,13 @@ export function MainStack() {
         component={EndErrand}
         options={{
           headerTitle: 'Kör zárása',
+        }}
+      />
+      <Stack.Screen
+        name="PrintEndErrand"
+        component={PrintEndErrand}
+        options={{
+          headerTitle: 'Kör nyomtatás',
         }}
       />
     </Stack.Navigator>

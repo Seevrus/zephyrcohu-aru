@@ -1,0 +1,41 @@
+
+  KÖRELSZÁMOLÁS | 2024.03.18.
+  ---------------------------
+  Üzletkötő: 0032 Valkó Béla
+  Raktár   : 0002 LXW-777 hűtőautó                        
+  Kör      : ???? Szépek           Kördátum: 2024.03.17 .. 2024.03.18
+  
+  Számlaszám_ F Adószám______ Bolt________________________ Végösszeg_
+  -------------------------------------------------------------------
+      1023/24 Á 11286788-2-05 Szotyi ABC                       128500
+      1024/24 K 14548788-2-05 Sarki Kocsma                      57000
+      1025/24 Á 58386788-2-05 Csinos Presszó                    22040
+      1026/24 K 13587788-2-05 Megállj! Kocsma!                  12000
+      1027/24 K 13587788-2-05 Megállt, de kár volt              72000
+  -------------------------------------------------------------------
+  Összesen (5 db számla)                                       291540
+  Készpénzes számlák összesen                                  141000
+  ===================================================================
+  A számlákat és a készpénzt:
+  
+                               ------------------  ------------------
+                               átvettem            átadtam
+  -------------------------------------------------------------------
+  Számlázott készlet összesen:        ******** karton,  ********** Ft
+  -------------------------------------------------------------------
+
+
+Megjegyzések:
+-------------
+- Az 'F' a fizetési mód, ami lehet ezeknél a partnereknél 'K' vagy 'Á' (kp. vagy átutalás)
+- A sofőrnek (üzletkötőnek) a le kell adnia a kinyomtatott számlákat (az eladó példányát, legjobb tudásom szerint ez 1 példány/számla) és
+  a kp-s számlák végösszegének megfelelő készpénzt összesen.
+- A számlázott készlet infó sor csak egy ellenőrző adat, hogy az összes féle áruból együttesen mennyi kartont adott el és ezek összes
+  bruttó eladási értéke mennyi volt. Ha ez nem egyezik meg a számlák bruttó mindösszesenjével, akkor volt alkalmazva a számlákon 
+  valamilyen egyéb tétel, akár kedvezmény is, ami esetleg külön ellenőrizedő lehet az elszámoltató személy számára.
+
+
+Akármit nyomtatsz, számla, körelszámolás, rakodó lista, mindig tolj még mögé pár üres sort, hogy könnyebb legyen letépni.
+Ha valamiből több példányt nyomtatsz, akkor lehet a példányok közé is tenni 2-2 üres sorral közrefogott 1 szaggatott vonal-sort,
+mint "itt tépd szét".
+

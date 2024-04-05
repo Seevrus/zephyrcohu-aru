@@ -144,8 +144,6 @@ Route::controller(ReceiptController::class)->prefix('receipts')->group(function 
         ->middleware(['auth:sanctum', 'ability:A']);
     Route::get('/', 'view_all')
         ->middleware(['auth:sanctum', 'ability:I']);
-    Route::post('/update_printed_copies', 'update_receipt_original_copies_printed')
-        ->middleware(['auth:sanctum', 'ability:A']);
     Route::delete('/{id}', 'remove_receipt')
         ->middleware(['auth:sanctum', 'ability:I']);
 });

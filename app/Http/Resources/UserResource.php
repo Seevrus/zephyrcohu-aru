@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
@@ -22,6 +21,9 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
+        $isRoundsLoaded = $this->relationLoaded('rounds');
+        $round = $isRoundsLoaded ? $this->rounds->last() : null;
+
         return [
             'id' => $this->id,
             'userName' => $this->user_name,
@@ -31,6 +33,7 @@ class UserResource extends JsonResource
             'company' => new CompanyResource($this->whenLoaded('company')),
             'phoneNumber' => $this->phone_number,
             'roles' => new UserRoleCollection($this->roles),
+            'lastRound' => $isRoundsLoaded ? new RoundResource($round) : null,
             'storeId' => $this->store?->id,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,

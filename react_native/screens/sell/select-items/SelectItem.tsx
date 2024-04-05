@@ -2,9 +2,9 @@ import { append, eqProps, equals, pipe, values } from 'ramda';
 import { memo, useCallback } from 'react';
 import {
   FlatList,
+  type ListRenderItemInfo,
   StyleSheet,
   View,
-  type ListRenderItemInfo,
 } from 'react-native';
 
 import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';

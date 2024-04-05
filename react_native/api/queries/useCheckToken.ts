@@ -10,8 +10,8 @@ import {
 } from '../../atoms/token';
 import env from '../../env.json';
 import {
-  mapCheckTokenResponse,
   type CheckToken,
+  mapCheckTokenResponse,
 } from '../response-mappers/mapCheckTokenResponse';
 import { type LoginResponse } from '../response-types/LoginResponseType';
 

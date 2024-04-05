@@ -15,17 +15,23 @@ class RoundResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+        $result = [
             'id' => $this->id,
             'userId' => $this->user_id,
             'storeId' => $this->store_id,
             'partnerListId' => $this->partner_list_id,
             'lastSerialNumber' => $this->last_serial_number,
             'yearCode' => $this->year_code,
-            'roundStarted' => $this->round_started,
-            'roundFinished' => $this->round_finished ? $this->round_finished : null,
+            'roundStarted' => Carbon::createFromDate($this->round_started),
+            'roundFinished' => $this->round_finished ? Carbon::createFromDate($this->round_finished) : null,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,
         ];
+
+        if (!is_null($this->last_serial_number)) {
+            $result['isEmergencyClose'] = $this->emergency_close == 0 ? false : true;
+        }
+
+        return $result;
     }
 }

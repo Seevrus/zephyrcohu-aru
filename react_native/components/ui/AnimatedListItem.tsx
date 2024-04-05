@@ -1,10 +1,10 @@
 import { not } from 'ramda';
 import {
+  type PropsWithChildren,
+  type ReactNode,
   useEffect,
   useMemo,
   useState,
-  type PropsWithChildren,
-  type ReactNode,
 } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 

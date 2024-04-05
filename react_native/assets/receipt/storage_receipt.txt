@@ -1,0 +1,45 @@
+111111111122222222223333333333444444444455555555556666666666777777777
+
+  RAKJEGYZÉK | 2023.09.20.
+  ------------------------
+  Rakodta: 0032 Valkó Béla
+  Raktár : 0002 LXW-777 hűtőautó
+  
+  SSz. Cikk__ Lejárat                      Menny. Mennyiségek______  
+  Megnevezés______________________________ egység Kezdő Mozgás Kész_
+  ------------------------------------------------------------------
+  001. ****6* ****.**  
+  *************************************40* ****6* ***5* ****6* ***5*
+  ------------------------------------------------------------------
+  002. 000021 2024.05  
+  Pandó pálcikás                           karton    10     +7    17
+  ------------------------------------------------------------------
+  003. 000033 2024.11  
+  Mogyorós családi                         karton    10      0    10
+  ------------------------------------------------------------------
+  004. 000042 2023.12  
+  Vaníliás családi                         karton    30     -3    27
+  ------------------------------------------------------------------
+  Összesen (rakodva 2 termék)                        50     +7
+                                                            -3    54
+  ==================================================================
+  
+  
+                      --------------------      --------------------
+                                   rakodta               ellenőrizte 
+  |> 2023.09.20. | 0032 | 0002 <|-----------------------------------
+
+
+Megjegyzések:
+-------------
+- Mennyiségek jobbra igazítva, a rakodás előjelesen. Elég 5 (illetve az előjel miatt ott 6)
+  számjegy, mivel nem lesz törtszám és még ez a hossz is bőven túlzás.
+- A '[ ]' helyére jöhet az a pipálós négyszög.
+- A listára kellenek azok a tételek is, amik nem mozogtak, de volt/van belőlük készlet, hogy 
+  a raktári készlete is ellenőrizhető legyen, ne csak a mozgás.
+- Jó volna, ha az összesen sorban a mozgás külön lenne összesítve, ha van fel- és lerakás is.
+  Ha nincs kétféle (ami elég gyakori lesz), akkor elég egy sorban, pl.
+  
+  ------------------------------------------------------------------
+  Összesen (rakodva 2 termék)                        50     +4    54
+  ==================================================================

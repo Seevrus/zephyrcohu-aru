@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import {
   DateTimePickerAndroid,
   type DateTimePickerEvent,
@@ -11,7 +12,6 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useStartRound } from '../../api/mutations/useStartRound';
-import { fetchActiveRound } from '../../api/queries/useActiveRound';
 import { fetchItems } from '../../api/queries/useItems';
 import { fetchOtherItems } from '../../api/queries/useOtherItems';
 import {
@@ -22,11 +22,11 @@ import { fetchPartners } from '../../api/queries/usePartners';
 import { fetchPriceLists } from '../../api/queries/usePriceLists';
 import { fetchStoreDetails } from '../../api/queries/useStoreDetails';
 import { fetchStores, useStores } from '../../api/queries/useStores';
-import { selectedStoreAtom } from '../../atoms/storage';
+import { selectedStoreCurrentStateAtom } from '../../atoms/storage';
 import { tokenAtom } from '../../atoms/token';
-import { Loading } from '../../components/Loading';
 import { Container } from '../../components/container/Container';
 import { ErrorCard } from '../../components/info-cards/ErrorCard';
+import { Loading } from '../../components/Loading';
 import { Button } from '../../components/ui/Button';
 import { Dropdown } from '../../components/ui/Dropdown';
 import { Input } from '../../components/ui/Input';
@@ -49,7 +49,9 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
   } = useStores();
 
   const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
-  const [, setSelectedStore] = useAtom(selectedStoreAtom);
+  const [, setSelectedStoreCurrentState] = useAtom(
+    selectedStoreCurrentStateAtom
+  );
 
   const [storeId, setStoreId] = useState<number | null>(null);
   const [partnerListId, setPartnerListId] = useState<number | null>(null);
@@ -75,14 +77,21 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
           roundStarted: format(date, 'yyyy-MM-dd'),
         });
 
-        await queryClient.fetchQuery({
-          queryKey: ['active-round'],
-          queryFn: fetchActiveRound(token),
-        });
         await queryClient.invalidateQueries({
           queryKey: ['check-token'],
           refetchType: 'all',
         });
+        await queryClient.invalidateQueries({ queryKey: ['items'] });
+        await queryClient.invalidateQueries({ queryKey: ['other-items'] });
+        await queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
+        await queryClient.invalidateQueries({ queryKey: ['partners'] });
+        await queryClient.invalidateQueries({ queryKey: ['price-lists'] });
+        await queryClient.invalidateQueries({
+          queryKey: ['search-tax-number'],
+        });
+        await queryClient.invalidateQueries({ queryKey: ['store-details'] });
+        await queryClient.invalidateQueries({ queryKey: ['stores'] });
+
         await queryClient.fetchQuery({
           queryKey: ['items'],
           queryFn: fetchItems(token),
@@ -108,7 +117,7 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
           queryKey: ['store-details', storeId],
           queryFn: fetchStoreDetails(token, storeId),
         });
-        await setSelectedStore(storeDetails);
+        await setSelectedStoreCurrentState(storeDetails);
 
         await queryClient.fetchQuery({
           queryKey: ['stores'],

@@ -15,7 +15,7 @@ export function useLogin() {
 
   return useMutation({
     mutationKey: ['login'],
-    mutationFn: async ({ userName, password }: LoginRequest) => {
+    async mutationFn({ userName, password }: LoginRequest) {
       try {
         const response = await axios
           .post<LoginResponse>(
@@ -24,6 +24,8 @@ export function useLogin() {
             { headers: { Accept: 'application/json' } }
           )
           .then((r) => mapLoginResponse(r.data));
+
+        console.log('Token:', response.token.accessToken);
 
         await setStoredToken({
           token: response.token.accessToken,
@@ -50,7 +52,7 @@ export function useLogin() {
         throw new Error('Váratlan hiba lépett fel a bejelentkezés során.');
       }
     },
-    onSuccess: async () => {
+    async onSuccess() {
       await queryClient.invalidateQueries({ queryKey: ['token'] });
       await queryClient.invalidateQueries({ queryKey: ['check-token'] });
     },

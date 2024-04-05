@@ -6,9 +6,9 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { currentReceiptAtom } from '../../../atoms/receipts';
 import { maxNewPartnerIdInUseAtom } from '../../../atoms/sellFlow';
-import { Loading } from '../../../components/Loading';
 import { Alert } from '../../../components/alert/Alert';
 import { TextCard } from '../../../components/info-cards/TextCard';
+import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { colors } from '../../../constants/colors';

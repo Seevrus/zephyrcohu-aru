@@ -1,5 +1,5 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useFocusEffect, type EventArg } from '@react-navigation/native';
+import { type EventArg, useFocusEffect } from '@react-navigation/native';
 import { useAtomValue } from 'jotai';
 import { last } from 'ramda';
 import { Suspense, useCallback, useMemo, useState } from 'react';
@@ -7,9 +7,10 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { usePartners } from '../../../api/queries/usePartners';
 import { receiptsAtom } from '../../../atoms/receipts';
-import { Loading } from '../../../components/Loading';
+import { Container } from '../../../components/container/Container';
 import { ErrorCard } from '../../../components/info-cards/ErrorCard';
 import { TextCard } from '../../../components/info-cards/TextCard';
+import { Loading } from '../../../components/Loading';
 import { PrintSection } from '../../../components/print-section/PrintSection';
 import { Button } from '../../../components/ui/Button';
 import { colors } from '../../../constants/colors';
@@ -17,7 +18,6 @@ import { fontSizes } from '../../../constants/fontSizes';
 import { useResetSellFlow } from '../../../hooks/sell/useResetSellFlow';
 import { useSyncSellWithApi } from '../../../hooks/sell/useSyncSellWithApi';
 import { type SummaryProps } from '../../../navigators/screen-types';
-import { Container } from '../../../components/container/Container';
 
 function SuspendedSummary({ navigation }: SummaryProps) {
   const { isInternetReachable } = useNetInfo();

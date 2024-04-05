@@ -42,13 +42,15 @@ export type OtherReviewItem = BaseReviewItem & {
 export type ReviewItem = RegularReviewItem | OtherReviewItem;
 
 export const maxNewPartnerIdInUseAtom = atomWithAsyncStorage(
-  'boreal-max-new-partner-id-in-use',
+  'boreal-max-partner-id-in-use',
   0
 );
+
 export const selectedPartnerAtom = atom<Partner | null>(null);
 
 export const selectedItemsAtom = atom<Record<number, Record<number, number>>>(
   {}
 );
+
 export const selectedOtherItemsAtom = atom<SelectedOtherItems>({});
 export const reviewItemsAtom = atom<ReviewItem[] | null>(null);

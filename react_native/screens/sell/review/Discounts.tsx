@@ -2,9 +2,9 @@ import { format } from 'date-fns';
 import { Suspense } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Loading } from '../../../components/Loading';
 import { Container } from '../../../components/container/Container';
 import { ErrorCard } from '../../../components/info-cards/ErrorCard';
+import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { LabeledItem } from '../../../components/ui/LabeledItem';

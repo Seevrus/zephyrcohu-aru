@@ -9,8 +9,8 @@ import {
 } from 'react-native';
 
 import { usePasswordChange } from '../../api/mutations/usePasswordChange';
-import { Loading } from '../../components/Loading';
 import { ErrorCard } from '../../components/info-cards/ErrorCard';
+import { Loading } from '../../components/Loading';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { colors } from '../../constants/colors';

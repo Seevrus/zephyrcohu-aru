@@ -1,5 +1,6 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import { http, HttpResponse } from 'msw';
+
 import env from '../../env.json';
 
 export const getRoundsOkResponse = http.get(`${env.api_url}/rounds`, () =>

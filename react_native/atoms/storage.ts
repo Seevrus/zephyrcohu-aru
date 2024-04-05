@@ -9,12 +9,12 @@ export const primaryStoreAtom =
 
 export const selectedStoreInitialStateAtom =
   atomWithAsyncStorage<StoreDetailsResponseData | null>(
-    'boreal-selected-store-original',
+    'boreal-selected-store-initial-state',
     null
   );
 
-export const selectedStoreAtom =
+export const selectedStoreCurrentStateAtom =
   atomWithAsyncStorage<StoreDetailsResponseData | null>(
-    'boreal-selected-store',
+    'boreal-selected-store-current-state',
     null
   );

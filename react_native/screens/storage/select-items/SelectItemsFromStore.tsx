@@ -3,15 +3,15 @@ import { isNil } from 'ramda';
 import { Suspense, useEffect } from 'react';
 import {
   Animated,
+  type ListRenderItemInfo,
   Pressable,
   StyleSheet,
   View,
-  type ListRenderItemInfo,
 } from 'react-native';
 
 import { type StorageListItem } from '../../../atoms/storageFlow';
-import { Loading } from '../../../components/Loading';
 import { Container } from '../../../components/container/Container';
+import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { colors } from '../../../constants/colors';

@@ -1,6 +1,6 @@
-import { useFocusEffect, type EventArg } from '@react-navigation/native';
+import { type EventArg, useFocusEffect } from '@react-navigation/native';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
-import * as Print from 'expo-print';
+import { printAsync } from 'expo-print';
 import { useAtomValue } from 'jotai';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -11,7 +11,7 @@ import { storageListItemsAtom } from '../../../atoms/storageFlow';
 import { useResetStorage } from '../../../atoms/useResetStorage';
 import { useResetStorageFlow } from '../../../atoms/useResetStorageFlow';
 import { type StackParams } from '../../../navigators/screen-types';
-import { createPrint } from './createPrint';
+import { createPrintStorageChanges } from './createPrintStorageChanges';
 
 export function useStorageChangesSummaryData(
   navigation: NativeStackNavigationProp<
@@ -83,13 +83,15 @@ export function useStorageChangesSummaryData(
   );
 
   const printButtonHandler = async () => {
-    await Print.printAsync({
-      html: createPrint({
-        receiptItems,
-        storeDetails: selectedStoreInitialState,
-        user,
-      }),
-    });
+    if (isPrintEnabled) {
+      await printAsync({
+        html: createPrintStorageChanges({
+          receiptItems,
+          storeDetails: selectedStoreInitialState,
+          user,
+        }),
+      });
+    }
   };
 
   const returnButtonHandler = async () => {

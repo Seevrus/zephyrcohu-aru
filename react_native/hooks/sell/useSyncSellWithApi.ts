@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useCreateOrders } from '../../api/mutations/useCreateOrders';
 import { useCreateReceipts } from '../../api/mutations/useCreateReceipts';
-import { ordersAtom, type ContextOrder } from '../../atoms/orders';
+import { type ContextOrder, ordersAtom } from '../../atoms/orders';
 import { receiptsAtom } from '../../atoms/receipts';
 
 export function useSyncSellWithApi() {

@@ -6,25 +6,24 @@ import { and, dissoc, dissocPath, isEmpty, reduce } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useSellSelectedItems } from '../../../api/mutations/useSellSelectedItems';
-import { useActiveRound } from '../../../api/queries/useActiveRound';
 import { useCheckToken } from '../../../api/queries/useCheckToken';
 import { useItems } from '../../../api/queries/useItems';
 import { useOtherItems } from '../../../api/queries/useOtherItems';
 import { type StoreDetailsResponseData } from '../../../api/response-types/StoreDetailsResponseType';
 import { currentOrderAtom, ordersAtom } from '../../../atoms/orders';
 import {
+  type ContextReceipt,
   currentReceiptAtom,
   receiptsAtom,
-  type ContextReceipt,
 } from '../../../atoms/receipts';
 import {
+  type OtherReviewItem,
+  type RegularReviewItem,
   reviewItemsAtom,
   selectedItemsAtom,
   selectedOtherItemsAtom,
-  type OtherReviewItem,
-  type RegularReviewItem,
 } from '../../../atoms/sellFlow';
-import { selectedStoreAtom } from '../../../atoms/storage';
+import { selectedStoreCurrentStateAtom } from '../../../atoms/storage';
 import { tokenAtom } from '../../../atoms/token';
 import { type AlertButton } from '../../../components/alert/Alert';
 import { useCurrentPriceList } from '../../../hooks/sell/useCurrentPriceList';
@@ -40,7 +39,6 @@ export function useReviewData(
   const { isInternetReachable } = useNetInfo();
   const { token } = useAtomValue(tokenAtom);
 
-  const { data: activeRound } = useActiveRound();
   const { data: user } = useCheckToken();
   const { data: items, isPending: isItemsPending } = useItems();
   const { data: otherItems, isPending: isOtherItemsPending } = useOtherItems();
@@ -52,8 +50,9 @@ export function useReviewData(
 
   const currentOrder = useAtomValue(currentOrderAtom);
   const [currentReceipt, setCurrentReceipt] = useAtom(currentReceiptAtom);
-  const [selectedStoreCurrentState, setSelectedStoreCurrentState] =
-    useAtom(selectedStoreAtom);
+  const [selectedStoreCurrentState, setSelectedStoreCurrentState] = useAtom(
+    selectedStoreCurrentStateAtom
+  );
   const [, setOrders] = useAtom(ordersAtom);
   const [receipts, setReceipts] = useAtom(receiptsAtom);
   const [reviewItems, setReviewItems] = useAtom(reviewItemsAtom);
@@ -246,7 +245,7 @@ export function useReviewData(
       setOrders(async (prevOrders) => [...(await prevOrders), currentOrder]);
     }
 
-    if (!!activeRound && !!currentReceipt && !!token && !!user) {
+    if (!!user?.lastRound && !!currentReceipt && !!token && !!user) {
       const serialNumber = isEmpty(receipts)
         ? selectedStoreCurrentState?.firstAvailableSerialNumber
         : receipts.reduce(
@@ -260,7 +259,7 @@ export function useReviewData(
         otherItems: currentReceipt.otherItems,
       });
 
-      const invoiceDate = parseISO(activeRound.roundStarted);
+      const invoiceDate = parseISO(user.lastRound.roundStarted);
       const fulfillmentDate = add(invoiceDate, {
         days: currentReceipt.paymentDays ?? 0,
       });
@@ -331,7 +330,6 @@ export function useReviewData(
       await setSelectedStoreCurrentState(updatedStorage);
     }
   }, [
-    activeRound,
     currentOrder,
     currentReceipt,
     isInternetReachable,
@@ -400,7 +398,7 @@ export function useReviewData(
     removeOtherItemHandler,
     saveReceiptError,
     removeReceiptHandler,
-    canConfirm: !!activeRound && !!currentReceipt && !!token && !!user,
+    canConfirm: !!user?.lastRound && !!currentReceipt && !!token && !!user,
     confirmReceiptHandler,
     alert: {
       isAlertVisible,
