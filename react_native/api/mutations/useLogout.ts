@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
 
 import { defaultStoredToken, storedTokenAtom } from '../../atoms/token';
+import { queryKeys } from '../keys';
 
 export function useLogout() {
   const queryClient = useQueryClient();
@@ -9,8 +10,7 @@ export function useLogout() {
   const [, setStoredToken] = useAtom(storedTokenAtom);
 
   return useMutation({
-    mutationKey: ['logout'],
-    mutationFn: async () => {
+    async mutationFn() {
       try {
         await setStoredToken(defaultStoredToken);
       } catch {
@@ -19,8 +19,7 @@ export function useLogout() {
     },
     onSuccess: () => {
       // only user related queries should be invalidated on logout
-      queryClient.invalidateQueries({ queryKey: ['check-token'] });
-      queryClient.invalidateQueries({ queryKey: ['token'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.checkToken });
     },
   });
 }

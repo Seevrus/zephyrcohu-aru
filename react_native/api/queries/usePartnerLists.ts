@@ -5,6 +5,7 @@ import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
+import { queryKeys } from '../keys';
 import {
   type PartnersListResponseData,
   type PartnersListResponseType,
@@ -17,7 +18,7 @@ export function usePartnerLists() {
   const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
 
   return useQuery({
-    queryKey: ['partner-lists'],
+    queryKey: queryKeys.partnerLists,
     queryFn: fetchPartnerLists(token),
     enabled:
       isInternetReachable === true &&

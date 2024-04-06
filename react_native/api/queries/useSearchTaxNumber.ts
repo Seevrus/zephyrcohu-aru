@@ -4,6 +4,7 @@ import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
+import { queryKeys } from '../keys';
 import {
   mapSearchTaxPayerResponse,
   type TaxPayer,
@@ -24,8 +25,8 @@ export function useSearchTaxNumber({
   const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
 
   return useQuery({
-    queryKey: ['search-tax-number', taxNumber, token],
-    queryFn: async (): Promise<TaxPayer[]> => {
+    queryKey: queryKeys.searchTaxNumber(taxNumber, token),
+    async queryFn(): Promise<TaxPayer[]> {
       try {
         const response = await axios.post<SearchTaxNumberResponseType>(
           `${env.api_url}/partners/search`,

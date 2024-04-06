@@ -5,6 +5,7 @@ import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
+import { queryKeys } from '../keys';
 import {
   type StoresResponseData,
   type StoresResponseType,
@@ -17,7 +18,7 @@ export function useStores() {
   const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
 
   return useQuery({
-    queryKey: ['stores'],
+    queryKey: queryKeys.stores,
     queryFn: fetchStores(token),
     enabled:
       isInternetReachable === true &&

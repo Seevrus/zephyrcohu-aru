@@ -15,10 +15,9 @@ export function useCreateOrders() {
   const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
-    mutationKey: ['create-orders'],
-    mutationFn: async (
+    async mutationFn(
       orders: ContextOrder[]
-    ): Promise<CreateOrdersResponseData> => {
+    ): Promise<CreateOrdersResponseData> {
       try {
         const createOrdersRequest = mapCreateOrdersRequest(orders);
 

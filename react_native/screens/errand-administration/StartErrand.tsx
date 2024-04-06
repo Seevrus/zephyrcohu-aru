@@ -11,6 +11,7 @@ import { isNotNil } from 'ramda';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { queryKeys } from '../../api/keys';
 import { useStartRound } from '../../api/mutations/useStartRound';
 import { fetchItems } from '../../api/queries/useItems';
 import { fetchOtherItems } from '../../api/queries/useOtherItems';
@@ -78,49 +79,53 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
         });
 
         await queryClient.invalidateQueries({
-          queryKey: ['check-token'],
+          queryKey: queryKeys.checkToken,
           refetchType: 'all',
         });
-        await queryClient.invalidateQueries({ queryKey: ['items'] });
-        await queryClient.invalidateQueries({ queryKey: ['other-items'] });
-        await queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
-        await queryClient.invalidateQueries({ queryKey: ['partners'] });
-        await queryClient.invalidateQueries({ queryKey: ['price-lists'] });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.items });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.otherItems });
         await queryClient.invalidateQueries({
-          queryKey: ['search-tax-number'],
+          queryKey: queryKeys.partnerLists,
         });
-        await queryClient.invalidateQueries({ queryKey: ['store-details'] });
-        await queryClient.invalidateQueries({ queryKey: ['stores'] });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.partners });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.priceLists });
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.searchTaxNumber(),
+        });
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.storeDetails(),
+        });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.stores });
 
         await queryClient.fetchQuery({
-          queryKey: ['items'],
+          queryKey: queryKeys.items,
           queryFn: fetchItems(token),
         });
         await queryClient.fetchQuery({
-          queryKey: ['other-items'],
+          queryKey: queryKeys.otherItems,
           queryFn: fetchOtherItems(token),
         });
         await queryClient.fetchQuery({
-          queryKey: ['partner-lists'],
+          queryKey: queryKeys.partnerLists,
           queryFn: fetchPartnerLists(token),
         });
         await queryClient.fetchQuery({
-          queryKey: ['partners'],
+          queryKey: queryKeys.partners,
           queryFn: fetchPartners(token),
         });
         await queryClient.fetchQuery({
-          queryKey: ['price-lists'],
+          queryKey: queryKeys.priceLists,
           queryFn: fetchPriceLists(token),
         });
 
         const storeDetails = await queryClient.fetchQuery({
-          queryKey: ['store-details', storeId],
+          queryKey: queryKeys.storeDetails(storeId),
           queryFn: fetchStoreDetails(token, storeId),
         });
         await setSelectedStoreCurrentState(storeDetails);
 
         await queryClient.fetchQuery({
-          queryKey: ['stores'],
+          queryKey: queryKeys.stores,
           queryFn: fetchStores(token),
         });
 
@@ -136,8 +141,8 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
   };
 
   const refreshHandler = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
-    queryClient.invalidateQueries({ queryKey: ['stores'] });
+    queryClient.invalidateQueries({ queryKey: queryKeys.partnerLists });
+    queryClient.invalidateQueries({ queryKey: queryKeys.stores });
   }, [queryClient]);
 
   const displayStores = useMemo(

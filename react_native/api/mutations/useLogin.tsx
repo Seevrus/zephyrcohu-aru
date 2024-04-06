@@ -4,6 +4,7 @@ import { useAtom } from 'jotai';
 
 import { storedTokenAtom } from '../../atoms/token';
 import env from '../../env.json';
+import { queryKeys } from '../keys';
 import { type LoginRequest } from '../request-types/LoginRequestType';
 import { mapLoginResponse } from '../response-mappers/mapLoginResponse';
 import { type LoginResponse } from '../response-types/LoginResponseType';
@@ -14,7 +15,6 @@ export function useLogin() {
   const [, setStoredToken] = useAtom(storedTokenAtom);
 
   return useMutation({
-    mutationKey: ['login'],
     async mutationFn({ userName, password }: LoginRequest) {
       try {
         const response = await axios
@@ -53,8 +53,7 @@ export function useLogin() {
       }
     },
     async onSuccess() {
-      await queryClient.invalidateQueries({ queryKey: ['token'] });
-      await queryClient.invalidateQueries({ queryKey: ['check-token'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.checkToken });
     },
   });
 }

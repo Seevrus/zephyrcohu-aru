@@ -4,6 +4,7 @@ import { useAtom, useAtomValue } from 'jotai';
 
 import { storedTokenAtom, tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
+import { queryKeys } from '../keys';
 import { type ChangePasswordRequest } from '../request-types/ChangePasswordRequestType';
 import { mapLoginResponse } from '../response-mappers/mapLoginResponse';
 import { type LoginResponse } from '../response-types/LoginResponseType';
@@ -17,8 +18,7 @@ export function usePasswordChange() {
   const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
-    mutationKey: ['login'],
-    mutationFn: async ({ password }: ChangePasswordRequest) => {
+    async mutationFn({ password }: ChangePasswordRequest) {
       try {
         const response = await axios
           .post<LoginResponse>(
@@ -60,8 +60,7 @@ export function usePasswordChange() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['check-token'] });
-      queryClient.invalidateQueries({ queryKey: ['token'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.checkToken });
     },
   });
 }

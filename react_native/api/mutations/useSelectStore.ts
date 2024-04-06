@@ -4,6 +4,7 @@ import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
+import { queryKeys } from '../keys';
 import { type SelectStoreRequestType } from '../request-types/SelectStoreRequestType';
 import { type SelectStoreResponseType } from '../response-types/SelectStoreResponseType';
 
@@ -12,8 +13,7 @@ export function useSelectStore() {
   const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
-    mutationKey: ['select-store'],
-    mutationFn: async ({ storeId }: SelectStoreRequestType) => {
+    async mutationFn({ storeId }: SelectStoreRequestType) {
       try {
         const response = await axios.post<SelectStoreResponseType>(
           `${env.api_url}/storage/lock_to_user`,
@@ -42,10 +42,10 @@ export function useSelectStore() {
       }
     },
     onSuccess: (response) => {
-      queryClient.invalidateQueries({ queryKey: ['check-token'] });
-      queryClient.invalidateQueries({ queryKey: ['stores'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.checkToken });
+      queryClient.invalidateQueries({ queryKey: queryKeys.stores });
       queryClient.invalidateQueries({
-        queryKey: ['store-details', response.storeId],
+        queryKey: queryKeys.storeDetails(response.storeId),
       });
     },
   });

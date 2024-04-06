@@ -4,6 +4,7 @@ import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
+import { queryKeys } from '../keys';
 import {
   mapPartnersResponse,
   type Partners,
@@ -18,8 +19,8 @@ export function usePartners({ enabled = true } = {}): UseQueryResult<Partners> {
   const isRoundStarted = user?.state === 'R';
 
   return useQuery({
-    queryKey: ['partners'],
-    queryFn: fetchPartners(token as string),
+    queryKey: queryKeys.partners,
+    queryFn: fetchPartners(token),
     enabled:
       enabled &&
       !isTokenExpired &&

@@ -6,6 +6,7 @@ import { isNotNil } from 'ramda';
 
 import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
+import { queryKeys } from '../keys';
 import {
   type StoreDetailsResponseData,
   type StoreDetailsResponseType,
@@ -21,7 +22,7 @@ export function useStoreDetails(
   const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
 
   return useQuery({
-    queryKey: ['store-details', storeId],
+    queryKey: queryKeys.storeDetails(storeId),
     queryFn: fetchStoreDetails(token, storeId as number),
     enabled:
       enabled &&

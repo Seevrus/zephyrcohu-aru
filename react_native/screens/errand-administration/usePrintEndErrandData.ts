@@ -5,6 +5,7 @@ import { printAsync } from 'expo-print';
 import { useAtom } from 'jotai';
 import { useCallback, useState } from 'react';
 
+import { queryKeys } from '../../api/keys';
 import { useCheckToken } from '../../api/queries/useCheckToken';
 import { usePartnerLists } from '../../api/queries/usePartnerLists';
 import { useStoreDetails } from '../../api/queries/useStoreDetails';
@@ -80,15 +81,17 @@ export function usePrintEndErrandData(
     await setOrders([]);
     await setCurrentOrder(null);
 
-    await queryClient.invalidateQueries({ queryKey: ['check-token'] });
-    await queryClient.invalidateQueries({ queryKey: ['items'] });
-    await queryClient.invalidateQueries({ queryKey: ['other-items'] });
-    await queryClient.invalidateQueries({ queryKey: ['partner-lists'] });
-    await queryClient.invalidateQueries({ queryKey: ['partners'] });
-    await queryClient.invalidateQueries({ queryKey: ['price-lists'] });
-    await queryClient.invalidateQueries({ queryKey: ['search-tax-number'] });
-    await queryClient.invalidateQueries({ queryKey: ['store-details'] });
-    await queryClient.invalidateQueries({ queryKey: ['stores'] });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.checkToken });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.items });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.otherItems });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.partnerLists });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.partners });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.partnerLists });
+    await queryClient.invalidateQueries({
+      queryKey: queryKeys.searchTaxNumber(),
+    });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.storeDetails() });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.stores });
   }, [
     queryClient,
     resetSellFlow,

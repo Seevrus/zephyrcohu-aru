@@ -11,8 +11,7 @@ export function useStartRound() {
   const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
-    mutationKey: ['start-round'],
-    mutationFn: async (request: StartRoundRequestType) => {
+    async mutationFn(request: StartRoundRequestType) {
       try {
         const response = await axios.post<StartRoundResponseType>(
           `${env.api_url}/rounds/start`,

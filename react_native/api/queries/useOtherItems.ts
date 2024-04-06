@@ -4,6 +4,7 @@ import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
+import { queryKeys } from '../keys';
 import {
   type OtherItemsResponseData,
   type OtherItemsResponseType,
@@ -19,7 +20,7 @@ export function useOtherItems({
   const isRoundStarted = user?.state === 'R';
 
   return useQuery({
-    queryKey: ['other-items'],
+    queryKey: queryKeys.otherItems,
     queryFn: fetchOtherItems(token),
     enabled:
       enabled &&

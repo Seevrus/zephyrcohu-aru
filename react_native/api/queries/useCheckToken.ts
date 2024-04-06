@@ -1,5 +1,5 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
 import { useAtom, useAtomValue } from 'jotai';
 
@@ -9,6 +9,7 @@ import {
   tokenAtom,
 } from '../../atoms/token';
 import env from '../../env.json';
+import { queryKeys } from '../keys';
 import {
   type CheckToken,
   mapCheckTokenResponse,
@@ -17,14 +18,13 @@ import { type LoginResponse } from '../response-types/LoginResponseType';
 
 export function useCheckToken() {
   const { isInternetReachable } = useNetInfo();
-  const queryClient = useQueryClient();
 
   const [, setStoredToken] = useAtom(storedTokenAtom);
   const { token } = useAtomValue(tokenAtom);
 
   return useQuery({
-    queryKey: ['check-token'],
-    queryFn: async (): Promise<CheckToken> => {
+    queryKey: queryKeys.checkToken,
+    async queryFn(): Promise<CheckToken> {
       try {
         const response = await axios.get<LoginResponse>(
           `${env.api_url}/users/check-token`,
@@ -54,7 +54,6 @@ export function useCheckToken() {
           console.log('useCheckToken', error.response?.data);
 
           if (error.response?.status === 401) {
-            await queryClient.invalidateQueries({ queryKey: ['token'] });
             await setStoredToken(defaultStoredToken);
           }
         }

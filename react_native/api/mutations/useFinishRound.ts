@@ -11,8 +11,7 @@ export function useFinishRound() {
   const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
-    mutationKey: ['start-round'],
-    mutationFn: async (request: FinishRoundRequestType) => {
+    async mutationFn(request: FinishRoundRequestType) {
       try {
         const response = await axios.post<FinishRoundResponseType>(
           `${env.api_url}/rounds/finish`,

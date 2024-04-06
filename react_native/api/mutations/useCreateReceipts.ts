@@ -15,10 +15,7 @@ export function useCreateReceipts() {
   const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
-    mutationKey: ['create-receipts'],
-    mutationFn: async (
-      receipts: ContextReceipt[]
-    ): Promise<ReceiptResponseData> => {
+    async mutationFn(receipts: ContextReceipt[]): Promise<ReceiptResponseData> {
       try {
         const receiptRequestData = mapCreateReceiptsRequest(receipts);
 

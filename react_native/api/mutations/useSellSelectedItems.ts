@@ -4,6 +4,7 @@ import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
+import { queryKeys } from '../keys';
 import { useCheckToken } from '../queries/useCheckToken';
 import { useStoreDetails } from '../queries/useStoreDetails';
 import { mapSellSelectedItemsRequest } from '../request-mappers/mapSellSelectedItemsRequest';
@@ -20,8 +21,7 @@ export function useSellSelectedItems() {
   const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
-    mutationKey: ['sell-selected-items'],
-    mutationFn: async (updatedStorage: StoreDetailsResponseData) => {
+    async mutationFn(updatedStorage: StoreDetailsResponseData) {
       try {
         if (!storeDetails) {
           throw new Error('Raktár adatai nem elérhetőek');
@@ -53,8 +53,8 @@ export function useSellSelectedItems() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['stores'] });
-      queryClient.invalidateQueries({ queryKey: ['store-details'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.stores });
+      queryClient.invalidateQueries({ queryKey: queryKeys.storeDetails() });
     },
   });
 }

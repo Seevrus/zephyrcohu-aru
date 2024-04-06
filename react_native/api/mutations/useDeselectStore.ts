@@ -4,6 +4,7 @@ import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
+import { queryKeys } from '../keys';
 import { type LoginResponse } from '../response-types/LoginResponseType';
 
 export function useDeselectStore() {
@@ -11,8 +12,7 @@ export function useDeselectStore() {
   const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
-    mutationKey: ['deselect-store'],
-    mutationFn: async () => {
+    async mutationFn() {
       try {
         const response = await axios.post<LoginResponse>(
           `${env.api_url}/storage/unlock_from_user`,
@@ -37,10 +37,10 @@ export function useDeselectStore() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['check-token'] });
-      queryClient.invalidateQueries({ queryKey: ['items'] });
-      queryClient.invalidateQueries({ queryKey: ['stores'] });
-      queryClient.invalidateQueries({ queryKey: ['store-details'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.checkToken });
+      queryClient.invalidateQueries({ queryKey: queryKeys.items });
+      queryClient.invalidateQueries({ queryKey: queryKeys.stores });
+      queryClient.invalidateQueries({ queryKey: queryKeys.storeDetails() });
     },
   });
 }

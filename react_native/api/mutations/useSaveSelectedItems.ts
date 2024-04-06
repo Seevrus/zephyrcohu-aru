@@ -5,6 +5,7 @@ import { useAtomValue } from 'jotai';
 import { type StorageListItem } from '../../atoms/storageFlow';
 import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
+import { queryKeys } from '../keys';
 import { useStores } from '../queries/useStores';
 import { mapSaveSelectedItemsRequest } from '../request-mappers/mapSaveSelectedItemsRequest';
 import { type StoreDetailsResponseType } from '../response-types/StoreDetailsResponseType';
@@ -18,8 +19,7 @@ export function useSaveSelectedItems() {
   const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
-    mutationKey: ['save-selected-items'],
-    mutationFn: async (changedItems: StorageListItem[]) => {
+    async mutationFn(changedItems: StorageListItem[]) {
       try {
         if (!primaryStoreId) {
           throw new Error('Elsődleges raktár nem található!');
@@ -51,8 +51,8 @@ export function useSaveSelectedItems() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['stores'] });
-      queryClient.invalidateQueries({ queryKey: ['store-details'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.stores });
+      queryClient.invalidateQueries({ queryKey: queryKeys.storeDetails() });
     },
   });
 }

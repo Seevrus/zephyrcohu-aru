@@ -4,6 +4,7 @@ import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
 import env from '../../env.json';
+import { queryKeys } from '../keys';
 import {
   type PriceListResponseData,
   type PriceListResponseType,
@@ -19,8 +20,8 @@ export function usePriceLists({
   const isRoundStarted = user?.state === 'R';
 
   return useQuery({
-    queryKey: ['price-lists'],
-    queryFn: fetchPriceLists(token as string),
+    queryKey: queryKeys.priceLists,
+    queryFn: fetchPriceLists(token),
     enabled:
       enabled &&
       !isTokenExpired &&
