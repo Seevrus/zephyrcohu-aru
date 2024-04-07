@@ -16,8 +16,10 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log as FacadesLog;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\LockedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -120,6 +122,26 @@ class UserController extends Controller
             $user->save();
 
             if ($currentAttempts > 2) {
+                throw new ThrottleRequestsException();
+            }
+
+            $androidId = $request->header('X-Android-Id');
+
+            if (
+                (is_null($androidId) && !is_null($user->android_id)) ||
+                (!is_null($androidId) && !is_null($user->android_id))
+            ) {
+                Log::insert([
+                    'company_id' => $user->company_id,
+                    'user_id' => $user->id,
+                    'token_id' => 0,
+                    'action' => 'Tried to log in from a different device',
+                    'occured_at' => Carbon::now(),
+                ]);
+
+                $user->attempts = $currentAttempts + 1;
+                $user->save();
+
                 throw new LockedHttpException();
             }
 
@@ -140,21 +162,26 @@ class UserController extends Controller
                 throw new UnauthorizedHttpException(random_bytes(32));
             }
 
+            $isAndroidToken = !is_null($androidId);
+            $tokenExpiration = $isAndroidToken ? null : Carbon::now()->addHour();
+
+            if ($isAndroidToken && is_null($user->android_id)) {
+                $user->android_id = Hash::make($androidId);
+            }
             $user->attempts = 0;
             $user->tokens()->delete();
             $passwordSetTime = new Carbon($password->set_time);
             $isPasswordExpired = $passwordSetTime->diffInSeconds(Carbon::now()) > $this->password_max_lifetime;
 
             if ($password->is_generated === 1 || $isPasswordExpired) {
-                $token = $user->createToken('boreal', ['password']);
+                $token = $user->createToken('boreal', ['password'], $tokenExpiration);
             } else {
                 $roles = array_map(
                     fn ($role) => $role['role'],
                     $user->roles->toArray()
                 );
-                $token = $user->createToken('boreal', $roles);
+                $token = $user->createToken('boreal', $roles, $tokenExpiration);
             }
-            $tokenExpiration = Carbon::now()->addHours(25);
 
             Log::insert([
                 'company_id' => $user->company_id,
@@ -183,6 +210,7 @@ class UserController extends Controller
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
                 || $e instanceof LockedHttpException
+                || $e instanceof ThrottleRequestsException
             ) {
                 throw $e;
             }
@@ -197,9 +225,15 @@ class UserController extends Controller
             $sender = $request->user();
             $sender->last_active = Carbon::now();
             $sender->save();
+            $this->authorize('androidId', $request->user());
+
+            $androidId = $request->header('X-Android-Id');
+            $isAndroidToken = !is_null($androidId);
 
             $token = $request->user()->currentAccessToken();
-            $tokenExpiration = Carbon::parse($token->created_at)->addHours(25);
+            $tokenExpiration = $isAndroidToken
+                ? null
+                : Carbon::parse($token->created_at)->addHour();
 
             $userResource = new UserResource($sender->load('company', 'rounds'));
 
@@ -215,6 +249,13 @@ class UserController extends Controller
                 ]
             );
         } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) {
+                throw $e;
+            }
+
             throw new BadRequestException();
         }
     }
@@ -225,6 +266,7 @@ class UserController extends Controller
             $sender = $request->user();
             $sender->last_active = Carbon::now();
             $sender->save();
+            $this->authorize('androidId');
 
             $senderRoles = array_map(
                 fn ($role) => $role['role'],
@@ -320,6 +362,7 @@ class UserController extends Controller
             $sender = $request->user();
             $sender->last_active = Carbon::now();
             $sender->save();
+            $this->authorize('androidId');
 
             $companyUsers = $sender->company->users;
 
@@ -343,6 +386,7 @@ class UserController extends Controller
             $sender = request()->user();
             $sender->last_active = Carbon::now();
             $sender->save();
+            $this->authorize('androidId');
 
             $user = User::firstWhere([
                 'user_name' => $request->userName,
