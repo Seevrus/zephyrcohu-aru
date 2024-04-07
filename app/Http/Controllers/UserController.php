@@ -225,10 +225,8 @@ class UserController extends Controller
             $sender = $request->user();
             $sender->last_active = Carbon::now();
             $sender->save();
-            $this->authorize('androidId', $request->user());
 
-            $androidId = $request->header('X-Android-Id');
-            $isAndroidToken = !is_null($androidId);
+            $isAndroidToken = !is_null($sender->android_id);
 
             $token = $request->user()->currentAccessToken();
             $tokenExpiration = $isAndroidToken
@@ -266,7 +264,6 @@ class UserController extends Controller
             $sender = $request->user();
             $sender->last_active = Carbon::now();
             $sender->save();
-            $this->authorize('androidId');
 
             $senderRoles = array_map(
                 fn ($role) => $role['role'],
@@ -362,7 +359,6 @@ class UserController extends Controller
             $sender = $request->user();
             $sender->last_active = Carbon::now();
             $sender->save();
-            $this->authorize('androidId');
 
             $companyUsers = $sender->company->users;
 
@@ -386,7 +382,6 @@ class UserController extends Controller
             $sender = request()->user();
             $sender->last_active = Carbon::now();
             $sender->save();
-            $this->authorize('androidId');
 
             $user = User::firstWhere([
                 'user_name' => $request->userName,
