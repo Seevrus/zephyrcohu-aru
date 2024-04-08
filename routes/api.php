@@ -35,6 +35,8 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
         ->middleware(['auth:sanctum', 'ability:AM']);
 
     Route::post('/login', 'login');
+    Route::post('/logout', 'logout')
+        ->middleware(['auth:sanctum']);
 
     Route::get('/check-token', 'check_token')
         ->middleware(['auth:sanctum']);
@@ -46,6 +48,9 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
         ->middleware(['auth:sanctum', 'ability:AM']);
 
     Route::post('/delete', 'delete')
+        ->middleware(['auth:sanctum', 'ability:AM']);
+
+    Route::get('/{id}', 'view')
         ->middleware(['auth:sanctum', 'ability:AM']);
 });
 

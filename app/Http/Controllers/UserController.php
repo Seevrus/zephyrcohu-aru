@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log as FacadesLog;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\LockedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -49,7 +48,14 @@ class UserController extends Controller
         try {
             $sender = $request->user();
             $company_id = $sender->company_id;
-            $user_name = $request->userName;
+            $userName = $request->userName;
+
+            if ($sender->company->users()->firstWhere(['user_name' => $userName])) {
+                return response([
+                    'message' => 'User already exists: ' . $userName,
+                ], 409);
+            }
+
             $password = $this->generate_code($this->password_min_length);
 
             $company = Company::findOrFail($company_id);
@@ -57,7 +63,7 @@ class UserController extends Controller
 
             $new_user = User::create([
                 'company_id' => $company_id,
-                'user_name' => $user_name,
+                'user_name' => $userName,
                 'name' => $request->name,
                 'state' => 'I',
                 'phone_number' => $request->phoneNumber ?? null,
@@ -82,7 +88,7 @@ class UserController extends Controller
                 'company_id' => $company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Created user ' . $user_name,
+                'action' => 'Created user ' . $userName,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -109,7 +115,13 @@ class UserController extends Controller
     public function login(LoginRequest $request)
     {
         try {
-            $user = User::firstWhere([
+            $company = Company::find($request->companyId);
+
+            if (!$company) {
+                throw new UnauthorizedHttpException(random_bytes(32));
+            }
+
+            $user = $company->users()->firstWhere([
                 'user_name' => $request->userName,
             ]);
 
@@ -228,7 +240,7 @@ class UserController extends Controller
 
             $isAndroidToken = !is_null($sender->android_id);
 
-            $token = $request->user()->currentAccessToken();
+            $token =  $sender->currentAccessToken();
             $tokenExpiration = $isAndroidToken
                 ? null
                 : Carbon::parse($token->created_at)->addHour();
@@ -254,6 +266,20 @@ class UserController extends Controller
                 throw $e;
             }
 
+            throw new BadRequestException();
+        }
+    }
+
+    public function logout(Request $request)
+    {
+        try {
+            $sender = $request->user();
+            $sender->android_id = null;
+            $sender->last_active = Carbon::now();
+
+            $sender->tokens()->delete();
+            $sender->save();
+        } catch (Exception $e) {
             throw new BadRequestException();
         }
     }
@@ -372,6 +398,32 @@ class UserController extends Controller
 
             return new UserCollection($companyUsers);
         } catch (Exception $e) {
+            throw new BadRequestException();
+        }
+    }
+
+    public function view(Request $request, int $id)
+    {
+        try {
+            $sender = $request->user();
+            $sender->last_active = Carbon::now();
+            $sender->save();
+
+            $user = $sender->company->users()->find($id);
+
+            if (!$user) {
+                throw new UnauthorizedHttpException(random_bytes(32));
+            }
+
+            return new UserResource($user->load('company', 'rounds'));
+        } catch (Exception $e) {
+            if (
+                $e instanceof UnauthorizedHttpException
+                || $e instanceof AuthorizationException
+            ) {
+                throw $e;
+            }
+
             throw new BadRequestException();
         }
     }
