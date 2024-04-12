@@ -24,8 +24,7 @@ class LoginRequest extends FormRequest
     public function rules()
     {
         return [
-            'companyId' => 'required|integer|min:1',
-            'userName' => 'required|string',
+            'userName' => 'required|string|regex:/([\w]+)@([0-9]+)/',
             'password' => 'required|string',
         ];
     }

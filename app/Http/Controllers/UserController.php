@@ -115,14 +115,18 @@ class UserController extends Controller
     public function login(LoginRequest $request)
     {
         try {
-            $company = Company::find($request->companyId);
+            $reguestUserIdentifier = explode('@', $request->userName);
+            $userName = $reguestUserIdentifier[0];
+            $companyCode = $reguestUserIdentifier[1];
+
+            $company = Company::firstWhere(['code' => $companyCode]);
 
             if (!$company) {
                 throw new UnauthorizedHttpException(random_bytes(32));
             }
 
             $user = $company->users()->firstWhere([
-                'user_name' => $request->userName,
+                'user_name' => $userName,
             ]);
 
             if (!$user) {
