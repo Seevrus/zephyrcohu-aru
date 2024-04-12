@@ -1,6 +1,7 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
@@ -38,6 +39,7 @@ export const fetchItems =
           headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
+            'X-Android-Id': getAndroidId(),
           },
         }
       );

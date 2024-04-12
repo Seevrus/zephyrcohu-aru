@@ -1,25 +1,46 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAtom } from 'jotai';
+import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
+import { useAtom, useAtomValue } from 'jotai';
 
-import { defaultStoredToken, storedTokenAtom } from '../../atoms/token';
+import {
+  defaultStoredToken,
+  storedTokenAtom,
+  tokenAtom,
+} from '../../atoms/token';
+import env from '../../env.json';
 import { queryKeys } from '../keys';
 
 export function useLogout() {
   const queryClient = useQueryClient();
 
+  const { token } = useAtomValue(tokenAtom);
   const [, setStoredToken] = useAtom(storedTokenAtom);
 
   return useMutation({
     async mutationFn() {
       try {
-        await setStoredToken(defaultStoredToken);
-      } catch {
+        await axios.post<void>(`${env.api_url}/orders`, undefined, {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`,
+            'X-Android-Id': getAndroidId(),
+          },
+        });
+      } catch (error) {
+        if (isAxiosError(error)) {
+          // eslint-disable-next-line no-console
+          console.log('useCreateOrders:', error.response?.data);
+        }
+
         throw new Error('Váratlan hiba lépett fel a kijelentkezés során.');
       }
     },
-    onSuccess: () => {
+    async onSuccess() {
+      await setStoredToken(defaultStoredToken);
+
       // only user related queries should be invalidated on logout
-      queryClient.invalidateQueries({ queryKey: queryKeys.checkToken });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.checkToken });
     },
   });
 }

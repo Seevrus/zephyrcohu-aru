@@ -13,5 +13,5 @@ export type Token = {
   tokenType: string;
   accessToken: string;
   abilities: UserRoleType[] | ['password'];
-  expiresAt: string;
+  expiresAt: string | null;
 };

@@ -17,7 +17,7 @@ function SuspendedSettings({ navigation }: SettingsProps) {
 
   const { isTokenExpired } = useAtomValue(tokenAtom);
 
-  const isRoundStarted = user?.state === 'R';
+  const isUserIdle = user?.state === 'I';
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -55,11 +55,11 @@ function SuspendedSettings({ navigation }: SettingsProps) {
           Jelszó megváltoztatása
         </Button>
       )}
-      {!isTokenExpired && !isRoundStarted && (
+      {!isTokenExpired && isUserIdle ? (
         <Button variant="neutral" onPress={logoutHandler}>
           Kijelentkezés
         </Button>
-      )}
+      ) : null}
     </View>
   );
 }

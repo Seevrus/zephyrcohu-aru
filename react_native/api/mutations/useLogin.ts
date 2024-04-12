@@ -1,8 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtom } from 'jotai';
 
 import { storedTokenAtom } from '../../atoms/token';
+import { userLoginIdentifierAtom } from '../../atoms/user';
 import env from '../../env.json';
 import { queryKeys } from '../keys';
 import { type LoginRequest } from '../request-types/LoginRequestType';
@@ -13,6 +15,7 @@ export function useLogin() {
   const queryClient = useQueryClient();
 
   const [, setStoredToken] = useAtom(storedTokenAtom);
+  const [, setLoginIdentifier] = useAtom(userLoginIdentifierAtom);
 
   return useMutation({
     async mutationFn({ userName, password }: LoginRequest) {
@@ -21,7 +24,12 @@ export function useLogin() {
           .post<LoginResponse>(
             `${env.api_url}/users/login`,
             { userName, password },
-            { headers: { Accept: 'application/json' } }
+            {
+              headers: {
+                Accept: 'application/json',
+                'X-Android-Id': getAndroidId(),
+              },
+            }
           )
           .then((r) => mapLoginResponse(r.data));
 
@@ -33,6 +41,8 @@ export function useLogin() {
           expiresAt: response.token.expiresAt,
         });
 
+        await setLoginIdentifier(userName);
+
         return response;
       } catch (error) {
         if (isAxiosError(error)) {
@@ -43,6 +53,11 @@ export function useLogin() {
             throw new Error('Hibás felhasználónév / jelszó!');
           }
           if (error?.response?.status === 423) {
+            throw new Error(
+              'Ezzel a felhasználóval egy másik eszközről már bejelentkeztek.'
+            );
+          }
+          if (error?.response?.status === 429) {
             throw new Error(
               'Túl sok sikertelen bejelentkezési kísérlet miatt a felhasználót zároltuk.'
             );

@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { type ContextReceipt } from '../../atoms/receipts';
@@ -26,6 +27,7 @@ export function useCreateReceipts() {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
+              'X-Android-Id': getAndroidId(),
             },
           }
         );

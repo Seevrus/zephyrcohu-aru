@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtom, useAtomValue } from 'jotai';
 
 import { storedTokenAtom, tokenAtom } from '../../atoms/token';
@@ -12,7 +13,7 @@ import { useLogout } from './useLogout';
 
 export function usePasswordChange() {
   const queryClient = useQueryClient();
-  const logout = useLogout();
+  const { mutateAsync: logout } = useLogout();
 
   const [, setStoredToken] = useAtom(storedTokenAtom);
   const { token } = useAtomValue(tokenAtom);
@@ -28,6 +29,7 @@ export function usePasswordChange() {
               headers: {
                 Accept: 'application/json',
                 Authorization: `Bearer ${token}`,
+                'X-Android-Id': getAndroidId(),
               },
             }
           )
@@ -46,7 +48,7 @@ export function usePasswordChange() {
         if (isAxiosError(error) && error.response?.status === 400) {
           throw new Error('A jelszó nem egyezhet meg a korábbi 10 jelszóval.');
         } else if (isAxiosError(error) && error.response?.status === 401) {
-          await logout.mutateAsync();
+          await logout();
           throw new Error(
             'A jelszó megváltoztatásához újra be kell jelentkeznie.'
           );

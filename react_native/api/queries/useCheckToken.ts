@@ -26,7 +26,7 @@ export function useCheckToken() {
     queryKey: queryKeys.checkToken,
     async queryFn(): Promise<CheckToken> {
       try {
-        const response = await axios.get<LoginResponse>(
+        const user = await axios.get<LoginResponse>(
           `${env.api_url}/users/check-token`,
           {
             headers: {
@@ -36,7 +36,7 @@ export function useCheckToken() {
           }
         );
 
-        const isPasswordExpired = response.data.token.abilities.includes(
+        const isPasswordExpired = user.data.token.abilities.includes(
           'password' as never
         );
 
@@ -47,7 +47,7 @@ export function useCheckToken() {
           }));
         }
 
-        return mapCheckTokenResponse(response.data);
+        return mapCheckTokenResponse(user.data);
       } catch (error) {
         if (isAxiosError(error)) {
           // eslint-disable-next-line no-console
@@ -62,7 +62,7 @@ export function useCheckToken() {
       }
     },
     enabled: isInternetReachable === true && !!token,
-    staleTime: 300_000,
+    staleTime: 24 * 60 * 60 * 1000,
     retry: false,
   });
 }

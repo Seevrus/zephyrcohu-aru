@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
@@ -20,6 +21,7 @@ export function useFinishRound() {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
+              'X-Android-Id': getAndroidId(),
             },
           }
         );

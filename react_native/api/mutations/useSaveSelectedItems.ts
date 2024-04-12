@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { type StorageListItem } from '../../atoms/storageFlow';
@@ -37,6 +38,7 @@ export function useSaveSelectedItems() {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
+              'X-Android-Id': getAndroidId(),
             },
           }
         );
