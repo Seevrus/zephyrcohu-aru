@@ -65,6 +65,8 @@ export type StackParams = {
   PrintEndErrand: undefined;
 };
 
+export type IndexProps = NativeStackScreenProps<StackParams, 'Index'>;
+
 export type LoginProps = NativeStackScreenProps<StackParams, 'Login'>;
 export type ChangePasswordProps = NativeStackScreenProps<
   StackParams,

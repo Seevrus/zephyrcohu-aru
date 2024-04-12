@@ -6,6 +6,7 @@ import {
   FlatList,
   type ListRenderItem,
   type ListRenderItemInfo,
+  Pressable,
   StyleSheet,
   View,
 } from 'react-native';
@@ -19,13 +20,18 @@ import { Loading } from '../../components/Loading';
 import { Tile, type TileT } from '../../components/Tile';
 import { RoundInfo } from '../../containers/RoundInfo';
 import { useTiles } from '../../hooks/useTiles';
+import { type IndexProps } from '../../navigators/screen-types';
 
-function SuspendedIndex() {
+function SuspendedIndex({ navigation }: IndexProps) {
   const { isFetching: isUserFetching } = useCheckToken();
   const { isInternetReachable } = useNetInfo();
   const token = useAtomValue(loadable(tokenAtom));
 
   const { alert, tiles } = useTiles() || {};
+
+  const loginNavigationHandler = () => {
+    navigation.navigate('Login');
+  };
 
   const renderTile: ListRenderItem<TileT> = (
     info: ListRenderItemInfo<TileT>
@@ -59,7 +65,11 @@ function SuspendedIndex() {
       ) : null}
       {token.data.isTokenExpired ? (
         <View style={styles.textCardContainer}>
-          <TextCard>Körindításhoz és -záráshoz kérem jelentkezzen be.</TextCard>
+          <Pressable onPress={loginNavigationHandler}>
+            <TextCard>
+              A program használatának megkezdéséhez kérem jelentkezzen be.
+            </TextCard>
+          </Pressable>
         </View>
       ) : null}
       <FlatList
@@ -83,10 +93,10 @@ function SuspendedIndex() {
   );
 }
 
-export function Index() {
+export function Index(props: IndexProps) {
   return (
     <Suspense fallback={<Container />}>
-      <SuspendedIndex />
+      <SuspendedIndex {...props} />
     </Suspense>
   );
 }
