@@ -20,6 +20,8 @@ export function useLogin() {
   return useMutation({
     async mutationFn({ userName, password }: LoginRequest) {
       try {
+        const androidId = getAndroidId();
+
         const response = await axios
           .post<LoginResponse>(
             `${env.api_url}/users/login`,
@@ -27,12 +29,13 @@ export function useLogin() {
             {
               headers: {
                 Accept: 'application/json',
-                'X-Android-Id': getAndroidId(),
+                'X-Android-Id': androidId,
               },
             }
           )
-          .then((r) => mapLoginResponse(r.data));
+          .then((response) => mapLoginResponse(response.data));
 
+        console.log('Android ID', androidId);
         console.log('Token:', response.token.accessToken);
 
         await setStoredToken({

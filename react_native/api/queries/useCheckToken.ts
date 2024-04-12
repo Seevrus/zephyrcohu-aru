@@ -1,6 +1,7 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtom, useAtomValue } from 'jotai';
 
 import {
@@ -32,6 +33,7 @@ export function useCheckToken() {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
+              'X-Android-Id': getAndroidId(),
             },
           }
         );
@@ -63,6 +65,5 @@ export function useCheckToken() {
     },
     enabled: isInternetReachable === true && !!token,
     staleTime: 24 * 60 * 60 * 1000,
-    retry: false,
   });
 }
