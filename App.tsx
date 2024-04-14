@@ -28,8 +28,8 @@ const queryClient = new QueryClient({
     queries: {
       gcTime: Number.POSITIVE_INFINITY,
       placeholderData: keepPreviousData,
-      staleTime: Number.POSITIVE_INFINITY,
       retry: 3,
+      staleTime: Number.POSITIVE_INFINITY,
     },
   },
 });

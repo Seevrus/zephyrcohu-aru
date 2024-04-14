@@ -19,10 +19,13 @@ import { TextCard } from '../../components/info-cards/TextCard';
 import { Loading } from '../../components/Loading';
 import { Tile, type TileT } from '../../components/Tile';
 import { RoundInfo } from '../../containers/RoundInfo';
+import { useInitializeApp } from '../../hooks/useInitializeApp';
 import { useTiles } from '../../hooks/useTiles';
 import { type IndexProps } from '../../navigators/screen-types';
 
 function SuspendedIndex({ navigation }: IndexProps) {
+  useInitializeApp();
+
   const { isFetching: isUserFetching } = useCheckToken();
   const { isInternetReachable } = useNetInfo();
   const token = useAtomValue(loadable(tokenAtom));
