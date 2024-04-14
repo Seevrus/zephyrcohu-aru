@@ -424,6 +424,7 @@ class UserController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
+                || $e instanceof NotFoundHttpException
             ) {
                 throw $e;
             }

@@ -57,7 +57,7 @@ class ReceiptResource extends JsonResource
             'paidDate' => $this->paid_date,
             'user' => [
                 'id' => $this->user_id,
-                'code' => $this->user_code,
+                'userName' => $this->user_user_name,
                 'name' => $this->user_name,
                 'phoneNumber' => $this->user_phone_number,
             ],

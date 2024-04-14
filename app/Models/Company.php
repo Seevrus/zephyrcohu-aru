@@ -58,4 +58,9 @@ class Company extends Model
     {
         return $this->hasMany(Receipt::class);
     }
+
+    public function storageReceipts()
+    {
+        return $this->hasMany(StorageReceipt::class);
+    }
 }
