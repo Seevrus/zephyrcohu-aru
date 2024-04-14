@@ -1385,7 +1385,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"data\": {\r\n        \"primaryStoreId\": 1,\r\n        \"changes\": [\r\n            {\r\n                \"expirationId\": 1,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 2,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 3,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 4,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 5,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 6,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 7,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 8,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 9,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 10,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 11,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 12,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 13,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 14,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 15,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 16,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 17,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 18,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 19,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 20,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 21,\r\n                \"quantityChange\": 10\r\n            },\r\n            {\r\n                \"expirationId\": 22,\r\n                \"quantityChange\": 10\r\n            }\r\n        ]\r\n    }\r\n}",
+              "raw": "{\r\n    \"data\": {\r\n        \"primaryStoreId\": 1,\r\n        \"changes\": [\r\n            {\r\n                \"expirationId\": 1,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 2,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 3,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 4,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 5,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 6,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 7,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 8,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 9,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 10,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 11,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 12,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 13,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 14,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 15,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 16,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 17,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 18,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 19,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 20,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 21,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 22,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            }\r\n        ]\r\n    }\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1472,6 +1472,98 @@
               "raw": "{{zephyr_aru_url}}/storage/unlock_from_user",
               "host": ["{{zephyr_aru_url}}"],
               "path": ["storage", "unlock_from_user"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "storage receipts",
+      "item": [
+        {
+          "name": "View All Storage Receipts",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/storage_receipts",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["storage_receipts"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "View Storage Receipt",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/storage_receipts/1",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["storage_receipts", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Storage Receipt",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/storage_receipts/1",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["storage_receipts", "1"]
             }
           },
           "response": []
@@ -1665,7 +1757,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"userName\": \"ztill\",\r\n    \"password\": \"test\"\r\n}",
+              "raw": "{\r\n    \"userName\": \"ztill@001\",\r\n    \"password\": \"test\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1676,6 +1768,35 @@
               "raw": "{{zephyr_aru_url}}/users/login",
               "host": ["{{zephyr_aru_url}}"],
               "path": ["users", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/users/logout",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["users", "logout"]
             }
           },
           "response": []
@@ -1772,6 +1893,35 @@
               "raw": "{{zephyr_aru_url}}/users",
               "host": ["{{zephyr_aru_url}}"],
               "path": ["users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "View User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{zephyr_aru_url}}/users/1",
+              "host": ["{{zephyr_aru_url}}"],
+              "path": ["users", "1"]
             }
           },
           "response": []

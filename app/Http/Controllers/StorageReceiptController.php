@@ -8,9 +8,9 @@ use App\Models\Log;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class StorageReceiptController extends Controller
@@ -37,7 +37,7 @@ class StorageReceiptController extends Controller
             if (
                 $e instanceof UnauthorizedHttpException
                 || $e instanceof AuthorizationException
-                || $e instanceof NotFoundHttpException
+                || $e instanceof ModelNotFoundException
             ) {
                 throw $e;
             }
