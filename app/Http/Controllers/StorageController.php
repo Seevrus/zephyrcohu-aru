@@ -254,7 +254,7 @@ class StorageController extends Controller
 
                 $storageReceipt->items()->create([
                     'item_id' => $item->id,
-                    'cn_code' => $item->$item->cn_code,
+                    'cn_code' => $item->cn_code,
                     'article_number' => $item->article_number,
                     'expires_at' => $expiration->expires_at,
                     'starting_quantity' => $storageUpdate['startingQuantity'],

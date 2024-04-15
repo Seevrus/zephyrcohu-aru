@@ -1,8 +1,11 @@
+import { useNetInfo } from '@react-native-community/netinfo';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAtom, useAtomValue } from 'jotai';
+import { isNil, isNotNil } from 'ramda';
 import { useCallback, useMemo, useState } from 'react';
 
 import { useSaveSelectedItems } from '../../../api/mutations/useSaveSelectedItems';
+import { useStores } from '../../../api/queries/useStores';
 import {
   isStorageSavedToApiAtom,
   storageListItemsAtom,
@@ -16,6 +19,9 @@ export function useReviewStorageChangesData(
     undefined
   >
 ) {
+  const { isInternetReachable } = useNetInfo();
+
+  const { data: stores } = useStores();
   const { mutateAsync: saveSelectedItems } = useSaveSelectedItems();
 
   const [, setIsStorageSavedToApi] = useAtom(isStorageSavedToApiAtom);
@@ -32,6 +38,12 @@ export function useReviewStorageChangesData(
       ),
     [storageListItems]
   );
+
+  const primaryStoreId = stores?.find((store) => store.type === 'P')?.id;
+  const canConfirmStorageChanges =
+    isInternetReachable && isNotNil(primaryStoreId);
+
+  const reallyUnexpectedBlocker = isNil(primaryStoreId);
 
   const handleSendChanges = useCallback(async () => {
     try {
@@ -65,6 +77,8 @@ export function useReviewStorageChangesData(
     isLoading,
     isError,
     changedItems,
+    reallyUnexpectedBlocker,
+    canConfirmStorageChanges,
     handleSendChanges,
   };
 }

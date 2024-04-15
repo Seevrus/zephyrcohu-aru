@@ -21,6 +21,7 @@ import {
 } from 'ramda';
 import { useCallback, useMemo, useState } from 'react';
 
+import { queryKeys } from '../../../api/keys';
 import { useSelectStore } from '../../../api/mutations/useSelectStore';
 import { fetchStoreDetails } from '../../../api/queries/useStoreDetails';
 import { useStores } from '../../../api/queries/useStores';
@@ -96,14 +97,14 @@ export function useSelectStoreData(
 
         const primaryStoreDetails =
           await queryClient.fetchQuery<StoreDetailsResponseData>({
-            queryKey: ['store-details', primaryStoreId],
+            queryKey: queryKeys.storeDetails(primaryStoreId),
             queryFn: fetchStoreDetails(token, primaryStoreId),
           });
         await setPrimaryStore(primaryStoreDetails);
 
         const selectedStoreDetails =
           await queryClient.fetchQuery<StoreDetailsResponseData>({
-            queryKey: ['store-details', selectedStoreId],
+            queryKey: queryKeys.storeDetails(selectedStoreId),
             queryFn: fetchStoreDetails(token, selectedStoreId),
           });
         await setSelectedStoreInitialState(selectedStoreDetails);

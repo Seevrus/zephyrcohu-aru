@@ -26,8 +26,14 @@ function SuspendedReviewStorageChanges({
 }: ReviewStorageChangesProps) {
   const { isInternetReachable } = useNetInfo();
 
-  const { isLoading, isError, changedItems, handleSendChanges } =
-    useReviewStorageChangesData(navigation);
+  const {
+    isLoading,
+    isError,
+    changedItems,
+    canConfirmStorageChanges,
+    reallyUnexpectedBlocker,
+    handleSendChanges,
+  } = useReviewStorageChangesData(navigation);
 
   const [isAlertVisible, setIsAlertVisible] = useState<boolean>(false);
 
@@ -43,7 +49,7 @@ function SuspendedReviewStorageChanges({
     setIsAlertVisible(true);
   };
 
-  const confirmButtonVariant = isInternetReachable ? 'ok' : 'disabled';
+  const confirmButtonVariant = canConfirmStorageChanges ? 'ok' : 'disabled';
 
   return (
     <Container>
@@ -54,6 +60,15 @@ function SuspendedReviewStorageChanges({
           </TextCard>
         </View>
       )}
+      {reallyUnexpectedBlocker ? (
+        <View style={styles.cardContainer}>
+          <ErrorCard>
+            Az alkalmazás nem találja a főkraktárat. Ezt az üzenetet
+            egyértelműen nem szabadna látnia, kérem azonnal lépjen kapcsolatba
+            az alkalmazás fejlesztőjével!
+          </ErrorCard>
+        </View>
+      ) : null}
       {isError ? (
         <View style={styles.cardContainer}>
           <ErrorCard>A rakodás mentése sikertelen.</ErrorCard>
