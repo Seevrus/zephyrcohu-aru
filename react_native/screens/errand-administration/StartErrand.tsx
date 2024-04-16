@@ -78,45 +78,47 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
           roundStarted: format(date, 'yyyy-MM-dd'),
         });
 
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.checkToken,
-          refetchType: 'all',
-        });
-        await queryClient.invalidateQueries({ queryKey: queryKeys.items });
-        await queryClient.invalidateQueries({ queryKey: queryKeys.otherItems });
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.partnerLists,
-        });
-        await queryClient.invalidateQueries({ queryKey: queryKeys.partners });
-        await queryClient.invalidateQueries({ queryKey: queryKeys.priceLists });
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.searchTaxNumber(),
-        });
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.storeDetails(),
-        });
-        await queryClient.invalidateQueries({ queryKey: queryKeys.stores });
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.checkToken,
+            refetchType: 'all',
+          }),
+          queryClient.invalidateQueries({ queryKey: queryKeys.items }),
+          queryClient.invalidateQueries({ queryKey: queryKeys.otherItems }),
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.partnerLists,
+          }),
+          queryClient.invalidateQueries({ queryKey: queryKeys.partners }),
+          queryClient.invalidateQueries({ queryKey: queryKeys.priceLists }),
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.searchTaxNumber(),
+          }),
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.storeDetails(),
+          }),
+          queryClient.invalidateQueries({ queryKey: queryKeys.stores }),
 
-        await queryClient.fetchQuery({
-          queryKey: queryKeys.items,
-          queryFn: fetchItems(token),
-        });
-        await queryClient.fetchQuery({
-          queryKey: queryKeys.otherItems,
-          queryFn: fetchOtherItems(token),
-        });
-        await queryClient.fetchQuery({
-          queryKey: queryKeys.partnerLists,
-          queryFn: fetchPartnerLists(token),
-        });
-        await queryClient.fetchQuery({
-          queryKey: queryKeys.partners,
-          queryFn: fetchPartners(token),
-        });
-        await queryClient.fetchQuery({
-          queryKey: queryKeys.priceLists,
-          queryFn: fetchPriceLists(token),
-        });
+          queryClient.fetchQuery({
+            queryKey: queryKeys.items,
+            queryFn: fetchItems(token),
+          }),
+          queryClient.fetchQuery({
+            queryKey: queryKeys.otherItems,
+            queryFn: fetchOtherItems(token),
+          }),
+          queryClient.fetchQuery({
+            queryKey: queryKeys.partnerLists,
+            queryFn: fetchPartnerLists(token),
+          }),
+          queryClient.fetchQuery({
+            queryKey: queryKeys.partners,
+            queryFn: fetchPartners(token),
+          }),
+          queryClient.fetchQuery({
+            queryKey: queryKeys.priceLists,
+            queryFn: fetchPriceLists(token),
+          }),
+        ]);
 
         const storeDetails = await queryClient.fetchQuery({
           queryKey: queryKeys.storeDetails(storeId),

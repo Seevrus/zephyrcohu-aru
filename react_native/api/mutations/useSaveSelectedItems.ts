@@ -52,9 +52,11 @@ export function useSaveSelectedItems() {
         throw new Error('Váratlan hiba lépett fel a raktár frissítése során.');
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.stores });
-      queryClient.invalidateQueries({ queryKey: queryKeys.storeDetails() });
+    async onSuccess() {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.stores }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.storeDetails() }),
+      ]);
     },
   });
 }

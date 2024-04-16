@@ -38,11 +38,13 @@ export function useDeselectStore() {
         );
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.checkToken });
-      queryClient.invalidateQueries({ queryKey: queryKeys.items });
-      queryClient.invalidateQueries({ queryKey: queryKeys.stores });
-      queryClient.invalidateQueries({ queryKey: queryKeys.storeDetails() });
+    async onSuccess() {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.checkToken }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.items }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.stores }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.storeDetails() }),
+      ]);
     },
   });
 }

@@ -61,8 +61,8 @@ export function usePasswordChange() {
         }
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.checkToken });
+    async onSuccess() {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.checkToken });
     },
   });
 }
