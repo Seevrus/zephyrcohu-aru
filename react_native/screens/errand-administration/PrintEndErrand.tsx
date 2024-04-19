@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Alert } from '../../components/alert/Alert';
 import { Container } from '../../components/container/Container';
+import { ErrorCard } from '../../components/info-cards/ErrorCard';
 import { Loading } from '../../components/Loading';
 import { Button } from '../../components/ui/Button';
 import { colors } from '../../constants/colors';
@@ -30,6 +31,16 @@ function SuspendedPrintEndErrand({ navigation }: PrintEndErrandProps) {
   return (
     <Container style={styles.container}>
       <Text style={styles.header}>Kör mentése sikeres!</Text>
+      {isPrintEnabled ? null : (
+        <View style={styles.cardContainer}>
+          <ErrorCard>
+            Az alkalmazás nem találja a nyomtatáshoz szükséges valamelyik
+            adatobjektumot (partnerlista, raktár vagy felhasználó). Ezt az
+            üzenetet egyértelműen nem szabadna látnia, kérem azonnal lépjen
+            kapcsolatba az alkalmazás fejlesztőjével!
+          </ErrorCard>
+        </View>
+      )}
       <Text style={styles.text}>
         Az alábbi gombra kattintva összegzés nyomtatható a kör során készült
         számlák adatairól.
@@ -47,6 +58,7 @@ function SuspendedPrintEndErrand({ navigation }: PrintEndErrandProps) {
       <View style={styles.buttonContainer}>
         <Button variant={returnButtonVariant} onPress={exitConfimationHandler}>
           Visszatérés a kezdőképernyőre
+          {/* TODO: usCreateOrders itt elhalt és nem jutottunk a kezdőképernyőre. useCreateOrders: {"errors": {"data": ["The data field is required."]}, "message": "The data field is required."} */}
         </Button>
       </View>
       <Alert
@@ -81,6 +93,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 40,
     marginTop: 20,
+  },
+  cardContainer: {
+    marginTop: 30,
   },
   container: {
     paddingHorizontal: '7%',

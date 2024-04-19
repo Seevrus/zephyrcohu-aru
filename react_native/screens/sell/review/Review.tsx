@@ -1,3 +1,4 @@
+import { useNetInfo } from '@react-native-community/netinfo';
 import { useAtomValue } from 'jotai';
 import { Suspense, useCallback, useState } from 'react';
 import {
@@ -24,6 +25,8 @@ import { RegularItemSelection } from './RegularItemSelection';
 import { useReviewData } from './useReviewData';
 
 function SuspendedReview({ navigation }: ReviewProps) {
+  const { isInternetReachable } = useNetInfo();
+
   const {
     isLoading,
     discountedGrossAmount,
@@ -32,6 +35,7 @@ function SuspendedReview({ navigation }: ReviewProps) {
     saveReceiptError,
     removeReceiptHandler,
     canConfirm,
+    surpriseError,
     confirmReceiptHandler,
     alert,
   } = useReviewData(navigation);
@@ -81,10 +85,27 @@ function SuspendedReview({ navigation }: ReviewProps) {
   return (
     <Container>
       {!!saveReceiptError && (
-        <View style={styles.error}>
+        <View style={styles.card}>
           <ErrorCard>{saveReceiptError}</ErrorCard>
         </View>
       )}
+      {isInternetReachable === false && (
+        <View style={styles.card}>
+          <ErrorCard>
+            A számla véglegesítéséhez internetkapcsolat szükséges.
+          </ErrorCard>
+        </View>
+      )}
+      {surpriseError ? (
+        <View style={styles.card}>
+          <ErrorCard>
+            Az alkalmazás nem találja a számla készítéséhez szükséges olyan
+            adatok egyikét, aminek feltétlenül meg kellene lennie. Ezt az
+            üzenetet egyértelműen nem szabadna látnia, kérem azonnal lépjen
+            kapcsolatba az alkalmazás fejlesztőjével!
+          </ErrorCard>
+        </View>
+      ) : null}
       <View style={styles.headerContainer}>
         <View style={styles.headerButtonContainer}>
           <Button
@@ -154,7 +175,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginHorizontal: '7%',
   },
-  error: {
+  card: {
     marginTop: 30,
   },
   footerContainer: {

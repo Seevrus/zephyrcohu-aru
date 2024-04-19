@@ -6,6 +6,7 @@ import { useAtom } from 'jotai';
 import { useCallback, useState } from 'react';
 
 import { queryKeys } from '../../api/keys';
+import { useLogout } from '../../api/mutations/useLogout';
 import { useCheckToken } from '../../api/queries/useCheckToken';
 import { usePartnerLists } from '../../api/queries/usePartnerLists';
 import { useStoreDetails } from '../../api/queries/useStoreDetails';
@@ -26,6 +27,7 @@ export function usePrintEndErrandData(
 ) {
   const queryClient = useQueryClient();
   const { data: user, isPending: isCheckTokenPending } = useCheckToken();
+  const { mutateAsync: logout } = useLogout();
   const { data: partnerLists, isPending: isPartnerListsPending } =
     usePartnerLists();
   const { data: storeDetails, isPending: isStoreDetailsPending } =
@@ -81,17 +83,19 @@ export function usePrintEndErrandData(
     await setOrders([]);
     await setCurrentOrder(null);
 
-    await queryClient.invalidateQueries({ queryKey: queryKeys.checkToken });
-    await queryClient.invalidateQueries({ queryKey: queryKeys.items });
-    await queryClient.invalidateQueries({ queryKey: queryKeys.otherItems });
-    await queryClient.invalidateQueries({ queryKey: queryKeys.partnerLists });
-    await queryClient.invalidateQueries({ queryKey: queryKeys.partners });
-    await queryClient.invalidateQueries({ queryKey: queryKeys.partnerLists });
-    await queryClient.invalidateQueries({
-      queryKey: queryKeys.searchTaxNumber(),
-    });
-    await queryClient.invalidateQueries({ queryKey: queryKeys.storeDetails() });
-    await queryClient.invalidateQueries({ queryKey: queryKeys.stores });
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: queryKeys.checkToken }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.items }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.otherItems }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.partnerLists }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.partners }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.partnerLists }),
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.searchTaxNumber(),
+      }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.storeDetails() }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.stores }),
+    ]);
   }, [
     queryClient,
     resetSellFlow,
@@ -130,6 +134,7 @@ export function usePrintEndErrandData(
         onPress: async () => {
           setIsLoading(true);
           await resetHopefullyAfterPrint();
+          await logout();
 
           navigation.removeListener('beforeRemove', backButtonHandler);
           navigation.reset({
@@ -139,19 +144,20 @@ export function usePrintEndErrandData(
         },
       });
     },
-    [navigation, resetHopefullyAfterPrint]
+    [logout, navigation, resetHopefullyAfterPrint]
   );
 
   const exitConfimationHandler = useCallback(async () => {
     setIsLoading(true);
     await resetHopefullyAfterPrint();
+    await logout();
 
     navigation.removeListener('beforeRemove', backButtonHandler);
     navigation.reset({
       index: 0,
       routes: [{ name: 'Index' }],
     });
-  }, [backButtonHandler, navigation, resetHopefullyAfterPrint]);
+  }, [backButtonHandler, logout, navigation, resetHopefullyAfterPrint]);
 
   useFocusEffect(
     useCallback(() => {

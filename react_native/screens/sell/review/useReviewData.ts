@@ -398,8 +398,14 @@ export function useReviewData(
     removeOtherItemHandler,
     saveReceiptError,
     removeReceiptHandler,
-    canConfirm: !!user?.lastRound && !!currentReceipt && !!token && !!user,
+    canConfirm:
+      isInternetReachable === true &&
+      !!user?.lastRound &&
+      !!currentReceipt &&
+      !!token &&
+      !!user,
     confirmReceiptHandler,
+    surpriseError: !user?.lastRound || !currentReceipt || !token || !user,
     alert: {
       isAlertVisible,
       alertTitle,

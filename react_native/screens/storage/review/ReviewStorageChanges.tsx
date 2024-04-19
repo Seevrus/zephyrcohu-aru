@@ -53,7 +53,7 @@ function SuspendedReviewStorageChanges({
 
   return (
     <Container>
-      {!isInternetReachable && (
+      {isInternetReachable === false && (
         <View style={styles.cardContainer}>
           <TextCard>
             Az alkalmazás jelenleg internetkapcsolat nélkül működik.

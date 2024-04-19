@@ -41,7 +41,7 @@ export function useReviewStorageChangesData(
 
   const primaryStoreId = stores?.find((store) => store.type === 'P')?.id;
   const canConfirmStorageChanges =
-    isInternetReachable && isNotNil(primaryStoreId);
+    isInternetReachable === true && isNotNil(primaryStoreId);
 
   const reallyUnexpectedBlocker = isNil(primaryStoreId);
 

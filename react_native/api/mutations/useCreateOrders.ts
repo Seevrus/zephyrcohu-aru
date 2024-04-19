@@ -22,6 +22,10 @@ export function useCreateOrders() {
       try {
         const createOrdersRequest = mapCreateOrdersRequest(orders);
 
+        if (createOrdersRequest.length === 0) {
+          return [];
+        }
+
         const response = await axios.post<CreateOrdersResponseType>(
           `${env.api_url}/orders`,
           { data: createOrdersRequest },

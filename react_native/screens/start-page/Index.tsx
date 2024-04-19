@@ -54,7 +54,7 @@ function SuspendedIndex({ navigation }: IndexProps) {
 
   return (
     <Container testID="index-page">
-      {!isInternetReachable && (
+      {isInternetReachable === false && (
         <View style={styles.textCardContainer}>
           <TextCard>
             Az alkalmazás jelenleg internetkapcsolat nélkül működik.
