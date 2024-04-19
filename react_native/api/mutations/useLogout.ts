@@ -20,17 +20,25 @@ export function useLogout() {
   return useMutation({
     async mutationFn() {
       try {
-        await axios.post<void>(`${env.api_url}/orders`, undefined, {
+        await axios.post<void>(`${env.api_url}/users/logout`, undefined, {
           headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
             'X-Android-Id': getAndroidId(),
           },
         });
+
+        return true;
       } catch (error) {
         if (isAxiosError(error)) {
           // eslint-disable-next-line no-console
-          console.log('useCreateOrders:', error.response?.data);
+          console.log('useLogout:', error.response?.data);
+
+          const status = error.response?.status ?? 0;
+
+          if (status >= 400 && status < 500) {
+            return true;
+          }
         }
 
         throw new Error('Váratlan hiba lépett fel a kijelentkezés során.');

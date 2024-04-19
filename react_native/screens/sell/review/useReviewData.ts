@@ -352,7 +352,7 @@ export function useReviewData(
       'Ez a lépés törli a jelenlegi árulevételi munkamenetet és visszairányít a kezdőoldalra. Biztosan folytatni szeretné?'
     );
     setConfirmButton({
-      text: 'Biztosan ezt szeretném',
+      text: 'Folytatás',
       variant: 'warning',
       onPress: async () => {
         setIsLoading(true);
@@ -372,7 +372,7 @@ export function useReviewData(
       'Ez a lépés számlakészítéssel jár, ezután már nem lesz lehetőség semmilyen módosításra. Biztosan folytatni szeretné?'
     );
     setConfirmButton({
-      text: 'Biztosan ezt szeretném',
+      text: 'Folytatás',
       variant: 'warning',
       onPress: async () => {
         try {
