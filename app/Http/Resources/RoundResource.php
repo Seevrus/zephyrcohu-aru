@@ -28,7 +28,7 @@ class RoundResource extends JsonResource
             'updatedAt' => $this->updated_at,
         ];
 
-        if (!is_null($this->last_serial_number)) {
+        if (! is_null($this->last_serial_number)) {
             $result['isEmergencyClose'] = $this->emergency_close == 0 ? false : true;
         }
 

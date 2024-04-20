@@ -94,7 +94,7 @@ class RoundController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Started round ' . $round->id,
+                'action' => 'Started round '.$round->id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -156,7 +156,7 @@ class RoundController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Finished round ' . $round->id,
+                'action' => 'Finished round '.$round->id,
                 'occured_at' => Carbon::now(),
             ]);
 

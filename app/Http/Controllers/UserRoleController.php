@@ -26,7 +26,7 @@ class UserRoleController extends Controller
                 'user_name' => $request->userName,
             ]);
 
-            if (!$user) {
+            if (! $user) {
                 throw new ModelNotFoundException();
             }
 
@@ -69,7 +69,7 @@ class UserRoleController extends Controller
                 'user_name' => $request->userName,
             ]);
 
-            if (!$user) {
+            if (! $user) {
                 throw new ModelNotFoundException();
             }
 

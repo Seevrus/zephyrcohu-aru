@@ -28,7 +28,7 @@ class StorageReceiptController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed storage receipt id ' . $id,
+                'action' => 'Accessed storage receipt id '.$id,
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -59,7 +59,7 @@ class StorageReceiptController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $storageReceipts->count() . ' storage receipts',
+                'action' => 'Accessed '.$storageReceipts->count().' storage receipts',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -84,7 +84,7 @@ class StorageReceiptController extends Controller
             'company_id' => $sender->company_id,
             'user_id' => $sender->id,
             'token_id' => $sender->currentAccessToken()->id,
-            'action' => 'Removed storage receipt ' . $storageReceipt->id,
+            'action' => 'Removed storage receipt '.$storageReceipt->id,
             'occured_at' => Carbon::now(),
         ]);
     }

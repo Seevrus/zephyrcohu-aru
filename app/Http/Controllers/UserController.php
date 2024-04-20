@@ -52,7 +52,7 @@ class UserController extends Controller
 
             if ($sender->company->users()->firstWhere(['user_name' => $userName])) {
                 return response([
-                    'message' => 'User already exists: ' . $userName,
+                    'message' => 'User already exists: '.$userName,
                 ], 409);
             }
 
@@ -88,17 +88,15 @@ class UserController extends Controller
                 'company_id' => $company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Created user ' . $userName,
+                'action' => 'Created user '.$userName,
                 'occured_at' => Carbon::now(),
             ]);
 
-            $newUserResource = new UserResource($new_user->load('company'));
-
-            return array_merge(
-                $newUserResource->toArray(0),
-                [
-                    'password' => $password,
-                ]
+            return new UserResource(
+                $new_user->load('company'),
+                null,
+                null,
+                $password
             );
         } catch (Exception $e) {
             if (
@@ -121,7 +119,7 @@ class UserController extends Controller
 
             $company = Company::firstWhere(['code' => $companyCode]);
 
-            if (!$company) {
+            if (! $company) {
                 throw new UnauthorizedHttpException(random_bytes(32));
             }
 
@@ -129,7 +127,7 @@ class UserController extends Controller
                 'user_name' => $userName,
             ]);
 
-            if (!$user) {
+            if (! $user) {
                 throw new UnauthorizedHttpException(random_bytes(32));
             }
 
@@ -144,8 +142,8 @@ class UserController extends Controller
             $androidId = $request->header('X-Android-Id');
 
             if (
-                (is_null($androidId) && !is_null($user->android_id)) ||
-                (!is_null($androidId) && !is_null($user->android_id))
+                (is_null($androidId) && ! is_null($user->android_id)) ||
+                (! is_null($androidId) && ! is_null($user->android_id))
             ) {
                 Log::insert([
                     'company_id' => $user->company_id,
@@ -163,7 +161,7 @@ class UserController extends Controller
 
             $password = $user->passwords()->orderBy('set_time', 'desc')->first();
 
-            if (!Hash::check($request->password, $password->password)) {
+            if (! Hash::check($request->password, $password->password)) {
                 Log::insert([
                     'company_id' => $user->company_id,
                     'user_id' => $user->id,
@@ -178,7 +176,7 @@ class UserController extends Controller
                 throw new UnauthorizedHttpException(random_bytes(32));
             }
 
-            $isAndroidToken = !is_null($androidId);
+            $isAndroidToken = ! is_null($androidId);
             $tokenExpiration = $isAndroidToken ? null : Carbon::now()->addHour();
 
             if ($isAndroidToken && is_null($user->android_id)) {
@@ -208,18 +206,11 @@ class UserController extends Controller
             ]);
 
             $user->save();
-            $userResource = new UserResource($user->load('company', 'rounds'));
 
-            return array_merge(
-                $userResource->toArray(0),
-                [
-                    'token' => [
-                        'tokenType' => 'Bearer',
-                        'accessToken' => $token->plainTextToken,
-                        'abilities' => $token->accessToken->abilities,
-                        'expiresAt' => $tokenExpiration,
-                    ],
-                ]
+            return new UserResource(
+                $user->load('company', 'rounds'),
+                $token,
+                $tokenExpiration
             );
         } catch (Exception $e) {
             if (
@@ -242,25 +233,17 @@ class UserController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $isAndroidToken = !is_null($sender->android_id);
+            $isAndroidToken = ! is_null($sender->android_id);
 
-            $token =  $sender->currentAccessToken();
+            $token = $sender->currentAccessToken();
             $tokenExpiration = $isAndroidToken
                 ? null
                 : Carbon::parse($token->created_at)->addHour();
 
-            $userResource = new UserResource($sender->load('company', 'rounds'));
-
-            return array_merge(
-                $userResource->toArray(0),
-                [
-                    'token' => [
-                        'tokenType' => 'Bearer',
-                        'accessToken' => $request->bearerToken(),
-                        'abilities' => $token->abilities,
-                        'expiresAt' => $tokenExpiration,
-                    ],
-                ]
+            return new UserResource(
+                $sender->load('company', 'rounds'),
+                $request->bearerToken(),
+                $tokenExpiration
             );
         } catch (Exception $e) {
             if (
@@ -302,7 +285,7 @@ class UserController extends Controller
 
             $isSenderAdmin = in_array('AM', $senderRoles);
 
-            if ($request->userName && !$isSenderAdmin) {
+            if ($request->userName && ! $isSenderAdmin) {
                 throw new UnauthorizedHttpException(random_bytes(32));
             }
 
@@ -311,7 +294,7 @@ class UserController extends Controller
                     'user_name' => $request->userName,
                 ]);
 
-                if (!$subjectOfChange) {
+                if (! $subjectOfChange) {
                     throw new NotFoundHttpException();
                 }
             } else {
@@ -358,19 +341,11 @@ class UserController extends Controller
                 'occured_at' => Carbon::now(),
             ]);
 
-            $userResource = new UserResource($subjectOfChange->load('company'));
-
-            return $sender->id === $subjectOfChange->id ? array_merge(
-                $userResource->toArray(0),
-                [
-                    'token' => [
-                        'tokenType' => 'Bearer',
-                        'accessToken' => $token->plainTextToken,
-                        'abilities' => $token->accessToken->abilities,
-                        'expiresAt' => $tokenExpiration,
-                    ],
-                ]
-            ) : $userResource;
+            return new UserResource(
+                $subjectOfChange->load('company'),
+                $token,
+                $tokenExpiration
+            );
         } catch (Exception $e) {
             if (
                 $e instanceof NotFoundHttpException
@@ -396,7 +371,7 @@ class UserController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Accessed ' . $companyUsers->count() . ' users',
+                'action' => 'Accessed '.$companyUsers->count().' users',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -415,7 +390,7 @@ class UserController extends Controller
 
             $user = $sender->company->users()->find($id);
 
-            if (!$user) {
+            if (! $user) {
                 throw new UnauthorizedHttpException(random_bytes(32));
             }
 
@@ -455,7 +430,7 @@ class UserController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed user ' . $user->id,
+                'action' => 'Removed user '.$user->id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {
