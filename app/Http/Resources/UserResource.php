@@ -14,7 +14,7 @@ class UserResource extends JsonResource
     private $password;
 
     public function __construct(
-        User $user,
+        ?User $user,
         $token = null,
         ?string $tokenExpiration = null,
         ?string $password = null
