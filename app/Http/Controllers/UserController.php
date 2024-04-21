@@ -242,7 +242,12 @@ class UserController extends Controller
 
             return new UserResource(
                 $sender->load('company', 'rounds'),
-                $request->bearerToken(),
+                (object) [
+                    'plainTextToken' => $request->bearerToken(),
+                    'accessToken' => (object) [
+                        'abilities' => $token->abilities,
+                    ],
+                ],
                 $tokenExpiration
             );
         } catch (Exception $e) {
