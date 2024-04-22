@@ -126,7 +126,7 @@ function SuspendedLogin({ navigation }: LoginProps) {
             value={password}
             invalid={!!errorMessage}
             config={{
-              secureTextEntry: true,
+              secureTextEntry: false,
               autoCapitalize: 'none',
               autoComplete: 'off',
               autoCorrect: false,
