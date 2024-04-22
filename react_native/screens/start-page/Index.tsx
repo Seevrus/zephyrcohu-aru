@@ -19,6 +19,7 @@ import { TextCard } from '../../components/info-cards/TextCard';
 import { Loading } from '../../components/Loading';
 import { Tile, type TileT } from '../../components/Tile';
 import { RoundInfo } from '../../containers/RoundInfo';
+import { useAppUpdates } from '../../hooks/useAppUpdates';
 import { useInitializeApp } from '../../hooks/useInitializeApp';
 import { useTiles } from '../../hooks/useTiles';
 import { type IndexProps } from '../../navigators/screen-types';
@@ -26,11 +27,12 @@ import { type IndexProps } from '../../navigators/screen-types';
 function SuspendedIndex({ navigation }: IndexProps) {
   useInitializeApp();
 
+  const { alert: updateAlert } = useAppUpdates();
   const { isFetching: isUserFetching } = useCheckToken();
   const { isInternetReachable } = useNetInfo();
   const token = useAtomValue(loadable(tokenAtom));
 
-  const { alert, tiles } = useTiles() || {};
+  const { alert: tileAlert, tiles } = useTiles() || {};
 
   const loginNavigationHandler = () => {
     navigation.navigate('Login');
@@ -81,15 +83,26 @@ function SuspendedIndex({ navigation }: IndexProps) {
         renderItem={renderTile}
       />
       <RoundInfo />
-      {alert ? (
+      {updateAlert ? (
         <Alert
-          visible={alert.isAlertVisible}
-          title={alert.alertTitle}
-          message={alert.alertMessage}
+          visible={updateAlert.isAlertVisible}
+          title={updateAlert.alertTitle}
+          message={updateAlert.alertMessage}
           buttons={{
-            cancel: alert.cancelButton,
+            cancel: updateAlert.cancelButton,
           }}
-          onBackdropPress={alert.onBackdropPress}
+          onBackdropPress={updateAlert.onBackdropPress}
+        />
+      ) : null}
+      {!updateAlert && tileAlert ? (
+        <Alert
+          visible={tileAlert.isAlertVisible}
+          title={tileAlert.alertTitle}
+          message={tileAlert.alertMessage}
+          buttons={{
+            cancel: tileAlert.cancelButton,
+          }}
+          onBackdropPress={tileAlert.onBackdropPress}
         />
       ) : null}
     </Container>
