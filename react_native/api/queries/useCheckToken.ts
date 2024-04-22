@@ -9,7 +9,6 @@ import {
   storedTokenAtom,
   tokenAtom,
 } from '../../atoms/token';
-import env from '../../env.json';
 import { queryKeys } from '../keys';
 import {
   type CheckToken,
@@ -28,7 +27,7 @@ export function useCheckToken() {
     async queryFn(): Promise<CheckToken> {
       try {
         const user = await axios.get<LoginResponse>(
-          `${env.api_url}/users/check-token`,
+          `${process.env.EXPO_PUBLIC_API_URL}/users/check-token`,
           {
             headers: {
               Accept: 'application/json',

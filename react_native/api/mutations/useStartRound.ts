@@ -4,7 +4,6 @@ import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
 import { type StartRoundRequestType } from '../request-types/StartRoundRequestType';
 import { type StartRoundResponseType } from '../response-types/StartRoundResponseType';
 
@@ -15,7 +14,7 @@ export function useStartRound() {
     async mutationFn(request: StartRoundRequestType) {
       try {
         const response = await axios.post<StartRoundResponseType>(
-          `${env.api_url}/rounds/start`,
+          `${process.env.EXPO_PUBLIC_API_URL}/rounds/start`,
           { data: request },
           {
             headers: {

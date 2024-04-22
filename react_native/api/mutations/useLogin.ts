@@ -5,7 +5,6 @@ import { useAtom } from 'jotai';
 
 import { storedTokenAtom } from '../../atoms/token';
 import { userLoginIdentifierAtom } from '../../atoms/user';
-import env from '../../env.json';
 import { queryKeys } from '../keys';
 import { type LoginRequest } from '../request-types/LoginRequestType';
 import { mapLoginResponse } from '../response-mappers/mapLoginResponse';
@@ -24,7 +23,7 @@ export function useLogin() {
 
         const response = await axios
           .post<LoginResponse>(
-            `${env.api_url}/users/login`,
+            `${process.env.EXPO_PUBLIC_API_URL}/users/login`,
             { userName, password },
             {
               headers: {

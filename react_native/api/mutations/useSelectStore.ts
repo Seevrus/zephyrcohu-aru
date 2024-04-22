@@ -4,7 +4,6 @@ import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
 import { queryKeys } from '../keys';
 import { type SelectStoreRequestType } from '../request-types/SelectStoreRequestType';
 import { type SelectStoreResponseType } from '../response-types/SelectStoreResponseType';
@@ -17,7 +16,7 @@ export function useSelectStore() {
     async mutationFn({ storeId }: SelectStoreRequestType) {
       try {
         const response = await axios.post<SelectStoreResponseType>(
-          `${env.api_url}/storage/lock_to_user`,
+          `${process.env.EXPO_PUBLIC_API_URL}/storage/lock_to_user`,
           { data: { storeId } },
           {
             headers: {

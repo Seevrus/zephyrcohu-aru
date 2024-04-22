@@ -8,7 +8,6 @@ import {
   storedTokenAtom,
   tokenAtom,
 } from '../../atoms/token';
-import env from '../../env.json';
 import { queryKeys } from '../keys';
 
 export function useLogout() {
@@ -20,13 +19,17 @@ export function useLogout() {
   return useMutation({
     async mutationFn() {
       try {
-        await axios.post<void>(`${env.api_url}/users/logout`, undefined, {
-          headers: {
-            Accept: 'application/json',
-            Authorization: `Bearer ${token}`,
-            'X-Android-Id': getAndroidId(),
-          },
-        });
+        await axios.post<void>(
+          `${process.env.EXPO_PUBLIC_API_URL}/users/logout`,
+          undefined,
+          {
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+              'X-Android-Id': getAndroidId(),
+            },
+          }
+        );
 
         return true;
       } catch (error) {

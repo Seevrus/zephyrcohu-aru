@@ -5,7 +5,6 @@ import { useAtomValue } from 'jotai';
 
 import { type ContextReceipt } from '../../atoms/receipts';
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
 import { mapCreateReceiptsRequest } from '../request-mappers/mapCreateReceiptsRequest';
 import {
   type ReceiptResponseData,
@@ -21,7 +20,7 @@ export function useCreateReceipts() {
         const receiptRequestData = mapCreateReceiptsRequest(receipts);
 
         const response = await axios.post<ReceiptsResponseType>(
-          `${env.api_url}/receipts`,
+          `${process.env.EXPO_PUBLIC_API_URL}/receipts`,
           { data: receiptRequestData },
           {
             headers: {

@@ -6,7 +6,6 @@ import { useAtomValue } from 'jotai';
 import { isNotNil } from 'ramda';
 
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
 import { queryKeys } from '../keys';
 import {
   type StoreDetailsResponseData,
@@ -41,7 +40,7 @@ export const fetchStoreDetails =
   async (): Promise<StoreDetailsResponseData> => {
     try {
       const response = await axios.get<StoreDetailsResponseType>(
-        `${env.api_url}/stores/${storeId}`,
+        `${process.env.EXPO_PUBLIC_API_URL}/stores/${storeId}`,
         {
           headers: {
             Accept: 'application/json',

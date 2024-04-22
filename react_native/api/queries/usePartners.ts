@@ -4,7 +4,6 @@ import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
 import { queryKeys } from '../keys';
 import {
   mapPartnersResponse,
@@ -35,7 +34,7 @@ export function usePartners({ enabled = true } = {}): UseQueryResult<Partners> {
 export const fetchPartners = (token: string) => async (): Promise<Partners> => {
   try {
     const response = await axios.get<PartnersResponseType>(
-      `${env.api_url}/partners`,
+      `${process.env.EXPO_PUBLIC_API_URL}/partners`,
       {
         headers: {
           Accept: 'application/json',

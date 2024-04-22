@@ -4,7 +4,6 @@ import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
 import { queryKeys } from '../keys';
 import { type LoginResponse } from '../response-types/LoginResponseType';
 
@@ -16,7 +15,7 @@ export function useDeselectStore() {
     async mutationFn() {
       try {
         const response = await axios.post<LoginResponse>(
-          `${env.api_url}/storage/unlock_from_user`,
+          `${process.env.EXPO_PUBLIC_API_URL}/storage/unlock_from_user`,
           undefined,
           {
             headers: {

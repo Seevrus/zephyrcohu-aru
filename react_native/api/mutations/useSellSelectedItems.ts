@@ -4,7 +4,6 @@ import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
 import { queryKeys } from '../keys';
 import { useCheckToken } from '../queries/useCheckToken';
 import { useStoreDetails } from '../queries/useStoreDetails';
@@ -34,7 +33,7 @@ export function useSellSelectedItems() {
         );
 
         const response = await axios.post<StoreDetailsResponseType>(
-          `${env.api_url}/storage/sell`,
+          `${process.env.EXPO_PUBLIC_API_URL}/storage/sell`,
           request,
           {
             headers: {

@@ -5,7 +5,6 @@ import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
 import { queryKeys } from '../keys';
 import {
   type ItemsResponseData,
@@ -34,7 +33,7 @@ export const fetchItems =
   (token: string) => async (): Promise<ItemsResponseData> => {
     try {
       const response = await axios.get<ItemsResponseType>(
-        `${env.api_url}/items`,
+        `${process.env.EXPO_PUBLIC_API_URL}/items`,
         {
           headers: {
             Accept: 'application/json',

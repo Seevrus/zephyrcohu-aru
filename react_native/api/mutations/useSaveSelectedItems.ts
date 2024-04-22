@@ -5,7 +5,6 @@ import { useAtomValue } from 'jotai';
 
 import { type StorageListItem } from '../../atoms/storageFlow';
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
 import { queryKeys } from '../keys';
 import { useStores } from '../queries/useStores';
 import { mapSaveSelectedItemsRequest } from '../request-mappers/mapSaveSelectedItemsRequest';
@@ -32,7 +31,7 @@ export function useSaveSelectedItems() {
         );
 
         const response = await axios.post<StoreDetailsResponseType>(
-          `${env.api_url}/storage/load`,
+          `${process.env.EXPO_PUBLIC_API_URL}/storage/load`,
           request,
           {
             headers: {

@@ -5,7 +5,6 @@ import { useAtomValue } from 'jotai';
 
 import { type ContextOrder } from '../../atoms/orders';
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
 import { mapCreateOrdersRequest } from '../request-mappers/mapCreateOrdersRequest';
 import {
   type CreateOrdersResponseData,
@@ -27,7 +26,7 @@ export function useCreateOrders() {
         }
 
         const response = await axios.post<CreateOrdersResponseType>(
-          `${env.api_url}/orders`,
+          `${process.env.EXPO_PUBLIC_API_URL}/orders`,
           { data: createOrdersRequest },
           {
             headers: {

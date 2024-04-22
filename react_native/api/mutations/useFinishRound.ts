@@ -4,7 +4,6 @@ import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
 import { type FinishRoundRequestType } from '../request-types/FinishRoundRequestType';
 import { type FinishRoundResponseType } from '../response-types/FinishRoundResponseType';
 
@@ -15,7 +14,7 @@ export function useFinishRound() {
     async mutationFn(request: FinishRoundRequestType) {
       try {
         const response = await axios.post<FinishRoundResponseType>(
-          `${env.api_url}/rounds/finish`,
+          `${process.env.EXPO_PUBLIC_API_URL}/rounds/finish`,
           { data: request },
           {
             headers: {

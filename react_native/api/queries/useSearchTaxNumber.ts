@@ -4,7 +4,6 @@ import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
 import { queryKeys } from '../keys';
 import {
   mapSearchTaxPayerResponse,
@@ -30,7 +29,7 @@ export function useSearchTaxNumber({
     async queryFn(): Promise<TaxPayer[]> {
       try {
         const response = await axios.post<SearchTaxNumberResponseType>(
-          `${env.api_url}/partners/search`,
+          `${process.env.EXPO_PUBLIC_API_URL}/partners/search`,
           { data: { taxNumber } },
           {
             headers: {

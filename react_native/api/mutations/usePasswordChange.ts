@@ -4,7 +4,6 @@ import { getAndroidId } from 'expo-application';
 import { useAtom, useAtomValue } from 'jotai';
 
 import { storedTokenAtom, tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
 import { queryKeys } from '../keys';
 import { type ChangePasswordRequest } from '../request-types/ChangePasswordRequestType';
 import { mapLoginResponse } from '../response-mappers/mapLoginResponse';
@@ -23,7 +22,7 @@ export function usePasswordChange() {
       try {
         const response = await axios
           .post<LoginResponse>(
-            `${env.api_url}/users/password`,
+            `${process.env.EXPO_PUBLIC_API_URL}/users/password`,
             { password },
             {
               headers: {
