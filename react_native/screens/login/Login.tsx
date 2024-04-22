@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { getAndroidId } from 'expo-application';
+import { useAtomValue } from 'jotai';
+import { Suspense, useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -10,6 +12,8 @@ import {
 
 import { useLogin } from '../../api/mutations/useLogin';
 import { useCheckToken } from '../../api/queries/useCheckToken';
+import { userLoginIdentifierAtom } from '../../atoms/user';
+import { Container } from '../../components/container/Container';
 import { ErrorCard } from '../../components/info-cards/ErrorCard';
 import { TextCard } from '../../components/info-cards/TextCard';
 import { Loading } from '../../components/Loading';
@@ -18,26 +22,29 @@ import { Input } from '../../components/ui/Input';
 import { colors } from '../../constants/colors';
 import { type LoginProps } from '../../navigators/screen-types';
 
-export function Login({ navigation }: LoginProps) {
+function SuspendedLogin({ navigation }: LoginProps) {
   const { data: user, isFetching: isUserFetching } = useCheckToken();
   const { mutateAsync: login } = useLogin();
 
+  const androidId = getAndroidId();
+
   const isRoundStarted = user?.state === 'R';
 
-  const [userName, setUserName] = useState<string>('');
+  const savedIdentifier = useAtomValue(userLoginIdentifierAtom);
+  const [userLoginIdentifier, setUserLoginIdentifier] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    if (user?.userName) {
-      setUserName(user?.userName);
+    if (savedIdentifier) {
+      setUserLoginIdentifier(savedIdentifier);
     }
-  }, [user?.userName]);
+  }, [savedIdentifier]);
 
-  const changeUserNameHandler = (value: string) => {
+  const changeUserLoginIdentifierHandler = (value: string) => {
     setErrorMessage('');
-    setUserName(value);
+    setUserLoginIdentifier(value);
   };
 
   const changePasswordHandler = (value: string) => {
@@ -51,7 +58,7 @@ export function Login({ navigation }: LoginProps) {
     try {
       setIsLoading(true);
       await login({
-        userName: userName.trim(),
+        userName: userLoginIdentifier.trim(),
         password: password.trim(),
       });
 
@@ -67,7 +74,10 @@ export function Login({ navigation }: LoginProps) {
   };
 
   const isLoginButtonDisabled =
-    userName.length === 0 || password.length === 0 || !!errorMessage;
+    !androidId ||
+    userLoginIdentifier.length === 0 ||
+    password.length === 0 ||
+    !!errorMessage;
 
   if (isLoading || isUserFetching) {
     return <Loading />;
@@ -100,7 +110,7 @@ export function Login({ navigation }: LoginProps) {
         >
           <Input
             label="Felhasználónév"
-            value={userName}
+            value={userLoginIdentifier}
             invalid={!!errorMessage}
             config={{
               autoCapitalize: 'none',
@@ -108,7 +118,7 @@ export function Login({ navigation }: LoginProps) {
               autoCorrect: false,
               editable: !isRoundStarted,
               importantForAutofill: 'no',
-              onChangeText: changeUserNameHandler,
+              onChangeText: changeUserLoginIdentifierHandler,
             }}
           />
           <Input
@@ -116,7 +126,7 @@ export function Login({ navigation }: LoginProps) {
             value={password}
             invalid={!!errorMessage}
             config={{
-              secureTextEntry: true,
+              secureTextEntry: false,
               autoCapitalize: 'none',
               autoComplete: 'off',
               autoCorrect: false,
@@ -135,6 +145,14 @@ export function Login({ navigation }: LoginProps) {
         </KeyboardAvoidingView>
       </View>
     </ScrollView>
+  );
+}
+
+export function Login(props: LoginProps) {
+  return (
+    <Suspense fallback={<Container />}>
+      <SuspendedLogin {...props} />
+    </Suspense>
   );
 }
 

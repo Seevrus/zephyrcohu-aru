@@ -8,6 +8,8 @@ use App\Http\Requests\LockStoreToUserRequest;
 use App\Http\Requests\SellItemsFromStoreRequest;
 use App\Http\Resources\StoreResource;
 use App\Http\Resources\UserResource;
+use App\Models\Expiration;
+use App\Models\StorageReceipt;
 use App\Models\Store;
 use Carbon\Carbon;
 use Exception;
@@ -194,6 +196,15 @@ class StorageController extends Controller
             $store->state = 'L';
             $store->save();
 
+            $storageReceipt = StorageReceipt::create([
+                'company_id' => $sender->company->id,
+                'company_code' => $sender->company->code,
+                'user_id' => $sender->id,
+                'user_user_name' => $sender->user_name,
+                'user_name' => $sender->name,
+                'user_phone_number' => $sender->phone_number,
+            ]);
+
             foreach ($request['data']['changes'] as $storageUpdate) {
                 $expirationId = $storageUpdate['expirationId'];
 
@@ -237,6 +248,19 @@ class StorageController extends Controller
 
                     $store->expirations()->attach($expirationId, ['quantity' => $storageUpdate['quantityChange']]);
                 }
+
+                $expiration = Expiration::findOrFail($expirationId);
+                $item = $expiration->item;
+
+                $storageReceipt->items()->create([
+                    'item_id' => $item->id,
+                    'cn_code' => $item->cn_code,
+                    'article_number' => $item->article_number,
+                    'expires_at' => $expiration->expires_at,
+                    'starting_quantity' => $storageUpdate['startingQuantity'],
+                    'quantity_change' => $storageUpdate['quantityChange'],
+                    'final_quantity' => $storageUpdate['finalQuantity'],
+                ]);
             }
 
             $primaryStore->state = 'I';

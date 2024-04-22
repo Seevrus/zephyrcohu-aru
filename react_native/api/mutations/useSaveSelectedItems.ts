@@ -1,10 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { type StorageListItem } from '../../atoms/storageFlow';
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
+import { queryKeys } from '../keys';
 import { useStores } from '../queries/useStores';
 import { mapSaveSelectedItemsRequest } from '../request-mappers/mapSaveSelectedItemsRequest';
 import { type StoreDetailsResponseType } from '../response-types/StoreDetailsResponseType';
@@ -18,8 +19,7 @@ export function useSaveSelectedItems() {
   const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
-    mutationKey: ['save-selected-items'],
-    mutationFn: async (changedItems: StorageListItem[]) => {
+    async mutationFn(changedItems: StorageListItem[]) {
       try {
         if (!primaryStoreId) {
           throw new Error('Elsődleges raktár nem található!');
@@ -31,12 +31,13 @@ export function useSaveSelectedItems() {
         );
 
         const response = await axios.post<StoreDetailsResponseType>(
-          `${env.api_url}/storage/load`,
+          `${process.env.EXPO_PUBLIC_API_URL}/storage/load`,
           request,
           {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
+              'X-Android-Id': getAndroidId(),
             },
           }
         );
@@ -50,9 +51,11 @@ export function useSaveSelectedItems() {
         throw new Error('Váratlan hiba lépett fel a raktár frissítése során.');
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['stores'] });
-      queryClient.invalidateQueries({ queryKey: ['store-details'] });
+    async onSuccess() {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.stores }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.storeDetails() }),
+      ]);
     },
   });
 }

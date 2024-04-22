@@ -1,6 +1,7 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtom, useAtomValue } from 'jotai';
 
 import {
@@ -8,7 +9,7 @@ import {
   storedTokenAtom,
   tokenAtom,
 } from '../../atoms/token';
-import env from '../../env.json';
+import { queryKeys } from '../keys';
 import {
   type CheckToken,
   mapCheckTokenResponse,
@@ -17,26 +18,26 @@ import { type LoginResponse } from '../response-types/LoginResponseType';
 
 export function useCheckToken() {
   const { isInternetReachable } = useNetInfo();
-  const queryClient = useQueryClient();
 
   const [, setStoredToken] = useAtom(storedTokenAtom);
   const { token } = useAtomValue(tokenAtom);
 
   return useQuery({
-    queryKey: ['check-token'],
-    queryFn: async (): Promise<CheckToken> => {
+    queryKey: queryKeys.checkToken,
+    async queryFn(): Promise<CheckToken> {
       try {
-        const response = await axios.get<LoginResponse>(
-          `${env.api_url}/users/check-token`,
+        const user = await axios.get<LoginResponse>(
+          `${process.env.EXPO_PUBLIC_API_URL}/users/check-token`,
           {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
+              'X-Android-Id': getAndroidId(),
             },
           }
         );
 
-        const isPasswordExpired = response.data.token.abilities.includes(
+        const isPasswordExpired = user.data.token.abilities.includes(
           'password' as never
         );
 
@@ -47,14 +48,13 @@ export function useCheckToken() {
           }));
         }
 
-        return mapCheckTokenResponse(response.data);
+        return mapCheckTokenResponse(user.data);
       } catch (error) {
         if (isAxiosError(error)) {
           // eslint-disable-next-line no-console
           console.log('useCheckToken', error.response?.data);
 
           if (error.response?.status === 401) {
-            await queryClient.invalidateQueries({ queryKey: ['token'] });
             await setStoredToken(defaultStoredToken);
           }
         }
@@ -63,7 +63,6 @@ export function useCheckToken() {
       }
     },
     enabled: isInternetReachable === true && !!token,
-    staleTime: 300_000,
-    retry: false,
+    staleTime: 1 * 60 * 60 * 1000,
   });
 }

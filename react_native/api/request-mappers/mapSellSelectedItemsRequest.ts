@@ -21,7 +21,9 @@ export function mapSellSelectedItemsRequest(
 
       return {
         expirationId: expiration.expirationId,
+        startingQuantity: expiration.quantity,
         quantityChange: soldItemExpiration.quantity - expiration.quantity,
+        finalQuantity: soldItemExpiration.quantity,
       };
     })
     .filter((expiration): expiration is ExpirationChange => !!expiration);

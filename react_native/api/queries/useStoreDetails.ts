@@ -1,11 +1,12 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 import { isNotNil } from 'ramda';
 
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
+import { queryKeys } from '../keys';
 import {
   type StoreDetailsResponseData,
   type StoreDetailsResponseType,
@@ -21,7 +22,7 @@ export function useStoreDetails(
   const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
 
   return useQuery({
-    queryKey: ['store-details', storeId],
+    queryKey: queryKeys.storeDetails(storeId),
     queryFn: fetchStoreDetails(token, storeId as number),
     enabled:
       enabled &&
@@ -39,11 +40,12 @@ export const fetchStoreDetails =
   async (): Promise<StoreDetailsResponseData> => {
     try {
       const response = await axios.get<StoreDetailsResponseType>(
-        `${env.api_url}/stores/${storeId}`,
+        `${process.env.EXPO_PUBLIC_API_URL}/stores/${storeId}`,
         {
           headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
+            'X-Android-Id': getAndroidId(),
           },
         }
       );

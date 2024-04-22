@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
+import { queryKeys } from '../keys';
 import { useCheckToken } from '../queries/useCheckToken';
 import { useStoreDetails } from '../queries/useStoreDetails';
 import { mapSellSelectedItemsRequest } from '../request-mappers/mapSellSelectedItemsRequest';
@@ -20,8 +21,7 @@ export function useSellSelectedItems() {
   const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
-    mutationKey: ['sell-selected-items'],
-    mutationFn: async (updatedStorage: StoreDetailsResponseData) => {
+    async mutationFn(updatedStorage: StoreDetailsResponseData) {
       try {
         if (!storeDetails) {
           throw new Error('Raktár adatai nem elérhetőek');
@@ -33,12 +33,13 @@ export function useSellSelectedItems() {
         );
 
         const response = await axios.post<StoreDetailsResponseType>(
-          `${env.api_url}/storage/sell`,
+          `${process.env.EXPO_PUBLIC_API_URL}/storage/sell`,
           request,
           {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
+              'X-Android-Id': getAndroidId(),
             },
           }
         );
@@ -52,9 +53,11 @@ export function useSellSelectedItems() {
         throw new Error('Váratlan hiba lépett fel a raktár frissítése során.');
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['stores'] });
-      queryClient.invalidateQueries({ queryKey: ['store-details'] });
+    async onSuccess() {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.stores }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.storeDetails() }),
+      ]);
     },
   });
 }

@@ -8,6 +8,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { usePartners } from '../../../api/queries/usePartners';
 import { receiptsAtom } from '../../../atoms/receipts';
 import { Container } from '../../../components/container/Container';
+import { ScrollContainer } from '../../../components/container/ScrollContainer';
 import { ErrorCard } from '../../../components/info-cards/ErrorCard';
 import { TextCard } from '../../../components/info-cards/TextCard';
 import { Loading } from '../../../components/Loading';
@@ -81,7 +82,7 @@ function SuspendedSummary({ navigation }: SummaryProps) {
   }
 
   return (
-    <Container style={styles.container}>
+    <ScrollContainer style={styles.container}>
       {isInternetReachable === false && (
         <View style={styles.textCardContainer}>
           <TextCard>
@@ -129,7 +130,7 @@ function SuspendedSummary({ navigation }: SummaryProps) {
           Visszatérés a kezdőképernyőre
         </Button>
       </View>
-    </Container>
+    </ScrollContainer>
   );
 }
 
@@ -145,6 +146,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 50,
     marginTop: 50,
   },
   container: {

@@ -2,7 +2,7 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { add, format, parseISO } from 'date-fns';
 import { useAtom, useAtomValue } from 'jotai';
-import { and, dissoc, dissocPath, isEmpty, reduce } from 'ramda';
+import { and, append, dissoc, dissocPath, isEmpty, reduce } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useSellSelectedItems } from '../../../api/mutations/useSellSelectedItems';
@@ -301,7 +301,7 @@ export function useReviewData(
 
       await setReceipts(async (prevReceiptsPromise) => {
         const prevReceipts = await prevReceiptsPromise;
-        return [...prevReceipts, finalReceipt];
+        return append(finalReceipt, prevReceipts);
       });
     }
 
@@ -352,7 +352,7 @@ export function useReviewData(
       'Ez a lépés törli a jelenlegi árulevételi munkamenetet és visszairányít a kezdőoldalra. Biztosan folytatni szeretné?'
     );
     setConfirmButton({
-      text: 'Biztosan ezt szeretném',
+      text: 'Folytatás',
       variant: 'warning',
       onPress: async () => {
         setIsLoading(true);
@@ -372,7 +372,7 @@ export function useReviewData(
       'Ez a lépés számlakészítéssel jár, ezután már nem lesz lehetőség semmilyen módosításra. Biztosan folytatni szeretné?'
     );
     setConfirmButton({
-      text: 'Biztosan ezt szeretném',
+      text: 'Folytatás',
       variant: 'warning',
       onPress: async () => {
         try {
@@ -398,8 +398,14 @@ export function useReviewData(
     removeOtherItemHandler,
     saveReceiptError,
     removeReceiptHandler,
-    canConfirm: !!user?.lastRound && !!currentReceipt && !!token && !!user,
+    canConfirm:
+      isInternetReachable === true &&
+      !!user?.lastRound &&
+      !!currentReceipt &&
+      !!token &&
+      !!user,
     confirmReceiptHandler,
+    surpriseError: !user?.lastRound || !currentReceipt || !token || !user,
     alert: {
       isAlertVisible,
       alertTitle,

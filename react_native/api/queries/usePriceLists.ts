@@ -1,9 +1,10 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
+import { queryKeys } from '../keys';
 import {
   type PriceListResponseData,
   type PriceListResponseType,
@@ -19,8 +20,8 @@ export function usePriceLists({
   const isRoundStarted = user?.state === 'R';
 
   return useQuery({
-    queryKey: ['price-lists'],
-    queryFn: fetchPriceLists(token as string),
+    queryKey: queryKeys.priceLists,
+    queryFn: fetchPriceLists(token),
     enabled:
       enabled &&
       !isTokenExpired &&
@@ -35,11 +36,12 @@ export const fetchPriceLists =
   (token: string) => async (): Promise<PriceListResponseData> => {
     try {
       const response = await axios.get<PriceListResponseType>(
-        `${env.api_url}/price_lists`,
+        `${process.env.EXPO_PUBLIC_API_URL}/price_lists`,
         {
           headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
+            'X-Android-Id': getAndroidId(),
           },
         }
       );

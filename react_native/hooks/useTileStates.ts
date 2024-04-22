@@ -68,7 +68,7 @@ export function useTileStates() {
         message = DisabledTileMessage.LoggedOut;
       } else if (tokenData.data.isPasswordExpired) {
         message = DisabledTileMessage.PasswordExpired;
-      } else if (!isInternetReachable) {
+      } else if (isInternetReachable === false) {
         message = DisabledTileMessage.Offline;
       } else if (isUserIdle) {
         state = StorageTileState.Ok;
@@ -103,7 +103,7 @@ export function useTileStates() {
         message = DisabledTileMessage.LoggedOut;
       } else if (tokenData.data.isPasswordExpired) {
         message = DisabledTileMessage.PasswordExpired;
-      } else if (!isInternetReachable) {
+      } else if (isInternetReachable === false) {
         message = DisabledTileMessage.Offline;
       } else if (isUserIdle) {
         state = StartErrandTileState.Ok;
@@ -168,7 +168,7 @@ export function useTileStates() {
         message = DisabledTileMessage.LoggedOut;
       } else if (tokenData.data.isPasswordExpired) {
         message = DisabledTileMessage.PasswordExpired;
-      } else if (!isInternetReachable) {
+      } else if (isInternetReachable === false) {
         message = DisabledTileMessage.Offline;
       } else if (isRoundStarted) {
         state = EndErrandTileState.Warning;

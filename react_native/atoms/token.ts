@@ -6,7 +6,7 @@ import { atomWithSecureStorage } from './helpers';
 type StoredToken = {
   token: string;
   isPasswordExpired: boolean;
-  expiresAt: string; // DateTime
+  expiresAt: string | null; // DateTime
 };
 
 type Token = {
@@ -32,6 +32,6 @@ export const tokenAtom = atom<Promise<Token>>(async (get) => {
   return {
     token,
     isPasswordExpired,
-    isTokenExpired: isPast(parseISO(expiresAt)),
+    isTokenExpired: expiresAt ? isPast(parseISO(expiresAt)) : false,
   };
 });

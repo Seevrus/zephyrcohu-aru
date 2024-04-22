@@ -1,10 +1,11 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
+import { queryKeys } from '../keys';
 import {
   type ItemsResponseData,
   type ItemsResponseType,
@@ -17,7 +18,7 @@ export function useItems() {
   const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
 
   return useQuery({
-    queryKey: ['items'],
+    queryKey: queryKeys.items,
     queryFn: fetchItems(token),
     enabled:
       isInternetReachable === true &&
@@ -32,11 +33,12 @@ export const fetchItems =
   (token: string) => async (): Promise<ItemsResponseData> => {
     try {
       const response = await axios.get<ItemsResponseType>(
-        `${env.api_url}/items`,
+        `${process.env.EXPO_PUBLIC_API_URL}/items`,
         {
           headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
+            'X-Android-Id': getAndroidId(),
           },
         }
       );

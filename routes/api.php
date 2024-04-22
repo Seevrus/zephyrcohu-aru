@@ -9,6 +9,7 @@ use App\Http\Controllers\PriceListController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\RoundController;
 use App\Http\Controllers\StorageController;
+use App\Http\Controllers\StorageReceiptController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRoleController;
@@ -35,6 +36,8 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
         ->middleware(['auth:sanctum', 'ability:AM']);
 
     Route::post('/login', 'login');
+    Route::post('/logout', 'logout')
+        ->middleware(['auth:sanctum']);
 
     Route::get('/check-token', 'check_token')
         ->middleware(['auth:sanctum']);
@@ -46,6 +49,9 @@ Route::controller(UserController::class)->prefix('users')->group(function () {
         ->middleware(['auth:sanctum', 'ability:AM']);
 
     Route::post('/delete', 'delete')
+        ->middleware(['auth:sanctum', 'ability:AM']);
+
+    Route::get('/{id}', 'view')
         ->middleware(['auth:sanctum', 'ability:AM']);
 });
 
@@ -128,6 +134,17 @@ Route::controller(StorageController::class)->prefix('/storage')->group(function 
 
     Route::post('/unlock_from_user', 'unlock_from_user')
         ->middleware(['auth:sanctum', 'ability:I,A']);
+});
+
+Route::controller(StorageReceiptController::class)->prefix('storage_receipts')->group(function () {
+    Route::get('/', 'view_all')
+        ->middleware(['auth:sanctum', 'ability:I']);
+
+    Route::get('/{id}', 'view')
+        ->middleware(['auth:sanctum', 'ability:I']);
+
+    Route::delete('/{id}', 'remove')
+        ->middleware(['auth:sanctum', 'ability:I']);
 });
 
 Route::controller(OrderController::class)->prefix('orders')->group(function () {

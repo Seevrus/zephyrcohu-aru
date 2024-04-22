@@ -1,8 +1,6 @@
 import { addDays } from 'date-fns';
 import { http, HttpResponse } from 'msw';
 
-import env from '../../env.json';
-
 export function createGetCheckTokenOkResponse({
   isRoundStarted = true,
   isPasswordExpired = false,
@@ -10,7 +8,7 @@ export function createGetCheckTokenOkResponse({
   isPasswordExpired?: boolean;
   isRoundStarted?: boolean;
 } = {}) {
-  return http.get(`${env.api_url}/users/check-token`, () =>
+  return http.get(`${process.env.EXPO_PUBLIC_API_URL}/users/check-token`, () =>
     HttpResponse.json({
       id: 1,
       code: '01',

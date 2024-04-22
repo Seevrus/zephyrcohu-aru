@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateReceiptsRequest;
-use App\Http\Requests\UpdateReceiptsPrintedCopiesRequest;
 use App\Http\Resources\ReceiptCollection;
 use App\Models\Log;
 use App\Models\Receipt;
@@ -137,7 +136,7 @@ class ReceiptController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Created ' . count($newReceipts) . ' receipts',
+                'action' => 'Created '.count($newReceipts).' receipts',
                 'occured_at' => Carbon::now(),
             ]);
 
@@ -167,7 +166,7 @@ class ReceiptController extends Controller
                 $receipts = $sender->company->receipts()->with('items', 'otherItems', 'vatAmounts')->get();
             }
 
-            if (!$receipts->isEmpty()) {
+            if (! $receipts->isEmpty()) {
                 $receipts->toQuery()->update([
                     'last_downloaded_at' => Carbon::now(),
                 ]);
@@ -176,7 +175,7 @@ class ReceiptController extends Controller
                     'company_id' => $sender->company_id,
                     'user_id' => $sender->id,
                     'token_id' => $sender->currentAccessToken()->id,
-                    'action' => 'Accessed ' . $receipts->count() . ' receipts',
+                    'action' => 'Accessed '.$receipts->count().' receipts',
                     'occured_at' => Carbon::now(),
                 ]);
             }
@@ -210,7 +209,7 @@ class ReceiptController extends Controller
                 'company_id' => $sender->company_id,
                 'user_id' => $sender->id,
                 'token_id' => $sender->currentAccessToken()->id,
-                'action' => 'Removed receipt ' . $receipt->id,
+                'action' => 'Removed receipt '.$receipt->id,
                 'occured_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {

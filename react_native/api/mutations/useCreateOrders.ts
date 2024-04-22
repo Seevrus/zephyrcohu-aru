@@ -1,10 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { type ContextOrder } from '../../atoms/orders';
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
 import { mapCreateOrdersRequest } from '../request-mappers/mapCreateOrdersRequest';
 import {
   type CreateOrdersResponseData,
@@ -15,20 +15,24 @@ export function useCreateOrders() {
   const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
-    mutationKey: ['create-orders'],
-    mutationFn: async (
+    async mutationFn(
       orders: ContextOrder[]
-    ): Promise<CreateOrdersResponseData> => {
+    ): Promise<CreateOrdersResponseData> {
       try {
         const createOrdersRequest = mapCreateOrdersRequest(orders);
 
+        if (createOrdersRequest.length === 0) {
+          return [];
+        }
+
         const response = await axios.post<CreateOrdersResponseType>(
-          `${env.api_url}/orders`,
+          `${process.env.EXPO_PUBLIC_API_URL}/orders`,
           { data: createOrdersRequest },
           {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
+              'X-Android-Id': getAndroidId(),
             },
           }
         );

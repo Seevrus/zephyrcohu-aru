@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtom, useAtomValue } from 'jotai';
 
 import { storedTokenAtom, tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
+import { queryKeys } from '../keys';
 import { type ChangePasswordRequest } from '../request-types/ChangePasswordRequestType';
 import { mapLoginResponse } from '../response-mappers/mapLoginResponse';
 import { type LoginResponse } from '../response-types/LoginResponseType';
@@ -11,23 +12,23 @@ import { useLogout } from './useLogout';
 
 export function usePasswordChange() {
   const queryClient = useQueryClient();
-  const logout = useLogout();
+  const { mutateAsync: logout } = useLogout();
 
   const [, setStoredToken] = useAtom(storedTokenAtom);
   const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
-    mutationKey: ['login'],
-    mutationFn: async ({ password }: ChangePasswordRequest) => {
+    async mutationFn({ password }: ChangePasswordRequest) {
       try {
         const response = await axios
           .post<LoginResponse>(
-            `${env.api_url}/users/password`,
+            `${process.env.EXPO_PUBLIC_API_URL}/users/password`,
             { password },
             {
               headers: {
                 Accept: 'application/json',
                 Authorization: `Bearer ${token}`,
+                'X-Android-Id': getAndroidId(),
               },
             }
           )
@@ -46,7 +47,7 @@ export function usePasswordChange() {
         if (isAxiosError(error) && error.response?.status === 400) {
           throw new Error('A jelszó nem egyezhet meg a korábbi 10 jelszóval.');
         } else if (isAxiosError(error) && error.response?.status === 401) {
-          await logout.mutateAsync();
+          await logout();
           throw new Error(
             'A jelszó megváltoztatásához újra be kell jelentkeznie.'
           );
@@ -59,9 +60,8 @@ export function usePasswordChange() {
         }
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['check-token'] });
-      queryClient.invalidateQueries({ queryKey: ['token'] });
+    async onSuccess() {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.checkToken });
     },
   });
 }

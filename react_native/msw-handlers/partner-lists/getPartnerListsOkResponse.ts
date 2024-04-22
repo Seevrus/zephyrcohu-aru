@@ -1,9 +1,7 @@
 import { http, HttpResponse } from 'msw';
 
-import env from '../../env.json';
-
 export const getPartnerListsOkResponse = http.get(
-  `${env.api_url}/partner_lists`,
+  `${process.env.EXPO_PUBLIC_API_URL}/partner_lists`,
   () =>
     HttpResponse.json({
       data: [

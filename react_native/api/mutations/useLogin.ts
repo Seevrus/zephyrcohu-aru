@@ -1,9 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtom } from 'jotai';
 
 import { storedTokenAtom } from '../../atoms/token';
-import env from '../../env.json';
+import { userLoginIdentifierAtom } from '../../atoms/user';
+import { queryKeys } from '../keys';
 import { type LoginRequest } from '../request-types/LoginRequestType';
 import { mapLoginResponse } from '../response-mappers/mapLoginResponse';
 import { type LoginResponse } from '../response-types/LoginResponseType';
@@ -12,19 +14,27 @@ export function useLogin() {
   const queryClient = useQueryClient();
 
   const [, setStoredToken] = useAtom(storedTokenAtom);
+  const [, setLoginIdentifier] = useAtom(userLoginIdentifierAtom);
 
   return useMutation({
-    mutationKey: ['login'],
     async mutationFn({ userName, password }: LoginRequest) {
       try {
+        const androidId = getAndroidId();
+
         const response = await axios
           .post<LoginResponse>(
-            `${env.api_url}/users/login`,
+            `${process.env.EXPO_PUBLIC_API_URL}/users/login`,
             { userName, password },
-            { headers: { Accept: 'application/json' } }
+            {
+              headers: {
+                Accept: 'application/json',
+                'X-Android-Id': androidId,
+              },
+            }
           )
-          .then((r) => mapLoginResponse(r.data));
+          .then((response) => mapLoginResponse(response.data));
 
+        console.log('Android ID', androidId);
         console.log('Token:', response.token.accessToken);
 
         await setStoredToken({
@@ -32,6 +42,8 @@ export function useLogin() {
           isPasswordExpired: response.token.isPasswordExpired,
           expiresAt: response.token.expiresAt,
         });
+
+        await setLoginIdentifier(userName);
 
         return response;
       } catch (error) {
@@ -44,6 +56,11 @@ export function useLogin() {
           }
           if (error?.response?.status === 423) {
             throw new Error(
+              'Ezzel a felhasználóval egy másik eszközről már bejelentkeztek.'
+            );
+          }
+          if (error?.response?.status === 429) {
+            throw new Error(
               'Túl sok sikertelen bejelentkezési kísérlet miatt a felhasználót zároltuk.'
             );
           }
@@ -53,8 +70,7 @@ export function useLogin() {
       }
     },
     async onSuccess() {
-      await queryClient.invalidateQueries({ queryKey: ['token'] });
-      await queryClient.invalidateQueries({ queryKey: ['check-token'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.checkToken });
     },
   });
 }

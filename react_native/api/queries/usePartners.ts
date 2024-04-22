@@ -1,9 +1,10 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
+import { queryKeys } from '../keys';
 import {
   mapPartnersResponse,
   type Partners,
@@ -18,8 +19,8 @@ export function usePartners({ enabled = true } = {}): UseQueryResult<Partners> {
   const isRoundStarted = user?.state === 'R';
 
   return useQuery({
-    queryKey: ['partners'],
-    queryFn: fetchPartners(token as string),
+    queryKey: queryKeys.partners,
+    queryFn: fetchPartners(token),
     enabled:
       enabled &&
       !isTokenExpired &&
@@ -33,11 +34,12 @@ export function usePartners({ enabled = true } = {}): UseQueryResult<Partners> {
 export const fetchPartners = (token: string) => async (): Promise<Partners> => {
   try {
     const response = await axios.get<PartnersResponseType>(
-      `${env.api_url}/partners`,
+      `${process.env.EXPO_PUBLIC_API_URL}/partners`,
       {
         headers: {
           Accept: 'application/json',
           Authorization: `Bearer ${token}`,
+          'X-Android-Id': getAndroidId(),
         },
       }
     );

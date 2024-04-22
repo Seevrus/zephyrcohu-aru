@@ -243,17 +243,14 @@ export function createPrintEndErrand({
     <html lang="en">
       ${head}
       <body>
-        ${[1, 2].map(
-          () => `
-            ${header}
-            <main>
-              <section class="items">
-                ${receiptsList}
-                ${totals}
-              </section>
-            </main>
-            ${footer}`
-        )}
+        ${header}
+        <main>
+          <section class="items">
+            ${receiptsList}
+            ${totals}
+          </section>
+        </main>
+        ${footer}
       </body>
     </html>
   `;

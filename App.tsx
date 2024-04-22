@@ -1,43 +1,50 @@
 import { NunitoSans_400Regular } from '@expo-google-fonts/nunito-sans';
 import { Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { addEventListener as NetInfoAddEventListener } from '@react-native-community/netinfo';
 import { NavigationContainer } from '@react-navigation/native';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import {
   QueryClient,
+  focusManager,
   keepPreviousData,
-  onlineManager,
 } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import { Provider as AtomsProvider } from 'jotai/react';
+import { Platform, type AppStateStatus } from 'react-native';
 
 import { Loading } from './react_native/components/Loading';
+import { useAppState } from './react_native/hooks/useAppState';
+import { useOnlineManager } from './react_native/hooks/useOnlineManager';
 import { MainStack } from './react_native/navigators/MainStack';
 
 const asyncStoragePersister = createAsyncStoragePersister({
   storage: AsyncStorage,
 });
 
-onlineManager.setEventListener((setOnline) =>
-  NetInfoAddEventListener((state) => {
-    setOnline(!!state.isConnected);
-  })
-);
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      gcTime: Number.POSITIVE_INFINITY,
       placeholderData: keepPreviousData,
-      staleTime: Number.POSITIVE_INFINITY,
       retry: 3,
+      staleTime: Number.POSITIVE_INFINITY,
     },
   },
 });
 
+function onAppStateChange(status: AppStateStatus) {
+  // React Query already supports in web browser refetch on window focus by default
+  if (Platform.OS !== 'web') {
+    focusManager.setFocused(status === 'active');
+  }
+}
+
 export default function App() {
+  useOnlineManager();
+  useAppState(onAppStateChange);
+
   const [fontsLoaded] = useFonts({
     'Nunito-Sans': NunitoSans_400Regular,
     'Roboto-Regular': Roboto_400Regular,

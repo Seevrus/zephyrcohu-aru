@@ -28,7 +28,9 @@ class LoadStoreRequest extends FormRequest
             'data.primaryStoreId' => 'required|integer|min:1|exists:stores,id',
             'data.changes' => 'required|array|bail',
             'data.changes.*.expirationId' => 'required|integer|min:1|exists:expirations,id',
+            'data.changes.*.startingQuantity' => 'required|integer|min:-2147483648|max:2147483647',
             'data.changes.*.quantityChange' => 'required|integer|min:-2147483648|max:2147483647',
+            'data.changes.*.finalQuantity' => 'required|integer|min:-2147483648|max:2147483647',
         ];
     }
 }

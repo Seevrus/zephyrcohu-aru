@@ -1,9 +1,10 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
+import { queryKeys } from '../keys';
 import {
   type OtherItemsResponseData,
   type OtherItemsResponseType,
@@ -19,7 +20,7 @@ export function useOtherItems({
   const isRoundStarted = user?.state === 'R';
 
   return useQuery({
-    queryKey: ['other-items'],
+    queryKey: queryKeys.otherItems,
     queryFn: fetchOtherItems(token),
     enabled:
       enabled &&
@@ -35,11 +36,12 @@ export const fetchOtherItems =
   (token: string) => async (): Promise<OtherItemsResponseData> => {
     try {
       const response = await axios.get<OtherItemsResponseType>(
-        `${env.api_url}/other_items`,
+        `${process.env.EXPO_PUBLIC_API_URL}/other_items`,
         {
           headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
+            'X-Android-Id': getAndroidId(),
           },
         }
       );

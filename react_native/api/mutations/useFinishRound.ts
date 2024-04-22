@@ -1,9 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
+import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { tokenAtom } from '../../atoms/token';
-import env from '../../env.json';
 import { type FinishRoundRequestType } from '../request-types/FinishRoundRequestType';
 import { type FinishRoundResponseType } from '../response-types/FinishRoundResponseType';
 
@@ -11,16 +11,16 @@ export function useFinishRound() {
   const { token } = useAtomValue(tokenAtom);
 
   return useMutation({
-    mutationKey: ['start-round'],
-    mutationFn: async (request: FinishRoundRequestType) => {
+    async mutationFn(request: FinishRoundRequestType) {
       try {
         const response = await axios.post<FinishRoundResponseType>(
-          `${env.api_url}/rounds/finish`,
+          `${process.env.EXPO_PUBLIC_API_URL}/rounds/finish`,
           { data: request },
           {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
+              'X-Android-Id': getAndroidId(),
             },
           }
         );
