@@ -68,10 +68,6 @@ export type StackParams = {
 export type IndexProps = NativeStackScreenProps<StackParams, 'Index'>;
 
 export type LoginProps = NativeStackScreenProps<StackParams, 'Login'>;
-export type ChangePasswordProps = NativeStackScreenProps<
-  StackParams,
-  'ChangePassword'
->;
 export type SettingsProps = NativeStackScreenProps<StackParams, 'Settings'>;
 
 export type SelectStoreProps = NativeStackScreenProps<
