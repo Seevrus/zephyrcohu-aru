@@ -1,3 +1,5 @@
+import { type EventArg, useFocusEffect } from '@react-navigation/native';
+import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { format, parseISO } from 'date-fns';
 import { useAtom, useAtomValue } from 'jotai';
 import { filter, pipe, prop, sortBy, take, when } from 'ramda';
@@ -13,8 +15,15 @@ import {
   type StorageListItem,
   storageListItemsAtom,
 } from '../../../atoms/storageFlow';
+import { type StackParams } from '../../../navigators/screen-types';
 
-export function useSelectItemsFromStoreData() {
+export function useSelectItemsFromStoreData(
+  navigation: NativeStackNavigationProp<
+    StackParams,
+    'SelectItemsFromStore',
+    undefined
+  >
+) {
   const { data: items, isPending: isItemsPending } = useItems();
 
   const primaryStoreDetails = useAtomValue(primaryStoreAtom);
@@ -23,10 +32,7 @@ export function useSelectItemsFromStoreData() {
 
   const [storageListItems, setStorageListItems] = useAtom(storageListItemsAtom);
 
-  const [searchState, setSearchState] = useState({
-    searchTerm: '',
-    barCode: '',
-  });
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   const isAnyItemChanged = useMemo(
     () =>
@@ -34,6 +40,42 @@ export function useSelectItemsFromStoreData() {
         (item) => item.currentQuantity !== item.originalQuantity
       ),
     [storageListItems]
+  );
+
+  const backButtonHandler = useCallback(
+    (
+      event: EventArg<
+        'beforeRemove',
+        true,
+        {
+          action: Readonly<{
+            type: string;
+            payload?: object;
+            source?: string;
+            target?: string;
+          }>;
+        }
+      >
+    ) => {
+      event.preventDefault();
+      navigation.removeListener('beforeRemove', backButtonHandler);
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Index' }],
+      });
+    },
+    [navigation]
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      navigation.addListener('beforeRemove', backButtonHandler);
+
+      return () => {
+        navigation.removeListener('beforeRemove', backButtonHandler);
+      };
+    }, [backButtonHandler, navigation])
   );
 
   useEffect(() => {
@@ -75,21 +117,18 @@ export function useSelectItemsFromStoreData() {
     () =>
       pipe(
         when(
-          () => !!searchState.searchTerm || !!searchState.barCode,
+          () => !!searchTerm,
           filter<StorageListItem>(
             (item) =>
-              `${item.name.toLowerCase()}${item.expiresAt}`.includes(
-                searchState.searchTerm.toLowerCase()
-              ) &&
-              `${item.itemBarcode}${item.expirationBarcode}`.includes(
-                searchState.barCode
-              )
+              item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              item.expiresAt.startsWith(searchTerm) ||
+              item.expirationBarcode.startsWith(searchTerm)
           )
         ),
         sortBy<StorageListItem>(prop('name')),
         (items) => take(10, items)
       )(storageListItems ?? []),
-    [searchState.barCode, searchState.searchTerm, storageListItems]
+    [searchTerm, storageListItems]
   );
 
   const setCurrentQuantity = useCallback(
@@ -118,8 +157,8 @@ export function useSelectItemsFromStoreData() {
 
   return {
     isLoading: isItemsPending,
-    searchState,
-    setSearchState,
+    searchTerm,
+    setSearchTerm,
     itemsToShow,
     isAnyItemChanged,
     setCurrentQuantity,

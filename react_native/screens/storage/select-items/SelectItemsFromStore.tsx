@@ -29,19 +29,19 @@ function SuspendedSelectItemsFromStore({
 
   const {
     isLoading,
-    searchState,
-    setSearchState,
+    searchTerm,
+    setSearchTerm,
     itemsToShow,
     isAnyItemChanged,
     setCurrentQuantity,
-  } = useSelectItemsFromStoreData();
+  } = useSelectItemsFromStoreData(navigation);
 
   useEffect(() => {
-    if (!isNil(scannedBarCode) && searchState.barCode !== scannedBarCode) {
-      setSearchState({ searchTerm: '', barCode: scannedBarCode });
+    if (!isNil(scannedBarCode) && searchTerm !== scannedBarCode) {
+      setSearchTerm(scannedBarCode);
       navigation.setParams({ scannedBarCode: undefined });
     }
-  }, [navigation, scannedBarCode, searchState.barCode, setSearchState]);
+  }, [navigation, scannedBarCode, searchTerm, setSearchTerm]);
 
   const renderItem = (info: ListRenderItemInfo<StorageListItem>) => (
     <ExpirationAccordionDetails
@@ -68,34 +68,18 @@ function SuspendedSelectItemsFromStore({
           <Input
             label=""
             labelPosition="left"
-            value={searchState.searchTerm}
+            value={searchTerm}
             config={{
-              onChangeText: (text) => {
-                setSearchState({ searchTerm: text, barCode: '' });
-              },
+              onChangeText: setSearchTerm,
             }}
           />
-          {searchState.barCode ? (
-            <Pressable
-              onPress={() => {
-                setSearchState((prevState) => ({ ...prevState, barCode: '' }));
-              }}
-            >
-              <MaterialCommunityIcons
-                name="barcode-off"
-                size={40}
-                color="white"
-              />
-            </Pressable>
-          ) : (
-            <Pressable
-              onPress={() => {
-                navigation.navigate('ScanBarCodeInStorage');
-              }}
-            >
-              <MaterialCommunityIcons name="barcode" size={40} color="white" />
-            </Pressable>
-          )}
+          <Pressable
+            onPress={() => {
+              navigation.navigate('ScanBarCodeInStorage');
+            }}
+          >
+            <MaterialCommunityIcons name="barcode" size={40} color="white" />
+          </Pressable>
         </View>
       </View>
       <View style={styles.listContainer}>

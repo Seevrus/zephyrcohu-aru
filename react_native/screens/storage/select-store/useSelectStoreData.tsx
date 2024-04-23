@@ -65,7 +65,11 @@ export function useSelectStoreData(
       pipe(
         when(
           () => !!storeSearchValue,
-          filter<StoreType>((store) => store.name.includes(storeSearchValue))
+          filter<StoreType>((store) =>
+            store.name
+              .toLocaleLowerCase()
+              .includes(storeSearchValue.toLocaleLowerCase())
+          )
         ),
         sortBy<StoreType>(prop('name')),
         (stores) => take<StoreType>(10, stores),
