@@ -3,13 +3,14 @@ import { isNil } from 'ramda';
 import { Suspense, useEffect } from 'react';
 import {
   Animated,
-  type ListRenderItemInfo,
+  type ListRenderItem,
   Pressable,
   StyleSheet,
   View,
 } from 'react-native';
 
 import { type StorageListItem } from '../../../atoms/storageFlow';
+import { Alert } from '../../../components/alert/Alert';
 import { Container } from '../../../components/container/Container';
 import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
@@ -34,6 +35,7 @@ function SuspendedSelectItemsFromStore({
     itemsToShow,
     isAnyItemChanged,
     setCurrentQuantity,
+    alert,
   } = useSelectItemsFromStoreData(navigation);
 
   useEffect(() => {
@@ -43,7 +45,7 @@ function SuspendedSelectItemsFromStore({
     }
   }, [navigation, scannedBarCode, searchTerm, setSearchTerm]);
 
-  const renderItem = (info: ListRenderItemInfo<StorageListItem>) => (
+  const renderItem: ListRenderItem<StorageListItem> = (info) => (
     <ExpirationAccordionDetails
       item={info.item}
       setCurrentQuantity={setCurrentQuantity}
@@ -96,6 +98,24 @@ function SuspendedSelectItemsFromStore({
           </Button>
         </View>
       </View>
+      <Alert
+        visible={alert.isAlertVisible}
+        title="Megerősítés szükséges"
+        message="Biztosan ki szeretne lépni? A nem mentett rakodási adatok elvesznek!"
+        buttons={{
+          cancel: {
+            text: 'Mégsem',
+            variant: 'neutral',
+            onPress: alert.resetAlertHandler,
+          },
+          confirm: {
+            text: 'Igen',
+            variant: 'warning',
+            onPress: alert.exitConfimationHandler,
+          },
+        }}
+        onBackdropPress={alert.resetAlertHandler}
+      />
     </Container>
   );
 }

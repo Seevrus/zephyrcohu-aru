@@ -34,6 +34,8 @@ export function useSelectItemsFromStoreData(
 
   const [searchTerm, setSearchTerm] = useState<string>('');
 
+  const [isAlertVisible, setIsAlertVisible] = useState<boolean>(false);
+
   const isAnyItemChanged = useMemo(
     () =>
       storageListItems?.some(
@@ -58,15 +60,33 @@ export function useSelectItemsFromStoreData(
       >
     ) => {
       event.preventDefault();
-      navigation.removeListener('beforeRemove', backButtonHandler);
 
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Index' }],
-      });
+      if (isAnyItemChanged) {
+        setIsAlertVisible(true);
+      } else {
+        navigation.removeListener('beforeRemove', backButtonHandler);
+
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Index' }],
+        });
+      }
     },
-    [navigation]
+    [isAnyItemChanged, navigation]
   );
+
+  const resetAlertHandler = useCallback(() => {
+    setIsAlertVisible(false);
+  }, []);
+
+  const exitConfimationHandler = useCallback(() => {
+    navigation.removeListener('beforeRemove', backButtonHandler);
+
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Index' }],
+    });
+  }, [backButtonHandler, navigation]);
 
   useFocusEffect(
     useCallback(() => {
@@ -98,10 +118,7 @@ export function useSelectItemsFromStoreData(
             (exp) =>
               exp.itemId === item.id && exp.expirationId === expiration.id
           )?.quantity,
-          currentQuantity: selectedStoreCurrentState?.expirations.find(
-            (exp) =>
-              exp.itemId === item.id && exp.expirationId === expiration.id
-          )?.quantity,
+          currentQuantity: undefined,
         }))
       )
     );
@@ -162,5 +179,10 @@ export function useSelectItemsFromStoreData(
     itemsToShow,
     isAnyItemChanged,
     setCurrentQuantity,
+    alert: {
+      isAlertVisible,
+      resetAlertHandler,
+      exitConfimationHandler,
+    },
   };
 }

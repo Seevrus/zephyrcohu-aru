@@ -36,13 +36,14 @@ function _ExpirationAccordionDetails({
       Number,
       Math.floor
     )(newQuantity);
+
     const nullIshFormattedQuantity = Number.isNaN(formattedQuantity)
       ? null
       : formattedQuantity;
 
     if (
       newQuantity === '' ||
-      formattedQuantity < 0 ||
+      formattedQuantity <= 0 ||
       isNil(nullIshFormattedQuantity)
     ) {
       setCurrentQuantity(item, null);
@@ -84,7 +85,7 @@ function _ExpirationAccordionDetails({
         }}
       >
         <View style={styles.detailsRow}>
-          <Text style={styles.detailsRowText}>Kód:</Text>
+          <Text style={styles.detailsRowText}>Vonalkód:</Text>
           <Text style={styles.detailsRowText}>
             {trim(`${item.itemBarcode} ${item.expirationBarcode}`)}
           </Text>
@@ -92,6 +93,12 @@ function _ExpirationAccordionDetails({
         <View style={styles.detailsRow}>
           <Text style={styles.detailsRowText}>Főraktárkészlet:</Text>
           <Text style={styles.detailsRowText}>{item.primaryStoreQuantity}</Text>
+        </View>
+        <View style={styles.detailsRow}>
+          <Text style={styles.detailsRowText}>Saját raktár készlete:</Text>
+          <Text style={styles.detailsRowText}>
+            {item.originalQuantity ?? 0}
+          </Text>
         </View>
         <View style={styles.selectionContainer}>
           <Pressable
@@ -109,7 +116,7 @@ function _ExpirationAccordionDetails({
           </Pressable>
           <View style={styles.quantityContainer}>
             <Input
-              label="Raktárkészlet:"
+              label="Rakodás:"
               textAlign="center"
               config={{
                 autoCapitalize: 'none',
