@@ -39,6 +39,30 @@ export function useReviewStorageChangesData(
     [storageListItems]
   );
 
+  const changedQuantities = useMemo(
+    () =>
+      changedItems.reduce(
+        (previousQuantities, item) => {
+          const quantityChange =
+            (item.currentQuantity ?? 0) - (item.originalQuantity ?? 0);
+
+          if (quantityChange > 0) {
+            return {
+              up: previousQuantities.up + quantityChange,
+              down: previousQuantities.down,
+            };
+          }
+
+          return {
+            up: previousQuantities.up,
+            down: previousQuantities.down - quantityChange,
+          };
+        },
+        { up: 0, down: 0 }
+      ),
+    [changedItems]
+  );
+
   const primaryStoreId = stores?.find((store) => store.type === 'P')?.id;
   const canConfirmStorageChanges =
     isInternetReachable === true && isNotNil(primaryStoreId);
@@ -79,6 +103,7 @@ export function useReviewStorageChangesData(
     changedItems,
     reallyUnexpectedBlocker,
     canConfirmStorageChanges,
+    changedQuantities,
     handleSendChanges,
   };
 }

@@ -1,3 +1,4 @@
+import { trim } from 'ramda';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { type StorageListItem } from '../../../atoms/storageFlow';
@@ -18,6 +19,12 @@ export function ReviewExpirationItem({ item }: ReviewExpirationItemProps) {
         <Text style={styles.selectItemText}>{item.expiresAt}</Text>
       </View>
       <View style={styles.selectItemContainer}>
+        <View style={styles.detailsRow}>
+          <Text style={styles.detailsRowText}>Vonalkód:</Text>
+          <Text style={styles.detailsRowText}>
+            {trim(`${item.itemBarcode} ${item.expirationBarcode}`)}
+          </Text>
+        </View>
         <View style={styles.detailsRow}>
           <Text style={styles.detailsRowText}>Rakodott mennyiség:</Text>
           <Text style={styles.detailsRowText}>
