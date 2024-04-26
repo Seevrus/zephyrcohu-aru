@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { eqProps, isNil, pipe, replace, trim } from 'ramda';
-import { memo, useState } from 'react';
+import { eqProps, isNil, isNotNil, pipe, replace, trim } from 'ramda';
+import { memo, useCallback, useState } from 'react';
 import {
   type LayoutChangeEvent,
   Pressable,
@@ -28,35 +28,57 @@ function _ExpirationAccordionDetails({
   setCurrentQuantity,
 }: ExpirationAccordionDetailsProps) {
   const [dropdownHeight, setDropdownHeight] = useState(170);
+  const [shownQuantity, setShownQuantity] = useState<string>('');
 
-  const quantityHandler = (newQuantity: string) => {
-    const formattedQuantity = pipe(
-      trim,
-      replace(',', '.'),
-      Number,
-      Math.floor
-    )(newQuantity);
+  const minimumCurrentQuantity = -1 * (item.originalQuantity ?? 0);
 
-    const nullIshFormattedQuantity = Number.isNaN(formattedQuantity)
-      ? null
-      : formattedQuantity;
+  const quantityHandler = useCallback(
+    (newQuantity: string) => {
+      if (newQuantity === '-') {
+        setShownQuantity(newQuantity);
+      } else {
+        const formattedQuantity = pipe(
+          trim,
+          replace(',', '.'),
+          Number,
+          Math.floor
+        )(newQuantity);
 
-    if (
-      newQuantity === '' ||
-      formattedQuantity <= 0 ||
-      isNil(nullIshFormattedQuantity)
-    ) {
-      setCurrentQuantity(item, null);
-    } else {
-      setCurrentQuantity(item, nullIshFormattedQuantity);
-    }
-  };
+        const nullIshFormattedQuantity = Number.isNaN(formattedQuantity)
+          ? null
+          : formattedQuantity;
+
+        const stringFormattedQuantity = isNil(nullIshFormattedQuantity)
+          ? ''
+          : String(formattedQuantity);
+
+        if (
+          newQuantity === '' ||
+          formattedQuantity === 0 ||
+          isNil(nullIshFormattedQuantity)
+        ) {
+          setCurrentQuantity(item, null);
+          setShownQuantity('');
+        } else if (formattedQuantity <= minimumCurrentQuantity) {
+          setCurrentQuantity(item, minimumCurrentQuantity);
+          setShownQuantity(String(minimumCurrentQuantity));
+        } else {
+          setCurrentQuantity(item, nullIshFormattedQuantity);
+          setShownQuantity(stringFormattedQuantity);
+        }
+      }
+    },
+    [item, minimumCurrentQuantity, setCurrentQuantity]
+  );
 
   const listItemColor = (() => {
     if ((item.primaryStoreQuantity ?? 0) < 0) {
       return colors.error;
     }
-    if ((item.currentQuantity ?? 0) !== (item.originalQuantity ?? 0)) {
+    if (
+      isNotNil(item.currentQuantity) &&
+      item.currentQuantity !== (item.originalQuantity ?? 0)
+    ) {
       return colors.warning;
     }
 
@@ -125,7 +147,7 @@ function _ExpirationAccordionDetails({
                 contextMenuHidden: true,
                 keyboardType: 'numeric',
                 maxLength: 4,
-                value: String(item.currentQuantity ?? ''),
+                value: shownQuantity,
                 onChangeText: quantityHandler,
               }}
             />
