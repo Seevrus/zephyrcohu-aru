@@ -2,7 +2,7 @@ import { type EventArg, useFocusEffect } from '@react-navigation/native';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { format, parseISO } from 'date-fns';
 import { useAtom, useAtomValue } from 'jotai';
-import { filter, pipe, prop, sortBy, take, when } from 'ramda';
+import { filter, isNotNil, pipe, prop, sortBy, take, when } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useItems } from '../../../api/queries/useItems';
@@ -37,10 +37,7 @@ export function useSelectItemsFromStoreData(
   const [isAlertVisible, setIsAlertVisible] = useState<boolean>(false);
 
   const isAnyItemChanged = useMemo(
-    () =>
-      storageListItems?.some(
-        (item) => item.currentQuantity !== item.originalQuantity
-      ),
+    () => storageListItems?.some((item) => isNotNil(item.quantityChange)),
     [storageListItems]
   );
 
@@ -118,7 +115,7 @@ export function useSelectItemsFromStoreData(
             (exp) =>
               exp.itemId === item.id && exp.expirationId === expiration.id
           )?.quantity,
-          currentQuantity: undefined,
+          quantityChange: undefined,
         }))
       )
     );
@@ -149,7 +146,7 @@ export function useSelectItemsFromStoreData(
   );
 
   const setCurrentQuantity = useCallback(
-    (itemToSet: StorageListItem, newCurrentQuantity: number | null) => {
+    (itemToSet: StorageListItem, totalChangedQuantity: number | null) => {
       setStorageListItems((prevItems) => {
         if (!prevItems) {
           return prevItems;
@@ -160,10 +157,7 @@ export function useSelectItemsFromStoreData(
           item.expirationId === itemToSet.expirationId
             ? {
                 ...item,
-                primaryStoreQuantity:
-                  (item.primaryStoreQuantity ?? 0) -
-                  ((newCurrentQuantity ?? 0) - (item.currentQuantity ?? 0)),
-                currentQuantity: newCurrentQuantity ?? undefined,
+                quantityChange: totalChangedQuantity ?? undefined,
               }
             : item
         );

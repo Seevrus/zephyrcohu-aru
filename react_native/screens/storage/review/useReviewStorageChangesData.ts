@@ -33,9 +33,7 @@ export function useReviewStorageChangesData(
 
   const changedItems = useMemo(
     () =>
-      (storageListItems ?? []).filter(
-        (item) => item.currentQuantity !== item.originalQuantity
-      ),
+      (storageListItems ?? []).filter((item) => isNotNil(item.quantityChange)),
     [storageListItems]
   );
 
@@ -43,8 +41,7 @@ export function useReviewStorageChangesData(
     () =>
       changedItems.reduce(
         (previousQuantities, item) => {
-          const quantityChange =
-            (item.currentQuantity ?? 0) - (item.originalQuantity ?? 0);
+          const quantityChange = item.quantityChange ?? 0;
 
           if (quantityChange > 0) {
             return {

@@ -72,13 +72,10 @@ function _ExpirationAccordionDetails({
   );
 
   const listItemColor = (() => {
-    if ((item.primaryStoreQuantity ?? 0) < 0) {
+    if ((item.primaryStoreQuantity ?? 0) < (item.quantityChange ?? 0)) {
       return colors.error;
     }
-    if (
-      isNotNil(item.currentQuantity) &&
-      item.currentQuantity !== (item.originalQuantity ?? 0)
-    ) {
+    if (isNotNil(item.quantityChange)) {
       return colors.warning;
     }
 
@@ -126,7 +123,7 @@ function _ExpirationAccordionDetails({
           <Pressable
             style={styles.selectIconContainer}
             onPress={() =>
-              quantityHandler(String((item.currentQuantity ?? 0) - 1))
+              quantityHandler(String((item.quantityChange ?? 0) - 1))
             }
           >
             <MaterialIcons
@@ -155,7 +152,7 @@ function _ExpirationAccordionDetails({
           <Pressable
             style={styles.selectIconContainer}
             onPress={() =>
-              quantityHandler(String((item.currentQuantity ?? 0) + 1))
+              quantityHandler(String((item.quantityChange ?? 0) + 1))
             }
           >
             <MaterialIcons

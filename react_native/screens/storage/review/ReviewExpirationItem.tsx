@@ -27,13 +27,13 @@ export function ReviewExpirationItem({ item }: ReviewExpirationItemProps) {
         </View>
         <View style={styles.detailsRow}>
           <Text style={styles.detailsRowText}>Rakodott mennyiség:</Text>
-          <Text style={styles.detailsRowText}>
-            {(item.currentQuantity ?? 0) - (item.originalQuantity ?? 0)}
-          </Text>
+          <Text style={styles.detailsRowText}>{item.quantityChange}</Text>
         </View>
         <View style={styles.detailsRow}>
           <Text style={styles.detailsRowText}>Rakodás utáni készlet:</Text>
-          <Text style={styles.detailsRowText}>{item.currentQuantity}</Text>
+          <Text style={styles.detailsRowText}>
+            {(item.originalQuantity ?? 0) + (item.quantityChange ?? 0)}
+          </Text>
         </View>
       </View>
     </View>
