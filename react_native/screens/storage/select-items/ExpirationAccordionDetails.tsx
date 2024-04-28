@@ -55,7 +55,8 @@ function _ExpirationAccordionDetails({
         if (
           newQuantity === '' ||
           formattedQuantity === 0 ||
-          isNil(nullIshFormattedQuantity)
+          isNil(nullIshFormattedQuantity) ||
+          (nullIshFormattedQuantity === -1 && minimumCurrentQuantity === 0)
         ) {
           setCurrentQuantity(item, null);
           setShownQuantity('');

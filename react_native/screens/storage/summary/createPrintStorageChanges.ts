@@ -243,8 +243,8 @@ export function createPrintStorageChanges({
   
     ${receiptItems
       .map((item, index) => {
-        const quantityChange =
-          (item.currentQuantity || 0) - (item.originalQuantity || 0);
+        const quantityChange = item.quantityChange ?? 0;
+        const currentQuantity = (item.originalQuantity ?? 0) + quantityChange;
 
         return `
           <div class="item nr">${mapToNr(index + 1)}</div>
@@ -259,7 +259,7 @@ export function createPrintStorageChanges({
           <div class="item quantity-change">
             ${quantityChange > 0 ? '+' : ''}${quantityChange}
           </div>
-          <div class="item final-quantity">${item.currentQuantity}</div>
+          <div class="item final-quantity">${currentQuantity}</div>
           <div class="item ok">
             <div class="square-check"></div>
           </div>`;
@@ -269,15 +269,15 @@ export function createPrintStorageChanges({
   const createItemsSummarySection = () => {
     const itemsSummary = receiptItems.reduce(
       (prev, item) => {
-        const quantityChange =
-          (item.currentQuantity ?? 0) - (item.originalQuantity ?? 0);
+        const quantityChange = item.quantityChange ?? 0;
+        const currentQuantity = (item.originalQuantity ?? 0) + quantityChange;
 
         return {
           originalQuantity:
             prev.originalQuantity + (item.originalQuantity ?? 0),
           in: quantityChange > 0 ? prev.in + quantityChange : prev.in,
           out: quantityChange < 0 ? prev.out + quantityChange : prev.out,
-          currentQuantity: prev.currentQuantity + (item.currentQuantity ?? 0),
+          currentQuantity: prev.currentQuantity + currentQuantity,
         };
       },
       {
