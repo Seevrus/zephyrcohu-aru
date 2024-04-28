@@ -49,6 +49,7 @@ export type StackParams = {
         centralPostalCode?: string | undefined;
         centralCity?: string | undefined;
         centralAddress?: string | undefined;
+        deliveryName?: string;
         deliveryPostalCode?: string;
         deliveryCity?: string;
         deliveryAddress?: string;

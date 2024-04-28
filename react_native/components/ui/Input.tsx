@@ -26,7 +26,7 @@ export function Input({
   invalid = false,
   variant,
   textAlign = 'left',
-  config = {},
+  config,
 }: InputProps) {
   const inputVariants = {
     input: colors.input,
@@ -40,8 +40,11 @@ export function Input({
     },
     input: {
       backgroundColor: (() => {
-        if (variant) return inputVariants[variant];
-        return config.editable === false ? colors.disabled : colors.input;
+        if (variant) {
+          return inputVariants[variant];
+        }
+
+        return config?.editable === false ? colors.disabled : colors.input;
       })(),
       textAlign,
       ...(labelPosition === 'top' && { width: '100%' }),
@@ -70,8 +73,8 @@ export function Input({
           dynamicStyles.input,
         ]}
         {...config}
-        {...(!config.multiline &&
-          !config.secureTextEntry && {
+        {...(!config?.multiline &&
+          !config?.secureTextEntry && {
             multiline: true,
             numberOfLines: 1,
           })}
@@ -90,7 +93,7 @@ const styles = StyleSheet.create({
   input: {
     borderRadius: 8,
     color: colors.white,
-    flex: 1,
+    flexGrow: 1,
     fontFamily: 'Roboto',
     fontSize: fontSizes.input,
     padding: 8,
