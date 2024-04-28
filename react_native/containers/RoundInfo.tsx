@@ -25,7 +25,7 @@ export function RoundInfo() {
     <View style={styles.infoContainer}>
       {partnerList ? (
         <View style={styles.infoItemContainer}>
-          <Text style={styles.infoItem}>Partnerlista:</Text>
+          <Text style={styles.infoItem}>Boltlista:</Text>
           <Text style={styles.infoItem}>{partnerList.name}</Text>
         </View>
       ) : null}

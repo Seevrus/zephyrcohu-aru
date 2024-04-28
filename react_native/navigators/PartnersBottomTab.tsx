@@ -35,7 +35,7 @@ export function PartnersBottomTab() {
       <PartnerTab.Screen
         name="SelectPartnerFromStore"
         component={SelectPartner}
-        options={{ title: 'Kör Partnerei', tabBarIcon: StorePartnersIcon }}
+        options={{ title: 'Kör boltjai', tabBarIcon: StorePartnersIcon }}
         initialParams={{
           partners: PartnerList.STORE,
         }}
@@ -44,7 +44,7 @@ export function PartnersBottomTab() {
         name="SelectPartnerFromAll"
         component={SelectPartner}
         options={{
-          title: 'Összes partner',
+          title: 'Összes bolt',
           tabBarIcon: AllPartnersIcon,
         }}
         initialParams={{
