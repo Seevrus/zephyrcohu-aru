@@ -74,16 +74,22 @@ function _RegularItemSelection({
         }}
       >
         <View style={styles.firstInfoGroup}>
-          <LabeledItem label="Cikkszám" text={item.articleNumber} />
+          <LabeledItem
+            label="Cikkszám"
+            text={item.articleNumber}
+            justifyContent="space-between"
+          />
         </View>
         <View style={styles.infoGroup}>
           <LabeledItem
             label="Mennyiség"
             text={`${item.quantity} ${item.unitName}`}
+            justifyContent="space-between"
           />
           <LabeledItem
             label="Bruttó összeg"
             text={formatPrice(item.grossAmount)}
+            justifyContent="space-between"
           />
         </View>
         {item.selectedDiscounts ? (
@@ -93,11 +99,25 @@ function _RegularItemSelection({
             </View>
             {absoluteDiscount ? (
               <View style={styles.firstInfoGroup}>
-                <LabeledItem label="Típus" text="abszolút" />
-                <LabeledItem label="Név" text={absoluteDiscount.name} />
+                <LabeledItem
+                  label="Típus"
+                  text="abszolút"
+                  justifyContent="space-between"
+                />
+                <LabeledItem
+                  label="Név"
+                  text={absoluteDiscount.name}
+                  justifyContent="space-between"
+                />
                 <LabeledItem
                   label="Mennyiség"
                   text={String(absoluteDiscount.quantity)}
+                  justifyContent="space-between"
+                />
+                <LabeledItem
+                  label="Mértéke"
+                  text={`${absoluteDiscount.amount ?? 0} Ft / ${item.unitName}`}
+                  justifyContent="space-between"
                 />
               </View>
             ) : null}
@@ -107,11 +127,25 @@ function _RegularItemSelection({
                   absoluteDiscount ? styles.infoGroup : styles.firstInfoGroup
                 }
               >
-                <LabeledItem label="Típus" text="százalékos" />
-                <LabeledItem label="Név" text={percentageDiscount.name} />
+                <LabeledItem
+                  label="Típus"
+                  text="százalékos"
+                  justifyContent="space-between"
+                />
+                <LabeledItem
+                  label="Név"
+                  text={percentageDiscount.name}
+                  justifyContent="space-between"
+                />
                 <LabeledItem
                   label="Mennyiség"
                   text={String(percentageDiscount.quantity)}
+                  justifyContent="space-between"
+                />
+                <LabeledItem
+                  label="Mértéke"
+                  text={`${percentageDiscount.amount ?? 0}% / ${item.unitName}`}
+                  justifyContent="space-between"
                 />
               </View>
             ) : null}
@@ -123,15 +157,25 @@ function _RegularItemSelection({
                     : styles.firstInfoGroup
                 }
               >
-                <LabeledItem label="Típus" text="tetszőleges" />
-                <LabeledItem label="Név" text={freeFormDiscount.name} />
+                <LabeledItem
+                  label="Típus"
+                  text="tetszőleges"
+                  justifyContent="space-between"
+                />
+                <LabeledItem
+                  label="Név"
+                  text={freeFormDiscount.name}
+                  justifyContent="space-between"
+                />
                 <LabeledItem
                   label="Mennyiség"
                   text={String(freeFormDiscount.quantity)}
+                  justifyContent="space-between"
                 />
                 <LabeledItem
                   label="Ár"
-                  text={String(freeFormDiscount.price ?? '')}
+                  text={`${freeFormDiscount.price ?? ''} Ft / ${item.unitName}`}
+                  justifyContent="space-between"
                 />
               </View>
             ) : null}

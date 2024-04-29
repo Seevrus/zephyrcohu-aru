@@ -64,6 +64,7 @@ function SuspendedDiscounts({ navigation, route }: DiscountsProps) {
         <View style={styles.infoGroup}>
           <LabeledItem label="Típus" text="abszolút" />
           <LabeledItem label="Név" text={absoluteDiscount.name} />
+          <LabeledItem label="Mértéke" text={`${absoluteDiscount.amount} Ft`} />
           <View style={styles.inputContainer}>
             <Input
               label="Mennyiség:"
@@ -82,6 +83,7 @@ function SuspendedDiscounts({ navigation, route }: DiscountsProps) {
         <View style={styles.infoGroup}>
           <LabeledItem label="Típus" text="százalékos" />
           <LabeledItem label="Név" text={percentageDiscount.name} />
+          <LabeledItem label="Mértéke" text={`${percentageDiscount.amount}%`} />
           <View style={styles.inputContainer}>
             <Input
               label="Mennyiség:"

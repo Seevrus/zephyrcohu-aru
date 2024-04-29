@@ -151,16 +151,17 @@ export function useReviewData(
               const expiration = item.expirations.find(
                 (exp) => exp.id === +expirationId
               );
+
+              if (!expiration) {
+                return;
+              }
+
               const currentReviewItem = prevItems?.find(
                 (index) =>
                   index.itemId === +itemId &&
                   index.type === 'item' &&
                   index.expirationId === +expirationId
               );
-
-              if (!expiration) {
-                return;
-              }
 
               const netPrice =
                 currentPriceList?.items.find(
