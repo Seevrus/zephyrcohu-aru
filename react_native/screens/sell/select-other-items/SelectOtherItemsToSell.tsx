@@ -100,7 +100,7 @@ function SuspendedSelectOtherItemsToSell({
         </View>
         <View style={styles.buttonContainer}>
           <Button variant={confirmButtonVariant} onPress={confirmItemsHandler}>
-            Kiválaszott tételek hozzáadása
+            Tételek jóváhagyása
           </Button>
         </View>
       </View>

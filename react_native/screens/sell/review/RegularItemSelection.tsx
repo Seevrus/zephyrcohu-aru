@@ -3,13 +3,14 @@ import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { format } from 'date-fns';
 import { equals } from 'ramda';
 import { memo, useState } from 'react';
-import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { type LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
 
 import { type RegularReviewItem } from '../../../atoms/sellFlow';
 import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';
 import { Button } from '../../../components/ui/Button';
 import { LabeledItem } from '../../../components/ui/LabeledItem';
 import { colors } from '../../../constants/colors';
+import { fontSizes } from '../../../constants/fontSizes';
 import { type StackParams } from '../../../navigators/screen-types';
 import { formatPrice } from '../../../utils/formatPrice';
 import { getReviewItemId } from './getReviewItemId';
@@ -53,7 +54,14 @@ function _RegularItemSelection({
   return (
     <AnimatedListItem
       id={getReviewItemId(item)}
-      title={`${item.name} (${expiresAt})`}
+      title={
+        <View style={styles.selectItemTitle}>
+          <View style={styles.selectItemNameContainer}>
+            <Text style={styles.selectItemText}>{item.name}</Text>
+          </View>
+          <Text style={styles.selectItemText}>{expiresAt}</Text>
+        </View>
+      }
       expandedInitially={selected}
       height={dropdownHeight}
       backgroundColor={backgroundColor}
@@ -67,7 +75,6 @@ function _RegularItemSelection({
       >
         <View style={styles.firstInfoGroup}>
           <LabeledItem label="Cikkszám" text={item.articleNumber} />
-          <LabeledItem label="Lejárat" text={expiresAt} />
         </View>
         <View style={styles.infoGroup}>
           <LabeledItem
@@ -173,6 +180,20 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     marginTop: 10,
     paddingTop: 5,
+  },
+  selectItemNameContainer: {
+    width: '70%',
+  },
+  selectItemText: {
+    color: colors.white,
+    fontFamily: 'Nunito-Sans',
+    fontSize: fontSizes.body,
+    fontWeight: 'bold',
+  },
+  selectItemTitle: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   selectPartnerContainer: {
     alignContent: 'flex-start',

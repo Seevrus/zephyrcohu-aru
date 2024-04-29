@@ -146,7 +146,7 @@ function _ExpirationAccordionDetails({
         </View>
         <View style={styles.priceContainer}>
           <Input
-            label="Ár:"
+            label="Egységár:"
             textAlign="center"
             config={{
               autoCapitalize: 'none',
@@ -162,7 +162,7 @@ function _ExpirationAccordionDetails({
         </View>
         <View style={styles.commentContainer}>
           <Input
-            label="Megjegyzés:"
+            label="Tételszöveg:"
             config={{
               multiline: true,
               numberOfLines: 5,
