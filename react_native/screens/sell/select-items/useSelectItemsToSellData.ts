@@ -48,7 +48,7 @@ export type SellExpiration = {
   itemId: number;
   expirationId: number;
   expiresAt: string;
-  quantity: number | undefined;
+  quantity: number;
 };
 
 type SellExpirations = Record<number, SellExpiration>;
@@ -152,7 +152,8 @@ export function useSelectItemsToSellData(
               expiresAt: expiration.expiresAt,
               quantity: storageExpirations[item.id]?.[expiration.id] ?? 0,
             })),
-            indexBy(prop('itemId'))
+            filter<SellExpiration>((expiration) => expiration.quantity > 0),
+            indexBy(prop('expirationId'))
           )(item.expirations),
           availableDiscounts: item.discounts,
         })),
