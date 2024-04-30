@@ -1,6 +1,6 @@
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAtom } from 'jotai';
-import { assoc, dissoc, isEmpty, isNil, not } from 'ramda';
+import { any, assoc, dissoc, isEmpty, isNil, not, trim } from 'ramda';
 import { useCallback, useState } from 'react';
 
 import {
@@ -105,7 +105,7 @@ export function useDiscountsData({ navigation, item }: UseDiscountsProps) {
   const [percentageDiscountedQuantity, setPercentageDiscountedQuantity] =
     useState<string>(String(currentPercentageDiscount?.quantity ?? ''));
   const [freeFormPrice, setFreeFormPrice] = useState<string>(
-    String(currentFreeFormDiscount?.price ?? item.netPrice)
+    String(currentFreeFormDiscount?.price ?? -item.netPrice)
   );
   const [freeFormDiscountedQuantity, setFreeFormDiscountedQuantity] =
     useState<string>(String(currentFreeFormDiscount?.quantity ?? ''));
@@ -125,19 +125,23 @@ export function useDiscountsData({ navigation, item }: UseDiscountsProps) {
     const freeForm = Number(freeFormDiscountedQuantity) ?? 0;
     const price = Number(freeFormPrice) ?? 0;
 
+    if (any(Number.isNaN, [absolute, percentage, freeForm, price])) {
+      errorMessage += ' Csak számok adhatóak meg.';
+    }
+
     if (absolute + percentage + freeForm > item.quantity) {
       errorMessage += ' Túl nagy megadott mennyiség.';
       formErrors.absoluteDiscountedQuantity = true;
       formErrors.percentageDiscountedQuantity = true;
       formErrors.freeFormDiscountedQuantity = true;
     }
-    if (freeForm > 0 && price < 1) {
-      errorMessage += ' A megadott ár túl alacsony.';
+    if (freeForm > 0 && price > 0) {
+      errorMessage += ' A kedvezményt negatív számként lehetséges megadni.';
       formErrors.freeFormPrice = true;
     }
 
     if (errorMessage) {
-      setFormErrorMessage(errorMessage);
+      setFormErrorMessage(trim(errorMessage));
     }
     if (not(isEmpty(formErrors))) {
       setFormError(formErrors);

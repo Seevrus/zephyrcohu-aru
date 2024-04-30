@@ -40,10 +40,12 @@ function _OtherItemSelection({
             <LabeledItem
               label="Mennyiség"
               text={`${item.quantity} ${item.unitName}`}
+              justifyContent="space-between"
             />
             <LabeledItem
               label="Bruttó összeg"
               text={formatPrice(item.grossAmount)}
+              justifyContent="space-between"
             />
           </View>
         </View>
@@ -60,7 +62,11 @@ function _OtherItemSelection({
         }}
       >
         <View style={styles.infoGroup}>
-          <LabeledItem label="Cikkszám" text={item.articleNumber} />
+          <LabeledItem
+            label="Cikkszám"
+            text={item.articleNumber}
+            justifyContent="space-between"
+          />
         </View>
         <View style={styles.buttonContainer}>
           <Button variant="warning" onPress={() => onDelete(item.itemId)}>

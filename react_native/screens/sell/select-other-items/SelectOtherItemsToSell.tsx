@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAtomValue } from 'jotai';
-import { Suspense, useCallback, useState } from 'react';
+import { Suspense, useCallback } from 'react';
 import {
   Animated,
   type ListRenderItemInfo,
@@ -28,6 +28,8 @@ function SuspendedSelectOtherItemsToSell({
 }: SelectOtherItemsToSellProps) {
   const {
     isLoading,
+    searchTerm,
+    setSearchTerm,
     otherItems,
     priceChangeHandler,
     quantityChangeHandler,
@@ -39,8 +41,6 @@ function SuspendedSelectOtherItemsToSell({
   } = useSelectOtherItemsToSellData(navigation);
 
   const selectedOtherItems = useAtomValue(selectedOtherItemsAtom);
-
-  const [searchTerm, setSearchTerm] = useState<string>('');
 
   const confirmButtonVariant = canConfirmItems ? 'ok' : 'disabled';
 

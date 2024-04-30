@@ -35,24 +35,38 @@ function _ExpirationAccordionDetails({
   setComment,
 }: ExpirationAccordionDetailsProps) {
   const [dropdownHeight, setDropdownHeight] = useState(0);
+  const [shownPrice, setShownPrice] = useState<string>(
+    netPrice?.toString() ?? ''
+  );
 
   const backgroundColor = (quantity ?? 0) > 0 ? colors.ok : colors.neutral;
 
   const priceHandler = (newPrice: string) => {
-    const formattedPrice = pipe(
-      trim,
-      replace(',', '.'),
-      Number,
-      Math.floor
-    )(newPrice);
-    const nullIshFormattedPrice = Number.isNaN(formattedPrice)
-      ? null
-      : formattedPrice;
-
-    if (newPrice === '' || isNil(nullIshFormattedPrice)) {
-      setNetPrice(item, null);
+    if (newPrice === '-') {
+      setShownPrice(newPrice);
     } else {
-      setNetPrice(item, nullIshFormattedPrice);
+      const formattedPrice = pipe(
+        trim,
+        replace(',', '.'),
+        Number,
+        Math.floor
+      )(newPrice);
+
+      const nullIshFormattedPrice = Number.isNaN(formattedPrice)
+        ? null
+        : formattedPrice;
+
+      const stringFormattedPrice = isNil(nullIshFormattedPrice)
+        ? ''
+        : String(formattedPrice);
+
+      if (newPrice === '' || isNil(nullIshFormattedPrice)) {
+        setNetPrice(item, null);
+        setShownPrice('');
+      } else {
+        setNetPrice(item, nullIshFormattedPrice);
+        setShownPrice(stringFormattedPrice);
+      }
     }
   };
 
@@ -154,8 +168,8 @@ function _ExpirationAccordionDetails({
               autoCorrect: false,
               contextMenuHidden: true,
               keyboardType: 'numeric',
-              maxLength: 4,
-              value: String(netPrice ?? ''),
+              maxLength: 6,
+              value: shownPrice,
               onChangeText: priceHandler,
             }}
           />
