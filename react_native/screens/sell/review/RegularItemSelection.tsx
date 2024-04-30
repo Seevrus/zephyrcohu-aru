@@ -55,11 +55,25 @@ function _RegularItemSelection({
     <AnimatedListItem
       id={getReviewItemId(item)}
       title={
-        <View style={styles.selectItemTitle}>
-          <View style={styles.selectItemNameContainer}>
-            <Text style={styles.selectItemText}>{item.name}</Text>
+        <View>
+          <View style={styles.selectItemTitle}>
+            <View style={styles.selectItemNameContainer}>
+              <Text style={styles.selectItemText}>{item.name}</Text>
+            </View>
+            <Text style={styles.selectItemText}>{expiresAt}</Text>
           </View>
-          <Text style={styles.selectItemText}>{expiresAt}</Text>
+          <View style={styles.infoGroupWithBorder}>
+            <LabeledItem
+              label="Mennyiség"
+              text={`${item.quantity} ${item.unitName}`}
+              justifyContent="space-between"
+            />
+            <LabeledItem
+              label="Bruttó összeg"
+              text={formatPrice(item.grossAmount)}
+              justifyContent="space-between"
+            />
+          </View>
         </View>
       }
       expandedInitially={selected}
@@ -73,32 +87,20 @@ function _RegularItemSelection({
           setDropdownHeight(event.nativeEvent.layout.height);
         }}
       >
-        <View style={styles.firstInfoGroup}>
+        <View style={styles.infoGroup}>
           <LabeledItem
             label="Cikkszám"
             text={item.articleNumber}
             justifyContent="space-between"
           />
         </View>
-        <View style={styles.infoGroup}>
-          <LabeledItem
-            label="Mennyiség"
-            text={`${item.quantity} ${item.unitName}`}
-            justifyContent="space-between"
-          />
-          <LabeledItem
-            label="Bruttó összeg"
-            text={formatPrice(item.grossAmount)}
-            justifyContent="space-between"
-          />
-        </View>
         {item.selectedDiscounts ? (
           <>
-            <View style={styles.infoGroup}>
+            <View style={styles.infoGroupWithBorder}>
               <LabeledItem label="Érvényes kedvezmények" text="" />
             </View>
             {absoluteDiscount ? (
-              <View style={styles.firstInfoGroup}>
+              <View style={styles.infoGroup}>
                 <LabeledItem
                   label="Típus"
                   text="abszolút"
@@ -124,7 +126,9 @@ function _RegularItemSelection({
             {percentageDiscount ? (
               <View
                 style={
-                  absoluteDiscount ? styles.infoGroup : styles.firstInfoGroup
+                  absoluteDiscount
+                    ? styles.infoGroupWithBorder
+                    : styles.infoGroup
                 }
               >
                 <LabeledItem
@@ -153,8 +157,8 @@ function _RegularItemSelection({
               <View
                 style={
                   absoluteDiscount || percentageDiscount
-                    ? styles.infoGroup
-                    : styles.firstInfoGroup
+                    ? styles.infoGroupWithBorder
+                    : styles.infoGroup
                 }
               >
                 <LabeledItem
@@ -216,10 +220,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     width: '85%',
   },
-  firstInfoGroup: {
+  infoGroup: {
     marginTop: 10,
   },
-  infoGroup: {
+  infoGroupWithBorder: {
     borderTopColor: colors.white,
     borderTopWidth: 1,
     marginTop: 10,
