@@ -52,7 +52,7 @@ function SuspendedReview({ navigation }: ReviewProps) {
       return info.item.type === 'item' ? (
         <RegularItemSelection
           selected={reviewItemId === selectedRowId}
-          item={info.item}
+          regularReviewItem={info.item}
           onSelect={(id: string | number) => {
             setSelectedRow(
               reviewItems?.find((row) => getReviewItemId(row) === id) ?? null

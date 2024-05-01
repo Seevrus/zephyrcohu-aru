@@ -17,7 +17,7 @@ import { getReviewItemId } from './getReviewItemId';
 
 type SelectionProps = {
   selected: boolean;
-  item: RegularReviewItem;
+  regularReviewItem: RegularReviewItem;
   onSelect: (id: string) => void;
   onDelete: ({
     itemId,
@@ -30,47 +30,49 @@ type SelectionProps = {
 
 function _RegularItemSelection({
   selected,
-  item,
+  regularReviewItem,
   onSelect,
   onDelete,
 }: SelectionProps) {
   const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
 
   const backgroundColor = selected ? colors.ok : colors.neutral;
-  const expiresAt = format(new Date(item.expiresAt), 'yyyy-MM');
+  const expiresAt = format(new Date(regularReviewItem.expiresAt), 'yyyy-MM');
 
   const [dropdownHeight, setDropdownHeight] = useState(250);
 
-  const absoluteDiscount = item.selectedDiscounts?.find(
-    (d) => d.type === 'absolute'
+  const absoluteDiscount = regularReviewItem.selectedDiscounts?.find(
+    (discount) => discount.type === 'absolute'
   );
-  const percentageDiscount = item.selectedDiscounts?.find(
-    (d) => d.type === 'percentage'
+  const percentageDiscount = regularReviewItem.selectedDiscounts?.find(
+    (discount) => discount.type === 'percentage'
   );
-  const freeFormDiscount = item.selectedDiscounts?.find(
-    (d) => d.type === 'freeForm'
+  const freeFormDiscount = regularReviewItem.selectedDiscounts?.find(
+    (discount) => discount.type === 'freeForm'
   );
 
   return (
     <AnimatedListItem
-      id={getReviewItemId(item)}
+      id={getReviewItemId(regularReviewItem)}
       title={
         <View>
           <View style={styles.selectItemTitle}>
             <View style={styles.selectItemNameContainer}>
-              <Text style={styles.selectItemText}>{item.name}</Text>
+              <Text style={styles.selectItemText}>
+                {regularReviewItem.name}
+              </Text>
             </View>
             <Text style={styles.selectItemText}>{expiresAt}</Text>
           </View>
           <View style={styles.infoGroupWithBorder}>
             <LabeledItem
               label="Mennyiség"
-              text={`${item.quantity} ${item.unitName}`}
+              text={`${regularReviewItem.quantity} ${regularReviewItem.unitName}`}
               justifyContent="space-between"
             />
             <LabeledItem
               label="Bruttó összeg"
-              text={formatPrice(item.grossAmount)}
+              text={formatPrice(regularReviewItem.grossAmount)}
               justifyContent="space-between"
             />
           </View>
@@ -90,11 +92,11 @@ function _RegularItemSelection({
         <View style={styles.infoGroup}>
           <LabeledItem
             label="Cikkszám"
-            text={item.articleNumber}
+            text={regularReviewItem.articleNumber}
             justifyContent="space-between"
           />
         </View>
-        {item.selectedDiscounts ? (
+        {regularReviewItem.selectedDiscounts ? (
           <>
             <View style={styles.infoGroupWithBorder}>
               <LabeledItem label="Érvényes kedvezmények" text="" />
@@ -118,7 +120,7 @@ function _RegularItemSelection({
                 />
                 <LabeledItem
                   label="Mértéke"
-                  text={`${absoluteDiscount.amount ?? 0} Ft / ${item.unitName}`}
+                  text={`${absoluteDiscount.amount ?? 0} Ft / ${regularReviewItem.unitName}`}
                   justifyContent="space-between"
                 />
               </View>
@@ -148,7 +150,7 @@ function _RegularItemSelection({
                 />
                 <LabeledItem
                   label="Mértéke"
-                  text={`${percentageDiscount.amount ?? 0}% / ${item.unitName}`}
+                  text={`${percentageDiscount.amount ?? 0}% / ${regularReviewItem.unitName}`}
                   justifyContent="space-between"
                 />
               </View>
@@ -178,7 +180,7 @@ function _RegularItemSelection({
                 />
                 <LabeledItem
                   label="Ár"
-                  text={`${freeFormDiscount.price ?? ''} Ft / ${item.unitName}`}
+                  text={`${freeFormDiscount.price ?? ''} Ft / ${regularReviewItem.unitName}`}
                   justifyContent="space-between"
                 />
               </View>
@@ -190,18 +192,18 @@ function _RegularItemSelection({
             variant="warning"
             onPress={() => {
               onDelete({
-                itemId: item.itemId,
-                expirationId: item.expirationId,
+                itemId: regularReviewItem.itemId,
+                expirationId: regularReviewItem.expirationId,
               });
             }}
           >
             Törlés
           </Button>
-          {(item.availableDiscounts?.length ?? 0) > 0 && (
+          {(regularReviewItem.availableDiscounts?.length ?? 0) > 0 && (
             <Button
               variant="ok"
               onPress={() => {
-                navigation.navigate('Discounts', { item });
+                navigation.navigate('Discounts', { regularReviewItem });
               }}
             >
               Kedvezmények
