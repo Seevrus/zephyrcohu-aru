@@ -242,6 +242,7 @@ export function createPrintStorageChanges({
     <div class="item ok">Ok?</div>
   
     ${receiptItems
+      .sort((itemA, itemB) => itemA.name.localeCompare(itemB.name, 'HU-hu'))
       .map((item, index) => {
         const quantityChange = item.quantityChange ?? 0;
         const currentQuantity = (item.originalQuantity ?? 0) + quantityChange;
