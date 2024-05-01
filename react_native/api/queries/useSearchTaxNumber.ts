@@ -56,5 +56,6 @@ export function useSearchTaxNumber({
       !!token &&
       isCheckTokenSuccess &&
       !isPasswordExpired,
+    placeholderData: undefined,
   });
 }

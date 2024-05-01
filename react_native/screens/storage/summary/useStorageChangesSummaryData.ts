@@ -37,7 +37,7 @@ export function useStorageChangesSummaryData(
   const receiptItems = useMemo(
     () =>
       (storageListItems ?? []).filter(
-        (item) => !!item.originalQuantity || !!item.currentQuantity
+        (item) => !!item.originalQuantity || !!item.quantityChange
       ),
     [storageListItems]
   );

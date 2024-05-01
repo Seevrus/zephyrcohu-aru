@@ -25,7 +25,7 @@ class ChangePasswordRequest extends FormRequest
     {
         return [
             'userName' => 'exists:users,user_name',
-            'password' => 'required|string|regex:/^([a-zA-Z0-9]){10}$/',
+            'password' => 'required|string|regex:/^([\dA-Za-z]){10}$/',
         ];
     }
 }

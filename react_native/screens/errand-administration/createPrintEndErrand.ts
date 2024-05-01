@@ -183,11 +183,11 @@ export function createPrintEndErrand({
       const receiptType = receipt.invoiceType === 'E' ? 'Á' : 'K';
 
       return `
-            <div class="number">${receipt.serialNumber}/${receipt.yearCode}</div>
-            <div>${receiptType}</div>
-            <div>${receipt.buyer.vatNumber}</div>
-            <div>${receipt.buyer.name}</div>
-            <div class="number">${receipt.roundedAmount}</div>`;
+        <div class="number">${receipt.serialNumber}/${receipt.yearCode}</div>
+        <div>${receiptType}</div>
+        <div>${receipt.buyer.vatNumber}</div>
+        <div>${receipt.buyer.name}</div>
+        <div class="number">${receipt.roundedAmount}</div>`;
     }),
     prepend(`
       <div>Számlaszám</div>

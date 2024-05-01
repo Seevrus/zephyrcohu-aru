@@ -32,7 +32,7 @@ export type StackParams = {
   ScanBarCodeInSell: undefined;
   Review: undefined;
   Discounts: {
-    item: RegularReviewItem;
+    regularReviewItem: RegularReviewItem;
   };
   SelectOtherItemsToSell: undefined;
   Summary: undefined;
@@ -49,6 +49,7 @@ export type StackParams = {
         centralPostalCode?: string | undefined;
         centralCity?: string | undefined;
         centralAddress?: string | undefined;
+        deliveryName?: string;
         deliveryPostalCode?: string;
         deliveryCity?: string;
         deliveryAddress?: string;
@@ -68,10 +69,6 @@ export type StackParams = {
 export type IndexProps = NativeStackScreenProps<StackParams, 'Index'>;
 
 export type LoginProps = NativeStackScreenProps<StackParams, 'Login'>;
-export type ChangePasswordProps = NativeStackScreenProps<
-  StackParams,
-  'ChangePassword'
->;
 export type SettingsProps = NativeStackScreenProps<StackParams, 'Settings'>;
 
 export type SelectStoreProps = NativeStackScreenProps<

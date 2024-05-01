@@ -7,7 +7,9 @@ import {
   all,
   anyPass,
   assoc,
+  assocPath,
   dissoc,
+  dissocPath,
   equals,
   filter,
   identity,
@@ -48,10 +50,10 @@ export type SellExpiration = {
   itemId: number;
   expirationId: number;
   expiresAt: string;
-  quantity: number | undefined;
+  quantity: number;
 };
 
-type SellExpirations = Record<number, SellExpiration>;
+type SellExpirations = Record<string, SellExpiration>;
 
 export type SellItem = {
   id: number;
@@ -90,7 +92,7 @@ export function useSelectItemsToSellData(
   const selectedPartner = useAtomValue(selectedPartnerAtom);
 
   const [selectedOrderItems, setSelectedOrderItems] = useState<
-    Record<number, number>
+    Record<string, number>
   >({});
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -113,7 +115,7 @@ export function useSelectItemsToSellData(
   }, []);
 
   const storageExpirations = useMemo(() => {
-    const expirations: Record<number, Record<number, number>> = {};
+    const expirations: Record<string, Record<string, number>> = {};
 
     if (selectedStoreCurrentState.state !== 'hasData') {
       return expirations;
@@ -142,8 +144,9 @@ export function useSelectItemsToSellData(
             (expiration) => `${item.barcode}${expiration.barcode}`
           ),
           netPrice:
-            currentPriceList?.items.find((index) => index.itemId === item.id)
-              ?.netPrice ?? item.netPrice,
+            currentPriceList?.items.find(
+              (priceListitem) => priceListitem.itemId === item.id
+            )?.netPrice ?? item.netPrice,
           vatRate: item.vatRate,
           expirations: pipe(
             map<Expiration, SellExpiration>((expiration) => ({
@@ -152,7 +155,8 @@ export function useSelectItemsToSellData(
               expiresAt: expiration.expiresAt,
               quantity: storageExpirations[item.id]?.[expiration.id] ?? 0,
             })),
-            indexBy(prop('itemId'))
+            filter<SellExpiration>((expiration) => expiration.quantity > 0),
+            indexBy(prop('expirationId'))
           )(item.expirations),
           availableDiscounts: item.discounts,
         })),
@@ -188,7 +192,11 @@ export function useSelectItemsToSellData(
             return prev;
           }
 
-          const { netPrice, vatRate } = currentItem;
+          const { vatRate } = currentItem;
+          const netPrice =
+            currentPriceList?.items.find(
+              (priceListitem) => priceListitem.itemId === currentItem.id
+            )?.netPrice ?? currentItem.netPrice;
 
           const [expirationsNetAmount, expirationsGrossAmount] = Object.values(
             expirations
@@ -211,7 +219,7 @@ export function useSelectItemsToSellData(
         },
         [0, 0]
       ),
-    [items, selectedItems]
+    [currentPriceList?.items, items, selectedItems]
   );
 
   const [netOrderTotal, grossOrderTotal] = useMemo(
@@ -227,7 +235,12 @@ export function useSelectItemsToSellData(
             return prev;
           }
 
-          const { netPrice, vatRate } = currentItem;
+          const { vatRate } = currentItem;
+          const netPrice =
+            currentPriceList?.items.find(
+              (priceListitem) => priceListitem.itemId === currentItem.id
+            )?.netPrice ?? currentItem.netPrice;
+
           const { netAmount, grossAmount } = calculateAmounts({
             netPrice,
             quantity: orderQuantity,
@@ -241,7 +254,7 @@ export function useSelectItemsToSellData(
         },
         [0, 0]
       ),
-    [items, selectedOrderItems]
+    [currentPriceList?.items, items, selectedOrderItems]
   );
 
   const upsertSelectedItem = useCallback(
@@ -249,13 +262,16 @@ export function useSelectItemsToSellData(
       const newQuantity = quantity ?? undefined;
 
       setSelectedItems((currentItems) => {
-        const itemsWithNewQuantity = {
-          ...currentItems,
-          [id]: {
-            ...currentItems[id],
-            [expirationId]: newQuantity,
-          },
-        };
+        const itemsWithNewQuantity = isNil(newQuantity)
+          ? dissocPath<Record<string, Record<string, number>>>(
+              [id.toString(), expirationId.toString()],
+              currentItems
+            )
+          : assocPath(
+              [id.toString(), expirationId.toString()],
+              newQuantity,
+              currentItems
+            );
 
         const areAllQuantitiesZero = pipe(
           values,
@@ -263,7 +279,7 @@ export function useSelectItemsToSellData(
         )(itemsWithNewQuantity[id]);
 
         if (areAllQuantitiesZero) {
-          return dissoc(id, itemsWithNewQuantity);
+          return dissoc(id.toString(), itemsWithNewQuantity);
         }
 
         return itemsWithNewQuantity;

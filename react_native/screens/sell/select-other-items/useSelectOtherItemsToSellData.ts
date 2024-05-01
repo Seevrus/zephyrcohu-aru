@@ -3,6 +3,7 @@ import { useAtom } from 'jotai';
 import {
   assoc,
   dissoc,
+  filter,
   isEmpty,
   isNil,
   isNotNil,
@@ -48,6 +49,7 @@ export function useSelectOtherItemsToSellData(
   );
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   const otherSellItems: OtherSellItems = useMemo(
     () =>
@@ -59,9 +61,12 @@ export function useSelectOtherItemsToSellData(
           vatRate: item.vatRate,
         })),
         sortBy(prop('name')),
+        filter<OtherSellItem>((item) =>
+          item.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+        ),
         (otherItems) => take<OtherSellItem>(NUM_ITEMS_SHOWN, otherItems)
       )(otherItems ?? []),
-    [otherItems]
+    [otherItems, searchTerm]
   );
 
   const [netTotal, grossTotal] = useMemo(
@@ -241,6 +246,8 @@ export function useSelectOtherItemsToSellData(
 
   return {
     isLoading: isLoading || isOtherItemsPending,
+    searchTerm,
+    setSearchTerm,
     otherItems: otherSellItems,
     priceChangeHandler,
     quantityChangeHandler,

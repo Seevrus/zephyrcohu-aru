@@ -1,6 +1,7 @@
 /* eslint-disable import/no-duplicates */
 import { format } from 'date-fns';
 import { hu } from 'date-fns/locale';
+import { trim } from 'ramda';
 
 import { type CheckToken } from '../../../api/response-mappers/mapCheckTokenResponse';
 import { type StoreDetailsResponseData } from '../../../api/response-types/StoreDetailsResponseType';
@@ -83,7 +84,7 @@ const head = `
 
       .item-grid {
         display: grid;
-        grid-template-columns: repeat(8, auto);
+        grid-template-columns: repeat(9, auto);
         border-bottom: 2px solid black;
         padding-bottom: 5px;
         margin-bottom: 5px;
@@ -130,13 +131,21 @@ const head = `
         grid-column: 3 / span 2;
       }
 
+      .item-grid .item.barcode {
+        grid-column: 5 / span 2;
+      }
+
       .item-grid .item.quantities {
-        grid-column: 5 / span 3;
+        grid-column: 7 / span 2;
       }
 
       .item-grid .item.item-name {
         grid-column: 1 / span 3;
         overflow-wrap: break-word;
+      }
+
+      .item-grid .item.unit {
+        grid-column: 4 / span 2;
       }
 
       .item-grid .item.ok {
@@ -151,12 +160,12 @@ const head = `
       }
 
       .item-grid .item.total-label {
-        grid-column: 1 / span 4;
+        grid-column: 1 / span 5;
         grid-row: auto / span 2;
       }
 
       .item-grid .item.total-change {
-        grid-column: 6 / span 1;
+        grid-column: 7 / span 1;
       }
 
       body footer {
@@ -223,6 +232,7 @@ export function createPrintStorageChanges({
     <div class="item nr">Ssz.</div>
     <div class="item article-number">Cikkszám</div>
     <div class="item expires-at">Lejárat</div>
+    <div class="item barcode">Vonalkód</div>
     <div class="item quantities">Mennyiségek</div>
     <div class="item item-name">Megnevezés</div>
     <div class="item unit">Egység</div>
@@ -232,39 +242,43 @@ export function createPrintStorageChanges({
     <div class="item ok">Ok?</div>
   
     ${receiptItems
+      .sort((itemA, itemB) => itemA.name.localeCompare(itemB.name, 'HU-hu'))
       .map((item, index) => {
-        const quantityChange =
-          (item.currentQuantity || 0) - (item.originalQuantity || 0);
+        const quantityChange = item.quantityChange ?? 0;
+        const currentQuantity = (item.originalQuantity ?? 0) + quantityChange;
 
         return `
-        <div class="item nr">${mapToNr(index)}</div>
-        <div class="item article-number">${item.articleNumber}</div>
-        <div class="item expires-at">${item.expiresAt}</div>
-        <div class="item item-name">${item.name}</div>
-        <div class="item unit">${item.unitName}</div>
-        <div class="item starting-quantity">${item.originalQuantity || 0}</div>
-        <div class="item quantity-change">
-          ${quantityChange > 0 ? '+' : ''}${quantityChange}
-        </div>
-        <div class="item final-quantity">${item.currentQuantity}</div>
-        <div class="item ok">
-          <div class="square-check"></div>
-        </div>`;
+          <div class="item nr">${mapToNr(index + 1)}</div>
+          <div class="item article-number">${item.articleNumber}</div>
+          <div class="item expires-at">${item.expiresAt}</div>
+          <div class="item barcode">
+            ${trim(`${item.itemBarcode} ${item.expirationBarcode}`)}
+          </div>
+          <div class="item item-name">${item.name}</div>
+          <div class="item unit">${item.unitName}</div>
+          <div class="item starting-quantity">${item.originalQuantity || 0}</div>
+          <div class="item quantity-change">
+            ${quantityChange > 0 ? '+' : ''}${quantityChange}
+          </div>
+          <div class="item final-quantity">${currentQuantity}</div>
+          <div class="item ok">
+            <div class="square-check"></div>
+          </div>`;
       })
       .join('')}`;
 
   const createItemsSummarySection = () => {
     const itemsSummary = receiptItems.reduce(
       (prev, item) => {
-        const quantityChange =
-          (item.currentQuantity ?? 0) - (item.originalQuantity ?? 0);
+        const quantityChange = item.quantityChange ?? 0;
+        const currentQuantity = (item.originalQuantity ?? 0) + quantityChange;
 
         return {
           originalQuantity:
             prev.originalQuantity + (item.originalQuantity ?? 0),
           in: quantityChange > 0 ? prev.in + quantityChange : prev.in,
           out: quantityChange < 0 ? prev.out + quantityChange : prev.out,
-          currentQuantity: prev.currentQuantity + (item.currentQuantity ?? 0),
+          currentQuantity: prev.currentQuantity + currentQuantity,
         };
       },
       {

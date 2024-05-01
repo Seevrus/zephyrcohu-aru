@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,47 +9,38 @@ import {
 
 import { usePasswordChange } from '../../api/mutations/usePasswordChange';
 import { ErrorCard } from '../../components/info-cards/ErrorCard';
+import { SuccessCard } from '../../components/info-cards/SuccessCard';
 import { Loading } from '../../components/Loading';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { colors } from '../../constants/colors';
 import { fontSizes } from '../../constants/fontSizes';
-import { type ChangePasswordProps } from '../../navigators/screen-types';
 
-export function ChangePassword({ navigation }: ChangePasswordProps) {
+export function ChangePassword() {
   const passwordChange = usePasswordChange();
 
   const [password, setPassword] = useState<string>('');
-  const [passwordRepeat, setPasswordRepeat] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [successMessage, setSuccessMessage] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const changePasswordHandler = (value: string) => {
     setErrorMessage('');
+    setSuccessMessage('');
     setPassword(value);
   };
 
-  const changePasswordRepeatHandler = (value: string) => {
-    setErrorMessage('');
-    setPasswordRepeat(value);
-  };
-
   const changePasswordRequestHandler = async () => {
-    if (password !== passwordRepeat) {
-      setErrorMessage('A beírt jelszavak nem egyeznek meg egymással.');
-    } else if (/^([\w#%+.@-]){10,}$/.test(password)) {
+    if (/^([\dA-Za-z]){10}$/.test(password)) {
       try {
         setIsLoading(true);
         await passwordChange.mutateAsync({ password });
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Index' }],
-        });
+        setIsLoading(false);
+        setSuccessMessage('Jelszó megváltoztatása sikeres.');
       } catch (error) {
         setIsLoading(false);
         setErrorMessage(error.message);
         setPassword('');
-        setPasswordRepeat('');
       }
     } else {
       setErrorMessage('A választott jelszó nem felel meg a szabályoknak.');
@@ -58,7 +48,7 @@ export function ChangePassword({ navigation }: ChangePasswordProps) {
   };
 
   const isChangePasswordButtonDisabled =
-    password.length === 0 || passwordRepeat.length === 0 || !!errorMessage;
+    password.length === 0 || !!errorMessage;
 
   if (isLoading) {
     return <Loading />;
@@ -71,61 +61,49 @@ export function ChangePassword({ navigation }: ChangePasswordProps) {
           Az új jelszóra vonatkozó szabályok:
         </Text>
         <Text style={[styles.passwordRuleCommon, styles.passwordRule]}>
-          Megengedett karakterek: angol ábécé kis- és nagybetűi, arab
-          számjegyek, valamit az alábbi speciális karakterek: . _ + # % @ -
+          Megengedett karakterek: angol ábécé kis- és nagybetűi és arab
+          számjegyek
         </Text>
         <Text style={[styles.passwordRuleCommon, styles.passwordRule]}>
-          Legalább 10 karakter hosszúságú
+          Pontosan 10 karakter hosszúságú
         </Text>
         <Text style={[styles.passwordRuleCommon, styles.passwordRule]}>
           Nem egyezhet meg a korábbi 10 jelszóval
         </Text>
       </View>
       {!!errorMessage && (
-        <View style={styles.error}>
+        <View style={styles.card}>
           <ErrorCard>{errorMessage}</ErrorCard>
         </View>
       )}
-      <View style={styles.form}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
-          <Input
-            label="Jelszó"
-            value={password}
-            invalid={!!errorMessage}
-            config={{
-              secureTextEntry: true,
-              autoCapitalize: 'none',
-              autoComplete: 'off',
-              autoCorrect: false,
-              importantForAutofill: 'no',
-              onChangeText: changePasswordHandler,
-            }}
-          />
-          <Input
-            label="Jelszó újra"
-            value={passwordRepeat}
-            invalid={!!errorMessage}
-            config={{
-              secureTextEntry: true,
-              autoCapitalize: 'none',
-              autoComplete: 'off',
-              autoCorrect: false,
-              importantForAutofill: 'no',
-              onChangeText: changePasswordRepeatHandler,
-            }}
-          />
-          <View style={styles.buttonContainer}>
-            <Button
-              variant={isChangePasswordButtonDisabled ? 'disabled' : 'ok'}
-              onPress={changePasswordRequestHandler}
-            >
-              Jelszó megváltoztatása
-            </Button>
-          </View>
-        </KeyboardAvoidingView>
-      </View>
+      {!!successMessage && (
+        <View style={styles.card}>
+          <SuccessCard>{successMessage}</SuccessCard>
+        </View>
+      )}
+      <KeyboardAvoidingView behavior="height" style={styles.form}>
+        <Input
+          label="Jelszó"
+          value={password}
+          invalid={!!errorMessage}
+          config={{
+            secureTextEntry: false,
+            autoCapitalize: 'none',
+            autoComplete: 'off',
+            autoCorrect: false,
+            importantForAutofill: 'no',
+            onChangeText: changePasswordHandler,
+          }}
+        />
+        <View style={styles.buttonContainer}>
+          <Button
+            variant={isChangePasswordButtonDisabled ? 'disabled' : 'ok'}
+            onPress={changePasswordRequestHandler}
+          >
+            Jelszó megváltoztatása
+          </Button>
+        </View>
+      </KeyboardAvoidingView>
     </ScrollView>
   );
 }
@@ -136,13 +114,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 8,
   },
+  card: {
+    marginBottom: 30,
+    marginTop: 20,
+  },
   container: {
     backgroundColor: colors.background,
     flex: 1,
-  },
-  error: {
-    marginBottom: 30,
-    marginTop: 20,
   },
   form: {
     backgroundColor: colors.neutral,

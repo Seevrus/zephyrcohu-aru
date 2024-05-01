@@ -48,7 +48,7 @@ export const maxNewPartnerIdInUseAtom = atomWithAsyncStorage(
 
 export const selectedPartnerAtom = atom<Partner | null>(null);
 
-export const selectedItemsAtom = atom<Record<number, Record<number, number>>>(
+export const selectedItemsAtom = atom<Record<string, Record<string, number>>>(
   {}
 );
 

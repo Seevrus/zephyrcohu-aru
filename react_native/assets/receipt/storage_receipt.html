@@ -65,7 +65,7 @@
 
       .item-grid {
         display: grid;
-        grid-template-columns: repeat(8, auto);
+        grid-template-columns: repeat(9, auto);
         border-bottom: 2px solid black;
         padding-bottom: 5px;
         margin-bottom: 5px;
@@ -112,13 +112,21 @@
         grid-column: 3 / span 2;
       }
 
+      .item-grid .item.barcode {
+        grid-column: 5 / span 2;
+      }
+
       .item-grid .item.quantities {
-        grid-column: 5 / span 3;
+        grid-column: 7 / span 2;
       }
 
       .item-grid .item.item-name {
         grid-column: 1 / span 3;
         overflow-wrap: break-word;
+      }
+
+      .item-grid .item.unit {
+        grid-column: 4 / span 2;
       }
 
       .item-grid .item.ok {
@@ -133,12 +141,12 @@
       }
 
       .item-grid .item.total-label {
-        grid-column: 1 / span 4;
+        grid-column: 1 / span 5;
         grid-row: auto / span 2;
       }
 
       .item-grid .item.total-change {
-        grid-column: 6 / span 1;
+        grid-column: 7 / span 1;
       }
 
       body footer {
@@ -193,6 +201,7 @@
         <div class="item nr">Ssz.</div>
         <div class="item article-number">Cikkszám</div>
         <div class="item expires-at">Lejárat</div>
+        <div class="item barcode">Vonalkód</div>
         <div class="item quantities">Mennyiségek</div>
         <div class="item item-name">Megnevezés</div>
         <div class="item unit">Egység</div>
@@ -204,6 +213,7 @@
         <div class="item nr">001.</div>
         <div class="item article-number">******8*</div>
         <div class="item expires-at">****.**</div>
+        <div class="item barcode">***********12*</div>
         <div class="item item-name">
           Lorem ipsum dolor sit amet, consectetur a
         </div>
@@ -218,6 +228,7 @@
         <div class="item nr">002.</div>
         <div class="item article-number">00000021</div>
         <div class="item expires-at">2024.05</div>
+        <div class="item barcode">0123456789101</div>
         <div class="item item-name">Pandó pálcikás</div>
         <div class="item unit">karton</div>
         <div class="item starting-quantity">10</div>
@@ -230,6 +241,7 @@
         <div class="item nr">003.</div>
         <div class="item article-number">00000033</div>
         <div class="item expires-at">2024.11</div>
+        <div class="item barcode">0123456789101</div>
         <div class="item item-name">Mogyorós családi</div>
         <div class="item unit">karton</div>
         <div class="item starting-quantity">10</div>
@@ -242,6 +254,7 @@
         <div class="item nr">004.</div>
         <div class="item article-number">00000042</div>
         <div class="item expires-at">2023.12</div>
+        <div class="item barcode">0123456789101</div>
         <div class="item item-name">Vaníliás családi</div>
         <div class="item unit">karton</div>
         <div class="item starting-quantity">30</div>

@@ -33,10 +33,31 @@ export function useReviewStorageChangesData(
 
   const changedItems = useMemo(
     () =>
-      (storageListItems ?? []).filter(
-        (item) => item.currentQuantity !== item.originalQuantity
-      ),
+      (storageListItems ?? []).filter((item) => isNotNil(item.quantityChange)),
     [storageListItems]
+  );
+
+  const changedQuantities = useMemo(
+    () =>
+      changedItems.reduce(
+        (previousQuantities, item) => {
+          const quantityChange = item.quantityChange ?? 0;
+
+          if (quantityChange > 0) {
+            return {
+              up: previousQuantities.up + quantityChange,
+              down: previousQuantities.down,
+            };
+          }
+
+          return {
+            up: previousQuantities.up,
+            down: previousQuantities.down - quantityChange,
+          };
+        },
+        { up: 0, down: 0 }
+      ),
+    [changedItems]
   );
 
   const primaryStoreId = stores?.find((store) => store.type === 'P')?.id;
@@ -79,6 +100,7 @@ export function useReviewStorageChangesData(
     changedItems,
     reallyUnexpectedBlocker,
     canConfirmStorageChanges,
+    changedQuantities,
     handleSendChanges,
   };
 }

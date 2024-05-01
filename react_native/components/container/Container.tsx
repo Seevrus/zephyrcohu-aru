@@ -1,5 +1,10 @@
 import { type PropsWithChildren } from 'react';
-import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  type StyleProp,
+  StyleSheet,
+  type ViewStyle,
+} from 'react-native';
 
 import { colors } from '../../constants/colors';
 
@@ -14,9 +19,13 @@ export function Container({
   children,
 }: PropsWithChildren<ContainerProps>) {
   return (
-    <View testID={testID} style={[style, styles.container]}>
+    <KeyboardAvoidingView
+      testID={testID}
+      behavior="height"
+      style={[style, styles.container]}
+    >
       {children}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

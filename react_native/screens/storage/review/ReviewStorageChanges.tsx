@@ -14,6 +14,7 @@ import { ErrorCard } from '../../../components/info-cards/ErrorCard';
 import { TextCard } from '../../../components/info-cards/TextCard';
 import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
+import { LabeledItem } from '../../../components/ui/LabeledItem';
 import { colors } from '../../../constants/colors';
 import { type ReviewStorageChangesProps } from '../../../navigators/screen-types';
 import { ReviewExpirationItem } from './ReviewExpirationItem';
@@ -32,6 +33,7 @@ function SuspendedReviewStorageChanges({
     changedItems,
     canConfirmStorageChanges,
     reallyUnexpectedBlocker,
+    changedQuantities,
     handleSendChanges,
   } = useReviewStorageChangesData(navigation);
 
@@ -82,6 +84,12 @@ function SuspendedReviewStorageChanges({
         />
       </View>
       <View style={styles.footerContainer}>
+        <View style={styles.totalStorageChangeContainer}>
+          <LabeledItem
+            label="Mindösszesen"
+            text={`${changedItems.length} termék / +${changedQuantities.up} / -${changedQuantities.down}`}
+          />
+        </View>
         <View style={styles.buttonContainer}>
           <Button
             variant={confirmButtonVariant}
@@ -137,10 +145,14 @@ const styles = StyleSheet.create({
   footerContainer: {
     borderTopColor: colors.white,
     borderTopWidth: 2,
-    height: 70,
-    paddingVertical: 10,
+    height: 110,
   },
   listContainer: {
     flex: 1,
+  },
+  totalStorageChangeContainer: {
+    alignItems: 'flex-end',
+    marginHorizontal: '7%',
+    marginVertical: 10,
   },
 });

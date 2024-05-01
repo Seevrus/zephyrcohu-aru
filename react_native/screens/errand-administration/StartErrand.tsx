@@ -97,7 +97,9 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
             queryKey: queryKeys.storeDetails(),
           }),
           queryClient.invalidateQueries({ queryKey: queryKeys.stores }),
+        ]);
 
+        await Promise.all([
           queryClient.fetchQuery({
             queryKey: queryKeys.items,
             queryFn: fetchItems(token),
@@ -142,9 +144,11 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
     }
   };
 
-  const refreshHandler = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.partnerLists });
-    queryClient.invalidateQueries({ queryKey: queryKeys.stores });
+  const refreshHandler = useCallback(async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: queryKeys.partnerLists }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.stores }),
+    ]);
   }, [queryClient]);
 
   const displayStores = useMemo(

@@ -44,7 +44,7 @@ function SuspendedReview({ navigation }: ReviewProps) {
 
   const [selectedRow, setSelectedRow] = useState<ReviewItem | null>(null);
 
-  const renderReceiptRow: ListRenderItem<ReviewItem> = useCallback(
+  const renderReviewRow: ListRenderItem<ReviewItem> = useCallback(
     (info: ListRenderItemInfo<ReviewItem>) => {
       const reviewItemId = getReviewItemId(info.item);
       const selectedRowId = getReviewItemId(selectedRow);
@@ -52,7 +52,7 @@ function SuspendedReview({ navigation }: ReviewProps) {
       return info.item.type === 'item' ? (
         <RegularItemSelection
           selected={reviewItemId === selectedRowId}
-          item={info.item}
+          regularReviewItem={info.item}
           onSelect={(id: string | number) => {
             setSelectedRow(
               reviewItems?.find((row) => getReviewItemId(row) === id) ?? null
@@ -121,7 +121,7 @@ function SuspendedReview({ navigation }: ReviewProps) {
       <View style={styles.receiptContainer}>
         <FlatList
           data={reviewItems}
-          renderItem={renderReceiptRow}
+          renderItem={renderReviewRow}
           keyExtractor={getReviewItemId}
         />
       </View>

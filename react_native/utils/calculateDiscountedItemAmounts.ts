@@ -32,11 +32,11 @@ export function calculateDiscountedItemAmounts({
           break;
         }
         case 'percentage': {
-          newNetPrice = netPrice * (100 - discount.amount);
+          newNetPrice = Math.round(netPrice * ((100 - discount.amount) / 100));
           break;
         }
         case 'freeForm': {
-          newNetPrice = discount.price ?? 1;
+          newNetPrice = discount.price ?? netPrice;
           break;
         }
         default: {

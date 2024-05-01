@@ -3,13 +3,14 @@ import { isNil } from 'ramda';
 import { Suspense, useEffect } from 'react';
 import {
   Animated,
-  type ListRenderItemInfo,
+  type ListRenderItem,
   Pressable,
   StyleSheet,
   View,
 } from 'react-native';
 
 import { type StorageListItem } from '../../../atoms/storageFlow';
+import { Alert } from '../../../components/alert/Alert';
 import { Container } from '../../../components/container/Container';
 import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
@@ -29,21 +30,22 @@ function SuspendedSelectItemsFromStore({
 
   const {
     isLoading,
-    searchState,
-    setSearchState,
+    searchTerm,
+    setSearchTerm,
     itemsToShow,
     isAnyItemChanged,
     setCurrentQuantity,
-  } = useSelectItemsFromStoreData();
+    alert,
+  } = useSelectItemsFromStoreData(navigation);
 
   useEffect(() => {
-    if (!isNil(scannedBarCode) && searchState.barCode !== scannedBarCode) {
-      setSearchState({ searchTerm: '', barCode: scannedBarCode });
+    if (!isNil(scannedBarCode) && searchTerm !== scannedBarCode) {
+      setSearchTerm(scannedBarCode);
       navigation.setParams({ scannedBarCode: undefined });
     }
-  }, [navigation, scannedBarCode, searchState.barCode, setSearchState]);
+  }, [navigation, scannedBarCode, searchTerm, setSearchTerm]);
 
-  const renderItem = (info: ListRenderItemInfo<StorageListItem>) => (
+  const renderItem: ListRenderItem<StorageListItem> = (info) => (
     <ExpirationAccordionDetails
       item={info.item}
       setCurrentQuantity={setCurrentQuantity}
@@ -68,34 +70,18 @@ function SuspendedSelectItemsFromStore({
           <Input
             label=""
             labelPosition="left"
-            value={searchState.searchTerm}
+            value={searchTerm}
             config={{
-              onChangeText: (text) => {
-                setSearchState({ searchTerm: text, barCode: '' });
-              },
+              onChangeText: setSearchTerm,
             }}
           />
-          {searchState.barCode ? (
-            <Pressable
-              onPress={() => {
-                setSearchState((prevState) => ({ ...prevState, barCode: '' }));
-              }}
-            >
-              <MaterialCommunityIcons
-                name="barcode-off"
-                size={40}
-                color="white"
-              />
-            </Pressable>
-          ) : (
-            <Pressable
-              onPress={() => {
-                navigation.navigate('ScanBarCodeInStorage');
-              }}
-            >
-              <MaterialCommunityIcons name="barcode" size={40} color="white" />
-            </Pressable>
-          )}
+          <Pressable
+            onPress={() => {
+              navigation.navigate('ScanBarCodeInStorage');
+            }}
+          >
+            <MaterialCommunityIcons name="barcode" size={40} color="white" />
+          </Pressable>
         </View>
       </View>
       <View style={styles.listContainer}>
@@ -112,6 +98,24 @@ function SuspendedSelectItemsFromStore({
           </Button>
         </View>
       </View>
+      <Alert
+        visible={alert.isAlertVisible}
+        title="Megerősítés szükséges"
+        message="Biztosan ki szeretne lépni? A nem mentett rakodási adatok elvesznek!"
+        buttons={{
+          cancel: {
+            text: 'Mégsem',
+            variant: 'neutral',
+            onPress: alert.resetAlertHandler,
+          },
+          confirm: {
+            text: 'Igen',
+            variant: 'warning',
+            onPress: alert.exitConfimationHandler,
+          },
+        }}
+        onBackdropPress={alert.resetAlertHandler}
+      />
     </Container>
   );
 }

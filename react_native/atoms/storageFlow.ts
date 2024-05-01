@@ -11,7 +11,7 @@ export type StorageListItem = {
   unitName: string;
   primaryStoreQuantity: number | undefined;
   originalQuantity: number | undefined;
-  currentQuantity: number | undefined;
+  quantityChange: number | undefined;
 };
 
 export const isStorageSavedToApiAtom = atom(false);

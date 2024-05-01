@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { eqProps, isNil, pipe, replace, trim } from 'ramda';
-import { memo, useState } from 'react';
+import { eqProps, isNil, isNotNil, pipe, replace, trim } from 'ramda';
+import { memo, useCallback, useState } from 'react';
 import {
   type LayoutChangeEvent,
   Pressable,
@@ -28,34 +28,55 @@ function _ExpirationAccordionDetails({
   setCurrentQuantity,
 }: ExpirationAccordionDetailsProps) {
   const [dropdownHeight, setDropdownHeight] = useState(170);
+  const [shownQuantity, setShownQuantity] = useState<string>('');
 
-  const quantityHandler = (newQuantity: string) => {
-    const formattedQuantity = pipe(
-      trim,
-      replace(',', '.'),
-      Number,
-      Math.floor
-    )(newQuantity);
-    const nullIshFormattedQuantity = Number.isNaN(formattedQuantity)
-      ? null
-      : formattedQuantity;
+  const minimumCurrentQuantity = -1 * (item.originalQuantity ?? 0);
 
-    if (
-      newQuantity === '' ||
-      formattedQuantity < 0 ||
-      isNil(nullIshFormattedQuantity)
-    ) {
-      setCurrentQuantity(item, null);
-    } else {
-      setCurrentQuantity(item, nullIshFormattedQuantity);
-    }
-  };
+  const quantityHandler = useCallback(
+    (newQuantity: string) => {
+      if (newQuantity === '-') {
+        setShownQuantity(newQuantity);
+      } else {
+        const formattedQuantity = pipe(
+          trim,
+          replace(',', '.'),
+          Number,
+          Math.floor
+        )(newQuantity);
+
+        const nullIshFormattedQuantity = Number.isNaN(formattedQuantity)
+          ? null
+          : formattedQuantity;
+
+        const stringFormattedQuantity = isNil(nullIshFormattedQuantity)
+          ? ''
+          : String(formattedQuantity);
+
+        if (
+          newQuantity === '' ||
+          formattedQuantity === 0 ||
+          isNil(nullIshFormattedQuantity) ||
+          (nullIshFormattedQuantity === -1 && minimumCurrentQuantity === 0)
+        ) {
+          setCurrentQuantity(item, null);
+          setShownQuantity('');
+        } else if (formattedQuantity <= minimumCurrentQuantity) {
+          setCurrentQuantity(item, minimumCurrentQuantity);
+          setShownQuantity(String(minimumCurrentQuantity));
+        } else {
+          setCurrentQuantity(item, nullIshFormattedQuantity);
+          setShownQuantity(stringFormattedQuantity);
+        }
+      }
+    },
+    [item, minimumCurrentQuantity, setCurrentQuantity]
+  );
 
   const listItemColor = (() => {
-    if ((item.primaryStoreQuantity ?? 0) < 0) {
+    if ((item.primaryStoreQuantity ?? 0) < (item.quantityChange ?? 0)) {
       return colors.error;
     }
-    if ((item.currentQuantity ?? 0) !== (item.originalQuantity ?? 0)) {
+    if (isNotNil(item.quantityChange)) {
       return colors.warning;
     }
 
@@ -84,7 +105,7 @@ function _ExpirationAccordionDetails({
         }}
       >
         <View style={styles.detailsRow}>
-          <Text style={styles.detailsRowText}>Kód:</Text>
+          <Text style={styles.detailsRowText}>Vonalkód:</Text>
           <Text style={styles.detailsRowText}>
             {trim(`${item.itemBarcode} ${item.expirationBarcode}`)}
           </Text>
@@ -93,11 +114,17 @@ function _ExpirationAccordionDetails({
           <Text style={styles.detailsRowText}>Főraktárkészlet:</Text>
           <Text style={styles.detailsRowText}>{item.primaryStoreQuantity}</Text>
         </View>
+        <View style={styles.detailsRow}>
+          <Text style={styles.detailsRowText}>Saját raktár készlete:</Text>
+          <Text style={styles.detailsRowText}>
+            {item.originalQuantity ?? 0}
+          </Text>
+        </View>
         <View style={styles.selectionContainer}>
           <Pressable
             style={styles.selectIconContainer}
             onPress={() =>
-              quantityHandler(String((item.currentQuantity ?? 0) - 1))
+              quantityHandler(String((item.quantityChange ?? 0) - 1))
             }
           >
             <MaterialIcons
@@ -109,7 +136,7 @@ function _ExpirationAccordionDetails({
           </Pressable>
           <View style={styles.quantityContainer}>
             <Input
-              label="Raktárkészlet:"
+              label="Rakodás:"
               textAlign="center"
               config={{
                 autoCapitalize: 'none',
@@ -118,7 +145,7 @@ function _ExpirationAccordionDetails({
                 contextMenuHidden: true,
                 keyboardType: 'numeric',
                 maxLength: 4,
-                value: String(item.currentQuantity ?? ''),
+                value: shownQuantity,
                 onChangeText: quantityHandler,
               }}
             />
@@ -126,7 +153,7 @@ function _ExpirationAccordionDetails({
           <Pressable
             style={styles.selectIconContainer}
             onPress={() =>
-              quantityHandler(String((item.currentQuantity ?? 0) + 1))
+              quantityHandler(String((item.quantityChange ?? 0) + 1))
             }
           >
             <MaterialIcons

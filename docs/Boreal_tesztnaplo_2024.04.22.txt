@@ -1,0 +1,113 @@
+Napló a Zephyr Boreal mobilalkalmazás tesztelésérïl
+
+Dátum: 2024.04.22. - verzió: 0.7.0
+
+Kezdï képernyï
+
+- bejelentkezés nélkül csak bejelentkezni lehet: OK
+- bejelentkezve aktív a körindítés és a rakodás: OK
+- körinditás után aktív az árulevétel és a kör zárása: OK
+
+Funkciók:
+
+1. Bejelentkezés:
+
+  - felajánlja a legutóbbi felhasználónevet: OK
+  - jelszóbeírás: 
+    -- elrontott jelszónál megfelelï hibajelzés: OK
+    -- helyes névvel és jelszóval bejelentkezés: OK
+
+1.1. Jelszó megváltoztatása: OK
+    -- ha írom a jelszót a billenty¹zet rátakar a "jelszó újra"-ra, nem tudom hogy
+       nem lehet-e valamit tenni (kicsit kisebb bet¹k a felsï üzenteben,  vagy kicsit szorosabb elrendezés)
+    -- a végén esetleg egy üzenet, hogy "sikerült" talán jó volna
+    -- itt is jó volna végig látni, mit írok be jelszónak (és akkor kérdés, hogy van-e értelme jelszó újrát is bekérni, ezt nem tudom)
+    
+2. Rakodás
+
+2.1. Raktárválasztás
+  - tudok választani, tudok keresni, a megfelelï nyomógombbal tudok továbbmenni: OK
+  - a keresï mezï alapján a keresés lehetne case-érzéketlen? ez hasznos lenne a többi keresésben is (de majd különösen a boltoknál)
+  
+2.2. Tételek
+  - keresï mezï: 
+    -- ez case-érzéketlen: hurrá
+    -- jó lenne, ha kézzel beírva ide is lehetne vonalkódra is keresni, "elejére" is, szóval ha van pl. olyan vonalkódú
+       termék, hogy 7285508138001, akkor ahogy írom be hogy 728... lesz¹rhetné (úgy mint ahogy a nevével is csinálod)
+  - sorrend: név + lejárati dátum: OK
+  - tétellista teljessége: jónak t¹nik, adott cikkhez vannak többféle lejárati dátummal tételek: OK
+  - rakodási panel:
+    -- látszik a név, a lejárat és a kód is (ean13): OK
+    -- látszik a fïraktár készlete: OK
+    -- a rakodó beviteli mezï használhatósága, mérete, nyomógombok, stb.: OK
+    -- a tételfejléc átszínezése, amire volt rakodás: nagyon jó
+    -- mivel van elég hely a panelen (és mert ezen már értetlenkedtek, amikor mutattam nekik) meg lehetne-e azt oldani, hogy annyi változzon rajta, hogy ahogyan a fïraktár készlete ki van írva, az alatt legyen kiírva hogy "saját raktár készlete" és ott jelenjen meg a kiinduló mennyiség és a rakodási mennyiség alapértelmezése legyen nulla és ha már beírt valamit és másik tételre átment és utána visszajön módosítani, akkor is ezt lássa? és akkor a mezï címe is változna "raktárkészlet"-rïl "rakodás"-ra.
+       
+       pl. 
+            fïraktár készlete:        100
+            saját raktár készlete      22
+            
+            rakodás                     5     (vagy ha kivett, akkor -5)
+            
+    -- megoldható-e, hogy ha a rakodó tételpanel lelóg alul, akkor automatikusan annyival feljebb gördüljön, hogy teljesen látsszon (anélkül hogy a felhazsnálónak kéne feljebb tolnia)? - NEM
+  - ha már elkezdtem tételeket rakodni, akkor jó lenne ha nem engedne szó nélkül visszalépni onnan, elveszítve az addig történt beviteleket
+    
+2.3. Áttekintés
+  - a rakodott tételek látszanak: OK
+  - a cikk megnevezése alá jó lenne kiírni a kódját is (mellesleg "kód" helyett lehet hogy "vonalkód" vagy "EAN13" vagy "bar" jobb lenne mindenütt?)
+  - jó lenne egy összegzï sor is (hasonlóan mint a számlázásnál), ami így nézhetne ki: "Összes termék/rakodás: ###/### (pl. ha 3-féle termékbïl rakodott összesen 22 db-ot, akkor 3/22)
+  - Biztonsági kérdés a végén: OK (valami hasonló kellene a véletlen visszalépés esetére) - De itt semmi baj sem történik, ha véletlenül visszalép, sőt, szerintem elvárt egy visszatekintő felületen, hogy vissza tudjon lépni...
+  
+2.4. Összegzés:
+  - szövegek, nyomógombok: OK
+  
+  2.4.1. Rakjegyzék
+  - a fejléc: OK
+  - a cikkszámban van egy aláhúzás-jel: beszéltünk meg korábban oda tagolást? - adatbázisból jön
+  - a sorszám a listán induljon 1-gyel és ne nullával
+  - tételenként a cikkszám és a lejárat mellett a vonalkód is jó lenne ha megjelenne, abban a sorban elfér és ez kaphatna közös feljécet, hogy "Cikk/lejárat/vonalkód" és az adat is lehetne így rajta hogy "000007/2024-10/3746664746472"
+  - egyébként az elrendezés, listakép, össtegzï sor, jónak t¹nnek, majd látni kell persze a nyomatot is hogy fog kinézni
+  - ezt még megkérdezem majd tïlük is, de lehet hogy jó volna a rakodási képernyïvel azonos sorrendben nyomtatni is, az ugye név + lejárati dátum, ez most cikkszám + lejárati dátum
+  
+  
+3. Körindítás
+  - raktárválasztás kereséssel együtt: OK
+  - partnerlista: OK
+  - dátum, naptárral: OK (figyel arra hogy vissza nem lehet dátumozni, szuper)
+  - itt végül mikor használandó az adatok frissítése gomb?
+  
+4. Árulevétel
+
+  - "kör partnerei" és "összes partner" legyen "kör boltjai" és "összes bolt", értik a "partnerezést", de ïk következetesen "boltoznak"
+  - kör partnerei: OK
+  - keresés a partnerek között többféle adatra: OK
+  - ha kerestem valamire a kör boltjaiban, majd koppintok az összes boltra és ott keresek valami másra, akkor megtalálja, de a sz¹rt listában benne marad a "kör"-bïl kikeresett is (ami az újabb keresésnek nem felel meg amúgy). Gondolom két külön keresïmezït használsz és az elïzïben megmaradó tartalom okozza a bajt - EZT NEM TUDTAM REPRODUKÁLNI
+  - ha a tételeknél "vissza"-zok, akkor nem egyet megy visszább, hanem kidob a fïmenübe - IGEN, DE MÉG FIGYELMEZTETÉS IS VAN
+  - új partner: 
+    - keresés és letöltés a NAV-tól adószám alapján: OK
+    - adatbeviteli panel
+      -- a "központi cím (ha van)" legyen inkább "Székhely (központ)"
+      -- a "számlázási cím" 
+         --- legyen inkább "A bolt neve és címe" (azzal együtt ha a NAV-tól jött le levelezési cím, ami eltérhet a székhelytïl akkor az jöhet ide továbbra is)
+         --- kéne ide név is (a bolt neve) alapértelmezésben a cég nevével
+    - a tételeknél nem azok a tételek látszanak, amiket rakodtam, vagy legalábbis nem mindegyik (egy cikkhez csak 1 lejárat)
+      -- ha az volt a szándék, hogy itt is úgy nézzen ki, mint a rakodásnál, hogy egy tétel = 1 cikk egy lejárata, akkor a tételfejléc legyen itt is ugyanaz (megnevezés és lejárat)
+  - amikor mennyiséget írok be, akkor a billenty¹zet feljebb tolja a "tétellista véglegesítése" gombot - NYILVÁN
+    -- lehet-e olyan billenty¹zet itt, amiben csak a számok vannak (meg esetleg egy minuszjel)? - OLYAN VAN
+    -- jobb lenne, ha olyankor, amikor elöl van a billenty¹zet, nem lehetne "tétellistát véglegesíteni", hanem csak a beírt mennyiséget leokézni és azután t¹njön el megint a billenty¹zet - EZT LEHETETLEN MEGCSINÁLNI
+  - a "tétellista véglegesítése" gomb felirata lehet hogy jobb lenne "tovább az áttekintéshez" vagy csak simán "tovább"
+  - áttekintés:
+    - a kedvezmények érvényesítése gombon (miután adtam meg mennyisége(ke)t kettïször kell koppintani - NYILVÁN (az elsïvel bezárja a billenty¹zetet, a másodikkal érvényesül ténylegesen)
+    - a tételpanelben a cikkszám alá is bekerül a lejárat, ami a fejlécben is van, szóval lehet hogy ide már nem kellene és a fejléc lehetne úgy formázva, mint a rakodásé, hogy balra a név, jobbra a lejárat
+    - ha nincs kinyitva a tétel-panel, akkor is jó lenne látni a mennyiségét és az össz (bruttó) értékét
+    - sokkal érthetïbb és használhatóbb lenne, ha az áttekintésben a tételpanelek így néznének ki valahogy - EZT AKKOR SE CSINÁLOM MEG, HA FIZETNEK ÉRTE   
+          
+      -- Szóval az tétel-összes mennyiségben és bruttó árban már benne vannak az érvényesített kedvezményes tételek is
+      -- Nem tudom, most hogy van a matek beállítva, de választottam 9 karton dupla csokit és 2, illetve 3 kartonra adtam a "kettït fizet", illetve a "féláron" kedvezményt és totál hülyeség lett az összérték a képernyï alján és ugye jelenleg nem látni hogy melyik kedvezmény  végülis "mennyit ér" és az össz tételbruttót se mozdítja meg
+
+    - extra tételek:
+      -- a tételpanelen belül az "ár" legyen "egységár" és a megjegyzés jobb lenne "tételszöveg"
+      -- a "kiválasztott tételek hozzáadása" gombszöveg elsïre OK, de ha módosítani volt itt, akkor már félreérthetï, jobb lenne inkább csak simán "tételek jóváhagyása" - ITT NEM IS TUD MÓDOSÍTANI, csak törölni és újra hozzáadni
+
+  - összegzés: ide átlépve az áttekintésrïl karikázásba ragadt (ha közben továbblép, szólok, de ez pár perce tart)
+  

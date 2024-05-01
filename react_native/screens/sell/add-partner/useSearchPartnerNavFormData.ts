@@ -94,6 +94,7 @@ export function useSearchPartnerNavFormData({
         centralPostalCode: selectedTaxPayer.locations.C?.postalCode,
         centralCity: selectedTaxPayer.locations.C?.city,
         centralAddress: selectedTaxPayer.locations.C?.address,
+        deliveryName: selectedTaxPayer.locations.D.name,
         deliveryPostalCode: selectedTaxPayer.locations.D?.postalCode,
         deliveryCity: selectedTaxPayer.locations.D?.city,
         deliveryAddress: selectedTaxPayer.locations.D?.address,

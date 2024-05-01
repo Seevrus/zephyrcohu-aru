@@ -152,7 +152,7 @@ function SuspendedSelectItemsToSell({
         </View>
         <View style={styles.buttonContainer}>
           <Button variant={confirmButtonVariant} onPress={confirmItemsHandler}>
-            Tétellista véglegesítése
+            Tovább az áttekintéshez
           </Button>
         </View>
       </View>

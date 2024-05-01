@@ -6,11 +6,16 @@ import { fontSizes } from '../../constants/fontSizes';
 type LabeledItemProps = {
   label: string;
   text: string;
+  justifyContent?: 'flex-start' | 'space-between';
 };
 
-export function LabeledItem({ label, text }: LabeledItemProps) {
+export function LabeledItem({
+  label,
+  text,
+  justifyContent = 'flex-start',
+}: LabeledItemProps) {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { justifyContent }]}>
       <Text style={styles.infoLabel}>{label}:</Text>
       <Text style={styles.infoText}>{text}</Text>
     </View>

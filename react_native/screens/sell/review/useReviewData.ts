@@ -2,7 +2,7 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { add, format, parseISO } from 'date-fns';
 import { useAtom, useAtomValue } from 'jotai';
-import { and, append, dissoc, dissocPath, isEmpty, reduce } from 'ramda';
+import { append, dissoc, dissocPath, isEmpty, reduce } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useSellSelectedItems } from '../../../api/mutations/useSellSelectedItems';
@@ -93,10 +93,13 @@ export function useReviewData(
     ({ itemId, expirationId }: { itemId: number; expirationId: number }) => {
       setSelectedItems((prevItems) => {
         if (Object.keys(prevItems[itemId]).length === 1) {
-          return dissoc(itemId, prevItems);
+          return dissoc(itemId.toString(), prevItems);
         }
 
-        return dissocPath([itemId, expirationId], prevItems);
+        return dissocPath(
+          [itemId.toString(), expirationId.toString()],
+          prevItems
+        );
       });
     },
     [setSelectedItems]
@@ -128,11 +131,7 @@ export function useReviewData(
 
   useEffect(() => {
     setReviewItems((prevItems) => {
-      if (
-        !items ||
-        !otherItems ||
-        and(isEmpty(selectedItems), isEmpty(selectedOtherItems))
-      ) {
+      if (!items || !otherItems) {
         return prevItems;
       }
 
@@ -151,16 +150,17 @@ export function useReviewData(
               const expiration = item.expirations.find(
                 (exp) => exp.id === +expirationId
               );
+
+              if (!expiration) {
+                return;
+              }
+
               const currentReviewItem = prevItems?.find(
                 (index) =>
                   index.itemId === +itemId &&
                   index.type === 'item' &&
                   index.expirationId === +expirationId
               );
-
-              if (!expiration) {
-                return;
-              }
 
               const netPrice =
                 currentPriceList?.items.find(

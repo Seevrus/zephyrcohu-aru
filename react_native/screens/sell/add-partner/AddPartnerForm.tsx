@@ -21,6 +21,7 @@ type FormErrors = {
   centralPostalCode: string;
   centralCity: string;
   centralAddress: string;
+  deliveryName: string;
   deliveryPostalCode: string;
   deliveryCity: string;
   deliveryAddress: string;
@@ -47,6 +48,9 @@ function SuspendedAddPartnerForm({
   );
   const [centralAddress, setCentralAddress] = useState<string>(
     params?.centralAddress ?? ''
+  );
+  const [deliveryName, setDeliveryName] = useState<string>(
+    params?.deliveryName ?? ''
   );
   const [deliveryPostalCode, setDeliveryPostalCode] = useState<string>(
     params?.deliveryPostalCode ?? ''
@@ -123,11 +127,14 @@ function SuspendedAddPartnerForm({
         formErrors.centralAddress = 'A központi cím nem lett megadva.';
       }
     }
+    if (!deliveryName) {
+      formErrors.deliveryName = 'A név megadása kötelező.';
+    }
     if (!deliveryPostalCode) {
-      formErrors.deliveryPostalCode = 'Az irányítószám megadása kötelező..';
+      formErrors.deliveryPostalCode = 'Az irányítószám megadása kötelező.';
     }
     if (!deliveryCity) {
-      formErrors.deliveryCity = 'A város megadása kötelező..';
+      formErrors.deliveryCity = 'A város megadása kötelező.';
     }
     if (!deliveryAddress) {
       formErrors.deliveryAddress = 'A központi cím megadása kötelező.';
@@ -149,7 +156,7 @@ function SuspendedAddPartnerForm({
           postalCode: centralPostalCode || deliveryPostalCode,
           city: centralCity || deliveryCity,
           address: centralAddress || deliveryAddress,
-          deliveryName: name,
+          deliveryName,
           deliveryCountry: 'HU',
           deliveryPostalCode: deliveryPostalCode,
           deliveryCity: deliveryCity,
@@ -163,15 +170,15 @@ function SuspendedAddPartnerForm({
       });
 
       await setMaxNewPartnerIdInUse(partnerTemporaryId);
+
+      navigation.removeListener('beforeRemove', handleGoBack);
+      navigation.reset({
+        index: 1,
+        routes: [{ name: 'Index' }, { name: 'SelectItemsToSell' }],
+      });
     } else {
       setFormError(formErrors);
     }
-
-    navigation.removeListener('beforeRemove', handleGoBack);
-    navigation.reset({
-      index: 1,
-      routes: [{ name: 'Index' }, { name: 'SelectItemsToSell' }],
-    });
   };
 
   if (isLoading) {
@@ -217,7 +224,7 @@ function SuspendedAddPartnerForm({
           />
         </View>
         <View style={styles.addressHeaderContainer}>
-          <Text style={styles.addressHeader}>Központi cím (ha van)</Text>
+          <Text style={styles.addressHeader}>Székhely (központ)</Text>
         </View>
         <View style={styles.inputContainer}>
           <Input
@@ -253,7 +260,18 @@ function SuspendedAddPartnerForm({
           />
         </View>
         <View style={styles.addressHeaderContainer}>
-          <Text style={styles.addressHeader}>Számlázási cím</Text>
+          <Text style={styles.addressHeader}>A bolt neve és címe</Text>
+        </View>
+        <View style={styles.inputContainer}>
+          <Input
+            label="Név:*"
+            value={deliveryName}
+            invalid={!!formError.deliveryName}
+            config={{
+              autoCorrect: false,
+              onChangeText: setDeliveryName,
+            }}
+          />
         </View>
         <View style={styles.inputContainer}>
           <Input

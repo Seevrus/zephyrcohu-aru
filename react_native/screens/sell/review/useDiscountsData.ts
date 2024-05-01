@@ -1,6 +1,6 @@
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAtom } from 'jotai';
-import { assoc, dissoc, isEmpty, isNil, not } from 'ramda';
+import { any, assoc, dissoc, isEmpty, isNil, not, trim } from 'ramda';
 import { useCallback, useState } from 'react';
 
 import {
@@ -22,41 +22,48 @@ type FormErrors = {
 
 type UseDiscountsProps = {
   navigation: NativeStackNavigationProp<StackParams, 'Discounts', undefined>;
-  item: RegularReviewItem;
+  regularReviewItem: RegularReviewItem;
 };
 
-export function useDiscountsData({ navigation, item }: UseDiscountsProps) {
+export function useDiscountsData({
+  navigation,
+  regularReviewItem,
+}: UseDiscountsProps) {
   const [, setCurrentReceipt] = useAtom(currentReceiptAtom);
   const [, setReviewItems] = useAtom(reviewItemsAtom);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const applyDiscounts = useCallback(
-    (itemId: number, discounts?: SelectedDiscount[]) => {
+    (discounts?: SelectedDiscount[]) => {
       setReviewItems((prevItems) => {
         if (isNil(prevItems)) {
           return prevItems;
         }
 
-        return prevItems.map((item) => {
-          if (item.itemId !== itemId || item.type !== 'item') {
-            return item;
+        return prevItems.map((prevItem) => {
+          if (
+            prevItem.type !== 'item' ||
+            prevItem.itemId !== regularReviewItem.itemId ||
+            prevItem.expirationId !== regularReviewItem.expirationId
+          ) {
+            return prevItem;
           }
 
           if (discounts) {
-            return assoc('selectedDiscounts', discounts, item);
+            return assoc('selectedDiscounts', discounts, prevItem);
           }
 
-          return dissoc('selectedDiscounts', item);
+          return dissoc('selectedDiscounts', prevItem);
         });
       });
     },
-    [setReviewItems]
+    [regularReviewItem.expirationId, regularReviewItem.itemId, setReviewItems]
   );
 
   const saveDiscountedItemsInFlow = useCallback(
-    async (itemId: number, discounts?: SelectedDiscount[]) => {
-      applyDiscounts(itemId, discounts);
+    async (discounts?: SelectedDiscount[]) => {
+      applyDiscounts(discounts);
 
       await setCurrentReceipt(async (prevReceiptPromise) => {
         const prevReceipt = await prevReceiptPromise;
@@ -64,7 +71,10 @@ export function useDiscountsData({ navigation, item }: UseDiscountsProps) {
         return {
           ...prevReceipt,
           items: prevReceipt?.items?.map((contextReceiptItem) => {
-            if (contextReceiptItem.id !== itemId) {
+            if (
+              contextReceiptItem.id !== regularReviewItem.itemId ||
+              contextReceiptItem.expirationId !== regularReviewItem.expirationId
+            ) {
               return contextReceiptItem;
             }
 
@@ -77,27 +87,32 @@ export function useDiscountsData({ navigation, item }: UseDiscountsProps) {
         };
       });
     },
-    [applyDiscounts, setCurrentReceipt]
+    [
+      applyDiscounts,
+      regularReviewItem.expirationId,
+      regularReviewItem.itemId,
+      setCurrentReceipt,
+    ]
   );
 
-  const absoluteDiscount = item.availableDiscounts?.find(
-    (d) => d.type === 'absolute'
+  const absoluteDiscount = regularReviewItem.availableDiscounts?.find(
+    (discount) => discount.type === 'absolute'
   );
-  const percentageDiscount = item.availableDiscounts?.find(
-    (d) => d.type === 'percentage'
+  const percentageDiscount = regularReviewItem.availableDiscounts?.find(
+    (discount) => discount.type === 'percentage'
   );
-  const freeFormDiscount = item.availableDiscounts?.find(
-    (d) => d.type === 'freeForm'
+  const freeFormDiscount = regularReviewItem.availableDiscounts?.find(
+    (discount) => discount.type === 'freeForm'
   );
 
-  const currentAbsoluteDiscount = item.selectedDiscounts?.find(
-    (d) => d.type === 'absolute'
+  const currentAbsoluteDiscount = regularReviewItem.selectedDiscounts?.find(
+    (discount) => discount.type === 'absolute'
   );
-  const currentPercentageDiscount = item.selectedDiscounts?.find(
-    (d) => d.type === 'percentage'
+  const currentPercentageDiscount = regularReviewItem.selectedDiscounts?.find(
+    (discount) => discount.type === 'percentage'
   );
-  const currentFreeFormDiscount = item.selectedDiscounts?.find(
-    (d) => d.type === 'freeForm'
+  const currentFreeFormDiscount = regularReviewItem.selectedDiscounts?.find(
+    (discount) => discount.type === 'freeForm'
   );
 
   const [absoluteDiscountedQuantity, setAbsoluteDiscountedQuantity] =
@@ -105,7 +120,7 @@ export function useDiscountsData({ navigation, item }: UseDiscountsProps) {
   const [percentageDiscountedQuantity, setPercentageDiscountedQuantity] =
     useState<string>(String(currentPercentageDiscount?.quantity ?? ''));
   const [freeFormPrice, setFreeFormPrice] = useState<string>(
-    String(currentFreeFormDiscount?.price ?? item.netPrice)
+    String(currentFreeFormDiscount?.price ?? -regularReviewItem.netPrice)
   );
   const [freeFormDiscountedQuantity, setFreeFormDiscountedQuantity] =
     useState<string>(String(currentFreeFormDiscount?.quantity ?? ''));
@@ -125,19 +140,23 @@ export function useDiscountsData({ navigation, item }: UseDiscountsProps) {
     const freeForm = Number(freeFormDiscountedQuantity) ?? 0;
     const price = Number(freeFormPrice) ?? 0;
 
-    if (absolute + percentage + freeForm > item.quantity) {
+    if (any(Number.isNaN, [absolute, percentage, freeForm, price])) {
+      errorMessage += ' Csak számok adhatóak meg.';
+    }
+
+    if (absolute + percentage + freeForm > regularReviewItem.quantity) {
       errorMessage += ' Túl nagy megadott mennyiség.';
       formErrors.absoluteDiscountedQuantity = true;
       formErrors.percentageDiscountedQuantity = true;
       formErrors.freeFormDiscountedQuantity = true;
     }
-    if (freeForm > 0 && price < 1) {
-      errorMessage += ' A megadott ár túl alacsony.';
+    if (freeForm > 0 && price > 0) {
+      errorMessage += ' A kedvezményt negatív számként lehetséges megadni.';
       formErrors.freeFormPrice = true;
     }
 
     if (errorMessage) {
-      setFormErrorMessage(errorMessage);
+      setFormErrorMessage(trim(errorMessage));
     }
     if (not(isEmpty(formErrors))) {
       setFormError(formErrors);
@@ -147,8 +166,8 @@ export function useDiscountsData({ navigation, item }: UseDiscountsProps) {
       setIsLoading(true);
 
       await (absolute + percentage + freeForm === 0
-        ? saveDiscountedItemsInFlow(item.itemId)
-        : saveDiscountedItemsInFlow(item.itemId, [
+        ? saveDiscountedItemsInFlow()
+        : saveDiscountedItemsInFlow([
             ...(absolute > 0 && absoluteDiscount
               ? [
                   {

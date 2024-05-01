@@ -11,9 +11,9 @@ export function mapSaveSelectedItemsRequest(
       changes: changedItems.map((item) => ({
         expirationId: item.expirationId,
         startingQuantity: item.originalQuantity ?? 0,
-        quantityChange:
-          (item.currentQuantity ?? 0) - (item.originalQuantity ?? 0),
-        finalQuantity: item.currentQuantity ?? 0,
+        quantityChange: item.quantityChange ?? 0,
+        finalQuantity:
+          (item.originalQuantity ?? 0) + (item.quantityChange ?? 0),
       })),
     },
   };

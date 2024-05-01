@@ -1,12 +1,13 @@
 import { equals } from 'ramda';
 import { memo, useState } from 'react';
-import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { type LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
 
 import { type OtherReviewItem } from '../../../atoms/sellFlow';
 import { AnimatedListItem } from '../../../components/ui/AnimatedListItem';
 import { Button } from '../../../components/ui/Button';
 import { LabeledItem } from '../../../components/ui/LabeledItem';
 import { colors } from '../../../constants/colors';
+import { fontSizes } from '../../../constants/fontSizes';
 import { formatPrice } from '../../../utils/formatPrice';
 import { getReviewItemId } from './getReviewItemId';
 
@@ -30,7 +31,25 @@ function _OtherItemSelection({
   return (
     <AnimatedListItem
       id={getReviewItemId(item)}
-      title={item.name}
+      title={
+        <View>
+          <View>
+            <Text style={styles.selectItemText}>{item.name}</Text>
+          </View>
+          <View style={styles.infoGroupWithBorder}>
+            <LabeledItem
+              label="Mennyiség"
+              text={`${item.quantity} ${item.unitName}`}
+              justifyContent="space-between"
+            />
+            <LabeledItem
+              label="Bruttó összeg"
+              text={formatPrice(item.grossAmount)}
+              justifyContent="space-between"
+            />
+          </View>
+        </View>
+      }
       expandedInitially={selected}
       height={dropdownHeight}
       backgroundColor={backgroundColor}
@@ -42,21 +61,20 @@ function _OtherItemSelection({
           setDropdownHeight(event.nativeEvent.layout.height);
         }}
       >
-        <View style={styles.firstInfoGroup}>
-          <LabeledItem label="Cikkszám" text={item.articleNumber} />
-        </View>
         <View style={styles.infoGroup}>
           <LabeledItem
-            label="Mennyiség"
-            text={`${item.quantity} ${item.unitName}`}
-          />
-          <LabeledItem
-            label="Bruttó összeg"
-            text={formatPrice(item.grossAmount)}
+            label="Cikkszám"
+            text={item.articleNumber}
+            justifyContent="space-between"
           />
         </View>
         <View style={styles.buttonContainer}>
-          <Button variant="warning" onPress={() => onDelete(item.itemId)}>
+          <Button
+            variant="warning"
+            onPress={() => {
+              onDelete(item.itemId);
+            }}
+          >
             Törlés
           </Button>
         </View>
@@ -75,14 +93,20 @@ const styles = StyleSheet.create({
     marginTop: 10,
     width: '85%',
   },
-  firstInfoGroup: {
+  infoGroup: {
     marginTop: 10,
   },
-  infoGroup: {
+  infoGroupWithBorder: {
     borderTopColor: colors.white,
     borderTopWidth: 1,
     marginTop: 10,
     paddingTop: 5,
+  },
+  selectItemText: {
+    color: colors.white,
+    fontFamily: 'Nunito-Sans',
+    fontSize: fontSizes.body,
+    fontWeight: 'bold',
   },
   selectPartnerContainer: {
     alignContent: 'flex-start',
