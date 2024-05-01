@@ -2,7 +2,7 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { add, format, parseISO } from 'date-fns';
 import { useAtom, useAtomValue } from 'jotai';
-import { and, append, dissoc, dissocPath, isEmpty, reduce } from 'ramda';
+import { append, dissoc, dissocPath, isEmpty, reduce } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useSellSelectedItems } from '../../../api/mutations/useSellSelectedItems';
@@ -131,11 +131,7 @@ export function useReviewData(
 
   useEffect(() => {
     setReviewItems((prevItems) => {
-      if (
-        !items ||
-        !otherItems ||
-        and(isEmpty(selectedItems), isEmpty(selectedOtherItems))
-      ) {
+      if (!items || !otherItems) {
         return prevItems;
       }
 
