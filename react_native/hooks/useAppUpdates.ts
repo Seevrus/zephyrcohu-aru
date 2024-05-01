@@ -22,7 +22,7 @@ export function useAppUpdates(): UseAppUpdates {
 
   useEffect(() => {
     if (
-      !process.env.EXPO_PUBLIC_IS_DEV &&
+      process.env.EXPO_PUBLIC_IS_DEV === 'no' &&
       isInternetReachable === true &&
       Date.now() - lastChecked > 1 * 24 * 60 * 60 * 1000
     ) {

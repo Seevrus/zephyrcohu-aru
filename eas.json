@@ -25,7 +25,7 @@
       "extends": "base",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://aru.zephyr.co.hu/api",
-        "EXPO_PUBLIC_IS_DEV": false
+        "EXPO_PUBLIC_IS_DEV": "no"
       },
       "ios": {
         "resourceClass": "m1-medium"
