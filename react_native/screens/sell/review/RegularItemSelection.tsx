@@ -188,9 +188,12 @@ function _RegularItemSelection({
         <View style={styles.buttonContainer}>
           <Button
             variant="warning"
-            onPress={() =>
-              onDelete({ itemId: item.itemId, expirationId: item.expirationId })
-            }
+            onPress={() => {
+              onDelete({
+                itemId: item.itemId,
+                expirationId: item.expirationId,
+              });
+            }}
           >
             Törlés
           </Button>

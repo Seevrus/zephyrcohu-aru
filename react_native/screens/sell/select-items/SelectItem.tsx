@@ -21,8 +21,8 @@ export enum ItemAvailability {
 type SelectItemProps = {
   info: ListRenderItemInfo<SellItem>;
   type: ItemAvailability;
-  selectedItems: Record<number, Record<number, number>>;
-  selectedOrderItems: Record<number, number>;
+  selectedItems: Record<string, Record<string, number>>;
+  selectedOrderItems: Record<string, number>;
   upsertSelectedItem: (
     id: number,
     expirationId: number,

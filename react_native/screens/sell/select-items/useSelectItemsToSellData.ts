@@ -53,7 +53,7 @@ export type SellExpiration = {
   quantity: number;
 };
 
-type SellExpirations = Record<number, SellExpiration>;
+type SellExpirations = Record<string, SellExpiration>;
 
 export type SellItem = {
   id: number;
@@ -92,7 +92,7 @@ export function useSelectItemsToSellData(
   const selectedPartner = useAtomValue(selectedPartnerAtom);
 
   const [selectedOrderItems, setSelectedOrderItems] = useState<
-    Record<number, number>
+    Record<string, number>
   >({});
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -115,7 +115,7 @@ export function useSelectItemsToSellData(
   }, []);
 
   const storageExpirations = useMemo(() => {
-    const expirations: Record<number, Record<number, number>> = {};
+    const expirations: Record<string, Record<string, number>> = {};
 
     if (selectedStoreCurrentState.state !== 'hasData') {
       return expirations;
@@ -263,11 +263,15 @@ export function useSelectItemsToSellData(
 
       setSelectedItems((currentItems) => {
         const itemsWithNewQuantity = isNil(newQuantity)
-          ? dissocPath<Record<number, Record<number, number>>>(
-              [id, expirationId],
+          ? dissocPath<Record<string, Record<string, number>>>(
+              [id.toString(), expirationId.toString()],
               currentItems
             )
-          : assocPath([id, expirationId], newQuantity, currentItems);
+          : assocPath(
+              [id.toString(), expirationId.toString()],
+              newQuantity,
+              currentItems
+            );
 
         const areAllQuantitiesZero = pipe(
           values,
@@ -275,7 +279,7 @@ export function useSelectItemsToSellData(
         )(itemsWithNewQuantity[id]);
 
         if (areAllQuantitiesZero) {
-          return dissoc(id, itemsWithNewQuantity);
+          return dissoc(id.toString(), itemsWithNewQuantity);
         }
 
         return itemsWithNewQuantity;

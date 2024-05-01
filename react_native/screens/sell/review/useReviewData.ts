@@ -93,10 +93,13 @@ export function useReviewData(
     ({ itemId, expirationId }: { itemId: number; expirationId: number }) => {
       setSelectedItems((prevItems) => {
         if (Object.keys(prevItems[itemId]).length === 1) {
-          return dissoc(itemId, prevItems);
+          return dissoc(itemId.toString(), prevItems);
         }
 
-        return dissocPath([itemId, expirationId], prevItems);
+        return dissocPath(
+          [itemId.toString(), expirationId.toString()],
+          prevItems
+        );
       });
     },
     [setSelectedItems]

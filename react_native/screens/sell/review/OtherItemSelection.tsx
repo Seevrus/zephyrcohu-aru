@@ -69,7 +69,12 @@ function _OtherItemSelection({
           />
         </View>
         <View style={styles.buttonContainer}>
-          <Button variant="warning" onPress={() => onDelete(item.itemId)}>
+          <Button
+            variant="warning"
+            onPress={() => {
+              onDelete(item.itemId);
+            }}
+          >
             Törlés
           </Button>
         </View>
