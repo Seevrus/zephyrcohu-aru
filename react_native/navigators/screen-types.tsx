@@ -32,7 +32,7 @@ export type StackParams = {
   ScanBarCodeInSell: undefined;
   Review: undefined;
   Discounts: {
-    item: RegularReviewItem;
+    regularReviewItem: RegularReviewItem;
   };
   SelectOtherItemsToSell: undefined;
   Summary: undefined;

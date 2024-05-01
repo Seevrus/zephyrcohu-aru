@@ -14,7 +14,7 @@ import { type DiscountsProps } from '../../../navigators/screen-types';
 import { useDiscountsData } from './useDiscountsData';
 
 function SuspendedDiscounts({ navigation, route }: DiscountsProps) {
-  const item = route.params.item;
+  const { regularReviewItem } = route.params;
 
   const {
     isLoading,
@@ -34,7 +34,7 @@ function SuspendedDiscounts({ navigation, route }: DiscountsProps) {
     handleApplyDiscounts,
   } = useDiscountsData({
     navigation,
-    item,
+    regularReviewItem,
   });
 
   if (isLoading) {
@@ -45,7 +45,8 @@ function SuspendedDiscounts({ navigation, route }: DiscountsProps) {
     <ScrollView style={styles.container}>
       <View style={styles.headerContainer}>
         <Text style={styles.header}>
-          {item.name} ({format(new Date(item.expiresAt), 'yyyy-MM')})
+          {regularReviewItem.name} (
+          {format(new Date(regularReviewItem.expiresAt), 'yyyy-MM')})
         </Text>
       </View>
       {formErrorMessage ? (
@@ -56,7 +57,7 @@ function SuspendedDiscounts({ navigation, route }: DiscountsProps) {
       <View style={styles.firstInfoGroup}>
         <LabeledItem
           label="Mennyiség"
-          text={`${item.quantity} ${item.unitName}`}
+          text={`${regularReviewItem.quantity} ${regularReviewItem.unitName}`}
         />
         <Text style={styles.infoLabel}>Elérhető kedvezmények:</Text>
       </View>
