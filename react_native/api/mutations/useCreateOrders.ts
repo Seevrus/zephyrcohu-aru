@@ -1,10 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { type ContextOrder } from '../../atoms/orders';
-import { tokenAtom } from '../../atoms/token';
+import { deviceIdAtom, tokenAtom } from '../../atoms/token';
 import { mapCreateOrdersRequest } from '../request-mappers/mapCreateOrdersRequest';
 import {
   type CreateOrdersResponseData,
@@ -13,6 +12,7 @@ import {
 
 export function useCreateOrders() {
   const { token } = useAtomValue(tokenAtom);
+  const deviceId = useAtomValue(deviceIdAtom);
 
   return useMutation({
     async mutationFn(
@@ -32,7 +32,7 @@ export function useCreateOrders() {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
-              'X-Android-Id': getAndroidId(),
+              'X-Device-Id': deviceId,
             },
           }
         );

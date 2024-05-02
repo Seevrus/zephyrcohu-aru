@@ -139,11 +139,11 @@ class UserController extends Controller
                 throw new ThrottleRequestsException();
             }
 
-            $androidId = $request->header('X-Android-Id');
+            $deviceId = $request->header('X-Device-Id');
 
             if (
-                (is_null($androidId) && ! is_null($user->android_id)) ||
-                (! is_null($androidId) && ! is_null($user->android_id))
+                (is_null($deviceId) && ! is_null($user->device_id)) ||
+                (! is_null($deviceId) && ! is_null($user->device_id))
             ) {
                 Log::insert([
                     'company_id' => $user->company_id,
@@ -176,11 +176,11 @@ class UserController extends Controller
                 throw new UnauthorizedHttpException(random_bytes(32));
             }
 
-            $isAndroidToken = ! is_null($androidId);
+            $isAndroidToken = ! is_null($deviceId);
             $tokenExpiration = $isAndroidToken ? null : Carbon::now()->addHour();
 
-            if ($isAndroidToken && is_null($user->android_id)) {
-                $user->android_id = Hash::make($androidId);
+            if ($isAndroidToken && is_null($user->device_id)) {
+                $user->device_id = Hash::make($deviceId);
             }
             $user->attempts = 0;
             $user->tokens()->delete();
@@ -233,7 +233,7 @@ class UserController extends Controller
             $sender->last_active = Carbon::now();
             $sender->save();
 
-            $isAndroidToken = ! is_null($sender->android_id);
+            $isAndroidToken = ! is_null($sender->device_id);
 
             $token = $sender->currentAccessToken();
             $tokenExpiration = $isAndroidToken
@@ -266,7 +266,7 @@ class UserController extends Controller
     {
         try {
             $sender = $request->user();
-            $sender->android_id = null;
+            $sender->device_id = null;
             $sender->last_active = Carbon::now();
 
             $sender->tokens()->delete();

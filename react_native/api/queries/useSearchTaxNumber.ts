@@ -1,9 +1,9 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
+import { isNotNil } from 'ramda';
 
-import { tokenAtom } from '../../atoms/token';
+import { deviceIdAtom, tokenAtom } from '../../atoms/token';
 import { queryKeys } from '../keys';
 import {
   mapSearchTaxPayerResponse,
@@ -23,6 +23,7 @@ export function useSearchTaxNumber({
 }: UseSearhcTaxNumberProps): UseQueryResult<TaxPayer[]> {
   const { isSuccess: isCheckTokenSuccess } = useCheckToken();
   const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
+  const deviceId = useAtomValue(deviceIdAtom);
 
   return useQuery({
     queryKey: queryKeys.searchTaxNumber(taxNumber, token),
@@ -35,7 +36,7 @@ export function useSearchTaxNumber({
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
-              'X-Android-Id': getAndroidId(),
+              'X-Device-Id': deviceId,
             },
           }
         );
@@ -54,6 +55,7 @@ export function useSearchTaxNumber({
       /^(\d{8})$/.test(taxNumber) &&
       !isTokenExpired &&
       !!token &&
+      isNotNil(deviceId) &&
       isCheckTokenSuccess &&
       !isPasswordExpired,
     placeholderData: undefined,

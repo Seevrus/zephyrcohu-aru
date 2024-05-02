@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { getAndroidId } from 'expo-application';
 import { useAtom, useAtomValue } from 'jotai';
 
 import {
   defaultStoredToken,
+  deviceIdAtom,
   storedTokenAtom,
   tokenAtom,
 } from '../../atoms/token';
@@ -15,6 +15,7 @@ export function useLogout() {
 
   const { token } = useAtomValue(tokenAtom);
   const [, setStoredToken] = useAtom(storedTokenAtom);
+  const [deviceId, setDeviceId] = useAtom(deviceIdAtom);
 
   return useMutation({
     async mutationFn() {
@@ -26,7 +27,7 @@ export function useLogout() {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
-              'X-Android-Id': getAndroidId(),
+              'X-Device-Id': deviceId,
             },
           }
         );
@@ -49,6 +50,7 @@ export function useLogout() {
     },
     async onSuccess() {
       await setStoredToken(defaultStoredToken);
+      await setDeviceId(null);
 
       // only user related queries should be invalidated on logout
       await queryClient.invalidateQueries({ queryKey: queryKeys.checkToken });

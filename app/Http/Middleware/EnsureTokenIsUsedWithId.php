@@ -19,12 +19,12 @@ class EnsureTokenIsUsedWithId
     public function handle(Request $request, Closure $next): Response
     {
         $user = Auth::guard('sanctum')->user();
-        $userHasAndroidToken = $user && ! is_null($user->android_id);
+        $userHasAndroidToken = $user && ! is_null($user->device_id);
 
         if ($userHasAndroidToken) {
-            $androidId = $request->header('X-Android-Id');
+            $deviceId = $request->header('X-Device-Id');
 
-            if (! $androidId || ! Hash::check($androidId, $user->android_id)) {
+            if (! $deviceId || ! Hash::check($deviceId, $user->device_id)) {
                 throw new UnauthorizedHttpException(random_bytes(32));
             }
         }

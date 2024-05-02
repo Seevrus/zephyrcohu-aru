@@ -1,11 +1,10 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 import { isNotNil } from 'ramda';
 
-import { tokenAtom } from '../../atoms/token';
+import { deviceIdAtom, tokenAtom } from '../../atoms/token';
 import { queryKeys } from '../keys';
 import {
   type StoreDetailsResponseData,
@@ -20,10 +19,11 @@ export function useStoreDetails(
   const { isInternetReachable } = useNetInfo();
   const { isSuccess: isCheckTokenSuccess } = useCheckToken();
   const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
+  const deviceId = useAtomValue(deviceIdAtom);
 
   return useQuery({
     queryKey: queryKeys.storeDetails(storeId),
-    queryFn: fetchStoreDetails(token, storeId as number),
+    queryFn: fetchStoreDetails(token, deviceId, storeId as number),
     enabled:
       enabled &&
       isInternetReachable === true &&
@@ -31,12 +31,13 @@ export function useStoreDetails(
       !isTokenExpired &&
       !isPasswordExpired &&
       isCheckTokenSuccess &&
-      !!token,
+      !!token &&
+      isNotNil(deviceId),
   });
 }
 
 export const fetchStoreDetails =
-  (token: string, storeId: number) =>
+  (token: string, deviceId: string | null, storeId: number) =>
   async (): Promise<StoreDetailsResponseData> => {
     try {
       const response = await axios.get<StoreDetailsResponseType>(
@@ -45,7 +46,7 @@ export const fetchStoreDetails =
           headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
-            'X-Android-Id': getAndroidId(),
+            'X-Device-Id': deviceId,
           },
         }
       );

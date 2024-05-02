@@ -1,9 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
-import { tokenAtom } from '../../atoms/token';
+import { deviceIdAtom, tokenAtom } from '../../atoms/token';
 import { queryKeys } from '../keys';
 import { type SelectStoreRequestType } from '../request-types/SelectStoreRequestType';
 import { type SelectStoreResponseType } from '../response-types/SelectStoreResponseType';
@@ -11,6 +10,7 @@ import { type SelectStoreResponseType } from '../response-types/SelectStoreRespo
 export function useSelectStore() {
   const queryClient = useQueryClient();
   const { token } = useAtomValue(tokenAtom);
+  const deviceId = useAtomValue(deviceIdAtom);
 
   return useMutation({
     async mutationFn({ storeId }: SelectStoreRequestType) {
@@ -22,7 +22,7 @@ export function useSelectStore() {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
-              'X-Android-Id': getAndroidId(),
+              'X-Device-Id': deviceId,
             },
           }
         );

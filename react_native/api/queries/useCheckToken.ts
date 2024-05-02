@@ -1,11 +1,12 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { getAndroidId } from 'expo-application';
 import { useAtom, useAtomValue } from 'jotai';
+import { isNotNil } from 'ramda';
 
 import {
   defaultStoredToken,
+  deviceIdAtom,
   storedTokenAtom,
   tokenAtom,
 } from '../../atoms/token';
@@ -21,6 +22,7 @@ export function useCheckToken() {
 
   const [, setStoredToken] = useAtom(storedTokenAtom);
   const { token } = useAtomValue(tokenAtom);
+  const deviceId = useAtomValue(deviceIdAtom);
 
   return useQuery({
     queryKey: queryKeys.checkToken,
@@ -32,7 +34,7 @@ export function useCheckToken() {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
-              'X-Android-Id': getAndroidId(),
+              'X-Device-Id': deviceId,
             },
           }
         );
@@ -62,7 +64,7 @@ export function useCheckToken() {
         throw new Error('A megadott token nem érvényes.');
       }
     },
-    enabled: isInternetReachable === true && !!token,
+    enabled: isInternetReachable === true && !!token && isNotNil(deviceId),
     staleTime: 1 * 60 * 60 * 1000,
   });
 }
