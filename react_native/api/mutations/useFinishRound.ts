@@ -1,14 +1,14 @@
 import { useMutation } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
-import { tokenAtom } from '../../atoms/token';
+import { deviceIdAtom, tokenAtom } from '../../atoms/token';
 import { type FinishRoundRequestType } from '../request-types/FinishRoundRequestType';
 import { type FinishRoundResponseType } from '../response-types/FinishRoundResponseType';
 
 export function useFinishRound() {
   const { token } = useAtomValue(tokenAtom);
+  const deviceId = useAtomValue(deviceIdAtom);
 
   return useMutation({
     async mutationFn(request: FinishRoundRequestType) {
@@ -20,7 +20,7 @@ export function useFinishRound() {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
-              'X-Android-Id': getAndroidId(),
+              'X-Android-Id': deviceId,
             },
           }
         );

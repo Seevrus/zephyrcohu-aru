@@ -1,10 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
 import { type ContextReceipt } from '../../atoms/receipts';
-import { tokenAtom } from '../../atoms/token';
+import { deviceIdAtom, tokenAtom } from '../../atoms/token';
 import { mapCreateReceiptsRequest } from '../request-mappers/mapCreateReceiptsRequest';
 import {
   type ReceiptResponseData,
@@ -13,6 +12,7 @@ import {
 
 export function useCreateReceipts() {
   const { token } = useAtomValue(tokenAtom);
+  const deviceId = useAtomValue(deviceIdAtom);
 
   return useMutation({
     async mutationFn(receipts: ContextReceipt[]): Promise<ReceiptResponseData> {
@@ -26,7 +26,7 @@ export function useCreateReceipts() {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
-              'X-Android-Id': getAndroidId(),
+              'X-Android-Id': deviceId,
             },
           }
         );

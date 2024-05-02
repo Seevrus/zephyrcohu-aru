@@ -35,3 +35,8 @@ export const tokenAtom = atom<Promise<Token>>(async (get) => {
     isTokenExpired: expiresAt ? isPast(parseISO(expiresAt)) : false,
   };
 });
+
+export const deviceIdAtom = atomWithSecureStorage<string | null>(
+  'boreal-device-id',
+  null
+);

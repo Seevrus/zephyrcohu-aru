@@ -1,10 +1,10 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
+import { isNotNil } from 'ramda';
 
-import { tokenAtom } from '../../atoms/token';
+import { deviceIdAtom, tokenAtom } from '../../atoms/token';
 import { queryKeys } from '../keys';
 import {
   type ItemsResponseData,
@@ -16,21 +16,24 @@ export function useItems() {
   const { isInternetReachable } = useNetInfo();
   const { isSuccess: isCheckTokenSuccess } = useCheckToken();
   const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
+  const deviceId = useAtomValue(deviceIdAtom);
 
   return useQuery({
     queryKey: queryKeys.items,
-    queryFn: fetchItems(token),
+    queryFn: fetchItems(token, deviceId),
     enabled:
       isInternetReachable === true &&
       !isTokenExpired &&
       !isPasswordExpired &&
       isCheckTokenSuccess &&
-      !!token,
+      !!token &&
+      isNotNil(deviceId),
   });
 }
 
 export const fetchItems =
-  (token: string) => async (): Promise<ItemsResponseData> => {
+  (token: string, deviceId: string | null) =>
+  async (): Promise<ItemsResponseData> => {
     try {
       const response = await axios.get<ItemsResponseType>(
         `${process.env.EXPO_PUBLIC_API_URL}/items`,
@@ -38,7 +41,7 @@ export const fetchItems =
           headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
-            'X-Android-Id': getAndroidId(),
+            'X-Android-Id': deviceId,
           },
         }
       );

@@ -24,7 +24,7 @@ import { fetchPriceLists } from '../../api/queries/usePriceLists';
 import { fetchStoreDetails } from '../../api/queries/useStoreDetails';
 import { fetchStores, useStores } from '../../api/queries/useStores';
 import { selectedStoreCurrentStateAtom } from '../../atoms/storage';
-import { tokenAtom } from '../../atoms/token';
+import { deviceIdAtom, tokenAtom } from '../../atoms/token';
 import { Container } from '../../components/container/Container';
 import { ErrorCard } from '../../components/info-cards/ErrorCard';
 import { Loading } from '../../components/Loading';
@@ -50,6 +50,7 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
   } = useStores();
 
   const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
+  const deviceId = useAtomValue(deviceIdAtom);
   const [, setSelectedStoreCurrentState] = useAtom(
     selectedStoreCurrentStateAtom
   );
@@ -102,35 +103,35 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
         await Promise.all([
           queryClient.fetchQuery({
             queryKey: queryKeys.items,
-            queryFn: fetchItems(token),
+            queryFn: fetchItems(token, deviceId),
           }),
           queryClient.fetchQuery({
             queryKey: queryKeys.otherItems,
-            queryFn: fetchOtherItems(token),
+            queryFn: fetchOtherItems(token, deviceId),
           }),
           queryClient.fetchQuery({
             queryKey: queryKeys.partnerLists,
-            queryFn: fetchPartnerLists(token),
+            queryFn: fetchPartnerLists(token, deviceId),
           }),
           queryClient.fetchQuery({
             queryKey: queryKeys.partners,
-            queryFn: fetchPartners(token),
+            queryFn: fetchPartners(token, deviceId),
           }),
           queryClient.fetchQuery({
             queryKey: queryKeys.priceLists,
-            queryFn: fetchPriceLists(token),
+            queryFn: fetchPriceLists(token, deviceId),
           }),
         ]);
 
         const storeDetails = await queryClient.fetchQuery({
           queryKey: queryKeys.storeDetails(storeId),
-          queryFn: fetchStoreDetails(token, storeId),
+          queryFn: fetchStoreDetails(token, deviceId, storeId),
         });
         await setSelectedStoreCurrentState(storeDetails);
 
         await queryClient.fetchQuery({
           queryKey: queryKeys.stores,
-          queryFn: fetchStores(token),
+          queryFn: fetchStores(token, deviceId),
         });
 
         navigation.reset({

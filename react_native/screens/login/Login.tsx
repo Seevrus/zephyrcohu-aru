@@ -1,4 +1,3 @@
-import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 import { Suspense, useEffect, useState } from 'react';
 import {
@@ -25,8 +24,6 @@ import { type LoginProps } from '../../navigators/screen-types';
 function SuspendedLogin({ navigation }: LoginProps) {
   const { data: user, isFetching: isUserFetching } = useCheckToken();
   const { mutateAsync: login } = useLogin();
-
-  const androidId = getAndroidId();
 
   const isRoundStarted = user?.state === 'R';
 
@@ -74,10 +71,7 @@ function SuspendedLogin({ navigation }: LoginProps) {
   };
 
   const isLoginButtonDisabled =
-    !androidId ||
-    userLoginIdentifier.length === 0 ||
-    password.length === 0 ||
-    !!errorMessage;
+    userLoginIdentifier.length === 0 || password.length === 0 || !!errorMessage;
 
   if (isLoading || isUserFetching) {
     return <Loading />;

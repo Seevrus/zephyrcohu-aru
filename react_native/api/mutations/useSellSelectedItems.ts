@@ -1,9 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
 
-import { tokenAtom } from '../../atoms/token';
+import { deviceIdAtom, tokenAtom } from '../../atoms/token';
 import { queryKeys } from '../keys';
 import { useCheckToken } from '../queries/useCheckToken';
 import { useStoreDetails } from '../queries/useStoreDetails';
@@ -19,6 +18,7 @@ export function useSellSelectedItems() {
   const { data: storeDetails } = useStoreDetails(user?.storeId ?? undefined);
 
   const { token } = useAtomValue(tokenAtom);
+  const deviceId = useAtomValue(deviceIdAtom);
 
   return useMutation({
     async mutationFn(updatedStorage: StoreDetailsResponseData) {
@@ -39,7 +39,7 @@ export function useSellSelectedItems() {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
-              'X-Android-Id': getAndroidId(),
+              'X-Android-Id': deviceId,
             },
           }
         );

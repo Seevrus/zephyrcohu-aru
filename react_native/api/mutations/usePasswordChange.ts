@@ -1,9 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { getAndroidId } from 'expo-application';
 import { useAtom, useAtomValue } from 'jotai';
 
-import { storedTokenAtom, tokenAtom } from '../../atoms/token';
+import { deviceIdAtom, storedTokenAtom, tokenAtom } from '../../atoms/token';
 import { queryKeys } from '../keys';
 import { type ChangePasswordRequest } from '../request-types/ChangePasswordRequestType';
 import { mapLoginResponse } from '../response-mappers/mapLoginResponse';
@@ -16,6 +15,7 @@ export function usePasswordChange() {
 
   const [, setStoredToken] = useAtom(storedTokenAtom);
   const { token } = useAtomValue(tokenAtom);
+  const deviceId = useAtomValue(deviceIdAtom);
 
   return useMutation({
     async mutationFn({ password }: ChangePasswordRequest) {
@@ -28,7 +28,7 @@ export function usePasswordChange() {
               headers: {
                 Accept: 'application/json',
                 Authorization: `Bearer ${token}`,
-                'X-Android-Id': getAndroidId(),
+                'X-Android-Id': deviceId,
               },
             }
           )

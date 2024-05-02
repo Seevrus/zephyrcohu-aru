@@ -32,7 +32,7 @@ import {
   selectedStoreCurrentStateAtom,
   selectedStoreInitialStateAtom,
 } from '../../../atoms/storage';
-import { tokenAtom } from '../../../atoms/token';
+import { deviceIdAtom, tokenAtom } from '../../../atoms/token';
 import { type TileT } from '../../../components/Tile';
 import { type StackParams } from '../../../navigators/screen-types';
 
@@ -44,6 +44,7 @@ export function useSelectStoreData(
   const { mutateAsync: selectStore } = useSelectStore();
   const { isPending: isStoresPending, data: stores } = useStores();
   const { token } = useAtomValue(tokenAtom);
+  const deviceId = useAtomValue(deviceIdAtom);
 
   const [, setPrimaryStore] = useAtom(primaryStoreAtom);
   const [, setSelectedStoreInitialState] = useAtom(
@@ -102,17 +103,20 @@ export function useSelectStoreData(
         const primaryStoreDetails =
           await queryClient.fetchQuery<StoreDetailsResponseData>({
             queryKey: queryKeys.storeDetails(primaryStoreId),
-            queryFn: fetchStoreDetails(token, primaryStoreId),
+            queryFn: fetchStoreDetails(token, deviceId, primaryStoreId),
           });
         await setPrimaryStore(primaryStoreDetails);
 
         const selectedStoreDetails =
           await queryClient.fetchQuery<StoreDetailsResponseData>({
             queryKey: queryKeys.storeDetails(selectedStoreId),
-            queryFn: fetchStoreDetails(token, selectedStoreId),
+            queryFn: fetchStoreDetails(token, deviceId, selectedStoreId),
           });
-        await setSelectedStoreInitialState(selectedStoreDetails);
-        await setSelectedStoreCurrentState(selectedStoreDetails);
+
+        await Promise.all([
+          setSelectedStoreInitialState(selectedStoreDetails),
+          setSelectedStoreCurrentState(selectedStoreDetails),
+        ]);
 
         navigation.replace('SelectItemsFromStore');
       } catch (error) {
@@ -120,6 +124,7 @@ export function useSelectStoreData(
       }
     }
   }, [
+    deviceId,
     navigation,
     primaryStoreId,
     queryClient,

@@ -1,9 +1,9 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
+import { isNotNil } from 'ramda';
 
-import { tokenAtom } from '../../atoms/token';
+import { deviceIdAtom, tokenAtom } from '../../atoms/token';
 import { queryKeys } from '../keys';
 import {
   type PriceListResponseData,
@@ -16,16 +16,18 @@ export function usePriceLists({
 } = {}): UseQueryResult<PriceListResponseData> {
   const { data: user, isSuccess: isCheckTokenSuccess } = useCheckToken();
   const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
+  const deviceId = useAtomValue(deviceIdAtom);
 
   const isRoundStarted = user?.state === 'R';
 
   return useQuery({
     queryKey: queryKeys.priceLists,
-    queryFn: fetchPriceLists(token),
+    queryFn: fetchPriceLists(token, deviceId),
     enabled:
       enabled &&
       !isTokenExpired &&
       !!token &&
+      isNotNil(deviceId) &&
       isCheckTokenSuccess &&
       !isPasswordExpired &&
       isRoundStarted,
@@ -33,7 +35,8 @@ export function usePriceLists({
 }
 
 export const fetchPriceLists =
-  (token: string) => async (): Promise<PriceListResponseData> => {
+  (token: string, deviceId: string | null) =>
+  async (): Promise<PriceListResponseData> => {
     try {
       const response = await axios.get<PriceListResponseType>(
         `${process.env.EXPO_PUBLIC_API_URL}/price_lists`,
@@ -41,7 +44,7 @@ export const fetchPriceLists =
           headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
-            'X-Android-Id': getAndroidId(),
+            'X-Android-Id': deviceId,
           },
         }
       );

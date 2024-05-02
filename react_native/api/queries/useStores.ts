@@ -1,10 +1,10 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useQuery } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { getAndroidId } from 'expo-application';
 import { useAtomValue } from 'jotai';
+import { isNotNil } from 'ramda';
 
-import { tokenAtom } from '../../atoms/token';
+import { deviceIdAtom, tokenAtom } from '../../atoms/token';
 import { queryKeys } from '../keys';
 import {
   type StoresResponseData,
@@ -16,21 +16,24 @@ export function useStores() {
   const { isInternetReachable } = useNetInfo();
   const { isSuccess: isCheckTokenSuccess } = useCheckToken();
   const { token, isPasswordExpired, isTokenExpired } = useAtomValue(tokenAtom);
+  const deviceId = useAtomValue(deviceIdAtom);
 
   return useQuery({
     queryKey: queryKeys.stores,
-    queryFn: fetchStores(token),
+    queryFn: fetchStores(token, deviceId),
     enabled:
       isInternetReachable === true &&
       !isTokenExpired &&
       !isPasswordExpired &&
       isCheckTokenSuccess &&
-      !!token,
+      !!token &&
+      isNotNil(deviceId),
   });
 }
 
 export const fetchStores =
-  (token: string) => async (): Promise<StoresResponseData> => {
+  (token: string, deviceId: string | null) =>
+  async (): Promise<StoresResponseData> => {
     try {
       const response = await axios.get<StoresResponseType>(
         `${process.env.EXPO_PUBLIC_API_URL}/stores`,
@@ -38,7 +41,7 @@ export const fetchStores =
           headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
-            'X-Android-Id': getAndroidId(),
+            'X-Android-Id': deviceId,
           },
         }
       );

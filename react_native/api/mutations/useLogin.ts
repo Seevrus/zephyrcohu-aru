@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
-import { getAndroidId } from 'expo-application';
 import { useAtom } from 'jotai';
+import { v4 as uuidv4 } from 'uuid';
 
-import { storedTokenAtom } from '../../atoms/token';
+import { deviceIdAtom, storedTokenAtom } from '../../atoms/token';
 import { userLoginIdentifierAtom } from '../../atoms/user';
 import { queryKeys } from '../keys';
 import { type LoginRequest } from '../request-types/LoginRequestType';
@@ -15,11 +15,13 @@ export function useLogin() {
 
   const [, setStoredToken] = useAtom(storedTokenAtom);
   const [, setLoginIdentifier] = useAtom(userLoginIdentifierAtom);
+  const [, setDeviceId] = useAtom(deviceIdAtom);
 
   return useMutation({
     async mutationFn({ userName, password }: LoginRequest) {
       try {
-        const androidId = getAndroidId();
+        const deviceId = uuidv4();
+        await setDeviceId(deviceId);
 
         const response = await axios
           .post<LoginResponse>(
@@ -28,13 +30,13 @@ export function useLogin() {
             {
               headers: {
                 Accept: 'application/json',
-                'X-Android-Id': androidId,
+                'X-Android-Id': deviceId,
               },
             }
           )
           .then((response) => mapLoginResponse(response.data));
 
-        console.log('Android ID', androidId);
+        console.log('Device ID', deviceId);
         console.log('Token:', response.token.accessToken);
 
         await setStoredToken({
