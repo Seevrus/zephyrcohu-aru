@@ -16,7 +16,7 @@ class User extends Authenticatable
         'state',
         'name',
         'phone_number',
-        'android_id',
+        'device_id',
         'attempts',
         'created_at',
     ];
