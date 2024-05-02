@@ -1,3 +1,5 @@
+import 'react-native-get-random-values';
+
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { isAxiosError } from 'axios';
 import { useAtom } from 'jotai';
@@ -30,7 +32,7 @@ export function useLogin() {
             {
               headers: {
                 Accept: 'application/json',
-                'X-Android-Id': deviceId,
+                'X-Device-Id': deviceId,
               },
             }
           )

@@ -37,7 +37,7 @@ export function useSaveSelectedItems() {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,
-              'X-Android-Id': deviceId,
+              'X-Device-Id': deviceId,
             },
           }
         );
