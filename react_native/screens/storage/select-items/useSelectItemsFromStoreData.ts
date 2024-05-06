@@ -2,7 +2,7 @@ import { type EventArg, useFocusEffect } from '@react-navigation/native';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { format, parseISO } from 'date-fns';
 import { useAtom, useAtomValue } from 'jotai';
-import { filter, isNotNil, pipe, prop, sortBy, take, when } from 'ramda';
+import { filter, isNotNil, pipe, prop, sortBy, when } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useItems } from '../../../api/queries/useItems';

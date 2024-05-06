@@ -32,7 +32,7 @@
     "plugin:react/jsx-runtime",
     "plugin:react-hooks/recommended",
     "plugin:react-native/all",
-    "plugin:sonarjs/recommended",
+    "plugin:sonarjs/recommended-legacy",
     "plugin:unicorn/recommended"
   ],
   "parser": "@typescript-eslint/parser",
