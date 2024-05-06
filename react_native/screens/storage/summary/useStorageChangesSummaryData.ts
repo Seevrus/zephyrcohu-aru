@@ -1,6 +1,6 @@
 import { type EventArg, useFocusEffect } from '@react-navigation/native';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { printAsync } from 'expo-print';
+import * as Print from 'expo-print';
 import { useAtomValue } from 'jotai';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -82,9 +82,9 @@ export function useStorageChangesSummaryData(
     }, [exitConfirmationHandler, navigation])
   );
 
-  const printButtonHandler = async () => {
+  const printButtonHandler = useCallback(async () => {
     if (isPrintEnabled) {
-      await printAsync({
+      await Print.printAsync({
         html: createPrintStorageChanges({
           receiptItems,
           storeDetails: selectedStoreInitialState,
@@ -92,7 +92,7 @@ export function useStorageChangesSummaryData(
         }),
       });
     }
-  };
+  }, [isPrintEnabled, receiptItems, selectedStoreInitialState, user]);
 
   const returnButtonHandler = async () => {
     await finishStorage();

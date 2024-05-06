@@ -1,6 +1,7 @@
-import { printAsync } from 'expo-print';
+import * as Print from 'expo-print';
 import { useAtom } from 'jotai';
 import { lensProp, set } from 'ramda';
+import { useCallback } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useCheckToken } from '../../api/queries/useCheckToken';
@@ -31,9 +32,9 @@ export function PrintSection({ partner, receipt }: PrintSectionProps) {
       ? 2
       : partner?.invoiceCopies;
 
-  const printButtonHandler = async () => {
+  const printButtonHandler = useCallback(async () => {
     if (canPrint) {
-      await printAsync({
+      await Print.printAsync({
         html: createReceiptHtml({
           user,
           receipt,
@@ -49,7 +50,7 @@ export function PrintSection({ partner, receipt }: PrintSectionProps) {
         );
       }
     }
-  };
+  }, [canPrint, partner, receipt, setReceipts, user]);
 
   if (isUserPending) {
     return <Loading />;

@@ -1,7 +1,7 @@
 import { type EventArg, useFocusEffect } from '@react-navigation/native';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQueryClient } from '@tanstack/react-query';
-import { printAsync } from 'expo-print';
+import * as Print from 'expo-print';
 import { useAtom } from 'jotai';
 import { useCallback, useState } from 'react';
 
@@ -60,9 +60,9 @@ export function usePrintEndErrandData(
 
   const isPrintEnabled = !!partnerLists && !!storeDetails && !!user;
 
-  const printButtonHandler = async () => {
+  const printButtonHandler = useCallback(async () => {
     if (isPrintEnabled) {
-      await printAsync({
+      await Print.printAsync({
         html: createPrintEndErrand({
           partnerLists,
           receipts,
@@ -73,7 +73,7 @@ export function usePrintEndErrandData(
 
       setIsPrinted(true);
     }
-  };
+  }, [isPrintEnabled, partnerLists, receipts, storeDetails, user]);
 
   const resetHopefullyAfterPrint = useCallback(async () => {
     await setSelectedStoreCurrentState(null);

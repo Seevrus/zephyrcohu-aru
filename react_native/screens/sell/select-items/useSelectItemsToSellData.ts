@@ -21,7 +21,6 @@ import {
   pipe,
   prop,
   sortBy,
-  take,
   values,
 } from 'ramda';
 import { useCallback, useMemo, useState } from 'react';
@@ -68,8 +67,6 @@ export type SellItem = {
 };
 
 type SellItems = SellItem[];
-
-const NUM_ITEMS_SHOWN = 10;
 
 export function useSelectItemsToSellData(
   navigation: BottomTabNavigationProp<
@@ -167,8 +164,7 @@ export function useSelectItemsToSellData(
               .includes(searchState.searchTerm.toLowerCase()) &&
             item.barcodes.some((bc) => bc.includes(searchState.barCode))
         ),
-        sortBy(prop('name')),
-        (items) => take<SellItem>(NUM_ITEMS_SHOWN, items)
+        sortBy(prop('name'))
       )(items ?? []),
     [
       currentPriceList?.items,

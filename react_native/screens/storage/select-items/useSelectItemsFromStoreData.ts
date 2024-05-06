@@ -139,8 +139,7 @@ export function useSelectItemsFromStoreData(
               item.expirationBarcode.startsWith(searchTerm)
           )
         ),
-        sortBy<StorageListItem>(prop('name')),
-        (items) => take(10, items)
+        sortBy<StorageListItem>(prop('name'))
       )(storageListItems ?? []),
     [searchTerm, storageListItems]
   );
