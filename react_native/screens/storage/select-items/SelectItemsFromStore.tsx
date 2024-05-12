@@ -13,9 +13,8 @@ import { type StorageListItem } from '../../../atoms/storageFlow';
 import { Alert } from '../../../components/alert/Alert';
 import { Container } from '../../../components/container/Container';
 import { Loading } from '../../../components/Loading';
-import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
-import { colors } from '../../../constants/colors';
+import { ForwardIcon } from '../../../navigators/ForwardIcon';
 import { type SelectItemsFromStoreProps } from '../../../navigators/screen-types';
 import { ExpirationAccordionDetails } from './ExpirationAccordionDetails';
 import { useSelectItemsFromStoreData } from './useSelectItemsFromStoreData';
@@ -39,6 +38,26 @@ function SuspendedSelectItemsFromStore({
   } = useSelectItemsFromStoreData(navigation);
 
   useEffect(() => {
+    if (isAnyItemChanged) {
+      navigation.setOptions({
+        headerRight() {
+          return (
+            <ForwardIcon
+              onPress={() => {
+                navigation.navigate('ReviewStorageChanges');
+              }}
+            />
+          );
+        },
+      });
+    } else {
+      navigation.setOptions({
+        headerRight: undefined,
+      });
+    }
+  }, [isAnyItemChanged, navigation]);
+
+  useEffect(() => {
     if (!isNil(scannedBarCode) && searchTerm !== scannedBarCode) {
       setSearchTerm(scannedBarCode);
       navigation.setParams({ scannedBarCode: undefined });
@@ -51,12 +70,6 @@ function SuspendedSelectItemsFromStore({
       setCurrentQuantity={setCurrentQuantity}
     />
   );
-
-  const sendButtonVariant = isAnyItemChanged ? 'ok' : 'disabled';
-
-  const handleReviewChanges = () => {
-    navigation.navigate('ReviewStorageChanges');
-  };
 
   if (isLoading) {
     return <Loading />;
@@ -91,13 +104,6 @@ function SuspendedSelectItemsFromStore({
           renderItem={renderItem}
         />
       </View>
-      <View style={styles.footerContainer}>
-        <View style={styles.buttonContainer}>
-          <Button variant={sendButtonVariant} onPress={handleReviewChanges}>
-            Tétellista véglegesítése
-          </Button>
-        </View>
-      </View>
       <Alert
         visible={alert.isAlertVisible}
         title="Megerősítés szükséges"
@@ -129,17 +135,6 @@ export function SelectItemsFromStore(props: SelectItemsFromStoreProps) {
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  footerContainer: {
-    borderTopColor: colors.white,
-    borderTopWidth: 2,
-    height: 70,
-    paddingVertical: 10,
-  },
   headerContainer: {
     height: 65,
     marginVertical: 10,

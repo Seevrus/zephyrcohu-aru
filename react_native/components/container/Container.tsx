@@ -19,11 +19,7 @@ export function Container({
   children,
 }: PropsWithChildren<ContainerProps>) {
   return (
-    <KeyboardAvoidingView
-      testID={testID}
-      behavior="height"
-      style={[style, styles.container]}
-    >
+    <KeyboardAvoidingView testID={testID} style={[style, styles.container]}>
       {children}
     </KeyboardAvoidingView>
   );

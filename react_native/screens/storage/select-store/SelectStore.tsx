@@ -1,5 +1,5 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { isNil } from 'ramda';
+import { isNotNil } from 'ramda';
 import { Suspense, useCallback, useEffect } from 'react';
 import {
   FlatList,
@@ -13,9 +13,8 @@ import { Container } from '../../../components/container/Container';
 import { ErrorCard } from '../../../components/info-cards/ErrorCard';
 import { Loading } from '../../../components/Loading';
 import { Tile, type TileT } from '../../../components/Tile';
-import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
-import { colors } from '../../../constants/colors';
+import { ForwardIcon } from '../../../navigators/ForwardIcon';
 import { type SelectStoreProps } from '../../../navigators/screen-types';
 import { useSelectStoreData } from './useSelectStoreData';
 
@@ -37,6 +36,20 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
     }
   }, [isInternetReachable, navigation]);
 
+  useEffect(() => {
+    if (isNotNil(selectedStoreId)) {
+      navigation.setOptions({
+        headerRight() {
+          return <ForwardIcon onPress={handleSubmitSelectedStore} />;
+        },
+      });
+    } else {
+      navigation.setOptions({
+        headerRight: undefined,
+      });
+    }
+  }, [handleSubmitSelectedStore, navigation, selectedStoreId]);
+
   const renderTile: ListRenderItem<TileT> = useCallback(
     (info: ListRenderItemInfo<TileT>) => (
       <Tile
@@ -49,8 +62,6 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
     ),
     []
   );
-
-  const confirmButtonVariant = isNil(selectedStoreId) ? 'disabled' : 'neutral';
 
   if (isLoading) {
     return <Loading />;
@@ -79,16 +90,6 @@ function SuspendedSelectStore({ navigation }: SelectStoreProps) {
           renderItem={renderTile}
         />
       </View>
-      <View style={styles.footerContainer}>
-        <View style={styles.buttonContainer}>
-          <Button
-            variant={confirmButtonVariant}
-            onPress={handleSubmitSelectedStore}
-          >
-            Raktár kiválasztása
-          </Button>
-        </View>
-      </View>
     </Container>
   );
 }
@@ -102,19 +103,8 @@ export function SelectStore(props: SelectStoreProps) {
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'space-between',
-  },
   container: {
     paddingBottom: 30,
-  },
-  footerContainer: {
-    borderTopColor: colors.white,
-    borderTopWidth: 2,
-    height: 70,
-    paddingVertical: 10,
   },
   headerContainer: {
     height: 65,

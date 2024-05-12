@@ -1,5 +1,5 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import {
   FlatList,
   type ListRenderItemInfo,
@@ -13,9 +13,9 @@ import { Container } from '../../../components/container/Container';
 import { ErrorCard } from '../../../components/info-cards/ErrorCard';
 import { TextCard } from '../../../components/info-cards/TextCard';
 import { Loading } from '../../../components/Loading';
-import { Button } from '../../../components/ui/Button';
 import { LabeledItem } from '../../../components/ui/LabeledItem';
 import { colors } from '../../../constants/colors';
+import { ForwardIcon } from '../../../navigators/ForwardIcon';
 import { type ReviewStorageChangesProps } from '../../../navigators/screen-types';
 import { ReviewExpirationItem } from './ReviewExpirationItem';
 import { useReviewStorageChangesData } from './useReviewStorageChangesData';
@@ -39,6 +39,26 @@ function SuspendedReviewStorageChanges({
 
   const [isAlertVisible, setIsAlertVisible] = useState<boolean>(false);
 
+  useEffect(() => {
+    if (canConfirmStorageChanges) {
+      navigation.setOptions({
+        headerRight() {
+          return (
+            <ForwardIcon
+              onPress={() => {
+                setIsAlertVisible(true);
+              }}
+            />
+          );
+        },
+      });
+    } else {
+      navigation.setOptions({
+        headerRight: undefined,
+      });
+    }
+  }, [canConfirmStorageChanges, navigation]);
+
   if (isLoading) {
     return <Loading />;
   }
@@ -46,12 +66,6 @@ function SuspendedReviewStorageChanges({
   const renderItem = (info: ListRenderItemInfo<StorageListItem>) => (
     <ReviewExpirationItem item={info.item} />
   );
-
-  const confirmStorageChanges = () => {
-    setIsAlertVisible(true);
-  };
-
-  const confirmButtonVariant = canConfirmStorageChanges ? 'ok' : 'disabled';
 
   return (
     <Container>
@@ -90,14 +104,6 @@ function SuspendedReviewStorageChanges({
             text={`${changedItems.length} termék / +${changedQuantities.up} / -${changedQuantities.down}`}
           />
         </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            variant={confirmButtonVariant}
-            onPress={confirmStorageChanges}
-          >
-            Véglegesítés
-          </Button>
-        </View>
       </View>
       <Alert
         visible={isAlertVisible}
@@ -107,7 +113,7 @@ function SuspendedReviewStorageChanges({
           cancel: {
             text: 'Mégsem',
             variant: 'neutral',
-            onPress: () => {
+            onPress() {
               setIsAlertVisible(false);
             },
           },
@@ -134,18 +140,12 @@ export function ReviewStorageChanges(props: ReviewStorageChangesProps) {
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'space-between',
-  },
   cardContainer: {
     marginTop: 30,
   },
   footerContainer: {
     borderTopColor: colors.white,
     borderTopWidth: 2,
-    height: 110,
   },
   listContainer: {
     flex: 1,
