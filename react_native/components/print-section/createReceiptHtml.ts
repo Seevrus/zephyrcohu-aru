@@ -1,4 +1,4 @@
-import { propOr, repeat, take, takeLast } from 'ramda';
+import { propOr, repeat, sort, take, takeLast } from 'ramda';
 
 import { type ReceiptOtherItem } from '../../api/request-types/common/ReceiptItemsTypes';
 import { type ReceiptVatAmount } from '../../api/request-types/common/ReceiptVatAmount';
@@ -342,8 +342,8 @@ function getItemsList({
   ) => itemA.name.localeCompare(itemB.name, 'HU-hu');
 
   const allItems = [
-    ...createUniqueDiscountedItems(items.sort(sorter)),
-    ...(otherItems ?? []).sort(sorter),
+    ...createUniqueDiscountedItems(sort(sorter, items)),
+    ...sort(sorter, otherItems ?? []),
   ];
 
   const itemRows = allItems.map((item, index) => {

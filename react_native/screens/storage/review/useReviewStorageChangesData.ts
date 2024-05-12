@@ -1,13 +1,14 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAtom, useAtomValue } from 'jotai';
-import { isNil, isNotNil } from 'ramda';
+import { filter, isNil, isNotNil, pipe, prop, sortBy } from 'ramda';
 import { useCallback, useMemo, useState } from 'react';
 
 import { useSaveSelectedItems } from '../../../api/mutations/useSaveSelectedItems';
 import { useStores } from '../../../api/queries/useStores';
 import {
   isStorageSavedToApiAtom,
+  type StorageListItem,
   storageListItemsAtom,
 } from '../../../atoms/storageFlow';
 import { type StackParams } from '../../../navigators/screen-types';
@@ -33,7 +34,10 @@ export function useReviewStorageChangesData(
 
   const changedItems = useMemo(
     () =>
-      (storageListItems ?? []).filter((item) => isNotNil(item.quantityChange)),
+      pipe(
+        filter<StorageListItem>(pipe(prop('quantityChange'), isNotNil)),
+        sortBy<StorageListItem>(prop('name'))
+      )(storageListItems ?? []),
     [storageListItems]
   );
 
