@@ -38,6 +38,9 @@ function _ExpirationAccordionDetails({
   const [shownPrice, setShownPrice] = useState<string>(
     netPrice?.toString() ?? ''
   );
+  const [shownQuantity, setShownQuantity] = useState<string>(
+    quantity?.toString() ?? ''
+  );
 
   const backgroundColor = (quantity ?? 0) > 0 ? colors.ok : colors.neutral;
 
@@ -71,24 +74,31 @@ function _ExpirationAccordionDetails({
   };
 
   const quantityHandler = (newQuantity: string) => {
-    const formattedQuantity = pipe(
-      trim,
-      replace(',', '.'),
-      Number,
-      Math.floor
-    )(newQuantity);
-    const nullIshFormattedQuantity = Number.isNaN(formattedQuantity)
-      ? null
-      : formattedQuantity;
-
-    if (
-      newQuantity === '' ||
-      formattedQuantity < 0 ||
-      isNil(nullIshFormattedQuantity)
-    ) {
-      setQuantity(item, null);
+    if (newQuantity === '-') {
+      setShownQuantity(newQuantity);
     } else {
-      setQuantity(item, nullIshFormattedQuantity);
+      const formattedQuantity = pipe(
+        trim,
+        replace(',', '.'),
+        Number,
+        Math.floor
+      )(newQuantity);
+
+      const nullIshFormattedQuantity = Number.isNaN(formattedQuantity)
+        ? null
+        : formattedQuantity;
+
+      const stringFormattedQuantity = isNil(nullIshFormattedQuantity)
+        ? ''
+        : String(formattedQuantity);
+
+      if (newQuantity === '' || isNil(nullIshFormattedQuantity)) {
+        setQuantity(item, null);
+        setShownQuantity('');
+      } else {
+        setQuantity(item, nullIshFormattedQuantity);
+        setShownQuantity(stringFormattedQuantity);
+      }
     }
   };
 
@@ -141,7 +151,7 @@ function _ExpirationAccordionDetails({
                 contextMenuHidden: true,
                 keyboardType: 'numeric',
                 maxLength: 4,
-                value: String(quantity ?? ''),
+                value: shownQuantity,
                 onChangeText: quantityHandler,
               }}
             />
