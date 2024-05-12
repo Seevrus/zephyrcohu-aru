@@ -227,7 +227,8 @@ export function useReviewData(
             };
           }
         )
-        .filter((item): item is OtherReviewItem => !!item);
+        .filter((item): item is OtherReviewItem => !!item)
+        .sort((itemA, itemB) => itemA.name.localeCompare(itemB.name, 'HU-hu'));
 
       return [...regularReviewItems, ...otherReviewItems];
     });

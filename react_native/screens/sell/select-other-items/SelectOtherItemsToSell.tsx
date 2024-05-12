@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAtomValue } from 'jotai';
-import { Suspense, useCallback } from 'react';
+import { Suspense, useCallback, useEffect } from 'react';
 import {
   Animated,
   type ListRenderItemInfo,
@@ -11,10 +11,10 @@ import {
 import { selectedOtherItemsAtom } from '../../../atoms/sellFlow';
 import { Container } from '../../../components/container/Container';
 import { Loading } from '../../../components/Loading';
-import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { LabeledItem } from '../../../components/ui/LabeledItem';
 import { colors } from '../../../constants/colors';
+import { ForwardIcon } from '../../../navigators/ForwardIcon';
 import { type SelectOtherItemsToSellProps } from '../../../navigators/screen-types';
 import { formatPrice } from '../../../utils/formatPrice';
 import { ExpirationAccordionDetails } from './ExpirationAccordionDetails';
@@ -42,8 +42,6 @@ function SuspendedSelectOtherItemsToSell({
 
   const selectedOtherItems = useAtomValue(selectedOtherItemsAtom);
 
-  const confirmButtonVariant = canConfirmItems ? 'ok' : 'disabled';
-
   const renderItem = useCallback(
     (info: ListRenderItemInfo<OtherSellItem>) => (
       <ExpirationAccordionDetails
@@ -66,6 +64,20 @@ function SuspendedSelectOtherItemsToSell({
       selectedOtherItems,
     ]
   );
+
+  useEffect(() => {
+    if (canConfirmItems) {
+      navigation.setOptions({
+        headerRight() {
+          return <ForwardIcon onPress={confirmItemsHandler} />;
+        },
+      });
+    } else {
+      navigation.setOptions({
+        headerRight: undefined,
+      });
+    }
+  }, [canConfirmItems, confirmItemsHandler, navigation]);
 
   if (isLoading) {
     return <Loading />;
@@ -98,11 +110,6 @@ function SuspendedSelectOtherItemsToSell({
             text={`${formatPrice(netTotal)} / ${formatPrice(grossTotal)}`}
           />
         </View>
-        <View style={styles.buttonContainer}>
-          <Button variant={confirmButtonVariant} onPress={confirmItemsHandler}>
-            Tételek jóváhagyása
-          </Button>
-        </View>
       </View>
     </Container>
   );
@@ -117,16 +124,10 @@ export function SelectOtherItemsToSell(props: SelectOtherItemsToSellProps) {
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'space-between',
-  },
   footerContainer: {
     backgroundColor: colors.neutral,
     borderTopColor: colors.white,
     borderTopWidth: 2,
-    height: 135,
     paddingVertical: 10,
   },
   headerContainer: {

@@ -14,10 +14,10 @@ import { selectedItemsAtom } from '../../../atoms/sellFlow';
 import { Alert } from '../../../components/alert/Alert';
 import { Container } from '../../../components/container/Container';
 import { Loading } from '../../../components/Loading';
-import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { LabeledItem } from '../../../components/ui/LabeledItem';
 import { colors } from '../../../constants/colors';
+import { ForwardIcon } from '../../../navigators/ForwardIcon';
 import { type SelectItemsToSellProps } from '../../../navigators/screen-types';
 import { formatPrice } from '../../../utils/formatPrice';
 import { ItemAvailability, SelectItem } from './SelectItem';
@@ -87,7 +87,19 @@ function SuspendedSelectItemsToSell({
     [selectedItems, selectedOrderItems, upsertOrderItem, upsertSelectedItem]
   );
 
-  const confirmButtonVariant = canConfirmItems ? 'ok' : 'disabled';
+  useEffect(() => {
+    if (canConfirmItems) {
+      navigation.setOptions({
+        headerRight() {
+          return <ForwardIcon onPress={confirmItemsHandler} />;
+        },
+      });
+    } else {
+      navigation.setOptions({
+        headerRight: undefined,
+      });
+    }
+  }, [canConfirmItems, confirmItemsHandler, navigation]);
 
   if (isLoading) {
     return <Loading />;
@@ -150,11 +162,6 @@ function SuspendedSelectItemsToSell({
             )}`}
           />
         </View>
-        <View style={styles.buttonContainer}>
-          <Button variant={confirmButtonVariant} onPress={confirmItemsHandler}>
-            Tovább az áttekintéshez
-          </Button>
-        </View>
       </View>
       <Alert
         visible={alert.isAlertVisible}
@@ -183,16 +190,10 @@ export function SelectItemsToSell(props: SelectItemsToSellProps) {
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'space-between',
-  },
   footerContainer: {
     backgroundColor: colors.neutral,
     borderTopColor: colors.white,
     borderTopWidth: 2,
-    height: 135,
     paddingVertical: 10,
   },
   headerContainer: {

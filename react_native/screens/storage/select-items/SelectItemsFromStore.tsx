@@ -16,6 +16,7 @@ import { Loading } from '../../../components/Loading';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { colors } from '../../../constants/colors';
+import { ForwardIcon } from '../../../navigators/ForwardIcon';
 import { type SelectItemsFromStoreProps } from '../../../navigators/screen-types';
 import { ExpirationAccordionDetails } from './ExpirationAccordionDetails';
 import { useSelectItemsFromStoreData } from './useSelectItemsFromStoreData';
@@ -35,8 +36,30 @@ function SuspendedSelectItemsFromStore({
     itemsToShow,
     isAnyItemChanged,
     setCurrentQuantity,
-    alert,
+    showCancelStorageAlertHandler,
+    goBackAlert,
+    cancelStorageAlert,
   } = useSelectItemsFromStoreData(navigation);
+
+  useEffect(() => {
+    if (isAnyItemChanged) {
+      navigation.setOptions({
+        headerRight() {
+          return (
+            <ForwardIcon
+              onPress={() => {
+                navigation.navigate('ReviewStorageChanges');
+              }}
+            />
+          );
+        },
+      });
+    } else {
+      navigation.setOptions({
+        headerRight: undefined,
+      });
+    }
+  }, [isAnyItemChanged, navigation]);
 
   useEffect(() => {
     if (!isNil(scannedBarCode) && searchTerm !== scannedBarCode) {
@@ -51,12 +74,6 @@ function SuspendedSelectItemsFromStore({
       setCurrentQuantity={setCurrentQuantity}
     />
   );
-
-  const sendButtonVariant = isAnyItemChanged ? 'ok' : 'disabled';
-
-  const handleReviewChanges = () => {
-    navigation.navigate('ReviewStorageChanges');
-  };
 
   if (isLoading) {
     return <Loading />;
@@ -93,28 +110,46 @@ function SuspendedSelectItemsFromStore({
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.buttonContainer}>
-          <Button variant={sendButtonVariant} onPress={handleReviewChanges}>
-            Tétellista véglegesítése
+          <Button variant="warning" onPress={showCancelStorageAlertHandler}>
+            Rakodás elvetése
           </Button>
         </View>
       </View>
       <Alert
-        visible={alert.isAlertVisible}
+        visible={goBackAlert.isAlertVisible}
         title="Megerősítés szükséges"
         message="Biztosan ki szeretne lépni? A nem mentett rakodási adatok elvesznek!"
         buttons={{
           cancel: {
             text: 'Mégsem',
             variant: 'neutral',
-            onPress: alert.resetAlertHandler,
+            onPress: goBackAlert.resetAlertHandler,
           },
           confirm: {
             text: 'Igen',
             variant: 'warning',
-            onPress: alert.exitConfimationHandler,
+            onPress: goBackAlert.confirmationHandler,
           },
         }}
-        onBackdropPress={alert.resetAlertHandler}
+        onBackdropPress={goBackAlert.resetAlertHandler}
+      />
+      <Alert
+        visible={cancelStorageAlert.isAlertVisible}
+        title="Megerősítés szükséges"
+        message="Ezzel a lépéssel befejeződik a rakodási folyamat a képernyőn elvégzett módosítások mentése nélkül."
+        buttons={{
+          cancel: {
+            text: 'Mégsem',
+            variant: 'neutral',
+            onPress: cancelStorageAlert.resetAlertHandler,
+          },
+          confirm: {
+            text: 'Igen',
+            variant: 'warning',
+            onPress: cancelStorageAlert.confirmationHandler,
+          },
+        }}
+        onBackdropPress={cancelStorageAlert.resetAlertHandler}
       />
     </Container>
   );
@@ -130,9 +165,10 @@ export function SelectItemsFromStore(props: SelectItemsFromStoreProps) {
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flex: 1,
     justifyContent: 'space-between',
+    paddingLeft: '10%',
   },
   footerContainer: {
     borderTopColor: colors.white,

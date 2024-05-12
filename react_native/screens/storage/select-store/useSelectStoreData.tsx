@@ -19,7 +19,7 @@ import {
   toLower,
   when,
 } from 'ramda';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { queryKeys } from '../../../api/keys';
 import { useSelectStore } from '../../../api/mutations/useSelectStore';
@@ -58,6 +58,10 @@ export function useSelectStoreData(
   const [selectedStoreId, setSelectedStoreId] = useState<number | null>(null);
   const [isSubmitInProgress, setIsSubmitInProgress] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string>('');
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.stores });
+  }, [queryClient]);
 
   const primaryStoreId = stores?.find((store) => store.type === 'P')?.id;
 
