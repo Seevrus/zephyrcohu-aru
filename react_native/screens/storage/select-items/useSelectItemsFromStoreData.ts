@@ -5,6 +5,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import { filter, isNotNil, pipe, prop, sortBy, when } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { useDeselectStore } from '../../../api/mutations/useDeselectStore';
 import { useItems } from '../../../api/queries/useItems';
 import {
   primaryStoreAtom,
@@ -25,6 +26,8 @@ export function useSelectItemsFromStoreData(
   >
 ) {
   const { data: items, isPending: isItemsPending } = useItems();
+  const { mutateAsync: deselectStore, isPending: isDeselectStorePending } =
+    useDeselectStore();
 
   const primaryStoreDetails = useAtomValue(primaryStoreAtom);
   const selectedStoreInitialState = useAtomValue(selectedStoreInitialStateAtom);
@@ -34,7 +37,10 @@ export function useSelectItemsFromStoreData(
 
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const [isAlertVisible, setIsAlertVisible] = useState<boolean>(false);
+  const [isGoBackAlertVisible, setIsGoBackAlertVisible] =
+    useState<boolean>(false);
+  const [isCancelStorageAlertVisible, setIsCancelStorageAlertVisible] =
+    useState<boolean>(false);
 
   const isAnyItemChanged = useMemo(
     () => storageListItems?.some((item) => isNotNil(item.quantityChange)),
@@ -59,7 +65,7 @@ export function useSelectItemsFromStoreData(
       event.preventDefault();
 
       if (isAnyItemChanged) {
-        setIsAlertVisible(true);
+        setIsGoBackAlertVisible(true);
       } else {
         navigation.removeListener('beforeRemove', backButtonHandler);
 
@@ -72,8 +78,12 @@ export function useSelectItemsFromStoreData(
     [isAnyItemChanged, navigation]
   );
 
-  const resetAlertHandler = useCallback(() => {
-    setIsAlertVisible(false);
+  const resetGoBackAlertHandler = useCallback(() => {
+    setIsGoBackAlertVisible(false);
+  }, []);
+
+  const resetCancelStorageAlertHandler = useCallback(() => {
+    setIsCancelStorageAlertVisible(false);
   }, []);
 
   const exitConfimationHandler = useCallback(() => {
@@ -84,6 +94,19 @@ export function useSelectItemsFromStoreData(
       routes: [{ name: 'Index' }],
     });
   }, [backButtonHandler, navigation]);
+
+  const showCancelStorageAlertHandler = useCallback(() => {
+    setIsCancelStorageAlertVisible(true);
+  }, []);
+
+  const cancelStorageHandler = useCallback(async () => {
+    await deselectStore();
+
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Index' }],
+    });
+  }, [deselectStore, navigation]);
 
   useFocusEffect(
     useCallback(() => {
@@ -136,6 +159,7 @@ export function useSelectItemsFromStoreData(
             (item) =>
               item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
               item.expiresAt.startsWith(searchTerm) ||
+              item.itemBarcode.startsWith(searchTerm) ||
               item.expirationBarcode.startsWith(searchTerm)
           )
         ),
@@ -166,16 +190,22 @@ export function useSelectItemsFromStoreData(
   );
 
   return {
-    isLoading: isItemsPending,
+    isLoading: isItemsPending || isDeselectStorePending,
     searchTerm,
     setSearchTerm,
     itemsToShow,
     isAnyItemChanged,
     setCurrentQuantity,
-    alert: {
-      isAlertVisible,
-      resetAlertHandler,
-      exitConfimationHandler,
+    showCancelStorageAlertHandler,
+    goBackAlert: {
+      isAlertVisible: isGoBackAlertVisible,
+      resetAlertHandler: resetGoBackAlertHandler,
+      confirmationHandler: exitConfimationHandler,
+    },
+    cancelStorageAlert: {
+      isAlertVisible: isCancelStorageAlertVisible,
+      resetAlertHandler: resetCancelStorageAlertHandler,
+      confirmationHandler: cancelStorageHandler,
     },
   };
 }

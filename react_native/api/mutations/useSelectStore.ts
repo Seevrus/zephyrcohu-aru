@@ -45,6 +45,7 @@ export function useSelectStore() {
     async onSuccess(response) {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.checkToken }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.items }),
         queryClient.invalidateQueries({ queryKey: queryKeys.stores }),
         queryClient.invalidateQueries({
           queryKey: queryKeys.storeDetails(response.storeId),
