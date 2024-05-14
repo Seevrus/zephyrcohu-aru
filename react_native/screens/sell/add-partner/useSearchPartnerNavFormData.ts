@@ -8,7 +8,6 @@ import {
   isNotNil,
   pipe,
   prepend,
-  take,
   when,
 } from 'ramda';
 import { useMemo, useState } from 'react';
@@ -16,8 +15,6 @@ import { useMemo, useState } from 'react';
 import { useSearchTaxNumber } from '../../../api/queries/useSearchTaxNumber';
 import { type TaxPayer } from '../../../api/response-mappers/mapSearchTaxPayerResponse';
 import { type StackParams } from '../../../navigators/screen-types';
-
-const NUM_PARTNERS_SHOWN = 10;
 
 type UseSearchPartnerNavFormProps = {
   navigation: NativeStackNavigationProp<
@@ -60,7 +57,6 @@ export function useSearchPartnerNavFormData({
             return haystack.toLocaleLowerCase().includes(needle);
           })
         ),
-        (taxPayers) => take<TaxPayer>(NUM_PARTNERS_SHOWN, taxPayers),
         when<TaxPayer[], TaxPayer[]>(
           allPass([
             () => isNotNil(selectedResult),

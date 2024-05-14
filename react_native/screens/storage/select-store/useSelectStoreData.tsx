@@ -15,7 +15,6 @@ import {
   prop,
   propEq,
   sortBy,
-  take,
   toLower,
   when,
 } from 'ramda';
@@ -77,7 +76,6 @@ export function useSelectStoreData(
           )
         ),
         sortBy<StoreType>(prop('name')),
-        (stores) => take<StoreType>(10, stores),
         when(
           allPass([
             () => isNotNil(selectedStoreId),
@@ -140,9 +138,16 @@ export function useSelectStoreData(
     token,
   ]);
 
-  const handleStoreSelect = useCallback((storeId: number) => {
-    setSelectedStoreId(storeId);
-  }, []);
+  const handleStoreSelect = useCallback(
+    (storeId: number) => {
+      const selectedStore = stores?.find((store) => store.id === storeId);
+
+      if (isNil(selectedStore?.user)) {
+        setSelectedStoreId(storeId);
+      }
+    },
+    [stores]
+  );
 
   const storeTiles = useMemo(
     () =>
@@ -150,7 +155,7 @@ export function useSelectStoreData(
         filter(complement(propEq('P', 'type'))),
         sortBy<StoreType>(compose(toLower, prop('name'))),
         map<StoreType, TileT>((store) => {
-          const isStoreOccupied = !isNil(store.user);
+          const isStoreOccupied = isNotNil(store.user);
 
           const buttonVariant = (() => {
             if (isStoreOccupied) return 'disabled';

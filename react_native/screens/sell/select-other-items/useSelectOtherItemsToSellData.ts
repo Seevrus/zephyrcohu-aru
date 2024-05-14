@@ -11,7 +11,6 @@ import {
   pipe,
   prop,
   sortBy,
-  take,
 } from 'ramda';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -31,8 +30,6 @@ export type OtherSellItem = {
 };
 
 type OtherSellItems = OtherSellItem[];
-
-const NUM_ITEMS_SHOWN = 10;
 
 export function useSelectOtherItemsToSellData(
   navigation: BottomTabNavigationProp<
@@ -63,8 +60,7 @@ export function useSelectOtherItemsToSellData(
         sortBy(prop('name')),
         filter<OtherSellItem>((item) =>
           item.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
-        ),
-        (otherItems) => take<OtherSellItem>(NUM_ITEMS_SHOWN, otherItems)
+        )
       )(otherItems ?? []),
     [otherItems, searchTerm]
   );

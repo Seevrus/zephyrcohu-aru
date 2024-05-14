@@ -14,7 +14,6 @@ import {
   pipe,
   prepend,
   sort,
-  take,
   when,
 } from 'ramda';
 import { useCallback, useMemo, useState } from 'react';
@@ -33,8 +32,6 @@ import {
   type PartnerTabParams,
   type StackParams,
 } from '../../../navigators/screen-types';
-
-const NUM_PARTNERS_SHOWN = 10;
 
 type UseSelectPartnerProps = {
   route: RouteProp<
@@ -105,7 +102,6 @@ export function useSelectPartnerData({
             return haystack.toLocaleLowerCase().includes(needle);
           })
         ),
-        (partners) => take<Partner>(NUM_PARTNERS_SHOWN, partners),
         when<Partners, Partners>(
           allPass([
             () => isNotNil(selectedPartner),
