@@ -1381,11 +1381,16 @@
                 "key": "Accept",
                 "value": "application/json",
                 "type": "text"
+              },
+              {
+                "key": "X-Android-Id",
+                "value": "{{androidId}}",
+                "type": "text"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"data\": {\r\n        \"primaryStoreId\": 1,\r\n        \"changes\": [\r\n            {\r\n                \"expirationId\": 1,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 2,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 3,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 4,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 5,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 6,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 7,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 8,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 9,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 10,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 11,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 12,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 13,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 14,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 15,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 16,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 17,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 18,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 19,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 20,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 21,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            },\r\n            {\r\n                \"expirationId\": 22,\r\n                \"startingQuantity\": 10,\r\n                \"quantityChange\": 10,\r\n                \"finalQuantity\": 20\r\n            }\r\n        ]\r\n    }\r\n}",
+              "raw": "{\r\n    \"data\": {\r\n        \"primaryStoreId\": 1,\r\n        \"changes\": [\r\n            {\r\n                \"expirationId\": 25,\r\n                \"startingQuantity\": 34,\r\n                \"quantityChange\": 1,\r\n                \"finalQuantity\": 35\r\n            },\r\n            {\r\n                \"expirationId\": 27,\r\n                \"startingQuantity\": 40,\r\n                \"quantityChange\": -4,\r\n                \"finalQuantity\": 36\r\n            }\r\n        ]\r\n    }\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1751,13 +1756,12 @@
             "header": [
               {
                 "key": "Accept",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"userName\": \"ztill@001\",\r\n    \"password\": \"test\"\r\n}",
+              "raw": "{\r\n    \"userName\": \"ztill_postman@001\",\r\n    \"password\": \"teszt\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1876,7 +1880,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{last_token}}",
+                  "value": "{{token}}",
                   "type": "string"
                 }
               ]
