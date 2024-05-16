@@ -59,7 +59,7 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
   const [partnerListId, setPartnerListId] = useState<number | null>(null);
   const [date, setDate] = useState<Date>(new Date());
 
-  const [loadingMessage, setLoadingMessage] = useState<string>('');
+  const [loadingMessage, setLoadingMessage] = useState<string>('Betöltés...');
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
@@ -67,6 +67,15 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
       navigation.pop();
     }
   }, [isInternetReachable, isPasswordExpired, isTokenExpired, navigation]);
+
+  useEffect(() => {
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: queryKeys.partnerLists }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.stores }),
+    ]).then(() => {
+      setLoadingMessage('');
+    });
+  }, [queryClient]);
 
   const confirmRoundHandler = async () => {
     if (isNotNil(storeId) && isNotNil(partnerListId) && token) {
@@ -144,13 +153,6 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
       }
     }
   };
-
-  const refreshHandler = useCallback(async () => {
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: queryKeys.partnerLists }),
-      queryClient.invalidateQueries({ queryKey: queryKeys.stores }),
-    ]);
-  }, [queryClient]);
 
   const displayStores = useMemo(
     () =>
@@ -247,9 +249,6 @@ function SuspendedStartErrand({ navigation }: StartErrandProps) {
       <View style={styles.buttonContainer}>
         <Button variant={confirmButtonVariant} onPress={confirmRoundHandler}>
           Kör indítása
-        </Button>
-        <Button variant="warning" onPress={refreshHandler}>
-          Adatok frissítése
         </Button>
       </View>
     </Container>

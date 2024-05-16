@@ -1,21 +1,14 @@
-import { FontAwesome5 } from '@expo/vector-icons';
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAtom, useAtomValue } from 'jotai';
 import {
   allPass,
-  complement,
-  compose,
-  filter,
   isNil,
   isNotNil,
-  map,
   pipe,
   prepend,
   prop,
-  propEq,
   sortBy,
-  toLower,
   when,
 } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -32,7 +25,6 @@ import {
   selectedStoreInitialStateAtom,
 } from '../../../atoms/storage';
 import { deviceIdAtom, tokenAtom } from '../../../atoms/token';
-import { type TileT } from '../../../components/Tile';
 import { type StackParams } from '../../../navigators/screen-types';
 
 export function useSelectStoreData(
@@ -53,7 +45,6 @@ export function useSelectStoreData(
     selectedStoreCurrentStateAtom
   );
 
-  const [storeSearchValue, setStoreSearchValue] = useState<string>('');
   const [selectedStoreId, setSelectedStoreId] = useState<number | null>(null);
   const [isSubmitInProgress, setIsSubmitInProgress] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string>('');
@@ -67,14 +58,6 @@ export function useSelectStoreData(
   const storesShown: StoreType[] = useMemo(
     () =>
       pipe(
-        when(
-          () => !!storeSearchValue,
-          filter<StoreType>((store) =>
-            store.name
-              .toLocaleLowerCase()
-              .includes(storeSearchValue.toLocaleLowerCase())
-          )
-        ),
         sortBy<StoreType>(prop('name')),
         when(
           allPass([
@@ -88,7 +71,7 @@ export function useSelectStoreData(
           )
         )
       )(stores ?? []),
-    [selectedStoreId, storeSearchValue, stores]
+    [selectedStoreId, stores]
   );
 
   const handleSubmitSelectedStore = useCallback(async () => {
@@ -139,56 +122,36 @@ export function useSelectStoreData(
   ]);
 
   const handleStoreSelect = useCallback(
-    (storeId: number) => {
-      const selectedStore = stores?.find((store) => store.id === storeId);
+    (storeId: string) => {
+      const selectedStore = stores?.find((store) => store.id === +storeId);
 
       if (isNil(selectedStore?.user)) {
-        setSelectedStoreId(storeId);
+        setSelectedStoreId(+storeId);
       }
     },
     [stores]
   );
 
-  const storeTiles = useMemo(
+  const displayStores = useMemo(
     () =>
-      pipe(
-        filter(complement(propEq('P', 'type'))),
-        sortBy<StoreType>(compose(toLower, prop('name'))),
-        map<StoreType, TileT>((store) => {
-          const isStoreOccupied = isNotNil(store.user);
-
-          const buttonVariant = (() => {
-            if (isStoreOccupied) return 'disabled';
-            if (store.id === selectedStoreId) return 'ok';
-            return 'neutral';
-          })();
-
-          return {
-            id: String(store.id),
-            title: store.name,
-            Icon: isStoreOccupied
-              ? () => (
-                  <FontAwesome5
-                    name="store-alt-slash"
-                    size={35}
-                    color="white"
-                  />
-                )
-              : () => <FontAwesome5 name="store-alt" size={35} color="white" />,
-            variant: buttonVariant,
-            onPress: () => handleStoreSelect(store.id),
-          };
-        })
-      )(storesShown),
-    [handleStoreSelect, selectedStoreId, storesShown]
+      (storesShown ?? [])
+        .filter((store) => store.type !== 'P' && store.state === 'I')
+        .map((store) => ({
+          key: String(store.id),
+          value: store.name,
+        }))
+        .sort((storeA, storeB) =>
+          storeA.value.localeCompare(storeB.value, 'HU-hu')
+        ),
+    [storesShown]
   );
 
   return {
     isLoading: isStoresPending || isSubmitInProgress,
     error: submitError,
     selectedStoreId,
-    searchInputHandler: setStoreSearchValue,
     handleSubmitSelectedStore,
-    storeTiles,
+    displayStores,
+    handleStoreSelect,
   };
 }
