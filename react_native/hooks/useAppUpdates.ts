@@ -1,8 +1,10 @@
 import { useNetInfo } from '@react-native-community/netinfo';
-import { checkForUpdateAsync } from 'expo-updates';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import SpInAppUpdates from 'sp-react-native-in-app-updates';
 
 import { type AlertButton } from '../components/alert/Alert';
+
+const isDevelopment = process.env.EXPO_PUBLIC_IS_DEV === 'yes';
 
 type UseAppUpdates = {
   alert?: {
@@ -17,18 +19,22 @@ type UseAppUpdates = {
 export function useAppUpdates(): UseAppUpdates {
   const { isInternetReachable } = useNetInfo();
 
+  const inAppUpdates = useRef(new SpInAppUpdates(isDevelopment));
+
   const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
   const [lastChecked, setLastChecked] = useState(0);
 
   useEffect(() => {
     if (
-      process.env.EXPO_PUBLIC_IS_DEV === 'no' &&
+      !isDevelopment &&
       isInternetReachable === true &&
       Date.now() - lastChecked > 1 * 24 * 60 * 60 * 1000
     ) {
-      checkForUpdateAsync().then(({ isAvailable }) => {
-        setIsUpdateAvailable(isAvailable);
-        setLastChecked(Date.now());
+      inAppUpdates.current.checkNeedsUpdate().then(({ shouldUpdate }) => {
+        if (shouldUpdate) {
+          setIsUpdateAvailable(true);
+          setLastChecked(Date.now());
+        }
       });
     }
   }, [isInternetReachable, lastChecked]);
