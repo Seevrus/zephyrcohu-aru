@@ -1,23 +1,13 @@
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAtom, useAtomValue } from 'jotai';
-import {
-  allPass,
-  isNil,
-  isNotNil,
-  pipe,
-  prepend,
-  prop,
-  sortBy,
-  when,
-} from 'ramda';
+import { isNil, isNotNil } from 'ramda';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { queryKeys } from '../../../api/keys';
 import { useSelectStore } from '../../../api/mutations/useSelectStore';
 import { fetchStoreDetails } from '../../../api/queries/useStoreDetails';
 import { useStores } from '../../../api/queries/useStores';
-import { type StoreType } from '../../../api/response-types/common/StoreType';
 import { type StoreDetailsResponseData } from '../../../api/response-types/StoreDetailsResponseType';
 import {
   primaryStoreAtom,
@@ -54,25 +44,6 @@ export function useSelectStoreData(
   }, [queryClient]);
 
   const primaryStoreId = stores?.find((store) => store.type === 'P')?.id;
-
-  const storesShown: StoreType[] = useMemo(
-    () =>
-      pipe(
-        sortBy<StoreType>(prop('name')),
-        when(
-          allPass([
-            () => isNotNil(selectedStoreId),
-            (stores) => !stores.some((store) => store.id === selectedStoreId),
-          ]),
-          prepend(
-            (stores ?? []).find(
-              (store) => store.id === selectedStoreId
-            ) as StoreType
-          )
-        )
-      )(stores ?? []),
-    [selectedStoreId, stores]
-  );
 
   const handleSubmitSelectedStore = useCallback(async () => {
     if (
@@ -134,7 +105,7 @@ export function useSelectStoreData(
 
   const displayStores = useMemo(
     () =>
-      (storesShown ?? [])
+      (stores ?? [])
         .filter((store) => store.type !== 'P' && store.state === 'I')
         .map((store) => ({
           key: String(store.id),
@@ -143,7 +114,7 @@ export function useSelectStoreData(
         .sort((storeA, storeB) =>
           storeA.value.localeCompare(storeB.value, 'HU-hu')
         ),
-    [storesShown]
+    [stores]
   );
 
   return {
